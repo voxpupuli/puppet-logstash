@@ -13,88 +13,88 @@
 #
 # === Parameters
 #
-# [*count*] 
+# [*count*]
 #   A count metric. metric_name =&gt; count as hash
 #   Value type is hash
 #   Default value: {}
 #   This variable is optional
 #
-# [*debug*] 
+# [*debug*]
 #   The final metric sent to statsd will look like the following (assuming
 #   defaults) logstash.sender.file_name  Enable debugging output?
 #   Value type is boolean
 #   Default value: false
 #   This variable is optional
 #
-# [*decrement*] 
+# [*decrement*]
 #   A decrement metric. metric names as array.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*exclude_tags*] 
+# [*exclude_tags*]
 #   Only handle events without any of these tags. Note this check is
 #   additional to type and tags.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*fields*] 
+# [*fields*]
 #   Only handle events with all of these fields. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*host*] 
+# [*host*]
 #   The address of the Statsd server.
 #   Value type is string
 #   Default value: "localhost"
 #   This variable is optional
 #
-# [*increment*] 
+# [*increment*]
 #   An increment metric. metric names as array.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*namespace*] 
+# [*namespace*]
 #   The statsd namespace to use for this metric
 #   Value type is string
 #   Default value: "logstash"
 #   This variable is optional
 #
-# [*port*] 
+# [*port*]
 #   The port to connect to on your statsd server.
 #   Value type is number
 #   Default value: 8125
 #   This variable is optional
 #
-# [*sample_rate*] 
+# [*sample_rate*]
 #   The sample rate for the metric
 #   Value type is number
 #   Default value: 1
 #   This variable is optional
 #
-# [*sender*] 
+# [*sender*]
 #   The name of the sender. Dots will be replaced with underscores
 #   Value type is string
 #   Default value: "%{@source_host}"
 #   This variable is optional
 #
-# [*tags*] 
+# [*tags*]
 #   Only handle events with all of these tags.  Note that if you specify a
 #   type, the event must also match that type. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*timing*] 
+# [*timing*]
 #   A timing metric. metric_name =&gt; duration as hash
 #   Value type is hash
 #   Default value: {}
 #   This variable is optional
 #
-# [*type*] 
+# [*type*]
 #   The type to act on. If a type is given, then this output will only act
 #   on messages with the same type. See any input plugin's "type"
 #   attribute for more. Optional.
@@ -111,11 +111,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.5
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.5/outputs/statsd
+#  http://logstash.net/docs/1.1.9/outputs/statsd
 #
-#  Need help? http://logstash.net/docs/1.1.5/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
@@ -191,12 +191,16 @@ define logstash::output::statsd(
   if $port {
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
+    } else {
+      $opt_port = "  port => ${port}\n"
     }
   }
 
   if $sample_rate {
     if ! is_numeric($sample_rate) {
       fail("\"${sample_rate}\" is not a valid sample_rate parameter value")
+    } else {
+      $opt_sample_rate = "  sample_rate => ${sample_rate}\n"
     }
   }
 

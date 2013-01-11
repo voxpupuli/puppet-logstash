@@ -1,17 +1,19 @@
-# == Define: logstash::filter::checksum
+# == Define: logstash::filter::geoip
 #
-#   This filter let's you create a checksum based on various parts of the
-#   logstash event. This can be useful for deduplication of messages or
-#   simply to provide a custom unique identifier.  This is VERY
-#   experimental and is largely a proof-of-concept
+#   Add GeoIP fields from Maxmind database  GeoIP filter, adds information
+#   about geographical location of IP addresses. This filter uses Maxmind
+#   GeoIP databases, have a look at https://www.maxmind.com/app/geolite 
+#   Logstash releases ship with the GeoLiteCity database made available
+#   from Maxmind with a CCA-ShareAlike 3.0 license. For more details on
+#   geolite, see http://www.maxmind.com/en/geolite.
 #
 #
 # === Parameters
 #
 # [*add_field*]
 #   If this filter is successful, add any arbitrary fields to this event.
-#   Example:  filter {   checksum {     add_field =&gt; [ "sample", "Hello
-#   world, from %{@source}" ]   } }    On success, the checksum plugin
+#   Example:  filter {   geoip {     add_field =&gt; [ "sample", "Hello
+#   world, from %{@source}" ]   } }    On success, the geoip plugin
 #   will then add field 'sample' with the  value above and the %{@source}
 #   piece replaced with that value from the  event.
 #   Value type is hash
@@ -21,16 +23,19 @@
 # [*add_tag*]
 #   If this filter is successful, add arbitrary tags to the event. Tags
 #   can be dynamic and include parts of the event using the %{field}
-#   syntax. Example:  filter {   checksum {     add_tag =&gt; [
+#   syntax. Example:  filter {   geoip {     add_tag =&gt; [
 #   "foo_%{somefield}" ]   } }   If the event has field "somefield" ==
 #   "hello" this filter, on success, would add a tag "foo_hello"
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*algorithm*]
-#   Value can be any of: "md5", "sha128", "sha256", "sha384"
-#   Default value: "sha256"
+# [*database*]
+#   GeoIP database file to use, Country, City, ASN, ISP and organization
+#   databases are supported  If not specified, this will default to the
+#   GeoLiteCity database that ships with logstash.
+#   Value type is string
+#   Default value: None
 #   This variable is optional
 #
 # [*exclude_tags*]
@@ -40,18 +45,17 @@
 #   Default value: []
 #   This variable is optional
 #
-# [*keys*]
-#   A list of keys to use in creating the string to checksum Keys will be
-#   sorted before building the string keys and values will then be
-#   concatenated with pipe delimeters and checksummed
-#   Value type is array
-#   Default value: ["@message", "@source_host", "@timestamp", "@source_path", "@type", "@source"]
-#   This variable is optional
+# [*field*]
+#   The field containing IP address, hostname is also OK. If this field is
+#   an array, only the first value will be used.
+#   Value type is string
+#   Default value: None
+#   This variable is required
 #
 # [*remove_tag*]
 #   If this filter is successful, remove arbitrary tags from the event.
 #   Tags can be dynamic and include parts of the event using the %{field}
-#   syntax. Example:  filter {   checksum {     remove_tag =&gt; [
+#   syntax. Example:  filter {   geoip {     remove_tag =&gt; [
 #   "foo_%{somefield}" ]   } }   If the event has field "somefield" ==
 #   "hello" this filter, on success, would remove the tag "foo_hello" if
 #   it is present
@@ -90,7 +94,7 @@
 #
 #  This define is created based on LogStash version 1.1.9
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.9/filters/checksum
+#  http://logstash.net/docs/1.1.9/filters/geoip
 #
 #  Need help? http://logstash.net/docs/1.1.9/learn
 #
@@ -98,12 +102,12 @@
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
-define logstash::filter::checksum(
+define logstash::filter::geoip(
+  $field,
   $add_field    = '',
-  $add_tag      = '',
-  $algorithm    = '',
+  $database     = '',
   $exclude_tags = '',
-  $keys         = '',
+  $add_tag      = '',
   $remove_tag   = '',
   $tags         = '',
   $type         = '',
@@ -113,10 +117,10 @@ define logstash::filter::checksum(
   require logstash::params
 
   #### Validate parameters
-  if $keys {
-    validate_array($keys)
-    $arr_keys = join($keys, "', '")
-    $opt_keys = "  keys => ['${arr_keys}']\n"
+  if $remove_tag {
+    validate_array($remove_tag)
+    $arr_remove_tag = join($remove_tag, "', '")
+    $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
   }
 
   if $add_tag {
@@ -125,22 +129,16 @@ define logstash::filter::checksum(
     $opt_add_tag = "  add_tag => ['${arr_add_tag}']\n"
   }
 
-  if $tags {
-    validate_array($tags)
-    $arr_tags = join($tags, "', '")
-    $opt_tags = "  tags => ['${arr_tags}']\n"
-  }
-
   if $exclude_tags {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, "', '")
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $remove_tag {
-    validate_array($remove_tag)
-    $arr_remove_tag = join($remove_tag, "', '")
-    $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
+  if $tags {
+    validate_array($tags)
+    $arr_tags = join($tags, "', '")
+    $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
   if $add_field {
@@ -155,12 +153,9 @@ define logstash::filter::checksum(
     }
   }
 
-  if $algorithm {
-    if ! ($algorithm in ['md5', 'sha128', 'sha256', 'sha384']) {
-      fail("\"${algorithm}\" is not a valid algorithm parameter value")
-    } else {
-      $opt_algorithm = "  algorithm => \"${algorithm}\"\n"
-    }
+  if $database { 
+    validate_string($database)
+    $opt_database = "  database => \"${database}\"\n"
   }
 
   if $type { 
@@ -168,11 +163,16 @@ define logstash::filter::checksum(
     $opt_type = "  type => \"${type}\"\n"
   }
 
+  if $field { 
+    validate_string($field)
+    $opt_field = "  field => \"${field}\"\n"
+  }
+
   #### Write config file
 
-  file { "${logstash::params::configdir}/filter_${order}_checksum_${name}":
+  file { "${logstash::params::configdir}/filter_${order}_geoip_${name}":
     ensure  => present,
-    content => "filter {\n checksum {\n${opt_add_field}${opt_add_tag}${opt_algorithm}${opt_exclude_tags}${opt_keys}${opt_remove_tag}${opt_tags}${opt_type} }\n}\n",
+    content => "filter {\n geoip {\n${opt_add_field}${opt_add_tag}${opt_database}${opt_exclude_tags}${opt_field}${opt_remove_tag}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',

@@ -7,48 +7,57 @@
 #
 # === Parameters
 #
-# [*exclude_tags*] 
+# [*exclude_tags*]
 #   Only handle events without any of these tags. Note this check is
 #   additional to type and tags.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*fields*] 
+# [*fields*]
 #   Only handle events with all of these fields. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*host*] 
+# [*host*]
 #   When mode is server, the address to listen on. When mode is client,
 #   the address to connect to.
 #   Value type is string
 #   Default value: None
 #   This variable is required
 #
-# [*mode*] 
+# [*message_format*]
+#   The format to use when writing events to the file. This value supports
+#   any string and can include %{name} and other dynamic strings.  If this
+#   setting is omitted, the full json representation of the event will be
+#   written as a single line.
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
+# [*mode*]
 #   Mode to operate in. server listens for client connections, client
 #   connects to a server.
 #   Value can be any of: "server", "client"
 #   Default value: "client"
 #   This variable is optional
 #
-# [*port*] 
+# [*port*]
 #   When mode is server, the port to listen on. When mode is client, the
 #   port to connect to.
 #   Value type is number
 #   Default value: None
 #   This variable is required
 #
-# [*tags*] 
+# [*tags*]
 #   Only handle events with all of these tags.  Note that if you specify a
 #   type, the event must also match that type. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*type*] 
+# [*type*]
 #   The type to act on. If a type is given, then this output will only act
 #   on messages with the same type. See any input plugin's "type"
 #   attribute for more. Optional.
@@ -65,11 +74,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.5
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.5/outputs/tcp
+#  http://logstash.net/docs/1.1.9/outputs/tcp
 #
-#  Need help? http://logstash.net/docs/1.1.5/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
@@ -78,11 +87,12 @@
 define logstash::output::tcp(
   $host,
   $port,
-  $mode         = '',
-  $exclude_tags = '',
-  $fields       = '',
-  $tags         = '',
-  $type         = '',
+  $mode           = '',
+  $message_format = '',
+  $exclude_tags   = '',
+  $fields         = '',
+  $tags           = '',
+  $type           = '',
 ) {
 
   require logstash::params
@@ -109,6 +119,8 @@ define logstash::output::tcp(
   if $port {
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
+    } else {
+      $opt_port = "  port => ${port}\n"
     }
   }
 
@@ -118,6 +130,11 @@ define logstash::output::tcp(
     } else {
       $opt_mode = "  mode => \"${mode}\"\n"
     }
+  }
+
+  if $message_format { 
+    validate_string($message_format)
+    $opt_message_format = "  message_format => \"${message_format}\"\n"
   }
 
   if $host { 
@@ -134,7 +151,7 @@ define logstash::output::tcp(
 
   file { "${logstash::params::configdir}/output_tcp_${name}":
     ensure  => present,
-    content => "output {\n tcp {\n${opt_exclude_tags}${opt_fields}${opt_host}${opt_mode}${opt_port}${opt_tags}${opt_type} }\n}\n",
+    content => "output {\n tcp {\n${opt_exclude_tags}${opt_fields}${opt_host}${opt_message_format}${opt_mode}${opt_port}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',

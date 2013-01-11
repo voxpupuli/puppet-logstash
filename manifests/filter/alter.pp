@@ -8,27 +8,27 @@
 #
 # === Parameters
 #
-# [*add_field*] 
+# [*add_field*]
 #   If this filter is successful, add any arbitrary fields to this event.
-#   Example:  filter {   myfilter {     add_field =&gt; [ "sample", "Hello
-#   world, from %{@source}" ]   } }    On success, myfilter will then add
-#   field 'sample' with the value above  and the %{@source} piece replaced
-#   with that value from the event.
+#   Example:  filter {   alter {     add_field =&gt; [ "sample", "Hello
+#   world, from %{@source}" ]   } }    On success, the alter plugin
+#   will then add field 'sample' with the  value above and the %{@source}
+#   piece replaced with that value from the  event.
 #   Value type is hash
 #   Default value: {}
 #   This variable is optional
 #
-# [*add_tag*] 
+# [*add_tag*]
 #   If this filter is successful, add arbitrary tags to the event. Tags
 #   can be dynamic and include parts of the event using the %{field}
-#   syntax. Example:  filter {   myfilter {     add_tag =&gt; [
+#   syntax. Example:  filter {   alter {     add_tag =&gt; [
 #   "foo_%{somefield}" ]   } }   If the event has field "somefield" ==
 #   "hello" this filter, on success, would add a tag "foo_hello"
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*coalesce*] 
+# [*coalesce*]
 #   Sets the value of field_name to the first nonnull expression among its
 #   arguments.  Example:  filter {   alter =&gt; {     coalesce =&gt; [   
 #   "field_name", "value1", "value2", "value3", ...     ]   } }
@@ -36,7 +36,7 @@
 #   Default value: None
 #   This variable is optional
 #
-# [*condrewrite*] 
+# [*condrewrite*]
 #   Change the content of the field to the specified value if the actual
 #   content is equal to the expected one.  Example:  filter {   alter {   
 #   condrewrite =&gt; [           "field_name", "expected_value",
@@ -46,7 +46,7 @@
 #   Default value: None
 #   This variable is optional
 #
-# [*condrewriteother*] 
+# [*condrewriteother*]
 #   Change the content of the field to the specified value if the content
 #   of another field is equal to the expected one.  Example:  filter {  
 #   alter =&gt; {     condrewriteother =&gt; [           "field_name",
@@ -57,17 +57,17 @@
 #   Default value: None
 #   This variable is optional
 #
-# [*exclude_tags*] 
+# [*exclude_tags*]
 #   Only handle events without any of these tags. Note this check is
 #   additional to type and tags.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*remove_tag*] 
+# [*remove_tag*]
 #   If this filter is successful, remove arbitrary tags from the event.
 #   Tags can be dynamic and include parts of the event using the %{field}
-#   syntax. Example:  filter {   myfilter {     remove_tag =&gt; [
+#   syntax. Example:  filter {   alter {     remove_tag =&gt; [
 #   "foo_%{somefield}" ]   } }   If the event has field "somefield" ==
 #   "hello" this filter, on success, would remove the tag "foo_hello" if
 #   it is present
@@ -75,14 +75,14 @@
 #   Default value: []
 #   This variable is optional
 #
-# [*tags*] 
+# [*tags*]
 #   Only handle events with all of these tags.  Note that if you specify a
 #   type, the event must also match that type. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*type*] 
+# [*type*]
 #   The type to act on. If a type is given, then this filter will only act
 #   on messages with the same type. See any input plugin's "type"
 #   attribute for more. Optional.
@@ -104,11 +104,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.5
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.5/filters/alter
+#  http://logstash.net/docs/1.1.9/filters/alter
 #
-#  Need help? http://logstash.net/docs/1.1.5/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #

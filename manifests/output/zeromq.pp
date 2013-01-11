@@ -1,79 +1,78 @@
 # == Define: logstash::output::zeromq
 #
 #   Write events to a 0MQ PUB socket.  You need to have the 0mq 2.1.x
-#   library installed to be able to use this input plugin.  The default
+#   library installed to be able to use this output plugin.  The default
 #   settings will create a publisher connecting to a subscriber bound to
 #   tcp://127.0.0.1:2120
 #
 #
 # === Parameters
 #
-# [*address*] 
-#   0mq socket address to connect or bind Please note that inproc:// will
-#   not work with logstash As each we use a context per thread By default,
-#   inputs bind/listen and outputs connect
+# [*address*]
+#   0mq socket address to connect or bind. Please note that inproc:// will
+#   not work with logstashi. For each we use a context per thread. By
+#   default, inputs bind/listen and outputs connect.
 #   Value type is array
 #   Default value: ["tcp://127.0.0.1:2120"]
 #   This variable is optional
 #
-# [*exclude_tags*] 
+# [*exclude_tags*]
 #   Only handle events without any of these tags. Note this check is
 #   additional to type and tags.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*fields*] 
+# [*fields*]
 #   Only handle events with all of these fields. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*mode*] 
-#   mode server mode binds/listens client mode connects
+# [*mode*]
+#   Server mode binds/listens. Client mode connects.
 #   Value can be any of: "server", "client"
 #   Default value: "client"
 #   This variable is optional
 #
-# [*sockopt*] 
-#   0mq socket options This exposes zmq_setsockopt for advanced tuning see
-#   http://api.zeromq.org/2-1:zmq-setsockopt for details  This is where
-#   you would set values like: ZMQ::HWM - high water mark ZMQ::IDENTITY -
-#   named queues ZMQ::SWAP_SIZE - space for disk overflow  example:
-#   sockopt =&gt; ["ZMQ::HWM", 50, "ZMQ::IDENTITY", "mynamedqueue"]
+# [*sockopt*]
+#   This exposes zmq_setsockopt for advanced tuning. See
+#   http://api.zeromq.org/2-1:zmq-setsockopt for details.  This is where
+#   you would set values like:  ZMQ::HWM - high water mark ZMQ::IDENTITY -
+#   named queues ZMQ::SWAP_SIZE - space for disk overflow Example: sockopt
+#   =&gt; ["ZMQ::HWM", 50, "ZMQ::IDENTITY", "mynamedqueue"]
 #   Value type is hash
 #   Default value: None
 #   This variable is optional
 #
-# [*tags*] 
+# [*tags*]
 #   Only handle events with all of these tags.  Note that if you specify a
 #   type, the event must also match that type. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*topic*] 
-#   0mq topic This is used for the 'pubsub' topology only On inputs, this
-#   allows you to filter messages by topic On outputs, this allows you to
-#   tag a message for routing NOTE: ZeroMQ does subscriber-side filtering
-#   NOTE: Topic is evaluated with event.sprintf so    macros are valid
-#   here
+# [*topic*]
+#   This is used for the 'pubsub' topology only. On inputs, this allows
+#   you to filter messages by topic. On outputs, this allows you to tag a
+#   message for routing. NOTE: ZeroMQ does subscriber-side filtering NOTE:
+#   Topic is evaluated with event.sprintf so macros are valid here.
 #   Value type is string
 #   Default value: ""
 #   This variable is optional
 #
-# [*topology*] 
-#   0mq topology The default logstash topologies work as follows: *
-#   pushpull - inputs are pull, outputs are push * pubsub - inputs are
-#   subscribers, outputs are publishers * pair - inputs are clients,
-#   inputs are servers  If the predefined topology flows don't work for
-#   you, you can change the 'mode' setting TODO (lusis) add req/rep MAYBE
-#   TODO (lusis) add router/dealer
+# [*topology*]
+#   The default logstash topologies work as follows:  pushpull - inputs
+#   are pull, outputs are push pubsub - inputs are subscribers, outputs
+#   are publishers pair - inputs are clients, inputs are servers If the
+#   predefined topology flows don't work for you, you can change the
+#   'mode' setting TODO (lusis) add req/rep MAYBE TODO (lusis) add
+#   router/dealer
 #   Value can be any of: "pushpull", "pubsub", "pair"
 #   Default value: None
-#   This variable is optional
+#   This variable is required
 #
-# [*type*] 
+# [*type*]
 #   The type to act on. If a type is given, then this output will only act
 #   on messages with the same type. See any input plugin's "type"
 #   attribute for more. Optional.
@@ -90,25 +89,25 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.5
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.5/outputs/zeromq
+#  http://logstash.net/docs/1.1.9/outputs/zeromq
 #
-#  Need help? http://logstash.net/docs/1.1.5/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
 define logstash::output::zeromq(
-  $address      = '',
-  $exclude_tags = '',
+  $topology,
+  $sockopt      = '',
   $fields       = '',
   $mode         = '',
-  $sockopt      = '',
+  $exclude_tags = '',
   $tags         = '',
   $topic        = '',
-  $topology     = '',
+  $address      = '',
   $type         = '',
 ) {
 

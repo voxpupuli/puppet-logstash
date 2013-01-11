@@ -5,13 +5,13 @@
 #
 # === Parameters
 #
-# [*description*] 
+# [*description*]
 #   Custom description
 #   Value type is string
 #   Default value: "Logstash event for %{@source_host}"
 #   This variable is optional
 #
-# [*details*] 
+# [*details*]
 #   Event details These might be keys from the logstash event you wish to
 #   include tags are automatically included if detected so no need to add
 #   them here
@@ -19,52 +19,52 @@
 #   Default value: {"timestamp"=>"%{@timestamp}", "message"=>"%{@message}"}
 #   This variable is optional
 #
-# [*event_type*] 
+# [*event_type*]
 #   Event type
 #   Value can be any of: "trigger", "acknowledge", "resolve"
 #   Default value: "trigger"
 #   This variable is optional
 #
-# [*exclude_tags*] 
+# [*exclude_tags*]
 #   Only handle events without any of these tags. Note this check is
 #   additional to type and tags.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*fields*] 
+# [*fields*]
 #   Only handle events with all of these fields. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*incident_key*] 
+# [*incident_key*]
 #   The service key to use You'll need to set this up in PD beforehand
 #   Value type is string
 #   Default value: "logstash/%{@source_host}/%{@type}"
 #   This variable is optional
 #
-# [*pdurl*] 
+# [*pdurl*]
 #   PagerDuty API url You shouldn't need to change this This allows for
 #   flexibility should PD iterate the API and Logstash hasn't updated yet
 #   Value type is string
 #   Default value: "https://events.pagerduty.com/generic/2010-04-15/create_event.json"
 #   This variable is optional
 #
-# [*service_key*] 
+# [*service_key*]
 #   Service API Key
 #   Value type is string
 #   Default value: None
 #   This variable is required
 #
-# [*tags*] 
+# [*tags*]
 #   Only handle events with all of these tags.  Note that if you specify a
 #   type, the event must also match that type. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*type*] 
+# [*type*]
 #   The type to act on. If a type is given, then this output will only act
 #   on messages with the same type. See any input plugin's "type"
 #   attribute for more. Optional.
@@ -81,11 +81,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.5
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.5/outputs/pagerduty
+#  http://logstash.net/docs/1.1.9/outputs/pagerduty
 #
-#  Need help? http://logstash.net/docs/1.1.5/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #

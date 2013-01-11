@@ -7,20 +7,20 @@
 #
 # === Parameters
 #
-# [*exclude_tags*] 
+# [*exclude_tags*]
 #   Only handle events without any of these tags. Note this check is
 #   additional to type and tags.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*fields*] 
+# [*fields*]
 #   Only handle events with all of these fields. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*host*] 
+# [*host*]
 #   The xmpp server to connect to. This is optional. If you omit this
 #   setting, the host on the user/identity is used. (foo.com for
 #   user@foo.com)
@@ -28,34 +28,34 @@
 #   Default value: None
 #   This variable is optional
 #
-# [*message*] 
+# [*message*]
 #   The message to send. This supports dynamic strings like
 #   %{@source_host}
 #   Value type is string
 #   Default value: None
 #   This variable is required
 #
-# [*password*] 
+# [*password*]
 #   The xmpp password for the user/identity.
 #   Value type is password
 #   Default value: None
 #   This variable is required
 #
-# [*rooms*] 
+# [*rooms*]
 #   if muc/multi-user-chat required, give the name of the room that you
 #   want to join: room@conference.domain/nick
 #   Value type is array
 #   Default value: None
 #   This variable is optional
 #
-# [*tags*] 
+# [*tags*]
 #   Only handle events with all of these tags.  Note that if you specify a
 #   type, the event must also match that type. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*type*] 
+# [*type*]
 #   The type to act on. If a type is given, then this output will only act
 #   on messages with the same type. See any input plugin's "type"
 #   attribute for more. Optional.
@@ -63,13 +63,13 @@
 #   Default value: ""
 #   This variable is optional
 #
-# [*user*] 
+# [*user*]
 #   The user or resource ID, like foo@example.com.
 #   Value type is string
 #   Default value: None
 #   This variable is required
 #
-# [*users*] 
+# [*users*]
 #   The users to send messages to
 #   Value type is array
 #   Default value: None
@@ -84,11 +84,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.5
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.5/outputs/xmpp
+#  http://logstash.net/docs/1.1.9/outputs/xmpp
 #
-#  Need help? http://logstash.net/docs/1.1.5/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #

@@ -4,45 +4,45 @@
 #
 # === Parameters
 #
-# [*exclude_tags*] 
+# [*exclude_tags*]
 #   Only handle events without any of these tags. Note this check is
 #   additional to type and tags.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*fields*] 
+# [*fields*]
 #   Only handle events with all of these fields. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*hosts*] 
+# [*hosts*]
 #   list of addresses lumberjack can send to
 #   Value type is array
 #   Default value: None
 #   This variable is required
 #
-# [*port*] 
+# [*port*]
 #   the port to connect to
 #   Value type is number
 #   Default value: None
 #   This variable is required
 #
-# [*ssl_certificate*] 
+# [*ssl_certificate*]
 #   ssl certificate to use
 #   Value type is string
 #   Default value: None
 #   This variable is required
 #
-# [*tags*] 
+# [*tags*]
 #   Only handle events with all of these tags.  Note that if you specify a
 #   type, the event must also match that type. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*type*] 
+# [*type*]
 #   The type to act on. If a type is given, then this output will only act
 #   on messages with the same type. See any input plugin's "type"
 #   attribute for more. Optional.
@@ -50,7 +50,7 @@
 #   Default value: ""
 #   This variable is optional
 #
-# [*window_size*] 
+# [*window_size*]
 #   window size
 #   Value type is number
 #   Default value: 5000
@@ -65,11 +65,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.5
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.5/outputs/lumberjack
+#  http://logstash.net/docs/1.1.9/outputs/lumberjack
 #
-#  Need help? http://logstash.net/docs/1.1.5/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
@@ -116,12 +116,16 @@ define logstash::output::lumberjack(
   if $port {
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
+    } else {
+      $opt_port = "  port => ${port}\n"
     }
   }
 
   if $window_size {
     if ! is_numeric($window_size) {
       fail("\"${window_size}\" is not a valid window_size parameter value")
+    } else {
+      $opt_window_size = "  window_size => ${window_size}\n"
     }
   }
 

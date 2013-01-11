@@ -1,15 +1,47 @@
-# == Define: logstash::filter::gelfify
+# == Define: logstash::filter::metrics
 #
-#   The GELFify filter parses RFC3164 severity levels to corresponding
-#   GELF levels.
+#   The metrics filter is useful for aggregating metrics.  For example, if
+#   you have a field 'response' that is a http response code, and you want
+#   to count each kind of response, you can do this:  filter {   metrics {
+#   meter =&gt; [ "http.%{response}" ]     add_tag =&gt; metric   } }  
+#   Metrics are flushed every 5 seconds. Metrics appear as new events in
+#   the event stream and go through any filters that occur after as well
+#   as outputs.  In general, you will want to add a tag to your metrics
+#   and have an output explicitly look for that tag.  The event that is
+#   flushed will include every 'meter' and 'timer' metric in the following
+#   way:  'meter' values  For a meter =&gt; "something" you will receive
+#   the following fields:  "thing.count" - the total count of events
+#   "thing.rate_1m" - the 1-minute rate (sliding) "thing.rate_5m" - the
+#   5-minute rate (sliding) "thing.rate_15m" - the 15-minute rate
+#   (sliding) 'timer' values  For a timer =&gt; [ "thing", "%{duration}" ]
+#   you will receive the following fields:  "thing.count" - the total
+#   count of events "thing.rate_1m" - the 1-minute rate of events
+#   (sliding) "thing.rate_5m" - the 5-minute rate of events (sliding)
+#   "thing.rate_15m" - the 15-minute rate of events (sliding) "thing.min"
+#   - the minimum value seen for this metric "thing.max" - the maximum
+#   value seen for this metric "thing.stddev" - the standard deviation for
+#   this metric "thing.mean" - the mean for this metric Example: computing
+#   event rate  For a simple example, let's track how many events per
+#   second are running through logstash:  input {   generator {     type
+#   =&gt; "generated"   } }  filter {   metrics {     type =&gt;
+#   "generated"     meter =&gt; "events"     add_tag =&gt; "metric"   } } 
+#   output {   stdout {     # only emit events with the 'metric' tag    
+#   tags =&gt; "metric"     message =&gt; "rate: %{events.rate_1m}"   } } 
+#   Running the above:  % java -jar logstash.jar agent -f example.conf
+#   rate: 23721.983566819246 rate: 24811.395722536377 rate:
+#   25875.892745934525 rate: 26836.42375967113   We see the output
+#   includes our 'events' 1-minute rate.  In the real world, you would
+#   emit this to graphite or another metrics store, like so:  output {  
+#   graphite {     metrics =&gt; [ "events.rate_1m", "%{events.rate_1m}" ]
+#   } }
 #
 #
 # === Parameters
 #
 # [*add_field*]
 #   If this filter is successful, add any arbitrary fields to this event.
-#   Example:  filter {   gelfify {     add_field =&gt; [ "sample", "Hello
-#   world, from %{@source}" ]   } }    On success, the gelfify plugin
+#   Example:  filter {   metrics {     add_field =&gt; [ "sample", "Hello
+#   world, from %{@source}" ]   } }    On success, the metrics plugin
 #   will then add field 'sample' with the  value above and the %{@source}
 #   piece replaced with that value from the  event.
 #   Value type is hash
@@ -19,7 +51,7 @@
 # [*add_tag*]
 #   If this filter is successful, add arbitrary tags to the event. Tags
 #   can be dynamic and include parts of the event using the %{field}
-#   syntax. Example:  filter {   gelfify {     add_tag =&gt; [
+#   syntax. Example:  filter {   metrics {     add_tag =&gt; [
 #   "foo_%{somefield}" ]   } }   If the event has field "somefield" ==
 #   "hello" this filter, on success, would add a tag "foo_hello"
 #   Value type is array
@@ -33,10 +65,16 @@
 #   Default value: []
 #   This variable is optional
 #
+# [*meter*]
+#   syntax: meter =&gt; [ "name of metric", "name of metric" ]
+#   Value type is array
+#   Default value: []
+#   This variable is optional
+#
 # [*remove_tag*]
 #   If this filter is successful, remove arbitrary tags from the event.
 #   Tags can be dynamic and include parts of the event using the %{field}
-#   syntax. Example:  filter {   gelfify {     remove_tag =&gt; [
+#   syntax. Example:  filter {   metrics {     remove_tag =&gt; [
 #   "foo_%{somefield}" ]   } }   If the event has field "somefield" ==
 #   "hello" this filter, on success, would remove the tag "foo_hello" if
 #   it is present
@@ -49,6 +87,12 @@
 #   type, the event must also match that type. Optional.
 #   Value type is array
 #   Default value: []
+#   This variable is optional
+#
+# [*timer*]
+#   syntax: timer =&gt; [ "name of metric", "%{time_value}" ]
+#   Value type is hash
+#   Default value: {}
 #   This variable is optional
 #
 # [*type*]
@@ -75,7 +119,7 @@
 #
 #  This define is created based on LogStash version 1.1.9
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.9/filters/gelfify
+#  http://logstash.net/docs/1.1.9/filters/metrics
 #
 #  Need help? http://logstash.net/docs/1.1.9/learn
 #
@@ -83,12 +127,14 @@
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
-define logstash::filter::gelfify(
+define logstash::filter::metrics(
   $add_field    = '',
   $add_tag      = '',
   $exclude_tags = '',
+  $meter        = '',
   $remove_tag   = '',
   $tags         = '',
+  $timer        = '',
   $type         = '',
   $order        = 10,
 ) {
@@ -114,6 +160,12 @@ define logstash::filter::gelfify(
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
+  if $meter {
+    validate_array($meter)
+    $arr_meter = join($meter, "', '")
+    $opt_meter = "  meter => ['${arr_meter}']\n"
+  }
+
   if $tags {
     validate_array($tags)
     $arr_tags = join($tags, "', '")
@@ -124,6 +176,12 @@ define logstash::filter::gelfify(
     validate_hash($add_field)
     $arr_add_field = inline_template('<%= add_field.to_a.flatten.inspect %>')
     $opt_add_field = "  add_field => ${arr_add_field}\n"
+  }
+
+  if $timer {
+    validate_hash($timer)
+    $arr_timer = inline_template('<%= timer.to_a.flatten.inspect %>')
+    $opt_timer = "  timer => ${arr_timer}\n"
   }
 
   if $order {
@@ -139,9 +197,9 @@ define logstash::filter::gelfify(
 
   #### Write config file
 
-  file { "${logstash::params::configdir}/filter_${order}_gelfify_${name}":
+  file { "${logstash::params::configdir}/filter_${order}_metrics_${name}":
     ensure  => present,
-    content => "filter {\n gelfify {\n${opt_add_field}${opt_add_tag}${opt_exclude_tags}${opt_remove_tag}${opt_tags}${opt_type} }\n}\n",
+    content => "filter {\n metrics {\n${opt_add_field}${opt_add_tag}${opt_exclude_tags}${opt_meter}${opt_remove_tag}${opt_tags}${opt_timer}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',

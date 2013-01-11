@@ -4,13 +4,13 @@
 #
 # === Parameters
 #
-# [*alert_type*] 
+# [*alert_type*]
 #   Alert type
 #   Value can be any of: "info", "error", "warning", "success"
 #   Default value: None
 #   This variable is optional
 #
-# [*api_key*] 
+# [*api_key*]
 #   This output lets you send events (for now. soon metrics) to DataDogHQ
 #   based on Logstash events  Note that since Logstash maintains no state
 #   these will be one-shot events  Your DatadogHQ API key
@@ -18,65 +18,65 @@
 #   Default value: None
 #   This variable is required
 #
-# [*date_happened*] 
+# [*date_happened*]
 #   Date Happened
 #   Value type is string
 #   Default value: None
 #   This variable is optional
 #
-# [*dd_tags*] 
+# [*dd_tags*]
 #   Tags Set any custom tags for this event Default are the Logstash tags
 #   if any
 #   Value type is array
 #   Default value: None
 #   This variable is optional
 #
-# [*exclude_tags*] 
+# [*exclude_tags*]
 #   Only handle events without any of these tags. Note this check is
 #   additional to type and tags.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*fields*] 
+# [*fields*]
 #   Only handle events with all of these fields. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*priority*] 
+# [*priority*]
 #   Priority
 #   Value can be any of: "normal", "low"
 #   Default value: None
 #   This variable is optional
 #
-# [*source_type_name*] 
+# [*source_type_name*]
 #   Source type name
 #   Value can be any of: "nagios", "hudson", "jenkins", "user", "my apps",
 #   "feed", "chef", "puppet", "git", "bitbucket"
 #   Default value: "my apps"
 #   This variable is optional
 #
-# [*tags*] 
+# [*tags*]
 #   Only handle events with all of these tags.  Note that if you specify a
 #   type, the event must also match that type. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*text*] 
+# [*text*]
 #   Text
 #   Value type is string
 #   Default value: "%{@message}"
 #   This variable is optional
 #
-# [*title*] 
+# [*title*]
 #   Title
 #   Value type is string
 #   Default value: "Logstash event for %{@source_host}"
 #   This variable is optional
 #
-# [*type*] 
+# [*type*]
 #   The type to act on. If a type is given, then this output will only act
 #   on messages with the same type. See any input plugin's "type"
 #   attribute for more. Optional.
@@ -93,11 +93,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.5
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.5/outputs/datadog
+#  http://logstash.net/docs/1.1.9/outputs/datadog
 #
-#  Need help? http://logstash.net/docs/1.1.5/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #

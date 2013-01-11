@@ -4,62 +4,59 @@
 #   hosted pub/sub framework.  It supports subscribers of type email,
 #   HTTP/S, SMS, and SQS.  For further documentation about the service
 #   see:    http://docs.amazonwebservices.com/sns/latest/api/  This plugin
-#   looks for the following fields on events it receives:   "sns"         
-#   =&gt;  If no ARN is found in the configuration file,                 
-#   this will be used as the ARN to publish.    "sns_subject"  =&gt;  The
-#   subject line that should be used.  Optional.                 
-#   "%{@source}" will be used if not present                 (truncated at
-#   MAX_SUBJECT_SIZE_IN_CHARACTERS).    "sns_message"  =&gt;  The message
-#   that should be sent.  Optional.  The                  event serialzed
-#   as JSON will be used if not                 present (with @message
-#   truncated so that the                 length of the JSON fits in      
-#   MAX_MESSAGE_SIZE_IN_BYTES).
+#   looks for the following fields on events it receives:  sns - If no ARN
+#   is found in the configuration file, this will be used as the ARN to
+#   publish. snssubject - The subject line that should be used. Optional.
+#   The "%{@source}" will be used if not present and truncated at
+#   MAXSUBJECTSIZEIN_CHARACTERS. snsmessage - The message that should be
+#   sent. Optional. The event serialzed as JSON will be used if not
+#   present and with the @message truncated so that the length of the JSON
+#   fits in MAXMESSAGESIZEIN_BYTES.
 #
 #
 # === Parameters
 #
-# [*access_key_id*] 
+# [*access_key_id*]
 #   Amazon API credentials.
 #   Value type is string
 #   Default value: None
 #   This variable is optional
 #
-# [*arn*] 
+# [*arn*]
 #   SNS topic ARN.
 #   Value type is string
 #   Default value: None
 #   This variable is optional
 #
-# [*credentials*] 
+# [*credentials*]
 #   Path to YAML file containing a hash of AWS credentials.  This file
-#   will be loaded if access_key_id and secret_access_key aren't set. 
-#   Example:  The path to YAML file containing a hash of the AWS
-#   credentials for your account.  The contents of the file should look
-#   like this:  :accesskeyid: "12345" :secretaccesskey: "54321"
+#   will be loaded if access_key_id and secret_access_key aren't set. The
+#   contents of the file should look like this:  --- :access_key_id:
+#   "12345" :secret_access_key: "54321"
 #   Value type is string
 #   Default value: None
 #   This variable is optional
 #
-# [*exclude_tags*] 
+# [*exclude_tags*]
 #   Only handle events without any of these tags. Note this check is
 #   additional to type and tags.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*fields*] 
+# [*fields*]
 #   Only handle events with all of these fields. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*format*] 
+# [*format*]
 #   Message format.  Defaults to plain text.
 #   Value can be any of: "json", "plain"
 #   Default value: "plain"
 #   This variable is optional
 #
-# [*publish_boot_message_arn*] 
+# [*publish_boot_message_arn*]
 #   When an ARN for an SNS topic is specified here, the message "Logstash
 #   successfully booted" will be sent to it when this plugin is
 #   registered.  Example:
@@ -68,19 +65,19 @@
 #   Default value: None
 #   This variable is optional
 #
-# [*secret_access_key*] 
+# [*secret_access_key*]
 #   Value type is string
 #   Default value: None
 #   This variable is optional
 #
-# [*tags*] 
+# [*tags*]
 #   Only handle events with all of these tags.  Note that if you specify a
 #   type, the event must also match that type. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*type*] 
+# [*type*]
 #   The type to act on. If a type is given, then this output will only act
 #   on messages with the same type. See any input plugin's "type"
 #   attribute for more. Optional.
@@ -97,11 +94,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.5
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.5/outputs/sns
+#  http://logstash.net/docs/1.1.9/outputs/sns
 #
-#  Need help? http://logstash.net/docs/1.1.5/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #

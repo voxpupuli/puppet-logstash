@@ -10,38 +10,38 @@
 #
 # === Parameters
 #
-# [*debug*] 
+# [*debug*]
 #   Enable debugging output?
 #   Value type is boolean
 #   Default value: false
 #   This variable is optional
 #
-# [*exclude_tags*] 
+# [*exclude_tags*]
 #   Only handle events without any of these tags. Note this check is
 #   additional to type and tags.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*fields*] 
+# [*fields*]
 #   Only handle events with all of these fields. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*host*] 
+# [*host*]
 #   The address of the Riemann server.
 #   Value type is string
 #   Default value: "localhost"
 #   This variable is optional
 #
-# [*port*] 
+# [*port*]
 #   The port to connect to on your Riemann server.
 #   Value type is number
 #   Default value: 5555
 #   This variable is optional
 #
-# [*protocol*] 
+# [*protocol*]
 #   The protocol to use UDP is non-blocking TCP is blocking  Logstash's
 #   default output behaviour is to never lose events As such, we use tcp
 #   as default here
@@ -49,7 +49,7 @@
 #   Default value: "tcp"
 #   This variable is optional
 #
-# [*riemann_event*] 
+# [*riemann_event*]
 #   A Hash to set Riemann event fields
 #   (http://aphyr.github.com/riemann/concepts.html).  The following event
 #   fields are supported: description, state, metric, ttl, service 
@@ -62,20 +62,20 @@
 #   Default value: None
 #   This variable is optional
 #
-# [*sender*] 
+# [*sender*]
 #   The name of the sender. This sets the host value in the Riemann event
 #   Value type is string
 #   Default value: "%{@source_host}"
 #   This variable is optional
 #
-# [*tags*] 
+# [*tags*]
 #   Only handle events with all of these tags.  Note that if you specify a
 #   type, the event must also match that type. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*type*] 
+# [*type*]
 #   The type to act on. If a type is given, then this output will only act
 #   on messages with the same type. See any input plugin's "type"
 #   attribute for more. Optional.
@@ -92,11 +92,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.5
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.5/outputs/riemann
+#  http://logstash.net/docs/1.1.9/outputs/riemann
 #
-#  Need help? http://logstash.net/docs/1.1.5/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
@@ -150,6 +150,8 @@ define logstash::output::riemann(
   if $port {
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
+    } else {
+      $opt_port = "  port => ${port}\n"
     }
   }
 

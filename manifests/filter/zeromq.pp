@@ -12,27 +12,27 @@
 #
 # === Parameters
 #
-# [*add_field*] 
+# [*add_field*]
 #   If this filter is successful, add any arbitrary fields to this event.
-#   Example:  filter {   myfilter {     add_field =&gt; [ "sample", "Hello
-#   world, from %{@source}" ]   } }    On success, myfilter will then add
-#   field 'sample' with the value above  and the %{@source} piece replaced
-#   with that value from the event.
+#   Example:  filter {   zeromq {     add_field =&gt; [ "sample", "Hello
+#   world, from %{@source}" ]   } }    On success, the zeromq plugin
+#   will then add field 'sample' with the  value above and the %{@source}
+#   piece replaced with that value from the  event.
 #   Value type is hash
 #   Default value: {}
 #   This variable is optional
 #
-# [*add_tag*] 
+# [*add_tag*]
 #   If this filter is successful, add arbitrary tags to the event. Tags
 #   can be dynamic and include parts of the event using the %{field}
-#   syntax. Example:  filter {   myfilter {     add_tag =&gt; [
+#   syntax. Example:  filter {   zeromq {     add_tag =&gt; [
 #   "foo_%{somefield}" ]   } }   If the event has field "somefield" ==
 #   "hello" this filter, on success, would add a tag "foo_hello"
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*address*] 
+# [*address*]
 #   0mq socket address to connect or bind Please note that inproc:// will
 #   not work with logstash as we use a context per thread By default,
 #   filters connect
@@ -40,30 +40,30 @@
 #   Default value: "tcp://127.0.0.1:2121"
 #   This variable is optional
 #
-# [*exclude_tags*] 
+# [*exclude_tags*]
 #   Only handle events without any of these tags. Note this check is
 #   additional to type and tags.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*field*] 
+# [*field*]
 #   The field to send off-site for processing If this is unset, the whole
 #   event will be sent TODO (lusis) Allow filtering multiple fields
 #   Value type is string
 #   Default value: None
 #   This variable is optional
 #
-# [*mode*] 
+# [*mode*]
 #   0mq mode server mode binds/listens client mode connects
 #   Value can be any of: "server", "client"
 #   Default value: "client"
 #   This variable is optional
 #
-# [*remove_tag*] 
+# [*remove_tag*]
 #   If this filter is successful, remove arbitrary tags from the event.
 #   Tags can be dynamic and include parts of the event using the %{field}
-#   syntax. Example:  filter {   myfilter {     remove_tag =&gt; [
+#   syntax. Example:  filter {   zeromq {     remove_tag =&gt; [
 #   "foo_%{somefield}" ]   } }   If the event has field "somefield" ==
 #   "hello" this filter, on success, would remove the tag "foo_hello" if
 #   it is present
@@ -71,7 +71,7 @@
 #   Default value: []
 #   This variable is optional
 #
-# [*sockopt*] 
+# [*sockopt*]
 #   0mq socket options This exposes zmq_setsockopt for advanced tuning see
 #   http://api.zeromq.org/2-1:zmq-setsockopt for details  This is where
 #   you would set values like: ZMQ::HWM - high water mark ZMQ::IDENTITY -
@@ -82,14 +82,14 @@
 #   Default value: None
 #   This variable is optional
 #
-# [*tags*] 
+# [*tags*]
 #   Only handle events with all of these tags.  Note that if you specify a
 #   type, the event must also match that type. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*type*] 
+# [*type*]
 #   The type to act on. If a type is given, then this filter will only act
 #   on messages with the same type. See any input plugin's "type"
 #   attribute for more. Optional.
@@ -111,11 +111,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.5
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.5/filters/zeromq
+#  http://logstash.net/docs/1.1.9/filters/zeromq
 #
-#  Need help? http://logstash.net/docs/1.1.5/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #

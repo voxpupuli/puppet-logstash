@@ -8,7 +8,13 @@
 #
 # === Parameters
 #
-# [*cache_xml_file*] 
+# [*cache_name*]
+#   Your client cache name
+#   Value type is string
+#   Default value: "logstash"
+#   This variable is optional
+#
+# [*cache_xml_file*]
 #   The path to a GemFire client cache XML file.  Example:  
 #   &lt;client-cache&gt;    &lt;pool name="client-pool"&gt;       
 #   &lt;locator host="localhost" port="31331"/&gt;    &lt;/pool&gt;   
@@ -19,45 +25,39 @@
 #   Default value: nil
 #   This variable is optional
 #
-# [*exclude_tags*] 
+# [*exclude_tags*]
 #   Only handle events without any of these tags. Note this check is
 #   additional to type and tags.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*fields*] 
+# [*fields*]
 #   Only handle events with all of these fields. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*key_format*] 
+# [*key_format*]
 #   A sprintf format to use when building keys
 #   Value type is string
 #   Default value: "%{@source}-%{@timestamp}"
 #   This variable is optional
 #
-# [*name*] 
-#   Your client cache name
-#   Value type is string
-#   Default value: "logstash"
-#   This variable is optional
-#
-# [*region_name*] 
+# [*region_name*]
 #   The region name
 #   Value type is string
 #   Default value: "Logstash"
 #   This variable is optional
 #
-# [*tags*] 
+# [*tags*]
 #   Only handle events with all of these tags.  Note that if you specify a
 #   type, the event must also match that type. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*type*] 
+# [*type*]
 #   The type to act on. If a type is given, then this output will only act
 #   on messages with the same type. See any input plugin's "type"
 #   attribute for more. Optional.
@@ -74,22 +74,22 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.5
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.5/outputs/gemfire
+#  http://logstash.net/docs/1.1.9/outputs/gemfire
 #
-#  Need help? http://logstash.net/docs/1.1.5/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
 define logstash::output::gemfire(
+  $cache_name     = '',
   $cache_xml_file = '',
   $exclude_tags   = '',
   $fields         = '',
   $key_format     = '',
-  $name           = '',
   $region_name    = '',
   $tags           = '',
   $type           = '',
@@ -116,14 +116,14 @@ define logstash::output::gemfire(
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $name { 
-    validate_string($name)
-    $opt_name = "  name => \"${name}\"\n"
-  }
-
   if $key_format { 
     validate_string($key_format)
     $opt_key_format = "  key_format => \"${key_format}\"\n"
+  }
+
+  if $cache_name { 
+    validate_string($cache_name)
+    $opt_cache_name = "  cache_name => \"${cache_name}\"\n"
   }
 
   if $region_name { 
@@ -145,7 +145,7 @@ define logstash::output::gemfire(
 
   file { "${logstash::params::configdir}/output_gemfire_${name}":
     ensure  => present,
-    content => "output {\n gemfire {\n${opt_cache_xml_file}${opt_exclude_tags}${opt_fields}${opt_key_format}${opt_name}${opt_region_name}${opt_tags}${opt_type} }\n}\n",
+    content => "output {\n gemfire {\n${opt_cache_name}${opt_cache_xml_file}${opt_exclude_tags}${opt_fields}${opt_key_format}${opt_region_name}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',

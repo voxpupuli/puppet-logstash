@@ -13,14 +13,14 @@
 #
 # === Parameters
 #
-# [*batch_number*] 
+# [*batch_number*]
 #   the number of metrics to send to GraphTastic at one time. 60 seems to
 #   be the perfect amount for UDP, with default packet size.
 #   Value type is number
 #   Default value: 60
 #   This variable is optional
 #
-# [*context*] 
+# [*context*]
 #   if using rest as your end point you need to also provide the
 #   application url it defaults to localhost/graphtastic.  You can
 #   customize the application url by changing the name of the .war file. 
@@ -31,7 +31,7 @@
 #   Default value: "graphtastic"
 #   This variable is optional
 #
-# [*error_file*] 
+# [*error_file*]
 #   setting allows you to specify where we save errored transactions this
 #   makes the most sense at this point - will need to decide on how we
 #   reintegrate these error metrics NOT IMPLEMENTED!
@@ -39,33 +39,33 @@
 #   Default value: ""
 #   This variable is optional
 #
-# [*exclude_tags*] 
+# [*exclude_tags*]
 #   Only handle events without any of these tags. Note this check is
 #   additional to type and tags.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*fields*] 
+# [*fields*]
 #   Only handle events with all of these fields. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*host*] 
+# [*host*]
 #   host for the graphtastic server - defaults to 127.0.0.1
 #   Value type is string
 #   Default value: "127.0.0.1"
 #   This variable is optional
 #
-# [*integration*] 
+# [*integration*]
 #   options are udp(fastest - default) - rmi(faster) - rest(fast) -
 #   tcp(don't use TCP yet - some problems - errors out on linux)
 #   Value can be any of: "udp", "tcp", "rmi", "rest"
 #   Default value: "udp"
 #   This variable is optional
 #
-# [*metrics*] 
+# [*metrics*]
 #   metrics hash - you will provide a name for your metric and the metric
 #   data as key value pairs.  so for example:  metrics =&gt; { "Response"
 #   =&gt; "%{response}" }  example for the logstash config  metrics =&gt;
@@ -75,14 +75,14 @@
 #   Default value: {}
 #   This variable is optional
 #
-# [*port*] 
+# [*port*]
 #   port for the graphtastic instance - defaults to 1199 for RMI, 1299 for
 #   TCP, 1399 for UDP, and 8080 for REST
 #   Value type is number
 #   Default value: None
 #   This variable is optional
 #
-# [*retries*] 
+# [*retries*]
 #   number of attempted retry after send error - currently only way to
 #   integrate errored transactions - should try and save to a file or
 #   later consumption either by graphtastic utility or by this program
@@ -91,14 +91,14 @@
 #   Default value: 1
 #   This variable is optional
 #
-# [*tags*] 
+# [*tags*]
 #   Only handle events with all of these tags.  Note that if you specify a
 #   type, the event must also match that type. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*type*] 
+# [*type*]
 #   The type to act on. If a type is given, then this output will only act
 #   on messages with the same type. See any input plugin's "type"
 #   attribute for more. Optional.
@@ -115,11 +115,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.5
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.5/outputs/graphtastic
+#  http://logstash.net/docs/1.1.9/outputs/graphtastic
 #
-#  Need help? http://logstash.net/docs/1.1.5/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
@@ -170,18 +170,24 @@ define logstash::output::graphtastic(
   if $retries {
     if ! is_numeric($retries) {
       fail("\"${retries}\" is not a valid retries parameter value")
+    } else {
+      $opt_retries = "  retries => ${retries}\n"
     }
   }
 
   if $port {
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
+    } else {
+      $opt_port = "  port => ${port}\n"
     }
   }
 
   if $batch_number {
     if ! is_numeric($batch_number) {
       fail("\"${batch_number}\" is not a valid batch_number parameter value")
+    } else {
+      $opt_batch_number = "  batch_number => ${batch_number}\n"
     }
   }
 

@@ -6,17 +6,16 @@
 #   queuing systems like AMQP, it uses a custom API and requires that you
 #   have an AWS account. See http://aws.amazon.com/sqs/ for more details
 #   on how SQS works, what the pricing schedule looks like and how to
-#   setup a queue.  To use this plugin, you must:  * Have an AWS account 
-#   * Setup an SQS queue  * Create an identify that has access to publish
-#   messages to the queue.  The "consumer" identity must have the
-#   following permissions on the queue:  * sqs:ChangeMessageVisibility  *
-#   sqs:ChangeMessageVisibilityBatch  * sqs:GetQueueAttributes  *
-#   sqs:GetQueueUrl  * sqs:ListQueues  * sqs:SendMessage  *
-#   sqs:SendMessageBatch  Typically, you should setup an IAM policy,
-#   create a user and apply the IAM policy to the user. A sample policy is
-#   as follows:   {    "Statement": [      {        "Sid":
-#   "Stmt1347986764948",        "Action": [         
-#   "sqs:ChangeMessageVisibility",         
+#   setup a queue.  To use this plugin, you must:  Have an AWS account
+#   Setup an SQS queue Create an identify that has access to publish
+#   messages to the queue. The "consumer" identity must have the following
+#   permissions on the queue:  sqs:ChangeMessageVisibility
+#   sqs:ChangeMessageVisibilityBatch sqs:GetQueueAttributes
+#   sqs:GetQueueUrl sqs:ListQueues sqs:SendMessage sqs:SendMessageBatch
+#   Typically, you should setup an IAM policy, create a user and apply the
+#   IAM policy to the user. A sample policy is as follows:   {   
+#   "Statement": [      {        "Sid": "Stmt1347986764948",       
+#   "Action": [          "sqs:ChangeMessageVisibility",         
 #   "sqs:ChangeMessageVisibilityBatch",          "sqs:DeleteMessage",     
 #   "sqs:DeleteMessageBatch",          "sqs:GetQueueAttributes",         
 #   "sqs:GetQueueUrl",          "sqs:ListQueues",         
@@ -28,46 +27,46 @@
 #
 # === Parameters
 #
-# [*access_key*] 
+# [*access_key*]
 #   AWS access key. Must have the appropriate permissions.
 #   Value type is string
 #   Default value: None
 #   This variable is required
 #
-# [*exclude_tags*] 
+# [*exclude_tags*]
 #   Only handle events without any of these tags. Note this check is
 #   additional to type and tags.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*fields*] 
+# [*fields*]
 #   Only handle events with all of these fields. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*queue*] 
+# [*queue*]
 #   Name of SQS queue to push messages into. Note that this is just the
 #   name of the queue, not the URL or ARN.
 #   Value type is string
 #   Default value: None
 #   This variable is required
 #
-# [*secret_key*] 
+# [*secret_key*]
 #   AWS secret key. Must have the appropriate permissions.
 #   Value type is string
 #   Default value: None
 #   This variable is required
 #
-# [*tags*] 
+# [*tags*]
 #   Only handle events with all of these tags.  Note that if you specify a
 #   type, the event must also match that type. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*type*] 
+# [*type*]
 #   The type to act on. If a type is given, then this output will only act
 #   on messages with the same type. See any input plugin's "type"
 #   attribute for more. Optional.
@@ -84,11 +83,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.5
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.5/outputs/sqs
+#  http://logstash.net/docs/1.1.9/outputs/sqs
 #
-#  Need help? http://logstash.net/docs/1.1.5/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #

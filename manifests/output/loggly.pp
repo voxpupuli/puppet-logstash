@@ -9,27 +9,27 @@
 #
 # === Parameters
 #
-# [*exclude_tags*] 
+# [*exclude_tags*]
 #   Only handle events without any of these tags. Note this check is
 #   additional to type and tags.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*fields*] 
+# [*fields*]
 #   Only handle events with all of these fields. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*host*] 
+# [*host*]
 #   The hostname to send logs to. This should target the loggly http input
 #   server which is usually "logs.loggly.com"
 #   Value type is string
 #   Default value: "logs.loggly.com"
 #   This variable is optional
 #
-# [*key*] 
+# [*key*]
 #   The loggly http input key to send to. This is usually visible in the
 #   Loggly 'Inputs' page as something like this 
 #   https://logs.hoover.loggly.net/inputs/abcdef12-3456-7890-abcd-ef0123456789
@@ -42,21 +42,21 @@
 #   Default value: None
 #   This variable is required
 #
-# [*proto*] 
+# [*proto*]
 #   Should the log action be sent over https instead of plain http
 #   Defaults to https
 #   Value type is string
 #   Default value: "http"
 #   This variable is optional
 #
-# [*tags*] 
+# [*tags*]
 #   Only handle events with all of these tags.  Note that if you specify a
 #   type, the event must also match that type. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*type*] 
+# [*type*]
 #   The type to act on. If a type is given, then this output will only act
 #   on messages with the same type. See any input plugin's "type"
 #   attribute for more. Optional.
@@ -73,11 +73,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.5
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.5/outputs/loggly
+#  http://logstash.net/docs/1.1.9/outputs/loggly
 #
-#  Need help? http://logstash.net/docs/1.1.5/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #

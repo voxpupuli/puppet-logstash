@@ -5,63 +5,69 @@
 #
 # === Parameters
 #
-# [*channels*] 
+# [*channels*]
 #   Channels to broadcast to
 #   Value type is array
 #   Default value: None
 #   This variable is required
 #
-# [*exclude_tags*] 
+# [*exclude_tags*]
 #   Only handle events without any of these tags. Note this check is
 #   additional to type and tags.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*fields*] 
+# [*fields*]
 #   Only handle events with all of these fields. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*format*] 
+# [*format*]
 #   Message format to send, event tokens are usable here
 #   Value type is string
 #   Default value: "%{@message}"
 #   This variable is optional
 #
-# [*host*] 
+# [*host*]
 #   Address of the host to connect to
 #   Value type is string
 #   Default value: None
 #   This variable is required
 #
-# [*nick*] 
+# [*nick*]
 #   IRC Nickname
 #   Value type is string
 #   Default value: "logstash"
 #   This variable is optional
 #
-# [*port*] 
+# [*password*]
+#   IRC server password
+#   Value type is password
+#   Default value: None
+#   This variable is optional
+#
+# [*port*]
 #   Port on host to connect to.
 #   Value type is number
 #   Default value: None
 #   This variable is required
 #
-# [*real*] 
+# [*real*]
 #   IRC Real name
 #   Value type is string
 #   Default value: "logstash"
 #   This variable is optional
 #
-# [*tags*] 
+# [*tags*]
 #   Only handle events with all of these tags.  Note that if you specify a
 #   type, the event must also match that type. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*type*] 
+# [*type*]
 #   The type to act on. If a type is given, then this output will only act
 #   on messages with the same type. See any input plugin's "type"
 #   attribute for more. Optional.
@@ -69,7 +75,7 @@
 #   Default value: ""
 #   This variable is optional
 #
-# [*user*] 
+# [*user*]
 #   IRC Username
 #   Value type is string
 #   Default value: "logstash"
@@ -84,11 +90,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.5
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.5/outputs/irc
+#  http://logstash.net/docs/1.1.9/outputs/irc
 #
-#  Need help? http://logstash.net/docs/1.1.5/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
@@ -98,8 +104,9 @@ define logstash::output::irc(
   $channels,
   $port,
   $host,
-  $nick         = '',
+  $password     = '',
   $fields       = '',
+  $nick         = '',
   $format       = '',
   $exclude_tags = '',
   $real         = '',
@@ -138,7 +145,14 @@ define logstash::output::irc(
   if $port {
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
+    } else {
+      $opt_port = "  port => ${port}\n"
     }
+  }
+
+  if $password { 
+    validate_string($password)
+    $opt_password = "  password => \"${password}\"\n"
   }
 
   if $nick { 
@@ -175,7 +189,7 @@ define logstash::output::irc(
 
   file { "${logstash::params::configdir}/output_irc_${name}":
     ensure  => present,
-    content => "output {\n irc {\n${opt_channels}${opt_exclude_tags}${opt_fields}${opt_format}${opt_host}${opt_nick}${opt_port}${opt_real}${opt_tags}${opt_type}${opt_user} }\n}\n",
+    content => "output {\n irc {\n${opt_channels}${opt_exclude_tags}${opt_fields}${opt_format}${opt_host}${opt_nick}${opt_password}${opt_port}${opt_real}${opt_tags}${opt_type}${opt_user} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',

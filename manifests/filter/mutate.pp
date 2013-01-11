@@ -7,27 +7,27 @@
 #
 # === Parameters
 #
-# [*add_field*] 
+# [*add_field*]
 #   If this filter is successful, add any arbitrary fields to this event.
-#   Example:  filter {   myfilter {     add_field =&gt; [ "sample", "Hello
-#   world, from %{@source}" ]   } }    On success, myfilter will then add
-#   field 'sample' with the value above  and the %{@source} piece replaced
-#   with that value from the event.
+#   Example:  filter {   mutate {     add_field =&gt; [ "sample", "Hello
+#   world, from %{@source}" ]   } }    On success, the mutate plugin
+#   will then add field 'sample' with the  value above and the %{@source}
+#   piece replaced with that value from the  event.
 #   Value type is hash
 #   Default value: {}
 #   This variable is optional
 #
-# [*add_tag*] 
+# [*add_tag*]
 #   If this filter is successful, add arbitrary tags to the event. Tags
 #   can be dynamic and include parts of the event using the %{field}
-#   syntax. Example:  filter {   myfilter {     add_tag =&gt; [
+#   syntax. Example:  filter {   mutate {     add_tag =&gt; [
 #   "foo_%{somefield}" ]   } }   If the event has field "somefield" ==
 #   "hello" this filter, on success, would add a tag "foo_hello"
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*convert*] 
+# [*convert*]
 #   Convert a field's value to a different type, like turning a string to
 #   an integer. If the field value is an array, all members will be
 #   converted. If the field is a hash, no action will be taken.  Valid
@@ -37,44 +37,52 @@
 #   Default value: None
 #   This variable is optional
 #
-# [*exclude_tags*] 
+# [*exclude_tags*]
 #   Only handle events without any of these tags. Note this check is
 #   additional to type and tags.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*gsub*] 
+# [*gsub*]
 #   Convert a string field by applying a regular expression and a
 #   replacement if the field is not a string, no action will be taken 
-#   this configuration takes an array consisting of 3 elements per
-#   field/substitution  be aware of escaping any backslash in the config
-#   file  for example:     mutate {    …  gsub =&gt; [    "fieldname",
-#   "\\/", "_",      #replace all forward slashes with underscore   
-#   "fieldname", "[\\?#-]", "_"   #replace backslashes, question marks,
-#   hashes and minuses with underscore  ]   …      }
+#   This configuration takes an array consisting of 3 elements per
+#   field/substitution.  be aware of escaping any backslash in the config
+#   file  for example:  filter {   mutate {     gsub =&gt; [       #
+#   replace all forward slashes with underscore       "fieldname", "\\/",
+#   "_",        # replace backslashes, question marks, hashes and minuses
+#   with       # underscore       "fieldname", "[\\?#-]", "_"     ]   } }
 #   Value type is array
 #   Default value: None
 #   This variable is optional
 #
-# [*lowercase*] 
-#   Convert a string to its lowercase equivalent  Example:    mutate { 
-#   lowercase =&gt; [ "fieldname" ]     }
+# [*join*]
+#   Join an array with a separator character, does nothing on non-array
+#   fields  Example:     filter {   mutate {     join =&gt; ["fieldname",
+#   ","]  }      }
+#   Value type is hash
+#   Default value: None
+#   This variable is optional
+#
+# [*lowercase*]
+#   Convert a string to its lowercase equivalent  Example:  filter {  
+#   mutate {     lowercase =&gt; [ "fieldname" ]   } }
 #   Value type is array
 #   Default value: None
 #   This variable is optional
 #
-# [*remove*] 
+# [*remove*]
 #   Remove one or more fields.  Example:  filter {   mutate {     remove
 #   =&gt; [ "client" ]  # Removes the 'client' field   } }
 #   Value type is array
 #   Default value: None
 #   This variable is optional
 #
-# [*remove_tag*] 
+# [*remove_tag*]
 #   If this filter is successful, remove arbitrary tags from the event.
 #   Tags can be dynamic and include parts of the event using the %{field}
-#   syntax. Example:  filter {   myfilter {     remove_tag =&gt; [
+#   syntax. Example:  filter {   mutate {     remove_tag =&gt; [
 #   "foo_%{somefield}" ]   } }   If the event has field "somefield" ==
 #   "hello" this filter, on success, would remove the tag "foo_hello" if
 #   it is present
@@ -82,7 +90,7 @@
 #   Default value: []
 #   This variable is optional
 #
-# [*rename*] 
+# [*rename*]
 #   Rename one or more fields.  Example:  filter {   mutate {     #
 #   Renames the 'HOSTORIP' field to 'client_ip'     rename =&gt; [
 #   "HOSTORIP", "client_ip" ]   } }
@@ -90,7 +98,7 @@
 #   Default value: None
 #   This variable is optional
 #
-# [*replace*] 
+# [*replace*]
 #   Replace a field with a new value. The new value can include %{foo}
 #   strings to help you build a new value from other parts of the event. 
 #   Example:  filter {   mutate {     replace =&gt; [ "@message",
@@ -99,14 +107,29 @@
 #   Default value: None
 #   This variable is optional
 #
-# [*tags*] 
+# [*split*]
+#   Split a field to an array using a separator character. Only works on
+#   string fields.  Example:  filter {   mutate {       split =&gt;
+#   ["fieldname", ","]   } }
+#   Value type is hash
+#   Default value: None
+#   This variable is optional
+#
+# [*strip*]
+#   Strip whitespaces  Example:  filter {   mutate {       strip =&gt;
+#   ["field1", "field2"]   } }
+#   Value type is array
+#   Default value: None
+#   This variable is optional
+#
+# [*tags*]
 #   Only handle events with all of these tags.  Note that if you specify a
 #   type, the event must also match that type. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*type*] 
+# [*type*]
 #   The type to act on. If a type is given, then this filter will only act
 #   on messages with the same type. See any input plugin's "type"
 #   attribute for more. Optional.
@@ -114,9 +137,9 @@
 #   Default value: ""
 #   This variable is optional
 #
-# [*uppercase*] 
-#   Convert a string to its uppercase equivalent  Example:     mutate {  
-#   uppercase =&gt; [ "fieldname" ]      }
+# [*uppercase*]
+#   Convert a string to its uppercase equivalent  Example:  filter {  
+#   mutate {     uppercase =&gt; [ "fieldname" ]   } }
 #   Value type is array
 #   Default value: None
 #   This variable is optional
@@ -135,11 +158,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.5
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.5/filters/mutate
+#  http://logstash.net/docs/1.1.9/filters/mutate
 #
-#  Need help? http://logstash.net/docs/1.1.5/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
@@ -151,11 +174,14 @@ define logstash::filter::mutate(
   $convert      = '',
   $exclude_tags = '',
   $gsub         = '',
+  $join         = '',
   $lowercase    = '',
   $remove       = '',
   $remove_tag   = '',
   $rename       = '',
   $replace      = '',
+  $split        = '',
+  $strip        = '',
   $tags         = '',
   $type         = '',
   $uppercase    = '',
@@ -195,6 +221,12 @@ define logstash::filter::mutate(
     $opt_gsub = "  gsub => ['${arr_gsub}']\n"
   }
 
+  if $tags {
+    validate_array($tags)
+    $arr_tags = join($tags, "', '")
+    $opt_tags = "  tags => ['${arr_tags}']\n"
+  }
+
   if $lowercase {
     validate_array($lowercase)
     $arr_lowercase = join($lowercase, "', '")
@@ -207,10 +239,10 @@ define logstash::filter::mutate(
     $opt_remove = "  remove => ['${arr_remove}']\n"
   }
 
-  if $tags {
-    validate_array($tags)
-    $arr_tags = join($tags, "', '")
-    $opt_tags = "  tags => ['${arr_tags}']\n"
+  if $strip {
+    validate_array($strip)
+    $arr_strip = join($strip, "', '")
+    $opt_strip = "  strip => ['${arr_strip}']\n"
   }
 
   if $add_field {
@@ -225,6 +257,12 @@ define logstash::filter::mutate(
     $opt_replace = "  replace => ${arr_replace}\n"
   }
 
+  if $split {
+    validate_hash($split)
+    $arr_split = inline_template('<%= split.to_a.flatten.inspect %>')
+    $opt_split = "  split => ${arr_split}\n"
+  }
+
   if $rename {
     validate_hash($rename)
     $arr_rename = inline_template('<%= rename.to_a.flatten.inspect %>')
@@ -235,6 +273,12 @@ define logstash::filter::mutate(
     validate_hash($convert)
     $arr_convert = inline_template('<%= convert.to_a.flatten.inspect %>')
     $opt_convert = "  convert => ${arr_convert}\n"
+  }
+
+  if $join {
+    validate_hash($join)
+    $arr_join = inline_template('<%= join.to_a.flatten.inspect %>')
+    $opt_join = "  join => ${arr_join}\n"
   }
 
   if $order {
@@ -252,7 +296,7 @@ define logstash::filter::mutate(
 
   file { "${logstash::params::configdir}/filter_${order}_mutate_${name}":
     ensure  => present,
-    content => "filter {\n mutate {\n${opt_add_field}${opt_add_tag}${opt_convert}${opt_exclude_tags}${opt_gsub}${opt_lowercase}${opt_remove}${opt_remove_tag}${opt_rename}${opt_replace}${opt_tags}${opt_type}${opt_uppercase} }\n}\n",
+    content => "filter {\n mutate {\n${opt_add_field}${opt_add_tag}${opt_convert}${opt_exclude_tags}${opt_gsub}${opt_join}${opt_lowercase}${opt_remove}${opt_remove_tag}${opt_rename}${opt_replace}${opt_split}${opt_strip}${opt_tags}${opt_type}${opt_uppercase} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',

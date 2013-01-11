@@ -4,65 +4,69 @@
 #
 # === Parameters
 #
-# [*attachments*] 
+# [*attachments*]
 #   attachments - has of name of file and file location
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*body*] 
+# [*body*]
 #   body for email - just plain text
 #   Value type is string
 #   Default value: ""
 #   This variable is optional
 #
-# [*cc*] 
+# [*cc*]
 #   cc - send to others
 #   Value type is string
 #   Default value: ""
 #   This variable is optional
 #
-# [*contenttype*] 
+# [*contenttype*]
 #   contenttype : for multipart messages, set the content type and/or
 #   charset of the html part
 #   Value type is string
 #   Default value: "text/html; charset=UTF-8"
 #   This variable is optional
 #
-# [*exclude_tags*] 
+# [*exclude_tags*]
 #   Only handle events without any of these tags. Note this check is
 #   additional to type and tags.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*fields*] 
+# [*fields*]
 #   Only handle events with all of these fields. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*from*] 
+# [*from*]
 #   The From setting for email - fully qualified email address for the
 #   From:
 #   Value type is string
 #   Default value: "logstash.alert@nowhere.com"
 #   This variable is optional
 #
-# [*htmlbody*] 
+# [*htmlbody*]
 #   body for email - can contain html markup
 #   Value type is string
 #   Default value: ""
 #   This variable is optional
 #
-# [*match*] 
-#   the registered fields that we want to monitor A hash of matches of
-#   field =&gt; value
+# [*match*]
+#   The registered fields that we want to monitor A hash of matches of
+#   field =&gt; value Takes the form of:     { "match name",
+#   "field.in.event,value.expected, ,
+#   operand(and/or),field.in.event,value.expected, , or...",    "match
+#   name", "..." }  The match name can be referenced using the
+#   %{matchName} field.
 #   Value type is hash
 #   Default value: None
-#   This variable is optional
+#   This variable is required
 #
-# [*options*] 
+# [*options*]
 #   the options to use: smtp: address, port, enablestarttlsauto,
 #   user_name, password, authentication(bool), domain sendmail: location,
 #   arguments If you do not specify anything, you will get the following
@@ -92,26 +96,26 @@
 #   Default value: {}
 #   This variable is optional
 #
-# [*subject*] 
+# [*subject*]
 #   subject for email
 #   Value type is string
 #   Default value: ""
 #   This variable is optional
 #
-# [*tags*] 
+# [*tags*]
 #   Only handle events with all of these tags.  Note that if you specify a
 #   type, the event must also match that type. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*to*] 
-#   the To address setting - fully qualified email address to send to
+# [*to*]
+#   The To address setting - fully qualified email address to send to
 #   Value type is string
 #   Default value: None
 #   This variable is required
 #
-# [*type*] 
+# [*type*]
 #   The type to act on. If a type is given, then this output will only act
 #   on messages with the same type. See any input plugin's "type"
 #   attribute for more. Optional.
@@ -119,7 +123,7 @@
 #   Default value: ""
 #   This variable is optional
 #
-# [*via*] 
+# [*via*]
 #   how to send email: either smtp or sendmail - default to 'smtp'
 #   Value type is string
 #   Default value: "smtp"
@@ -134,30 +138,30 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.5
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.5/outputs/email
+#  http://logstash.net/docs/1.1.9/outputs/email
 #
-#  Need help? http://logstash.net/docs/1.1.5/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
 define logstash::output::email(
+  $match,
   $to,
   $htmlbody     = '',
-  $cc           = '',
   $contenttype  = '',
   $exclude_tags = '',
   $fields       = '',
   $from         = '',
-  $body         = '',
-  $match        = '',
+  $cc           = '',
+  $attachments  = '',
   $options      = '',
   $subject      = '',
   $tags         = '',
-  $attachments  = '',
+  $body         = '',
   $type         = '',
   $via          = '',
 ) {

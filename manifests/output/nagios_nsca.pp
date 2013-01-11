@@ -13,27 +13,27 @@
 #
 # === Parameters
 #
-# [*exclude_tags*] 
+# [*exclude_tags*]
 #   Only handle events without any of these tags. Note this check is
 #   additional to type and tags.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*fields*] 
+# [*fields*]
 #   Only handle events with all of these fields. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*host*] 
+# [*host*]
 #   The nagios host or IP to send logs to. It should have a NSCA daemon
 #   running.
 #   Value type is string
 #   Default value: "localhost"
 #   This variable is optional
 #
-# [*nagios_host*] 
+# [*nagios_host*]
 #   The nagios 'host' you want to submit a passive check result to. This
 #   parameter accepts interpolation, e.g. you can use @source_host or
 #   other logstash internal variables.
@@ -41,7 +41,7 @@
 #   Default value: "%{@source_host}"
 #   This variable is optional
 #
-# [*nagios_service*] 
+# [*nagios_service*]
 #   The nagios 'service' you want to submit a passive check result to.
 #   This parameter accepts interpolation, e.g. you can use @source_host or
 #   other logstash internal variables.
@@ -49,40 +49,40 @@
 #   Default value: "LOGSTASH"
 #   This variable is optional
 #
-# [*nagios_status*] 
+# [*nagios_status*]
 #   The status to send to nagios. Should be 0 = OK, 1 = WARNING, 2 =
 #   CRITICAL, 3 = UNKNOWN
 #   Value type is string
 #   Default value: None
 #   This variable is required
 #
-# [*port*] 
+# [*port*]
 #   The port where the NSCA daemon on the nagios host listens.
 #   Value type is number
 #   Default value: 5667
 #   This variable is optional
 #
-# [*send_nsca_bin*] 
+# [*send_nsca_bin*]
 #   The path to the 'send_nsca' binary on the local host.
 #   Value type is string
 #   Default value: "/usr/sbin/send_nsca"
 #   This variable is optional
 #
-# [*send_nsca_config*] 
+# [*send_nsca_config*]
 #   The path to the send_nsca config file on the local host. Leave blank
 #   if you don't want to provide a config file.
 #   Value type is string
 #   Default value: None
 #   This variable is optional
 #
-# [*tags*] 
+# [*tags*]
 #   Only handle events with all of these tags.  Note that if you specify a
 #   type, the event must also match that type. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*type*] 
+# [*type*]
 #   The type to act on. If a type is given, then this output will only act
 #   on messages with the same type. See any input plugin's "type"
 #   attribute for more. Optional.
@@ -99,11 +99,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.5
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.5/outputs/nagios_nsca
+#  http://logstash.net/docs/1.1.9/outputs/nagios_nsca
 #
-#  Need help? http://logstash.net/docs/1.1.5/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
@@ -147,6 +147,8 @@ define logstash::output::nagios_nsca(
   if $port {
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
+    } else {
+      $opt_port = "  port => ${port}\n"
     }
   }
 

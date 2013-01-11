@@ -8,43 +8,43 @@
 #
 # === Parameters
 #
-# [*add_field*] 
+# [*add_field*]
 #   If this filter is successful, add any arbitrary fields to this event.
-#   Example:  filter {   myfilter {     add_field =&gt; [ "sample", "Hello
-#   world, from %{@source}" ]   } }    On success, myfilter will then add
-#   field 'sample' with the value above  and the %{@source} piece replaced
-#   with that value from the event.
+#   Example:  filter {   syslog_pri {     add_field =&gt; [ "sample", "Hello
+#   world, from %{@source}" ]   } }    On success, the syslog_pri plugin
+#   will then add field 'sample' with the  value above and the %{@source}
+#   piece replaced with that value from the  event.
 #   Value type is hash
 #   Default value: {}
 #   This variable is optional
 #
-# [*add_tag*] 
+# [*add_tag*]
 #   If this filter is successful, add arbitrary tags to the event. Tags
 #   can be dynamic and include parts of the event using the %{field}
-#   syntax. Example:  filter {   myfilter {     add_tag =&gt; [
+#   syntax. Example:  filter {   syslog_pri {     add_tag =&gt; [
 #   "foo_%{somefield}" ]   } }   If the event has field "somefield" ==
 #   "hello" this filter, on success, would add a tag "foo_hello"
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*exclude_tags*] 
+# [*exclude_tags*]
 #   Only handle events without any of these tags. Note this check is
 #   additional to type and tags.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*facility_labels*] 
+# [*facility_labels*]
 #   Labels for facility levels. This comes from RFC3164.
 #   Value type is array
 #   Default value: ["kernel", "user-level", "mail", "daemon", "security/authorization", "syslogd", "line printer", "network news", "uucp", "clock", "security/authorization", "ftp", "ntp", "log audit", "log alert", "clock", "local0", "local1", "local2", "local3", "local4", "local5", "local6", "local7"]
 #   This variable is optional
 #
-# [*remove_tag*] 
+# [*remove_tag*]
 #   If this filter is successful, remove arbitrary tags from the event.
 #   Tags can be dynamic and include parts of the event using the %{field}
-#   syntax. Example:  filter {   myfilter {     remove_tag =&gt; [
+#   syntax. Example:  filter {   syslog_pri {     remove_tag =&gt; [
 #   "foo_%{somefield}" ]   } }   If the event has field "somefield" ==
 #   "hello" this filter, on success, would remove the tag "foo_hello" if
 #   it is present
@@ -52,27 +52,27 @@
 #   Default value: []
 #   This variable is optional
 #
-# [*severity_labels*] 
+# [*severity_labels*]
 #   Labels for severity levels. This comes from RFC3164.
 #   Value type is array
 #   Default value: ["emergency", "alert", "critical", "error", "warning", "notice", "informational", "debug"]
 #   This variable is optional
 #
-# [*syslog_pri_field_name*] 
+# [*syslog_pri_field_name*]
 #   Name of field which passes in the extracted PRI part of the syslog
 #   message
 #   Value type is string
 #   Default value: "syslog_pri"
 #   This variable is optional
 #
-# [*tags*] 
+# [*tags*]
 #   Only handle events with all of these tags.  Note that if you specify a
 #   type, the event must also match that type. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*type*] 
+# [*type*]
 #   The type to act on. If a type is given, then this filter will only act
 #   on messages with the same type. See any input plugin's "type"
 #   attribute for more. Optional.
@@ -80,7 +80,7 @@
 #   Default value: ""
 #   This variable is optional
 #
-# [*use_labels*] 
+# [*use_labels*]
 #   set the status to experimental/beta/stable Add human-readable names
 #   after parsing severity and facility from PRI
 #   Value type is boolean
@@ -101,11 +101,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.5
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.5/filters/syslog_pri
+#  http://logstash.net/docs/1.1.9/filters/syslog_pri
 #
-#  Need help? http://logstash.net/docs/1.1.5/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #

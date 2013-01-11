@@ -4,39 +4,45 @@
 #
 # === Parameters
 #
-# [*debug*] 
+# [*debug*]
 #   Enable debugging. Tries to pretty-print the entire event object.
 #   Value type is boolean
 #   Default value: None
 #   This variable is optional
 #
-# [*debug_format*] 
+# [*debug_format*]
 #   Debug output format: ruby (default), json
 #   Value can be any of: "ruby", "json", "dots"
 #   Default value: "ruby"
 #   This variable is optional
 #
-# [*exclude_tags*] 
+# [*exclude_tags*]
 #   Only handle events without any of these tags. Note this check is
 #   additional to type and tags.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*fields*] 
+# [*fields*]
 #   Only handle events with all of these fields. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*tags*] 
+# [*message*]
+#   The message to emit to stdout.
+#   Value type is string
+#   Default value: "%{@timestamp} %{@source}: %{@message}"
+#   This variable is optional
+#
+# [*tags*]
 #   Only handle events with all of these tags.  Note that if you specify a
 #   type, the event must also match that type. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*type*] 
+# [*type*]
 #   The type to act on. If a type is given, then this output will only act
 #   on messages with the same type. See any input plugin's "type"
 #   attribute for more. Optional.
@@ -53,11 +59,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.5
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.5/outputs/stdout
+#  http://logstash.net/docs/1.1.9/outputs/stdout
 #
-#  Need help? http://logstash.net/docs/1.1.5/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
@@ -68,6 +74,7 @@ define logstash::output::stdout(
   $debug_format = '',
   $exclude_tags = '',
   $fields       = '',
+  $message      = '',
   $tags         = '',
   $type         = '',
 ) {
@@ -106,6 +113,11 @@ define logstash::output::stdout(
     }
   }
 
+  if $message { 
+    validate_string($message)
+    $opt_message = "  message => \"${message}\"\n"
+  }
+
   if $type { 
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
@@ -115,7 +127,7 @@ define logstash::output::stdout(
 
   file { "${logstash::params::configdir}/output_stdout_${name}":
     ensure  => present,
-    content => "output {\n stdout {\n${opt_debug}${opt_debug_format}${opt_exclude_tags}${opt_fields}${opt_tags}${opt_type} }\n}\n",
+    content => "output {\n stdout {\n${opt_debug}${opt_debug_format}${opt_exclude_tags}${opt_fields}${opt_message}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',

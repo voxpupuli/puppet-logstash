@@ -32,8 +32,8 @@ class logstash::config {
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    #purge   => true,
-    #recurse => true
+    purge   => true,
+    recurse => true
   }
 
 }

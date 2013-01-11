@@ -6,64 +6,64 @@
 #
 # === Parameters
 #
-# [*exclude_tags*] 
+# [*exclude_tags*]
 #   Only handle events without any of these tags. Note this check is
 #   additional to type and tags.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*fields*] 
+# [*fields*]
 #   Only handle events with all of these fields. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*host*] 
+# [*host*]
 #   The address of the graphite server.
 #   Value type is string
 #   Default value: "localhost"
 #   This variable is optional
 #
-# [*lifetime*] 
+# [*lifetime*]
 #   Lifetime in seconds of this metric
 #   Value type is number
 #   Default value: 300
 #   This variable is optional
 #
-# [*max_interval*] 
+# [*max_interval*]
 #   Maximum time in seconds between gmetric calls for this metric.
 #   Value type is number
 #   Default value: 60
 #   This variable is optional
 #
-# [*metric*] 
+# [*metric*]
 #   The metric to use. This supports dynamic strings like %{@source_host}
 #   Value type is string
 #   Default value: None
 #   This variable is required
 #
-# [*metric_type*] 
+# [*metric_type*]
 #   The type of value for this metric.
 #   Value can be any of: "string", "int8", "uint8", "int16", "uint16",
 #   "int32", "uint32", "float", "double"
 #   Default value: "uint8"
 #   This variable is optional
 #
-# [*port*] 
+# [*port*]
 #   The port to connect on your graphite server.
 #   Value type is number
 #   Default value: 8649
 #   This variable is optional
 #
-# [*tags*] 
+# [*tags*]
 #   Only handle events with all of these tags.  Note that if you specify a
 #   type, the event must also match that type. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*type*] 
+# [*type*]
 #   The type to act on. If a type is given, then this output will only act
 #   on messages with the same type. See any input plugin's "type"
 #   attribute for more. Optional.
@@ -71,14 +71,14 @@
 #   Default value: ""
 #   This variable is optional
 #
-# [*units*] 
+# [*units*]
 #   Gmetric units for metric, such as "kb/sec" or "ms" or whatever unit
 #   this metric uses.
 #   Value type is string
 #   Default value: ""
 #   This variable is optional
 #
-# [*value*] 
+# [*value*]
 #   The value to use. This supports dynamic strings like %{bytes} It will
 #   be coerced to a floating point value. Values which cannot be coerced
 #   will zero (0)
@@ -95,11 +95,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.5
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.5/outputs/ganglia
+#  http://logstash.net/docs/1.1.9/outputs/ganglia
 #
-#  Need help? http://logstash.net/docs/1.1.5/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
@@ -144,18 +144,24 @@ define logstash::output::ganglia(
   if $lifetime {
     if ! is_numeric($lifetime) {
       fail("\"${lifetime}\" is not a valid lifetime parameter value")
+    } else {
+      $opt_lifetime = "  lifetime => ${lifetime}\n"
     }
   }
 
   if $max_interval {
     if ! is_numeric($max_interval) {
       fail("\"${max_interval}\" is not a valid max_interval parameter value")
+    } else {
+      $opt_max_interval = "  max_interval => ${max_interval}\n"
     }
   }
 
   if $port {
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
+    } else {
+      $opt_port = "  port => ${port}\n"
     }
   }
 

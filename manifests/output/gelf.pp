@@ -7,13 +7,13 @@
 #
 # === Parameters
 #
-# [*chunksize*] 
+# [*chunksize*]
 #   The GELF chunksize. You usually don't need to change this.
 #   Value type is number
 #   Default value: 1420
 #   This variable is optional
 #
-# [*custom_fields*] 
+# [*custom_fields*]
 #   The GELF custom field mappings. GELF supports arbitrary attributes as
 #   custom fields. This exposes that. Exclude the _ portion of the field
 #   name e.g. custom_fields =&gt; ['foo_field', 'some_value']
@@ -22,14 +22,14 @@
 #   Default value: {}
 #   This variable is optional
 #
-# [*exclude_tags*] 
+# [*exclude_tags*]
 #   Only handle events without any of these tags. Note this check is
 #   additional to type and tags.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*facility*] 
+# [*facility*]
 #   The GELF facility. Dynamic values like %{foo} are permitted here; this
 #   is useful if you need to use a value from the event as the facility
 #   name.
@@ -37,13 +37,13 @@
 #   Default value: "logstash-gelf"
 #   This variable is optional
 #
-# [*fields*] 
+# [*fields*]
 #   Only handle events with all of these fields. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*file*] 
+# [*file*]
 #   The GELF file; this is usually the source code file in your program
 #   where the log event originated. Dynamic values like %{foo} are
 #   permitted here.
@@ -51,13 +51,26 @@
 #   Default value: "%{@source_path}"
 #   This variable is optional
 #
-# [*host*] 
+# [*full_message*]
+#   The GELF full message. Dynamic values like %{foo} are permitted here.
+#   Value type is string
+#   Default value: "%{@message}"
+#   This variable is optional
+#
+# [*host*]
 #   graylog2 server address
 #   Value type is string
 #   Default value: None
 #   This variable is required
 #
-# [*level*] 
+# [*ignore_metadata*]
+#   Ignore these fields when ship_metadata is set. Typically this lists
+#   the fields used in dynamic values for GELF fields.
+#   Value type is array
+#   Default value: ["severity", "source_host", "source_path", "short_message"]
+#   This variable is optional
+#
+# [*level*]
 #   The GELF message level. Dynamic values like %{level} are permitted
 #   here; useful if you want to parse the 'log level' from an event and
 #   use that as the gelf level/severity.  Values here can be integers
@@ -68,7 +81,7 @@
 #   Default value: ["%{severity}", "INFO"]
 #   This variable is optional
 #
-# [*line*] 
+# [*line*]
 #   The GELF line number; this is usually the line number in your program
 #   where the log event originated. Dynamic values like %{foo} are
 #   permitted here, but the value should be a number.
@@ -76,13 +89,13 @@
 #   Default value: None
 #   This variable is optional
 #
-# [*port*] 
+# [*port*]
 #   graylog2 server port
 #   Value type is number
 #   Default value: 12201
 #   This variable is optional
 #
-# [*sender*] 
+# [*sender*]
 #   Allow overriding of the gelf 'sender' field. This is useful if you
 #   want to use something other than the event's source host as the
 #   "sender" of an event. A common case for this is using the application
@@ -91,7 +104,7 @@
 #   Default value: "%{@source_host}"
 #   This variable is optional
 #
-# [*ship_metadata*] 
+# [*ship_metadata*]
 #   Ship metadata within event object? This will cause logstash to ship
 #   any fields in the event (such as those created by grok) in the GELF
 #   messages.
@@ -99,14 +112,21 @@
 #   Default value: true
 #   This variable is optional
 #
-# [*tags*] 
+# [*short_message*]
+#   The GELF short message field name. If the field does not exist or is
+#   empty, the event message is taken instead.
+#   Value type is string
+#   Default value: "short_message"
+#   This variable is optional
+#
+# [*tags*]
 #   Only handle events with all of these tags.  Note that if you specify a
 #   type, the event must also match that type. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*type*] 
+# [*type*]
 #   The type to act on. If a type is given, then this output will only act
 #   on messages with the same type. See any input plugin's "type"
 #   attribute for more. Optional.
@@ -123,11 +143,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.5
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.5/outputs/gelf
+#  http://logstash.net/docs/1.1.9/outputs/gelf
 #
-#  Need help? http://logstash.net/docs/1.1.5/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
@@ -135,40 +155,49 @@
 #
 define logstash::output::gelf(
   $host,
-  $level         = '',
-  $exclude_tags  = '',
-  $facility      = '',
-  $fields        = '',
-  $file          = '',
-  $chunksize     = '',
-  $custom_fields = '',
-  $line          = '',
-  $port          = '',
-  $sender        = '',
-  $ship_metadata = '',
-  $tags          = '',
-  $type          = '',
+  $ignore_metadata = '',
+  $exclude_tags    = '',
+  $facility        = '',
+  $fields          = '',
+  $file            = '',
+  $full_message    = '',
+  $chunksize       = '',
+  $custom_fields   = '',
+  $level           = '',
+  $line            = '',
+  $port            = '',
+  $sender          = '',
+  $ship_metadata   = '',
+  $short_message   = '',
+  $tags            = '',
+  $type            = '',
 ) {
 
   require logstash::params
 
   #### Validate parameters
+  if $ignore_metadata {
+    validate_array($ignore_metadata)
+    $arr_ignore_metadata = join($ignore_metadata, "', '")
+    $opt_ignore_metadata = "  ignore_metadata => ['${arr_ignore_metadata}']\n"
+  }
+
   if $level {
     validate_array($level)
     $arr_level = join($level, "', '")
     $opt_level = "  level => ['${arr_level}']\n"
   }
 
-  if $fields {
-    validate_array($fields)
-    $arr_fields = join($fields, "', '")
-    $opt_fields = "  fields => ['${arr_fields}']\n"
-  }
-
   if $exclude_tags {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, "', '")
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
+  }
+
+  if $fields {
+    validate_array($fields)
+    $arr_fields = join($fields, "', '")
+    $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
   if $tags {
@@ -191,12 +220,16 @@ define logstash::output::gelf(
   if $chunksize {
     if ! is_numeric($chunksize) {
       fail("\"${chunksize}\" is not a valid chunksize parameter value")
+    } else {
+      $opt_chunksize = "  chunksize => ${chunksize}\n"
     }
   }
 
   if $port {
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
+    } else {
+      $opt_port = "  port => ${port}\n"
     }
   }
 
@@ -205,19 +238,29 @@ define logstash::output::gelf(
     $opt_sender = "  sender => \"${sender}\"\n"
   }
 
-  if $host { 
-    validate_string($host)
-    $opt_host = "  host => \"${host}\"\n"
-  }
-
   if $line { 
     validate_string($line)
     $opt_line = "  line => \"${line}\"\n"
   }
 
+  if $host { 
+    validate_string($host)
+    $opt_host = "  host => \"${host}\"\n"
+  }
+
+  if $full_message { 
+    validate_string($full_message)
+    $opt_full_message = "  full_message => \"${full_message}\"\n"
+  }
+
   if $file { 
     validate_string($file)
     $opt_file = "  file => \"${file}\"\n"
+  }
+
+  if $short_message { 
+    validate_string($short_message)
+    $opt_short_message = "  short_message => \"${short_message}\"\n"
   }
 
   if $facility { 
@@ -234,7 +277,7 @@ define logstash::output::gelf(
 
   file { "${logstash::params::configdir}/output_gelf_${name}":
     ensure  => present,
-    content => "output {\n gelf {\n${opt_chunksize}${opt_custom_fields}${opt_exclude_tags}${opt_facility}${opt_fields}${opt_file}${opt_host}${opt_level}${opt_line}${opt_port}${opt_sender}${opt_ship_metadata}${opt_tags}${opt_type} }\n}\n",
+    content => "output {\n gelf {\n${opt_chunksize}${opt_custom_fields}${opt_exclude_tags}${opt_facility}${opt_fields}${opt_file}${opt_full_message}${opt_host}${opt_ignore_metadata}${opt_level}${opt_line}${opt_port}${opt_sender}${opt_ship_metadata}${opt_short_message}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',

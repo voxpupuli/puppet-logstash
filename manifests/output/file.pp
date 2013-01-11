@@ -6,33 +6,33 @@
 #
 # === Parameters
 #
-# [*exclude_tags*] 
+# [*exclude_tags*]
 #   Only handle events without any of these tags. Note this check is
 #   additional to type and tags.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*fields*] 
+# [*fields*]
 #   Only handle events with all of these fields. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*flush_interval*] 
+# [*flush_interval*]
 #   Flush interval for flushing writes to log files. 0 will flush on every
 #   meesage
 #   Value type is number
 #   Default value: 2
 #   This variable is optional
 #
-# [*gzip*] 
+# [*gzip*]
 #   Gzip output stream
 #   Value type is boolean
 #   Default value: false
 #   This variable is optional
 #
-# [*max_size*] 
+# [*max_size*]
 #   The maximum size of file to write. When the file exceeds this
 #   threshold, it will be rotated to the current filename + ".1" If that
 #   file already exists, the previous .1 will shift to .2 and so forth. 
@@ -41,7 +41,7 @@
 #   Default value: None
 #   This variable is optional
 #
-# [*message_format*] 
+# [*message_format*]
 #   The format to use when writing events to the file. This value supports
 #   any string and can include %{name} and other dynamic strings.  If this
 #   setting is omitted, the full json representation of the event will be
@@ -50,21 +50,21 @@
 #   Default value: None
 #   This variable is optional
 #
-# [*path*] 
+# [*path*]
 #   The path to the file to write. Event fields can be used here, like
 #   "/var/log/logstash/%{@source_host}/%{application}"
 #   Value type is string
 #   Default value: None
 #   This variable is required
 #
-# [*tags*] 
+# [*tags*]
 #   Only handle events with all of these tags.  Note that if you specify a
 #   type, the event must also match that type. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*type*] 
+# [*type*]
 #   The type to act on. If a type is given, then this output will only act
 #   on messages with the same type. See any input plugin's "type"
 #   attribute for more. Optional.
@@ -81,11 +81,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.5
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.5/outputs/file
+#  http://logstash.net/docs/1.1.9/outputs/file
 #
-#  Need help? http://logstash.net/docs/1.1.5/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
@@ -132,6 +132,8 @@ define logstash::output::file(
   if $flush_interval {
     if ! is_numeric($flush_interval) {
       fail("\"${flush_interval}\" is not a valid flush_interval parameter value")
+    } else {
+      $opt_flush_interval = "  flush_interval => ${flush_interval}\n"
     }
   }
 

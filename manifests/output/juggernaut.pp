@@ -1,8 +1,8 @@
 # == Define: logstash::output::juggernaut
 #
-#   Push messages to the juggernaut websockets server
-#   https://github.com/maccman/juggernaut  Wraps Websockets and supports
-#   other methods (including xhr longpolling) This is basiccaly, just an
+#   Push messages to the juggernaut websockets server: 
+#   https://github.com/maccman/juggernaut Wraps Websockets and supports
+#   other methods (including xhr longpolling) This is basically, just an
 #   extension of the redis output (Juggernaut pulls messages from redis). 
 #   But it pushes messages to a particular channel and formats the
 #   messages in the way juggernaut expects.
@@ -10,70 +10,70 @@
 #
 # === Parameters
 #
-# [*channels*] 
+# [*channels*]
 #   List of channels to which to publish. Dynamic names are valid here,
 #   for example "logstash-%{@type}".
 #   Value type is array
 #   Default value: None
 #   This variable is required
 #
-# [*db*] 
+# [*db*]
 #   The redis database number.
 #   Value type is number
 #   Default value: 0
 #   This variable is optional
 #
-# [*exclude_tags*] 
+# [*exclude_tags*]
 #   Only handle events without any of these tags. Note this check is
 #   additional to type and tags.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*fields*] 
+# [*fields*]
 #   Only handle events with all of these fields. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*host*] 
+# [*host*]
 #   The hostname of the redis server to which juggernaut is listening.
 #   Value type is string
 #   Default value: "127.0.0.1"
 #   This variable is optional
 #
-# [*message_format*] 
-#   How should be message be formatted before pusing to the websocket.
+# [*message_format*]
+#   How should the message be formatted before pushing to the websocket.
 #   Value type is string
 #   Default value: None
 #   This variable is optional
 #
-# [*password*] 
+# [*password*]
 #   Password to authenticate with.  There is no authentication by default.
 #   Value type is password
 #   Default value: None
 #   This variable is optional
 #
-# [*port*] 
+# [*port*]
 #   The port to connect on.
 #   Value type is number
 #   Default value: 6379
 #   This variable is optional
 #
-# [*tags*] 
+# [*tags*]
 #   Only handle events with all of these tags.  Note that if you specify a
 #   type, the event must also match that type. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*timeout*] 
+# [*timeout*]
 #   Redis initial connection timeout in seconds.
 #   Value type is number
 #   Default value: 5
 #   This variable is optional
 #
-# [*type*] 
+# [*type*]
 #   The type to act on. If a type is given, then this output will only act
 #   on messages with the same type. See any input plugin's "type"
 #   attribute for more. Optional.
@@ -90,11 +90,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.5
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.5/outputs/juggernaut
+#  http://logstash.net/docs/1.1.9/outputs/juggernaut
 #
-#  Need help? http://logstash.net/docs/1.1.5/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
@@ -144,18 +144,24 @@ define logstash::output::juggernaut(
   if $timeout {
     if ! is_numeric($timeout) {
       fail("\"${timeout}\" is not a valid timeout parameter value")
+    } else {
+      $opt_timeout = "  timeout => ${timeout}\n"
     }
   }
 
   if $db {
     if ! is_numeric($db) {
       fail("\"${db}\" is not a valid db parameter value")
+    } else {
+      $opt_db = "  db => ${db}\n"
     }
   }
 
   if $port {
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
+    } else {
+      $opt_port = "  port => ${port}\n"
     }
   }
 

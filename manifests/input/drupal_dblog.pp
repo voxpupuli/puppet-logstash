@@ -1,6 +1,13 @@
-# == Define: logstash::input::udp
+# == Define: logstash::input::drupal_dblog
 #
-#   Read messages as events over the network via udp.
+#   Retrieve watchdog log events from a Drupal installation with DBLog
+#   enabled. The events are pulled out directly from the database. The
+#   original events are not deleted, and on every consecutive run only new
+#   events are pulled.  The last watchdog event id that was processed is
+#   stored in the Drupal variable table with the name "logstashlastwid".
+#   Delete this variable or set it to 0 if you want to re-import all
+#   events.  More info on DBLog:
+#   http://drupal.org/documentation/modules/dblog
 #
 #
 # === Parameters
@@ -11,10 +18,20 @@
 #   Default value: {}
 #   This variable is optional
 #
-# [*buffer_size*]
-#   Buffer size
+# [*add_usernames*]
+#   By default, the event only contains the current user id as a field. If
+#   you whish to add the username as an additional field, set this to
+#   true.
+#   Value type is boolean
+#   Default value: false
+#   This variable is optional
+#
+# [*bulksize*]
+#   The amount of log messages that should be fetched with each query.
+#   Bulk fetching is done to prevent querying huge data sets when lots of
+#   messages are in the database.
 #   Value type is number
-#   Default value: 8192
+#   Default value: 5000
 #   This variable is optional
 #
 # [*charset*]
@@ -57,6 +74,16 @@
 #   Default value: "UTF-8"
 #   This variable is optional
 #
+# [*databases*]
+#   Specify all drupal databases that you whish to import from. This can
+#   be as many as you whish. The format is a hash, with a unique site name
+#   as the key, and a databse url as the value.  Example: [   "site1",
+#   "mysql://user1:password@host1.com/databasename",   "other_site",
+#   "mysql://user2:password@otherhost.com/databasename",   ... ]
+#   Value type is hash
+#   Default value: None
+#   This variable is optional
+#
 # [*debug*]
 #   Set this to true to enable debugging on an input.
 #   Value type is boolean
@@ -69,10 +96,10 @@
 #   Default value: None
 #   This variable is optional
 #
-# [*host*]
-#   The address to listen on
-#   Value type is string
-#   Default value: "0.0.0.0"
+# [*interval*]
+#   Time between checks in minutes.
+#   Value type is number
+#   Default value: 10
 #   This variable is optional
 #
 # [*message_format*]
@@ -83,13 +110,6 @@
 #   Not receiving all fields will cause unexpected results.
 #   Value type is string
 #   Default value: None
-#   This variable is optional
-#
-# [*port*]
-#   The port to listen on. Remember that ports less than 1024 (privileged
-#   ports) may require root to use.
-#   Value type is number
-#   Default value: 9999
 #   This variable is optional
 #
 # [*tags*]
@@ -106,8 +126,8 @@
 #   also stored as part of the event itself, so you can also use the type
 #   to search for in the web interface.
 #   Value type is string
-#   Default value: None
-#   This variable is required
+#   Default value: "watchdog"
+#   This variable is optional
 #
 #
 #
@@ -120,7 +140,7 @@
 #
 #  This define is created based on LogStash version 1.1.9
 #  Extra information about this input can be found at:
-#  http://logstash.net/docs/1.1.9/inputs/udp
+#  http://logstash.net/docs/1.1.9/inputs/drupal_dblog
 #
 #  Need help? http://logstash.net/docs/1.1.9/learn
 #
@@ -128,17 +148,18 @@
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
-define logstash::input::udp(
-  $type,
-  $host           = '',
+define logstash::input::drupal_dblog(
+  $add_field      = '',
+  $add_usernames  = '',
+  $bulksize       = '',
   $charset        = '',
+  $databases      = '',
   $debug          = '',
   $format         = '',
-  $buffer_size    = '',
+  $interval       = '',
   $message_format = '',
-  $port           = '',
   $tags           = '',
-  $add_field      = '',
+  $type           = '',
 ) {
 
   require logstash::params
@@ -148,6 +169,11 @@ define logstash::input::udp(
     validate_array($tags)
     $arr_tags = join($tags, "', '")
     $opt_tags = "  tags => ['${arr_tags}']\n"
+  }
+
+  if $add_usernames {
+    validate_bool($add_usernames)
+    $opt_add_usernames = "  add_usernames => ${add_usernames}\n"
   }
 
   if $debug {
@@ -161,19 +187,25 @@ define logstash::input::udp(
     $opt_add_field = "  add_field => ${arr_add_field}\n"
   }
 
-  if $port {
-    if ! is_numeric($port) {
-      fail("\"${port}\" is not a valid port parameter value")
+  if $databases {
+    validate_hash($databases)
+    $arr_databases = inline_template('<%= databases.to_a.flatten.inspect %>')
+    $opt_databases = "  databases => ${arr_databases}\n"
+  }
+
+  if $bulksize {
+    if ! is_numeric($bulksize) {
+      fail("\"${bulksize}\" is not a valid bulksize parameter value")
     } else {
-      $opt_port = "  port => ${port}\n"
+      $opt_bulksize = "  bulksize => ${bulksize}\n"
     }
   }
 
-  if $buffer_size {
-    if ! is_numeric($buffer_size) {
-      fail("\"${buffer_size}\" is not a valid buffer_size parameter value")
+  if $interval {
+    if ! is_numeric($interval) {
+      fail("\"${interval}\" is not a valid interval parameter value")
     } else {
-      $opt_buffer_size = "  buffer_size => ${buffer_size}\n"
+      $opt_interval = "  interval => ${interval}\n"
     }
   }
 
@@ -193,11 +225,6 @@ define logstash::input::udp(
     }
   }
 
-  if $host { 
-    validate_string($host)
-    $opt_host = "  host => \"${host}\"\n"
-  }
-
   if $message_format { 
     validate_string($message_format)
     $opt_message_format = "  message_format => \"${message_format}\"\n"
@@ -210,9 +237,9 @@ define logstash::input::udp(
 
   #### Write config file
 
-  file { "${logstash::params::configdir}/input_udp_${name}":
+  file { "${logstash::params::configdir}/input_drupal_dblog_${name}":
     ensure  => present,
-    content => "input {\n udp {\n${opt_add_field}${opt_buffer_size}${opt_charset}${opt_debug}${opt_format}${opt_host}${opt_message_format}${opt_port}${opt_tags}${opt_type} }\n}\n",
+    content => "input {\n drupal_dblog {\n${opt_add_field}${opt_add_usernames}${opt_bulksize}${opt_charset}${opt_databases}${opt_debug}${opt_format}${opt_interval}${opt_message_format}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',

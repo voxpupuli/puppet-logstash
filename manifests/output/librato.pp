@@ -4,7 +4,7 @@
 #
 # === Parameters
 #
-# [*account_id*] 
+# [*account_id*]
 #   This output lets you send metrics, annotations and alerts to Librato
 #   based on Logstash events  This is VERY experimental and inefficient
 #   right now. Your Librato account usually an email address
@@ -12,7 +12,7 @@
 #   Default value: None
 #   This variable is required
 #
-# [*annotation*] 
+# [*annotation*]
 #   Annotations Registers an annotation with Librato The only required
 #   field is title and name. start_time and end_time will be set to
 #   event.unix_timestamp You can add any other optional annotation values
@@ -24,13 +24,13 @@
 #   Default value: {}
 #   This variable is optional
 #
-# [*api_token*] 
+# [*api_token*]
 #   Your Librato API Token
 #   Value type is string
 #   Default value: None
 #   This variable is required
 #
-# [*batch_size*] 
+# [*batch_size*]
 #   Named metrics (NYI) These allow multiple metrics/annotations in the
 #   same output Examples: (Gauge) apache_bytes =&gt; ["type", "gauge",
 #   "source", "%{@source_host}", "value", "%{bytes_received}"] (Counter)
@@ -42,7 +42,7 @@
 #   Default value: "10"
 #   This variable is optional
 #
-# [*counter*] 
+# [*counter*]
 #   Counters Send data to Librato as a counter  Example:   ["value", "1",
 #   "source", "%{@sourcehost}", "name", "messagesreceived"] Additionally,
 #   you can override the measure_time for the event. Must be a unix
@@ -53,20 +53,20 @@
 #   Default value: {}
 #   This variable is optional
 #
-# [*exclude_tags*] 
+# [*exclude_tags*]
 #   Only handle events without any of these tags. Note this check is
 #   additional to type and tags.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*fields*] 
+# [*fields*]
 #   Only handle events with all of these fields. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*gauge*] 
+# [*gauge*]
 #   Gauges Send data to Librato as a gauge  Example:   ["value",
 #   "%{bytesrecieved}", "source", "%{@sourcehost}", "name", "apachebytes"]
 #   Additionally, you can override the measure_time for the event. Must be
@@ -77,14 +77,14 @@
 #   Default value: {}
 #   This variable is optional
 #
-# [*tags*] 
+# [*tags*]
 #   Only handle events with all of these tags.  Note that if you specify a
 #   type, the event must also match that type. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*type*] 
+# [*type*]
 #   The type to act on. If a type is given, then this output will only act
 #   on messages with the same type. See any input plugin's "type"
 #   attribute for more. Optional.
@@ -101,11 +101,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.5
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.5/outputs/librato
+#  http://logstash.net/docs/1.1.9/outputs/librato
 #
-#  Need help? http://logstash.net/docs/1.1.5/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #

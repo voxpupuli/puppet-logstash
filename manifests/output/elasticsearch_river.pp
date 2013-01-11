@@ -12,79 +12,86 @@
 #
 # === Parameters
 #
-# [*amqp_host*] 
+# [*amqp_host*]
 #   Hostname of AMQP server
 #   Value type is string
 #   Default value: None
 #   This variable is required
 #
-# [*amqp_port*] 
+# [*amqp_port*]
 #   Port of AMQP server
 #   Value type is number
 #   Default value: 5672
 #   This variable is optional
 #
-# [*debug*] 
+# [*debug*]
 #   Value type is boolean
 #   Default value: false
 #   This variable is optional
 #
-# [*durable*] 
+# [*document_id*]
+#   The document ID for the index. Useful for overwriting existing entries
+#   in elasticsearch with the same ID.
+#   Value type is string
+#   Default value: nil
+#   This variable is optional
+#
+# [*durable*]
 #   AMQP durability setting. Also used for ElasticSearch setting
 #   Value type is boolean
 #   Default value: true
 #   This variable is optional
 #
-# [*es_bulk_size*] 
+# [*es_bulk_size*]
 #   ElasticSearch river configuration: bulk fetch size
 #   Value type is number
 #   Default value: 1000
 #   This variable is optional
 #
-# [*es_bulk_timeout_ms*] 
+# [*es_bulk_timeout_ms*]
 #   ElasticSearch river configuration: bulk timeout in milliseconds
 #   Value type is number
 #   Default value: 100
 #   This variable is optional
 #
-# [*es_host*] 
+# [*es_host*]
 #   The name/address of an ElasticSearch host to use for river creation
 #   Value type is string
 #   Default value: None
 #   This variable is required
 #
-# [*es_port*] 
+# [*es_port*]
 #   ElasticSearch API port
 #   Value type is number
 #   Default value: 9200
 #   This variable is optional
 #
-# [*exchange*] 
+# [*exchange*]
 #   AMQP exchange name
 #   Value type is string
 #   Default value: "elasticsearch"
 #   This variable is optional
 #
-# [*exchange_type*] 
+# [*exchange_type*]
 #   The exchange type (fanout, topic, direct)
 #   Value can be any of: "fanout", "direct", "topic"
 #   Default value: "direct"
 #   This variable is optional
 #
-# [*exclude_tags*] 
+# [*exclude_tags*]
 #   Only handle events without any of these tags. Note this check is
 #   additional to type and tags.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*fields*] 
+# [*fields*]
 #   Only handle events with all of these fields. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*index*] 
+# [*index*]
 #   The index to write events to. This can be dynamic using the %{foo}
 #   syntax. The default value will partition your indeces by day so you
 #   can more easily delete old data or only search specific date ranges.
@@ -92,7 +99,7 @@
 #   Default value: "logstash-%{+YYYY.MM.dd}"
 #   This variable is optional
 #
-# [*index_type*] 
+# [*index_type*]
 #   The index type to write events to. Generally you should try to write
 #   only similar events to the same 'type'. String expansion '%{foo}'
 #   works here.
@@ -100,38 +107,38 @@
 #   Default value: "%{@type}"
 #   This variable is optional
 #
-# [*key*] 
+# [*key*]
 #   AMQP routing key
 #   Value type is string
 #   Default value: "elasticsearch"
 #   This variable is optional
 #
-# [*name*] 
-#   AMQP queue name
-#   Value type is string
-#   Default value: "elasticsearch"
-#   This variable is optional
-#
-# [*password*] 
+# [*password*]
 #   AMQP password
 #   Value type is string
 #   Default value: "guest"
 #   This variable is optional
 #
-# [*persistent*] 
+# [*persistent*]
 #   AMQP persistence setting
 #   Value type is boolean
 #   Default value: true
 #   This variable is optional
 #
-# [*tags*] 
+# [*queue*]
+#   AMQP queue name
+#   Value type is string
+#   Default value: "elasticsearch"
+#   This variable is optional
+#
+# [*tags*]
 #   Only handle events with all of these tags.  Note that if you specify a
 #   type, the event must also match that type. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*type*] 
+# [*type*]
 #   The type to act on. If a type is given, then this output will only act
 #   on messages with the same type. See any input plugin's "type"
 #   attribute for more. Optional.
@@ -139,13 +146,13 @@
 #   Default value: ""
 #   This variable is optional
 #
-# [*user*] 
+# [*user*]
 #   AMQP user
 #   Value type is string
 #   Default value: "guest"
 #   This variable is optional
 #
-# [*vhost*] 
+# [*vhost*]
 #   AMQP vhost
 #   Value type is string
 #   Default value: "/"
@@ -160,11 +167,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.5
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.5/outputs/elasticsearch_river
+#  http://logstash.net/docs/1.1.9/outputs/elasticsearch_river
 #
-#  Need help? http://logstash.net/docs/1.1.5/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
@@ -174,6 +181,7 @@ define logstash::output::elasticsearch_river(
   $amqp_host,
   $es_host,
   $fields             = '',
+  $document_id        = '',
   $durable            = '',
   $es_bulk_size       = '',
   $es_bulk_timeout_ms = '',
@@ -186,9 +194,9 @@ define logstash::output::elasticsearch_river(
   $index              = '',
   $index_type         = '',
   $key                = '',
-  $name               = '',
   $password           = '',
   $persistent         = '',
+  $queue              = '',
   $tags               = '',
   $type               = '',
   $user               = '',
@@ -216,11 +224,6 @@ define logstash::output::elasticsearch_river(
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $durable {
-    validate_bool($durable)
-    $opt_durable = "  durable => ${durable}\n"
-  }
-
   if $persistent {
     validate_bool($persistent)
     $opt_persistent = "  persistent => ${persistent}\n"
@@ -231,27 +234,40 @@ define logstash::output::elasticsearch_river(
     $opt_debug = "  debug => ${debug}\n"
   }
 
-  if $es_port {
-    if ! is_numeric($es_port) {
-      fail("\"${es_port}\" is not a valid es_port parameter value")
+  if $durable {
+    validate_bool($durable)
+    $opt_durable = "  durable => ${durable}\n"
+  }
+
+  if $es_bulk_timeout_ms {
+    if ! is_numeric($es_bulk_timeout_ms) {
+      fail("\"${es_bulk_timeout_ms}\" is not a valid es_bulk_timeout_ms parameter value")
+    } else {
+      $opt_es_bulk_timeout_ms = "  es_bulk_timeout_ms => ${es_bulk_timeout_ms}\n"
     }
   }
 
   if $amqp_port {
     if ! is_numeric($amqp_port) {
       fail("\"${amqp_port}\" is not a valid amqp_port parameter value")
+    } else {
+      $opt_amqp_port = "  amqp_port => ${amqp_port}\n"
+    }
+  }
+
+  if $es_port {
+    if ! is_numeric($es_port) {
+      fail("\"${es_port}\" is not a valid es_port parameter value")
+    } else {
+      $opt_es_port = "  es_port => ${es_port}\n"
     }
   }
 
   if $es_bulk_size {
     if ! is_numeric($es_bulk_size) {
       fail("\"${es_bulk_size}\" is not a valid es_bulk_size parameter value")
-    }
-  }
-
-  if $es_bulk_timeout_ms {
-    if ! is_numeric($es_bulk_timeout_ms) {
-      fail("\"${es_bulk_timeout_ms}\" is not a valid es_bulk_timeout_ms parameter value")
+    } else {
+      $opt_es_bulk_size = "  es_bulk_size => ${es_bulk_size}\n"
     }
   }
 
@@ -266,6 +282,11 @@ define logstash::output::elasticsearch_river(
   if $amqp_host { 
     validate_string($amqp_host)
     $opt_amqp_host = "  amqp_host => \"${amqp_host}\"\n"
+  }
+
+  if $exchange { 
+    validate_string($exchange)
+    $opt_exchange = "  exchange => \"${exchange}\"\n"
   }
 
   if $index { 
@@ -283,24 +304,24 @@ define logstash::output::elasticsearch_river(
     $opt_key = "  key => \"${key}\"\n"
   }
 
-  if $name { 
-    validate_string($name)
-    $opt_name = "  name => \"${name}\"\n"
-  }
-
   if $password { 
     validate_string($password)
     $opt_password = "  password => \"${password}\"\n"
   }
 
-  if $exchange { 
-    validate_string($exchange)
-    $opt_exchange = "  exchange => \"${exchange}\"\n"
-  }
-
   if $es_host { 
     validate_string($es_host)
     $opt_es_host = "  es_host => \"${es_host}\"\n"
+  }
+
+  if $queue { 
+    validate_string($queue)
+    $opt_queue = "  queue => \"${queue}\"\n"
+  }
+
+  if $document_id { 
+    validate_string($document_id)
+    $opt_document_id = "  document_id => \"${document_id}\"\n"
   }
 
   if $type { 
@@ -322,7 +343,7 @@ define logstash::output::elasticsearch_river(
 
   file { "${logstash::params::configdir}/output_elasticsearch_river_${name}":
     ensure  => present,
-    content => "output {\n elasticsearch_river {\n${opt_amqp_host}${opt_amqp_port}${opt_debug}${opt_durable}${opt_es_bulk_size}${opt_es_bulk_timeout_ms}${opt_es_host}${opt_es_port}${opt_exchange}${opt_exchange_type}${opt_exclude_tags}${opt_fields}${opt_index}${opt_index_type}${opt_key}${opt_name}${opt_password}${opt_persistent}${opt_tags}${opt_type}${opt_user}${opt_vhost} }\n}\n",
+    content => "output {\n elasticsearch_river {\n${opt_amqp_host}${opt_amqp_port}${opt_debug}${opt_document_id}${opt_durable}${opt_es_bulk_size}${opt_es_bulk_timeout_ms}${opt_es_host}${opt_es_port}${opt_exchange}${opt_exchange_type}${opt_exclude_tags}${opt_fields}${opt_index}${opt_index_type}${opt_key}${opt_password}${opt_persistent}${opt_queue}${opt_tags}${opt_type}${opt_user}${opt_vhost} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',

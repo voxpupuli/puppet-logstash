@@ -4,7 +4,7 @@
 #
 # === Parameters
 #
-# [*annotation*] 
+# [*annotation*]
 #   Annotations Registers an annotation with Circonus The only required
 #   field is title and description. start and stop will be set to
 #   event.unix_timestamp You can add any other optional annotation values
@@ -16,41 +16,41 @@
 #   Default value: {}
 #   This variable is required
 #
-# [*api_token*] 
+# [*api_token*]
 #   This output lets you send annotations to Circonus based on Logstash
 #   events  Your Circonus API Token
 #   Value type is string
 #   Default value: None
 #   This variable is required
 #
-# [*app_name*] 
+# [*app_name*]
 #   Your Circonus App name This will be passed through event.sprintf so
 #   variables are allowed here:  Example:  app_name =&gt; "%{myappname}"
 #   Value type is string
 #   Default value: None
 #   This variable is required
 #
-# [*exclude_tags*] 
+# [*exclude_tags*]
 #   Only handle events without any of these tags. Note this check is
 #   additional to type and tags.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*fields*] 
+# [*fields*]
 #   Only handle events with all of these fields. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*tags*] 
+# [*tags*]
 #   Only handle events with all of these tags.  Note that if you specify a
 #   type, the event must also match that type. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*type*] 
+# [*type*]
 #   The type to act on. If a type is given, then this output will only act
 #   on messages with the same type. See any input plugin's "type"
 #   attribute for more. Optional.
@@ -67,11 +67,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.5
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.5/outputs/circonus
+#  http://logstash.net/docs/1.1.9/outputs/circonus
 #
-#  Need help? http://logstash.net/docs/1.1.5/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #

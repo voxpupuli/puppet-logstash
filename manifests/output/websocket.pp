@@ -1,43 +1,45 @@
 # == Define: logstash::output::websocket
 #
-#   TODO(sissel): THIS IS NOT SUPPORTED IN JRUBY YET
+#   This output runs a websocket server and publishes any messages to all
+#   connected websocket clients.  You can connect to it with ws://:/  If
+#   no clients are connected, any messages received are ignored.
 #
 #
 # === Parameters
 #
-# [*exclude_tags*] 
+# [*exclude_tags*]
 #   Only handle events without any of these tags. Note this check is
 #   additional to type and tags.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*fields*] 
+# [*fields*]
 #   Only handle events with all of these fields. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*host*] 
+# [*host*]
 #   The address to serve websocket data from
 #   Value type is string
 #   Default value: "0.0.0.0"
 #   This variable is optional
 #
-# [*port*] 
+# [*port*]
 #   The port to serve websocket data from
 #   Value type is number
 #   Default value: 3232
 #   This variable is optional
 #
-# [*tags*] 
+# [*tags*]
 #   Only handle events with all of these tags.  Note that if you specify a
 #   type, the event must also match that type. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*type*] 
+# [*type*]
 #   The type to act on. If a type is given, then this output will only act
 #   on messages with the same type. See any input plugin's "type"
 #   attribute for more. Optional.
@@ -54,11 +56,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.5
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.5/outputs/websocket
+#  http://logstash.net/docs/1.1.9/outputs/websocket
 #
-#  Need help? http://logstash.net/docs/1.1.5/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
@@ -97,6 +99,8 @@ define logstash::output::websocket(
   if $port {
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
+    } else {
+      $opt_port = "  port => ${port}\n"
     }
   }
 

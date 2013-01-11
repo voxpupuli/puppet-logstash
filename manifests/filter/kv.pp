@@ -3,49 +3,80 @@
 #   This filter helps automatically parse messages which are of the
 #   'foo=bar' variety.  For example, if you have a log message which
 #   contains 'ip=1.2.3.4 error=REFUSED', you can parse those automatically
-#   by doing:    filter {  kv { }     }  And you will get field 'ip' ==
-#   "1.2.3.4" etc.
+#   by doing:  filter {   kv { } }   The above will result in a message of
+#   "ip=1.2.3.4 error=REFUSED" having the fields:  ip: 1.2.3.4 error:
+#   REFUSED This is great for postfix, iptables, and other types of logs
+#   that tend towards 'key=value' syntax.  Further, this can often be used
+#   to parse query parameters like 'foo=bar&amp;baz=fizz' by setting the
+#   field_split to "&amp;"
 #
 #
 # === Parameters
 #
-# [*add_field*] 
+# [*add_field*]
 #   If this filter is successful, add any arbitrary fields to this event.
-#   Example:  filter {   myfilter {     add_field =&gt; [ "sample", "Hello
-#   world, from %{@source}" ]   } }    On success, myfilter will then add
-#   field 'sample' with the value above  and the %{@source} piece replaced
-#   with that value from the event.
+#   Example:  filter {   kv {     add_field =&gt; [ "sample", "Hello
+#   world, from %{@source}" ]   } }    On success, the kv plugin
+#   will then add field 'sample' with the  value above and the %{@source}
+#   piece replaced with that value from the  event.
 #   Value type is hash
 #   Default value: {}
 #   This variable is optional
 #
-# [*add_tag*] 
+# [*add_tag*]
 #   If this filter is successful, add arbitrary tags to the event. Tags
 #   can be dynamic and include parts of the event using the %{field}
-#   syntax. Example:  filter {   myfilter {     add_tag =&gt; [
+#   syntax. Example:  filter {   kv {     add_tag =&gt; [
 #   "foo_%{somefield}" ]   } }   If the event has field "somefield" ==
 #   "hello" this filter, on success, would add a tag "foo_hello"
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*exclude_tags*] 
+# [*container*]
+#   The name of the container to put all of the key-value pairs into 
+#   Example, to place all keys into container kv:  filter { kv { conatiner
+#   =&gt; "kv" } }
+#   Value type is string
+#   Default value: "@fields"
+#   This variable is optional
+#
+# [*exclude_tags*]
 #   Only handle events without any of these tags. Note this check is
 #   additional to type and tags.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*fields*] 
+# [*field_split*]
+#   A string of characters to use as delimiters for parsing out key-value
+#   pairs.  Example with URL Query Strings  Example, to split out the args
+#   from a url query string such as
+#   '?pin=12345~0&amp;d=123&amp;e=foo@bar.com&amp;oq=bobo&amp;ss=12345': 
+#   filter {   kv {     field_split =&gt; "&amp;?"    } }   The above
+#   splits on both "&amp;" and "?" characters, giving you the following
+#   fields:  pin: 12345~0 d: 123 e: foo@bar.com oq: bobo ss: 12345
+#   Value type is string
+#   Default value: " "
+#   This variable is optional
+#
+# [*fields*]
 #   The fields to perform 'key=value' searching on
 #   Value type is array
 #   Default value: ["@message"]
 #   This variable is optional
 #
-# [*remove_tag*] 
+# [*prefix*]
+#   A string to prepend to all of the extracted keys  Example, to prepend
+#   arg_ to all keys:  filter { kv { prefix =&gt; "arg_" } }
+#   Value type is string
+#   Default value: ""
+#   This variable is optional
+#
+# [*remove_tag*]
 #   If this filter is successful, remove arbitrary tags from the event.
 #   Tags can be dynamic and include parts of the event using the %{field}
-#   syntax. Example:  filter {   myfilter {     remove_tag =&gt; [
+#   syntax. Example:  filter {   kv {     remove_tag =&gt; [
 #   "foo_%{somefield}" ]   } }   If the event has field "somefield" ==
 #   "hello" this filter, on success, would remove the tag "foo_hello" if
 #   it is present
@@ -53,28 +84,36 @@
 #   Default value: []
 #   This variable is optional
 #
-# [*tags*] 
+# [*tags*]
 #   Only handle events with all of these tags.  Note that if you specify a
 #   type, the event must also match that type. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*trim*] 
+# [*trim*]
 #   A string of characters to trim from the value. This is useful if your
 #   values are wrapped in brackets or are terminated by comma (like
 #   postfix logs)  Example, to strip '&lt;' '&gt;' and ',' characters from
-#   values:  filter { kv { trim =&gt; "&lt;&gt;," } }
+#   values:  filter {    kv {      trim =&gt; "&lt;&gt;,"   } }
 #   Value type is string
 #   Default value: None
 #   This variable is optional
 #
-# [*type*] 
+# [*type*]
 #   The type to act on. If a type is given, then this filter will only act
 #   on messages with the same type. See any input plugin's "type"
 #   attribute for more. Optional.
 #   Value type is string
 #   Default value: ""
+#   This variable is optional
+#
+# [*value_split*]
+#   A string of characters to use as delimiters for identifying key-value
+#   relations.  Example, to identify key-values such as 'key1:value1
+#   key2:value2':  filter { kv { value_split =&gt; ":" } }
+#   Value type is string
+#   Default value: "="
 #   This variable is optional
 #
 # [*order*]
@@ -91,11 +130,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.5
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.5/filters/kv
+#  http://logstash.net/docs/1.1.9/filters/kv
 #
-#  Need help? http://logstash.net/docs/1.1.5/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
@@ -104,22 +143,26 @@
 define logstash::filter::kv(
   $add_field    = '',
   $add_tag      = '',
+  $container    = '',
   $exclude_tags = '',
+  $field_split  = '',
   $fields       = '',
+  $prefix       = '',
   $remove_tag   = '',
   $tags         = '',
   $trim         = '',
   $type         = '',
+  $value_split  = '',
   $order        = 10,
 ) {
 
   require logstash::params
 
   #### Validate parameters
-  if $remove_tag {
-    validate_array($remove_tag)
-    $arr_remove_tag = join($remove_tag, "', '")
-    $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
+  if $fields {
+    validate_array($fields)
+    $arr_fields = join($fields, "', '")
+    $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
   if $add_tag {
@@ -128,22 +171,22 @@ define logstash::filter::kv(
     $opt_add_tag = "  add_tag => ['${arr_add_tag}']\n"
   }
 
-  if $exclude_tags {
-    validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, "', '")
-    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
-  }
-
-  if $fields {
-    validate_array($fields)
-    $arr_fields = join($fields, "', '")
-    $opt_fields = "  fields => ['${arr_fields}']\n"
-  }
-
   if $tags {
     validate_array($tags)
     $arr_tags = join($tags, "', '")
     $opt_tags = "  tags => ['${arr_tags}']\n"
+  }
+
+  if $remove_tag {
+    validate_array($remove_tag)
+    $arr_remove_tag = join($remove_tag, "', '")
+    $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
+  }
+
+  if $exclude_tags {
+    validate_array($exclude_tags)
+    $arr_exclude_tags = join($exclude_tags, "', '")
+    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if $add_field {
@@ -158,9 +201,14 @@ define logstash::filter::kv(
     }
   }
 
-  if $type { 
-    validate_string($type)
-    $opt_type = "  type => \"${type}\"\n"
+  if $field_split { 
+    validate_string($field_split)
+    $opt_field_split = "  field_split => \"${field_split}\"\n"
+  }
+
+  if $container { 
+    validate_string($container)
+    $opt_container = "  container => \"${container}\"\n"
   }
 
   if $trim { 
@@ -168,11 +216,26 @@ define logstash::filter::kv(
     $opt_trim = "  trim => \"${trim}\"\n"
   }
 
+  if $type { 
+    validate_string($type)
+    $opt_type = "  type => \"${type}\"\n"
+  }
+
+  if $value_split { 
+    validate_string($value_split)
+    $opt_value_split = "  value_split => \"${value_split}\"\n"
+  }
+
+  if $prefix { 
+    validate_string($prefix)
+    $opt_prefix = "  prefix => \"${prefix}\"\n"
+  }
+
   #### Write config file
 
   file { "${logstash::params::configdir}/filter_${order}_kv_${name}":
     ensure  => present,
-    content => "filter {\n kv {\n${opt_add_field}${opt_add_tag}${opt_exclude_tags}${opt_fields}${opt_remove_tag}${opt_tags}${opt_trim}${opt_type} }\n}\n",
+    content => "filter {\n kv {\n${opt_add_field}${opt_add_tag}${opt_container}${opt_exclude_tags}${opt_field_split}${opt_fields}${opt_prefix}${opt_remove_tag}${opt_tags}${opt_trim}${opt_type}${opt_value_split} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',

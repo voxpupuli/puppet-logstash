@@ -6,7 +6,7 @@
 #
 # === Parameters
 #
-# [*bucket*] 
+# [*bucket*]
 #   The bucket name to write events to Expansion is supported here as
 #   values are passed through event.sprintf Multiple buckets can be
 #   specified here but any bucket-specific settings defined apply to ALL
@@ -15,7 +15,7 @@
 #   Default value: ["logstash-%{+YYYY.MM.dd}"]
 #   This variable is optional
 #
-# [*bucket_props*] 
+# [*bucket_props*]
 #   Bucket properties (NYI) Logstash hash of properties for the bucket
 #   i.e. bucket_props =&gt; ["r", "one", "w", "one", "dw", "one"] or
 #   bucket_props =&gt; ["n_val", "3"] Note that the Logstash config
@@ -25,60 +25,60 @@
 #   Default value: None
 #   This variable is optional
 #
-# [*enable_search*] 
+# [*enable_search*]
 #   Search Enable search on the bucket defined above
 #   Value type is boolean
 #   Default value: false
 #   This variable is optional
 #
-# [*enable_ssl*] 
+# [*enable_ssl*]
 #   SSL Enable SSL
 #   Value type is boolean
 #   Default value: false
 #   This variable is optional
 #
-# [*exclude_tags*] 
+# [*exclude_tags*]
 #   Only handle events without any of these tags. Note this check is
 #   additional to type and tags.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*fields*] 
+# [*fields*]
 #   Only handle events with all of these fields. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*indices*] 
+# [*indices*]
 #   Indices Array of fields to add 2i on e.g. `indices =&gt;
 #   ["@source_host", "@type"] Off by default as not everyone runs eleveldb
 #   Value type is array
 #   Default value: None
 #   This variable is optional
 #
-# [*key_name*] 
+# [*key_name*]
 #   The event key name variables are valid here.  Choose this carefully.
 #   Best to let riak decide....
 #   Value type is string
 #   Default value: None
 #   This variable is optional
 #
-# [*nodes*] 
+# [*nodes*]
 #   The nodes of your Riak cluster This can be a single host or a Logstash
 #   hash of node/port pairs e.g ["node1", "8098", "node2", "8098"]
 #   Value type is hash
 #   Default value: {"localhost"=>"8098"}
 #   This variable is optional
 #
-# [*proto*] 
+# [*proto*]
 #   The protocol to use HTTP or ProtoBuf Applies to ALL backends listed
 #   above No mix and match
 #   Value can be any of: "http", "pb"
 #   Default value: "http"
 #   This variable is optional
 #
-# [*ssl_opts*] 
+# [*ssl_opts*]
 #   SSL Options Options for SSL connections Only applied if SSL is enabled
 #   Logstash hash that maps to the riak-client options here:
 #   https://github.com/basho/riak-ruby-client/wiki/Connecting-to-Riak
@@ -89,14 +89,14 @@
 #   Default value: None
 #   This variable is optional
 #
-# [*tags*] 
+# [*tags*]
 #   Only handle events with all of these tags.  Note that if you specify a
 #   type, the event must also match that type. Optional.
 #   Value type is array
 #   Default value: []
 #   This variable is optional
 #
-# [*type*] 
+# [*type*]
 #   The type to act on. If a type is given, then this output will only act
 #   on messages with the same type. See any input plugin's "type"
 #   attribute for more. Optional.
@@ -113,11 +113,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.5
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.5/outputs/riak
+#  http://logstash.net/docs/1.1.9/outputs/riak
 #
-#  Need help? http://logstash.net/docs/1.1.5/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #

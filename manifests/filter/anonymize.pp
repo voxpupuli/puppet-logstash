@@ -1,17 +1,14 @@
-# == Define: logstash::filter::checksum
+# == Define: logstash::filter::anonymize
 #
-#   This filter let's you create a checksum based on various parts of the
-#   logstash event. This can be useful for deduplication of messages or
-#   simply to provide a custom unique identifier.  This is VERY
-#   experimental and is largely a proof-of-concept
+#   Anonymize fields using by replacing values with a consistent hash.
 #
 #
 # === Parameters
 #
 # [*add_field*]
 #   If this filter is successful, add any arbitrary fields to this event.
-#   Example:  filter {   checksum {     add_field =&gt; [ "sample", "Hello
-#   world, from %{@source}" ]   } }    On success, the checksum plugin
+#   Example:  filter {   anonymize {     add_field =&gt; [ "sample", "Hello
+#   world, from %{@source}" ]   } }    On success, the anonymize plugin
 #   will then add field 'sample' with the  value above and the %{@source}
 #   piece replaced with that value from the  event.
 #   Value type is hash
@@ -21,7 +18,7 @@
 # [*add_tag*]
 #   If this filter is successful, add arbitrary tags to the event. Tags
 #   can be dynamic and include parts of the event using the %{field}
-#   syntax. Example:  filter {   checksum {     add_tag =&gt; [
+#   syntax. Example:  filter {   anonymize {     add_tag =&gt; [
 #   "foo_%{somefield}" ]   } }   If the event has field "somefield" ==
 #   "hello" this filter, on success, would add a tag "foo_hello"
 #   Value type is array
@@ -29,9 +26,11 @@
 #   This variable is optional
 #
 # [*algorithm*]
-#   Value can be any of: "md5", "sha128", "sha256", "sha384"
-#   Default value: "sha256"
-#   This variable is optional
+#   digest/hash type
+#   Value can be any of: "SHA1", "SHA224", "SHA256", "SHA384", "SHA512",
+#   "MD4", "MD5", "MURMUR3", "IPV4_NETWORK"
+#   Default value: "SHA1"
+#   This variable is required
 #
 # [*exclude_tags*]
 #   Only handle events without any of these tags. Note this check is
@@ -40,18 +39,23 @@
 #   Default value: []
 #   This variable is optional
 #
-# [*keys*]
-#   A list of keys to use in creating the string to checksum Keys will be
-#   sorted before building the string keys and values will then be
-#   concatenated with pipe delimeters and checksummed
+# [*fields*]
+#   The fields to be anonymized
 #   Value type is array
-#   Default value: ["@message", "@source_host", "@timestamp", "@source_path", "@type", "@source"]
-#   This variable is optional
+#   Default value: None
+#   This variable is required
+#
+# [*key*]
+#   Hashing key When using MURMUR3 the key is ignored but must still be
+#   set. When using IPV4_NETWORK key is the subnet prefix lentgh
+#   Value type is string
+#   Default value: None
+#   This variable is required
 #
 # [*remove_tag*]
 #   If this filter is successful, remove arbitrary tags from the event.
 #   Tags can be dynamic and include parts of the event using the %{field}
-#   syntax. Example:  filter {   checksum {     remove_tag =&gt; [
+#   syntax. Example:  filter {   anonymize {     remove_tag =&gt; [
 #   "foo_%{somefield}" ]   } }   If the event has field "somefield" ==
 #   "hello" this filter, on success, would remove the tag "foo_hello" if
 #   it is present
@@ -90,7 +94,7 @@
 #
 #  This define is created based on LogStash version 1.1.9
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.9/filters/checksum
+#  http://logstash.net/docs/1.1.9/filters/anonymize
 #
 #  Need help? http://logstash.net/docs/1.1.9/learn
 #
@@ -98,12 +102,13 @@
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
-define logstash::filter::checksum(
+define logstash::filter::anonymize(
+  $key,
+  $fields,
+  $algorithm,
   $add_field    = '',
   $add_tag      = '',
-  $algorithm    = '',
   $exclude_tags = '',
-  $keys         = '',
   $remove_tag   = '',
   $tags         = '',
   $type         = '',
@@ -113,10 +118,10 @@ define logstash::filter::checksum(
   require logstash::params
 
   #### Validate parameters
-  if $keys {
-    validate_array($keys)
-    $arr_keys = join($keys, "', '")
-    $opt_keys = "  keys => ['${arr_keys}']\n"
+  if $remove_tag {
+    validate_array($remove_tag)
+    $arr_remove_tag = join($remove_tag, "', '")
+    $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
   }
 
   if $add_tag {
@@ -131,16 +136,16 @@ define logstash::filter::checksum(
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
+  if $fields {
+    validate_array($fields)
+    $arr_fields = join($fields, "', '")
+    $opt_fields = "  fields => ['${arr_fields}']\n"
+  }
+
   if $exclude_tags {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, "', '")
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
-  }
-
-  if $remove_tag {
-    validate_array($remove_tag)
-    $arr_remove_tag = join($remove_tag, "', '")
-    $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
   }
 
   if $add_field {
@@ -156,7 +161,7 @@ define logstash::filter::checksum(
   }
 
   if $algorithm {
-    if ! ($algorithm in ['md5', 'sha128', 'sha256', 'sha384']) {
+    if ! ($algorithm in ['SHA1', 'SHA224', 'SHA256', 'SHA384', 'SHA512', 'MD4', 'MD5', 'MURMUR3', 'IPV4_NETWORK']) {
       fail("\"${algorithm}\" is not a valid algorithm parameter value")
     } else {
       $opt_algorithm = "  algorithm => \"${algorithm}\"\n"
@@ -168,11 +173,16 @@ define logstash::filter::checksum(
     $opt_type = "  type => \"${type}\"\n"
   }
 
+  if $key { 
+    validate_string($key)
+    $opt_key = "  key => \"${key}\"\n"
+  }
+
   #### Write config file
 
-  file { "${logstash::params::configdir}/filter_${order}_checksum_${name}":
+  file { "${logstash::params::configdir}/filter_${order}_anonymize_${name}":
     ensure  => present,
-    content => "filter {\n checksum {\n${opt_add_field}${opt_add_tag}${opt_algorithm}${opt_exclude_tags}${opt_keys}${opt_remove_tag}${opt_tags}${opt_type} }\n}\n",
+    content => "filter {\n anonymize {\n${opt_add_field}${opt_add_tag}${opt_algorithm}${opt_exclude_tags}${opt_fields}${opt_key}${opt_remove_tag}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
