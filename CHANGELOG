@@ -1,0 +1,5 @@
+0.0.2 ( Jan 19, 2013 )
+  Adding a way to provide jar and init file instead of depending on a package
+
+0.0.1 ( Jan 13, 2013 )
+  Initial release of the module
