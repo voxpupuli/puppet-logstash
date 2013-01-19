@@ -81,7 +81,11 @@ class logstash(
   $ensure      = $logstash::params::ensure,
   $autoupgrade = $logstash::params::autoupgrade,
   $status      = $logstash::params::status,
-  $version     = false
+  $version     = false,
+  $provider    = 'package',
+  $jarfile     = undef,
+  $initfile    = undef,
+  $installpath = undef
 ) inherits logstash::params {
 
   #### Validate parameters

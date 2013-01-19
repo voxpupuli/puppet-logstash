@@ -24,6 +24,12 @@
 #
 class logstash::package {
 
+  File {
+    owner => 'root',
+    group => 'root',
+    mode  => '0644'
+  }
+
   #### Package management
 
   # set params: in operation
@@ -49,9 +55,34 @@ class logstash::package {
     $package_ensure = 'purged'
   }
 
-  # action
-  package { $logstash::params::package:
-    ensure => $package_ensure,
+  if ($logstash::provider == 'package') {
+    # action
+    package { $logstash::params::package:
+      ensure => $package_ensure,
+    }
+  } elsif ($logstash::provider == 'custom') {
+
+    $jarfile_arr = split($logstash::jarfile, '/')
+    $jarfile_arr2 = reverse($jarfile_arr)
+    $jarfile = $jarfile_arr2[0]
+
+    exec { 'create_dir':
+      cwd     => '/',
+      path    => ['/usr/bin', '/bin'],
+      command => "mkdir -p ${logstash::installpath}";
+    }
+
+    file { "${logstash::installpath}/${jarfile}":
+      ensure  => present,
+      source  => $logstash::jarfile,
+      require => Exec['create_dir']
+    }
+
+    file { '/etc/init.d/logstash':
+      ensure => present,
+      source => $logstash::initfile,
+      mode   => '0755'
+    }
   }
 
 }
