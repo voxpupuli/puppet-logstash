@@ -94,11 +94,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.9/outputs/sns
+#  http://logstash.net/docs/1.1.10.dev/outputs/sns
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -122,19 +122,19 @@ define logstash::output::sns(
   #### Validate parameters
   if $exclude_tags {
     validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, "', '")
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
   if $fields {
     validate_array($fields)
-    $arr_fields = join($fields, "', '")
+    $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
@@ -146,32 +146,32 @@ define logstash::output::sns(
     }
   }
 
-  if $access_key_id { 
+  if $access_key_id {
     validate_string($access_key_id)
     $opt_access_key_id = "  access_key_id => \"${access_key_id}\"\n"
   }
 
-  if $credentials { 
+  if $credentials {
     validate_string($credentials)
     $opt_credentials = "  credentials => \"${credentials}\"\n"
   }
 
-  if $publish_boot_message_arn { 
+  if $publish_boot_message_arn {
     validate_string($publish_boot_message_arn)
     $opt_publish_boot_message_arn = "  publish_boot_message_arn => \"${publish_boot_message_arn}\"\n"
   }
 
-  if $secret_access_key { 
+  if $secret_access_key {
     validate_string($secret_access_key)
     $opt_secret_access_key = "  secret_access_key => \"${secret_access_key}\"\n"
   }
 
-  if $arn { 
+  if $arn {
     validate_string($arn)
     $opt_arn = "  arn => \"${arn}\"\n"
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }

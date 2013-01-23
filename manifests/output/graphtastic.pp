@@ -3,7 +3,7 @@
 #   A plugin for a newly developed Java/Spring Metrics application I
 #   didn't really want to code this project but I couldn't find a
 #   respectable alternative that would also run on any Windows machine -
-#   which is the problem and why I am not going with Graphite and statsd. 
+#   which is the problem and why I am not going with Graphite and statsd.
 #   This application provides multiple integration options so as to make
 #   its use under your network requirements possible. This includes a REST
 #   option that is always enabled for your use in case you want to write a
@@ -23,7 +23,7 @@
 # [*context*]
 #   if using rest as your end point you need to also provide the
 #   application url it defaults to localhost/graphtastic.  You can
-#   customize the application url by changing the name of the .war file. 
+#   customize the application url by changing the name of the .war file.
 #   There are other ways to change the application context, but they vary
 #   depending on the Application Server in use. Please consult your
 #   application server documentation for more on application contexts.
@@ -115,11 +115,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.9/outputs/graphtastic
+#  http://logstash.net/docs/1.1.10.dev/outputs/graphtastic
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -145,19 +145,19 @@ define logstash::output::graphtastic(
   #### Validate parameters
   if $exclude_tags {
     validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, "', '")
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
   if $fields {
     validate_array($fields)
-    $arr_fields = join($fields, "', '")
+    $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
@@ -199,22 +199,22 @@ define logstash::output::graphtastic(
     }
   }
 
-  if $host { 
+  if $host {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
   }
 
-  if $error_file { 
+  if $error_file {
     validate_string($error_file)
     $opt_error_file = "  error_file => \"${error_file}\"\n"
   }
 
-  if $context { 
+  if $context {
     validate_string($context)
     $opt_context = "  context => \"${context}\"\n"
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }

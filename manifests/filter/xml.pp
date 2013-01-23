@@ -83,11 +83,11 @@
 #   xpath will additionally select string values (.to_s on whatever is
 #   selected) from parsed XML (using each source field defined using the
 #   method above) and place those values in the destination fields.
-#   Configuration:  xpath =&gt; [ "xpath-syntax", "destination-field" ] 
+#   Configuration:  xpath =&gt; [ "xpath-syntax", "destination-field" ]
 #   Values returned by XPath parsring from xpath-synatx will be put in the
 #   destination field. Multiple values returned will be pushed onto the
 #   destination field as an array. As such, multiple matches across
-#   multiple source fields will produce duplicate entries in the field 
+#   multiple source fields will produce duplicate entries in the field
 #   More on xpath: http://www.w3schools.com/xpath/  The xpath functions
 #   are particularly powerful:
 #   http://www.w3schools.com/xpath/xpath_functions.asp
@@ -109,11 +109,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.9/filters/xml
+#  http://logstash.net/docs/1.1.10.dev/filters/xml
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -136,25 +136,25 @@ define logstash::filter::xml(
   #### Validate parameters
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
   if $remove_tag {
     validate_array($remove_tag)
-    $arr_remove_tag = join($remove_tag, "', '")
+    $arr_remove_tag = join($remove_tag, '\', \'')
     $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
   }
 
   if $add_tag {
     validate_array($add_tag)
-    $arr_add_tag = join($add_tag, "', '")
+    $arr_add_tag = join($add_tag, '\', \'')
     $opt_add_tag = "  add_tag => ['${arr_add_tag}']\n"
   }
 
   if $exclude_tags {
     validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, "', '")
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
@@ -181,7 +181,7 @@ define logstash::filter::xml(
     }
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }

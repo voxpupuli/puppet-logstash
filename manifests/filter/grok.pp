@@ -7,7 +7,7 @@
 #   format that is generally written for humans and not computer
 #   consumption.  Logstash ships with about 120 patterns by default. You
 #   can find them here:
-#   https://github.com/logstash/logstash/tree/v1.1.9/patterns. You can
+#   https://github.com/logstash/logstash/tree/v1.1.10.dev/patterns. You can
 #   add your own trivially. (See the patterns_dir setting)  If you need
 #   help building patterns to match your logs, you will find the
 #   http://grokdebug.herokuapp.com too quite useful!  Grok Basics  Grok
@@ -25,22 +25,22 @@
 #   15824 0.043   The pattern for this could be:  %{IP:client}
 #   %{WORD:method} %{URIPATHPARAM:request} %{NUMBER:bytes}
 #   %{NUMBER:duration}   A more realistic example, let's read these logs
-#   from a file:  input {   file {     path =&gt; "/var/log/http.log"    
+#   from a file:  input {   file {     path =&gt; "/var/log/http.log"
 #   type =&gt; "examplehttp"   } } filter {   grok {     type =&gt;
 #   "examplehttp"     pattern =&gt; "%{IP:client} %{WORD:method}
-#   %{URIPATHPARAM:request} %{NUMBER:bytes} %{NUMBER:duration}"   } }  
-#   After the grok filter, the event will have a few extra fields in it: 
+#   %{URIPATHPARAM:request} %{NUMBER:bytes} %{NUMBER:duration}"   } }
+#   After the grok filter, the event will have a few extra fields in it:
 #   client: 55.3.244.1 method: GET request: /index.html bytes: 15824
 #   duration: 0.043 Regular Expressions  Grok sits on top of regular
 #   expressions, so any regular expressions are valid in grok as well. The
 #   regular expression library is Oniguruma, and you can see the full
-#   supported regexp syntax on the Onigiruma site  Custom Patterns 
+#   supported regexp syntax on the Onigiruma site  Custom Patterns
 #   Sometimes logstash doesn't have a pattern you need. For this, you have
 #   a few options.  First, you can use the Oniguruma syntax for 'named
 #   capture' which will let you match a piece of text and save it as a
 #   field:  (?&lt;field_name&gt;the pattern here)   For example, postfix
 #   logs have a 'queue id' that is an 11-character hexadecimal value. I
-#   can capture that easily like this:  (?&lt;queue_id&gt;[0-9A-F]{11})  
+#   can capture that easily like this:  (?&lt;queue_id&gt;[0-9A-F]{11})
 #   Alternately, you can create a custom patterns file.  Create a
 #   directory called 'patterns' with a file in it called 'extra' (the file
 #   name doesn't matter, but name it meaningfully for yourself) In that
@@ -189,11 +189,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.9/filters/grok
+#  http://logstash.net/docs/1.1.10.dev/filters/grok
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -222,37 +222,37 @@ define logstash::filter::grok(
   #### Validate parameters
   if $pattern {
     validate_array($pattern)
-    $arr_pattern = join($pattern, "', '")
+    $arr_pattern = join($pattern, '\', \'')
     $opt_pattern = "  pattern => ['${arr_pattern}']\n"
   }
 
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
   if $add_tag {
     validate_array($add_tag)
-    $arr_add_tag = join($add_tag, "', '")
+    $arr_add_tag = join($add_tag, '\', \'')
     $opt_add_tag = "  add_tag => ['${arr_add_tag}']\n"
   }
 
   if $remove_tag {
     validate_array($remove_tag)
-    $arr_remove_tag = join($remove_tag, "', '")
+    $arr_remove_tag = join($remove_tag, '\', \'')
     $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
   }
 
   if $patterns_dir {
     validate_array($patterns_dir)
-    $arr_patterns_dir = join($patterns_dir, "', '")
+    $arr_patterns_dir = join($patterns_dir, '\', \'')
     $opt_patterns_dir = "  patterns_dir => ['${arr_patterns_dir}']\n"
   }
 
   if $exclude_tags {
     validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, "', '")
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
@@ -299,7 +299,7 @@ define logstash::filter::grok(
     }
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }

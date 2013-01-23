@@ -73,7 +73,7 @@
 #
 # [*lines*]
 #   The lines to emit, in order. This option cannot be used with the
-#   'message' setting.  Example:  input {   generator {     lines =&gt; [ 
+#   'message' setting.  Example:  input {   generator {     lines =&gt; [
 #   "line 1",       "line 2",       "line 3"     ]   }    # Emit all lines
 #   3 times.   count =&gt; 3 }   The above will emit "line 1" then "line
 #   2" then "line", then "line 1", etc...
@@ -133,11 +133,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this input can be found at:
-#  http://logstash.net/docs/1.1.9/inputs/generator
+#  http://logstash.net/docs/1.1.10.dev/inputs/generator
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -162,13 +162,13 @@ define logstash::input::generator(
   #### Validate parameters
   if $lines {
     validate_array($lines)
-    $arr_lines = join($lines, "', '")
+    $arr_lines = join($lines, '\', \'')
     $opt_lines = "  lines => ['${arr_lines}']\n"
   }
 
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
@@ -215,17 +215,17 @@ define logstash::input::generator(
     }
   }
 
-  if $message_format { 
+  if $message_format {
     validate_string($message_format)
     $opt_message_format = "  message_format => \"${message_format}\"\n"
   }
 
-  if $message { 
+  if $message {
     validate_string($message)
     $opt_message = "  message => \"${message}\"\n"
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }

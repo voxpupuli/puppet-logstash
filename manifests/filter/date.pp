@@ -52,7 +52,7 @@
 #
 # [*match*]
 #   The date formats allowed are anything allowed by Joda-Time (java time
-#   library): You can see the docs for this format here: 
+#   library): You can see the docs for this format here:
 #   joda.time.format.DateTimeFormat  An array with field name first, and
 #   format patterns following, [ field, formats... ]  If your time field
 #   has multiple possible formats, you can do this:  match =&gt; [
@@ -65,7 +65,7 @@
 #   since epoch "UNIX_MS" - will parse unix time in milliseconds since
 #   epoch "TAI64N" - will parse tai64n time values For example, if you
 #   have a field 'logdate' and with a value that looks like 'Aug 13 2010
-#   00:03:44', you would use this configuration:  filter {   date {    
+#   00:03:44', you would use this configuration:  filter {   date {
 #   match =&gt; [ "logdate", "MMM dd YYYY HH:mm:ss" ]   } }
 #   Value type is array
 #   Default value: []
@@ -111,11 +111,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.9/filters/date
+#  http://logstash.net/docs/1.1.10.dev/filters/date
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -138,31 +138,31 @@ define logstash::filter::date(
   #### Validate parameters
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
   if $add_tag {
     validate_array($add_tag)
-    $arr_add_tag = join($add_tag, "', '")
+    $arr_add_tag = join($add_tag, '\', \'')
     $opt_add_tag = "  add_tag => ['${arr_add_tag}']\n"
   }
 
   if $exclude_tags {
     validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, "', '")
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if $remove_tag {
     validate_array($remove_tag)
-    $arr_remove_tag = join($remove_tag, "', '")
+    $arr_remove_tag = join($remove_tag, '\', \'')
     $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
   }
 
   if $match {
     validate_array($match)
-    $arr_match = join($match, "', '")
+    $arr_match = join($match, '\', \'')
     $opt_match = "  match => ['${arr_match}']\n"
   }
 
@@ -178,12 +178,12 @@ define logstash::filter::date(
     }
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $locale { 
+  if $locale {
     validate_string($locale)
     $opt_locale = "  locale => \"${locale}\"\n"
   }

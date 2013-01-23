@@ -15,11 +15,11 @@
 #   This variable is optional
 #
 # [*cache_xml_file*]
-#   The path to a GemFire client cache XML file.  Example:  
-#   &lt;client-cache&gt;    &lt;pool name="client-pool"&gt;       
-#   &lt;locator host="localhost" port="31331"/&gt;    &lt;/pool&gt;   
+#   The path to a GemFire client cache XML file.  Example:
+#   &lt;client-cache&gt;    &lt;pool name="client-pool"&gt;
+#   &lt;locator host="localhost" port="31331"/&gt;    &lt;/pool&gt;
 #   &lt;region name="Logstash"&gt;        &lt;region-attributes
-#   refid="CACHING_PROXY" pool-name="client-pool" &gt;       
+#   refid="CACHING_PROXY" pool-name="client-pool" &gt;
 #   &lt;/region-attributes&gt;    &lt;/region&gt;  &lt;/client-cache&gt;
 #   Value type is string
 #   Default value: nil
@@ -74,11 +74,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.9/outputs/gemfire
+#  http://logstash.net/docs/1.1.10.dev/outputs/gemfire
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -100,43 +100,43 @@ define logstash::output::gemfire(
   #### Validate parameters
   if $exclude_tags {
     validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, "', '")
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
   if $fields {
     validate_array($fields)
-    $arr_fields = join($fields, "', '")
+    $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $key_format { 
+  if $key_format {
     validate_string($key_format)
     $opt_key_format = "  key_format => \"${key_format}\"\n"
   }
 
-  if $cache_name { 
+  if $cache_name {
     validate_string($cache_name)
     $opt_cache_name = "  cache_name => \"${cache_name}\"\n"
   }
 
-  if $region_name { 
+  if $region_name {
     validate_string($region_name)
     $opt_region_name = "  region_name => \"${region_name}\"\n"
   }
 
-  if $cache_xml_file { 
+  if $cache_xml_file {
     validate_string($cache_xml_file)
     $opt_cache_xml_file = "  cache_xml_file => \"${cache_xml_file}\"\n"
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }

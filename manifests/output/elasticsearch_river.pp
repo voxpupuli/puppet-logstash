@@ -4,7 +4,7 @@
 #   'elasticsearch' output but improves performance by using an AMQP
 #   server, such as rabbitmq, to send data to elasticsearch.  Upon
 #   startup, this output will automatically contact an elasticsearch
-#   cluster and configure it to read from the queue to which we write. 
+#   cluster and configure it to read from the queue to which we write.
 #   You can learn more about elasticseasrch at http://elasticsearch.org
 #   More about the elasticsearch rabbitmq river plugin:
 #   https://github.com/elasticsearch/elasticsearch-river-rabbitmq/blob/master/README.md
@@ -167,11 +167,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.9/outputs/elasticsearch_river
+#  http://logstash.net/docs/1.1.10.dev/outputs/elasticsearch_river
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -208,19 +208,19 @@ define logstash::output::elasticsearch_river(
   #### Validate parameters
   if $fields {
     validate_array($fields)
-    $arr_fields = join($fields, "', '")
+    $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
   if $exclude_tags {
     validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, "', '")
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
@@ -279,62 +279,62 @@ define logstash::output::elasticsearch_river(
     }
   }
 
-  if $amqp_host { 
+  if $amqp_host {
     validate_string($amqp_host)
     $opt_amqp_host = "  amqp_host => \"${amqp_host}\"\n"
   }
 
-  if $exchange { 
+  if $exchange {
     validate_string($exchange)
     $opt_exchange = "  exchange => \"${exchange}\"\n"
   }
 
-  if $index { 
+  if $index {
     validate_string($index)
     $opt_index = "  index => \"${index}\"\n"
   }
 
-  if $index_type { 
+  if $index_type {
     validate_string($index_type)
     $opt_index_type = "  index_type => \"${index_type}\"\n"
   }
 
-  if $key { 
+  if $key {
     validate_string($key)
     $opt_key = "  key => \"${key}\"\n"
   }
 
-  if $password { 
+  if $password {
     validate_string($password)
     $opt_password = "  password => \"${password}\"\n"
   }
 
-  if $es_host { 
+  if $es_host {
     validate_string($es_host)
     $opt_es_host = "  es_host => \"${es_host}\"\n"
   }
 
-  if $queue { 
+  if $queue {
     validate_string($queue)
     $opt_queue = "  queue => \"${queue}\"\n"
   }
 
-  if $document_id { 
+  if $document_id {
     validate_string($document_id)
     $opt_document_id = "  document_id => \"${document_id}\"\n"
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $user { 
+  if $user {
     validate_string($user)
     $opt_user = "  user => \"${user}\"\n"
   }
 
-  if $vhost { 
+  if $vhost {
     validate_string($vhost)
     $opt_vhost = "  vhost => \"${vhost}\"\n"
   }

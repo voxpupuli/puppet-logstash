@@ -5,9 +5,9 @@
 #   server is not the same as the source host from where you want to send
 #   logs or alerts. If you only have one server, this output is probably
 #   overkill # for you, take a look at the 'nagios' output instead.  Here
-#   is a sample config using the nagios_nsca output:  output {  
-#   nagios_nsca {     # specify the hostname or ip of your nagios server  
-#   host =&gt; "nagios.example.com"      # specify the port to connect to 
+#   is a sample config using the nagios_nsca output:  output {
+#   nagios_nsca {     # specify the hostname or ip of your nagios server
+#   host =&gt; "nagios.example.com"      # specify the port to connect to
 #   port =&gt; 5667   } }
 #
 #
@@ -99,11 +99,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.9/outputs/nagios_nsca
+#  http://logstash.net/docs/1.1.10.dev/outputs/nagios_nsca
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -128,19 +128,19 @@ define logstash::output::nagios_nsca(
   #### Validate parameters
   if $exclude_tags {
     validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, "', '")
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if $fields {
     validate_array($fields)
-    $arr_fields = join($fields, "', '")
+    $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
@@ -152,37 +152,37 @@ define logstash::output::nagios_nsca(
     }
   }
 
-  if $nagios_status { 
+  if $nagios_status {
     validate_string($nagios_status)
     $opt_nagios_status = "  nagios_status => \"${nagios_status}\"\n"
   }
 
-  if $nagios_service { 
+  if $nagios_service {
     validate_string($nagios_service)
     $opt_nagios_service = "  nagios_service => \"${nagios_service}\"\n"
   }
 
-  if $nagios_host { 
+  if $nagios_host {
     validate_string($nagios_host)
     $opt_nagios_host = "  nagios_host => \"${nagios_host}\"\n"
   }
 
-  if $send_nsca_bin { 
+  if $send_nsca_bin {
     validate_string($send_nsca_bin)
     $opt_send_nsca_bin = "  send_nsca_bin => \"${send_nsca_bin}\"\n"
   }
 
-  if $send_nsca_config { 
+  if $send_nsca_config {
     validate_string($send_nsca_config)
     $opt_send_nsca_config = "  send_nsca_config => \"${send_nsca_config}\"\n"
   }
 
-  if $host { 
+  if $host {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }

@@ -68,7 +68,7 @@
 #
 # [*exclude*]
 #   Exclusions (matched against the filename, not full path). Globs are
-#   valid here, too. For example, if you have  path =&gt; "/var/log/*"  
+#   valid here, too. For example, if you have  path =&gt; "/var/log/*"
 #   you might want to exclude gzipped files:  exclude =&gt; "*.gz"
 #   Value type is array
 #   Default value: None
@@ -157,11 +157,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this input can be found at:
-#  http://logstash.net/docs/1.1.9/inputs/file
+#  http://logstash.net/docs/1.1.10.dev/inputs/file
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -189,19 +189,19 @@ define logstash::input::file(
   #### Validate parameters
   if $path {
     validate_array($path)
-    $arr_path = join($path, "', '")
+    $arr_path = join($path, '\', \'')
     $opt_path = "  path => ['${arr_path}']\n"
   }
 
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
   if $exclude {
     validate_array($exclude)
-    $arr_exclude = join($exclude, "', '")
+    $arr_exclude = join($exclude, '\', \'')
     $opt_exclude = "  exclude => ['${arr_exclude}']\n"
   }
 
@@ -264,17 +264,17 @@ define logstash::input::file(
     }
   }
 
-  if $message_format { 
+  if $message_format {
     validate_string($message_format)
     $opt_message_format = "  message_format => \"${message_format}\"\n"
   }
 
-  if $sincedb_path { 
+  if $sincedb_path {
     validate_string($sincedb_path)
     $opt_sincedb_path = "  sincedb_path => \"${sincedb_path}\"\n"
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }

@@ -52,7 +52,7 @@
 # [*riemann_event*]
 #   A Hash to set Riemann event fields
 #   (http://aphyr.github.com/riemann/concepts.html).  The following event
-#   fields are supported: description, state, metric, ttl, service 
+#   fields are supported: description, state, metric, ttl, service
 #   Example:  riemann {     riemann_event =&gt; [          "metric",
 #   "%{metric}",         "service", "%{service}"     ] }   metric and ttl
 #   values will be coerced to a floating point value. Values which cannot
@@ -92,11 +92,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.9/outputs/riemann
+#  http://logstash.net/docs/1.1.10.dev/outputs/riemann
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -120,19 +120,19 @@ define logstash::output::riemann(
   #### Validate parameters
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
   if $exclude_tags {
     validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, "', '")
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if $fields {
     validate_array($fields)
-    $arr_fields = join($fields, "', '")
+    $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
@@ -163,17 +163,17 @@ define logstash::output::riemann(
     }
   }
 
-  if $sender { 
+  if $sender {
     validate_string($sender)
     $opt_sender = "  sender => \"${sender}\"\n"
   }
 
-  if $host { 
+  if $host {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }

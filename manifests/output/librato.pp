@@ -16,7 +16,7 @@
 #   Annotations Registers an annotation with Librato The only required
 #   field is title and name. start_time and end_time will be set to
 #   event.unix_timestamp You can add any other optional annotation values
-#   as well. All values will be passed through event.sprintf  Example:  
+#   as well. All values will be passed through event.sprintf  Example:
 #   ["title":"Logstash event on %{@sourcehost}", "name":"logstashstream"]
 #   or   ["title":"Logstash event", "description":"%{@message}",
 #   "name":"logstash_stream"]
@@ -101,11 +101,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.9/outputs/librato
+#  http://logstash.net/docs/1.1.10.dev/outputs/librato
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -129,19 +129,19 @@ define logstash::output::librato(
   #### Validate parameters
   if $exclude_tags {
     validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, "', '")
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
   if $fields {
     validate_array($fields)
-    $arr_fields = join($fields, "', '")
+    $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
@@ -163,22 +163,22 @@ define logstash::output::librato(
     $opt_gauge = "  gauge => ${arr_gauge}\n"
   }
 
-  if $account_id { 
+  if $account_id {
     validate_string($account_id)
     $opt_account_id = "  account_id => \"${account_id}\"\n"
   }
 
-  if $batch_size { 
+  if $batch_size {
     validate_string($batch_size)
     $opt_batch_size = "  batch_size => \"${batch_size}\"\n"
   }
 
-  if $api_token { 
+  if $api_token {
     validate_string($api_token)
     $opt_api_token = "  api_token => \"${api_token}\"\n"
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }

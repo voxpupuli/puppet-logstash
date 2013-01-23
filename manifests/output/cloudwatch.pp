@@ -1,6 +1,6 @@
 # == Define: logstash::output::cloudwatch
 #
-#   This output lets you aggregate and send metric data to AWS CloudWatch 
+#   This output lets you aggregate and send metric data to AWS CloudWatch
 #   Summary:  This plugin is intended to be used on a logstash indexer
 #   agent (but that is not the only way, see below.)  In the intended
 #   scenario, one cloudwatch output plugin is configured, on the logstash
@@ -67,7 +67,7 @@
 #   This variable is optional
 #
 # [*field_dimensions*]
-#   The name of the field used to set the dimensions on an event metric 
+#   The name of the field used to set the dimensions on an event metric
 #   The field named here, if present in an event, must have an array of
 #   one or more key &amp; value pairs, for example...  add_field =&gt; [
 #   "CW_dimensions", "Environment", "CW_dimensions", "prod" ]   or,
@@ -88,7 +88,7 @@
 #   This variable is optional
 #
 # [*field_namespace*]
-#   The name of the field used to set a different namespace per event 
+#   The name of the field used to set a different namespace per event
 #   Note: Only one namespace can be sent to CloudWatch per API call so
 #   setting different namespaces will increase the number of API calls and
 #   those cost money.
@@ -212,11 +212,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.9/outputs/cloudwatch
+#  http://logstash.net/docs/1.1.10.dev/outputs/cloudwatch
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -249,19 +249,19 @@ define logstash::output::cloudwatch(
   #### Validate parameters
   if $fields {
     validate_array($fields)
-    $arr_fields = join($fields, "', '")
+    $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
   if $exclude_tags {
     validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, "', '")
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
@@ -295,62 +295,62 @@ define logstash::output::cloudwatch(
     }
   }
 
-  if $metricname { 
+  if $metricname {
     validate_string($metricname)
     $opt_metricname = "  metricname => \"${metricname}\"\n"
   }
 
-  if $field_unit { 
+  if $field_unit {
     validate_string($field_unit)
     $opt_field_unit = "  field_unit => \"${field_unit}\"\n"
   }
 
-  if $field_value { 
+  if $field_value {
     validate_string($field_value)
     $opt_field_value = "  field_value => \"${field_value}\"\n"
   }
 
-  if $namespace { 
+  if $namespace {
     validate_string($namespace)
     $opt_namespace = "  namespace => \"${namespace}\"\n"
   }
 
-  if $field_namespace { 
+  if $field_namespace {
     validate_string($field_namespace)
     $opt_field_namespace = "  field_namespace => \"${field_namespace}\"\n"
   }
 
-  if $field_metricname { 
+  if $field_metricname {
     validate_string($field_metricname)
     $opt_field_metricname = "  field_metricname => \"${field_metricname}\"\n"
   }
 
-  if $secret_key { 
+  if $secret_key {
     validate_string($secret_key)
     $opt_secret_key = "  secret_key => \"${secret_key}\"\n"
   }
 
-  if $field_dimensions { 
+  if $field_dimensions {
     validate_string($field_dimensions)
     $opt_field_dimensions = "  field_dimensions => \"${field_dimensions}\"\n"
   }
 
-  if $timeframe { 
+  if $timeframe {
     validate_string($timeframe)
     $opt_timeframe = "  timeframe => \"${timeframe}\"\n"
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $access_key { 
+  if $access_key {
     validate_string($access_key)
     $opt_access_key = "  access_key => \"${access_key}\"\n"
   }
 
-  if $value { 
+  if $value {
     validate_string($value)
     $opt_value = "  value => \"${value}\"\n"
   }

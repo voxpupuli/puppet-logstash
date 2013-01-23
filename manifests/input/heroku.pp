@@ -1,7 +1,7 @@
 # == Define: logstash::input::heroku
 #
 #   Stream events from a heroku app's logs.  This will read events in a
-#   manner similar to how the heroku logs -t command fetches logs. 
+#   manner similar to how the heroku logs -t command fetches logs.
 #   Recommended filters:  filter {   grok {     pattern =&gt;
 #   "^%{TIMESTAMP_ISO8601:timestamp}
 #   %{WORD:component}\[%{WORD:process}(?:\.%{INT:instance:int})?\]:
@@ -111,11 +111,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this input can be found at:
-#  http://logstash.net/docs/1.1.9/inputs/heroku
+#  http://logstash.net/docs/1.1.10.dev/inputs/heroku
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -137,7 +137,7 @@ define logstash::input::heroku(
   #### Validate parameters
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
@@ -168,17 +168,17 @@ define logstash::input::heroku(
     }
   }
 
-  if $message_format { 
+  if $message_format {
     validate_string($message_format)
     $opt_message_format = "  message_format => \"${message_format}\"\n"
   }
 
-  if $app { 
+  if $app {
     validate_string($app)
     $opt_app = "  app => \"${app}\"\n"
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }

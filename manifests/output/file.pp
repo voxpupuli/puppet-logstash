@@ -35,7 +35,7 @@
 # [*max_size*]
 #   The maximum size of file to write. When the file exceeds this
 #   threshold, it will be rotated to the current filename + ".1" If that
-#   file already exists, the previous .1 will shift to .2 and so forth. 
+#   file already exists, the previous .1 will shift to .2 and so forth.
 #   NOT YET SUPPORTED
 #   Value type is string
 #   Default value: None
@@ -81,11 +81,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.9/outputs/file
+#  http://logstash.net/docs/1.1.10.dev/outputs/file
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -108,19 +108,19 @@ define logstash::output::file(
   #### Validate parameters
   if $exclude_tags {
     validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, "', '")
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if $fields {
     validate_array($fields)
-    $arr_fields = join($fields, "', '")
+    $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
@@ -137,22 +137,22 @@ define logstash::output::file(
     }
   }
 
-  if $max_size { 
+  if $max_size {
     validate_string($max_size)
     $opt_max_size = "  max_size => \"${max_size}\"\n"
   }
 
-  if $path { 
+  if $path {
     validate_string($path)
     $opt_path = "  path => \"${path}\"\n"
   }
 
-  if $message_format { 
+  if $message_format {
     validate_string($message_format)
     $opt_message_format = "  message_format => \"${message_format}\"\n"
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }

@@ -92,11 +92,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.9/outputs/boundary
+#  http://logstash.net/docs/1.1.10.dev/outputs/boundary
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -121,59 +121,59 @@ define logstash::output::boundary(
   #### Validate parameters
   if $exclude_tags {
     validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, "', '")
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
   if $btags {
     validate_array($btags)
-    $arr_btags = join($btags, "', '")
+    $arr_btags = join($btags, '\', \'')
     $opt_btags = "  btags => ['${arr_btags}']\n"
   }
 
   if $fields {
     validate_array($fields)
-    $arr_fields = join($fields, "', '")
+    $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $api_key { 
+  if $api_key {
     validate_string($api_key)
     $opt_api_key = "  api_key => \"${api_key}\"\n"
   }
 
-  if $end_time { 
+  if $end_time {
     validate_string($end_time)
     $opt_end_time = "  end_time => \"${end_time}\"\n"
   }
 
-  if $btype { 
+  if $btype {
     validate_string($btype)
     $opt_btype = "  btype => \"${btype}\"\n"
   }
 
-  if $org_id { 
+  if $org_id {
     validate_string($org_id)
     $opt_org_id = "  org_id => \"${org_id}\"\n"
   }
 
-  if $start_time { 
+  if $start_time {
     validate_string($start_time)
     $opt_start_time = "  start_time => \"${start_time}\"\n"
   }
 
-  if $bsubtype { 
+  if $bsubtype {
     validate_string($bsubtype)
     $opt_bsubtype = "  bsubtype => \"${bsubtype}\"\n"
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }

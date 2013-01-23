@@ -154,11 +154,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this input can be found at:
-#  http://logstash.net/docs/1.1.9/inputs/zeromq
+#  http://logstash.net/docs/1.1.10.dev/inputs/zeromq
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -185,19 +185,19 @@ define logstash::input::zeromq(
   #### Validate parameters
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
   if $address {
     validate_array($address)
-    $arr_address = join($address, "', '")
+    $arr_address = join($address, '\', \'')
     $opt_address = "  address => ['${arr_address}']\n"
   }
 
   if $topic {
     validate_array($topic)
-    $arr_topic = join($topic, "', '")
+    $arr_topic = join($topic, '\', \'')
     $opt_topic = "  topic => ['${arr_topic}']\n"
   }
 
@@ -250,17 +250,17 @@ define logstash::input::zeromq(
     }
   }
 
-  if $sender { 
+  if $sender {
     validate_string($sender)
     $opt_sender = "  sender => \"${sender}\"\n"
   }
 
-  if $message_format { 
+  if $message_format {
     validate_string($message_format)
     $opt_message_format = "  message_format => \"${message_format}\"\n"
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }

@@ -101,11 +101,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.9/filters/syslog_pri
+#  http://logstash.net/docs/1.1.10.dev/filters/syslog_pri
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -130,37 +130,37 @@ define logstash::filter::syslog_pri(
   #### Validate parameters
   if $severity_labels {
     validate_array($severity_labels)
-    $arr_severity_labels = join($severity_labels, "', '")
+    $arr_severity_labels = join($severity_labels, '\', \'')
     $opt_severity_labels = "  severity_labels => ['${arr_severity_labels}']\n"
   }
 
   if $add_tag {
     validate_array($add_tag)
-    $arr_add_tag = join($add_tag, "', '")
+    $arr_add_tag = join($add_tag, '\', \'')
     $opt_add_tag = "  add_tag => ['${arr_add_tag}']\n"
   }
 
   if $exclude_tags {
     validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, "', '")
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
   if $remove_tag {
     validate_array($remove_tag)
-    $arr_remove_tag = join($remove_tag, "', '")
+    $arr_remove_tag = join($remove_tag, '\', \'')
     $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
   }
 
   if $facility_labels {
     validate_array($facility_labels)
-    $arr_facility_labels = join($facility_labels, "', '")
+    $arr_facility_labels = join($facility_labels, '\', \'')
     $opt_facility_labels = "  facility_labels => ['${arr_facility_labels}']\n"
   }
 
@@ -181,12 +181,12 @@ define logstash::filter::syslog_pri(
     }
   }
 
-  if $syslog_pri_field_name { 
+  if $syslog_pri_field_name {
     validate_string($syslog_pri_field_name)
     $opt_syslog_pri_field_name = "  syslog_pri_field_name => \"${syslog_pri_field_name}\"\n"
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }

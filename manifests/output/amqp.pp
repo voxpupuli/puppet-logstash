@@ -126,11 +126,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.9/outputs/amqp
+#  http://logstash.net/docs/1.1.10.dev/outputs/amqp
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -161,19 +161,19 @@ define logstash::output::amqp(
   #### Validate parameters
   if $fields {
     validate_array($fields)
-    $arr_fields = join($fields, "', '")
+    $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
   if $exclude_tags {
     validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, "', '")
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
@@ -218,37 +218,37 @@ define logstash::output::amqp(
     }
   }
 
-  if $password { 
+  if $password {
     validate_string($password)
     $opt_password = "  password => \"${password}\"\n"
   }
 
-  if $key { 
+  if $key {
     validate_string($key)
     $opt_key = "  key => \"${key}\"\n"
   }
 
-  if $host { 
+  if $host {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $user { 
+  if $user {
     validate_string($user)
     $opt_user = "  user => \"${user}\"\n"
   }
 
-  if $exchange { 
+  if $exchange {
     validate_string($exchange)
     $opt_exchange = "  exchange => \"${exchange}\"\n"
   }
 
-  if $vhost { 
+  if $vhost {
     validate_string($vhost)
     $opt_vhost = "  vhost => \"${vhost}\"\n"
   }

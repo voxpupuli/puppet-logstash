@@ -113,11 +113,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.9/outputs/riak
+#  http://logstash.net/docs/1.1.10.dev/outputs/riak
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -144,31 +144,31 @@ define logstash::output::riak(
   #### Validate parameters
   if $bucket {
     validate_array($bucket)
-    $arr_bucket = join($bucket, "', '")
+    $arr_bucket = join($bucket, '\', \'')
     $opt_bucket = "  bucket => ['${arr_bucket}']\n"
   }
 
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
   if $exclude_tags {
     validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, "', '")
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if $fields {
     validate_array($fields)
-    $arr_fields = join($fields, "', '")
+    $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
   if $indices {
     validate_array($indices)
-    $arr_indices = join($indices, "', '")
+    $arr_indices = join($indices, '\', \'')
     $opt_indices = "  indices => ['${arr_indices}']\n"
   }
 
@@ -208,12 +208,12 @@ define logstash::output::riak(
     }
   }
 
-  if $key_name { 
+  if $key_name {
     validate_string($key_name)
     $opt_key_name = "  key_name => \"${key_name}\"\n"
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }

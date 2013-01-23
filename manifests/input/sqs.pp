@@ -14,13 +14,13 @@
 #   sqs:DeleteMessageBatch sqs:GetQueueAttributes sqs:GetQueueUrl
 #   sqs:ListQueues sqs:ReceiveMessage Typically, you should setup an IAM
 #   policy, create a user and apply the IAM policy to the user. A sample
-#   policy is as follows:  {   "Statement": [     {       "Action": [     
-#   "sqs:ChangeMessageVisibility",        
-#   "sqs:ChangeMessageVisibilityBatch",         "sqs:GetQueueAttributes", 
-#   "sqs:GetQueueUrl",         "sqs:ListQueues",        
-#   "sqs:SendMessage",         "sqs:SendMessageBatch"       ],      
-#   "Effect": "Allow",       "Resource": [        
-#   "arn:aws:sqs:us-east-1:123456789012:Logstash"       ]     }   ] }   
+#   policy is as follows:  {   "Statement": [     {       "Action": [
+#   "sqs:ChangeMessageVisibility",
+#   "sqs:ChangeMessageVisibilityBatch",         "sqs:GetQueueAttributes",
+#   "sqs:GetQueueUrl",         "sqs:ListQueues",
+#   "sqs:SendMessage",         "sqs:SendMessageBatch"       ],
+#   "Effect": "Allow",       "Resource": [
+#   "arn:aws:sqs:us-east-1:123456789012:Logstash"       ]     }   ] }
 #   See http://aws.amazon.com/iam/ for more details on setting up AWS
 #   identities.
 #
@@ -147,11 +147,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this input can be found at:
-#  http://logstash.net/docs/1.1.9/inputs/sqs
+#  http://logstash.net/docs/1.1.10.dev/inputs/sqs
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -176,7 +176,7 @@ define logstash::input::sqs(
   #### Validate parameters
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
@@ -215,27 +215,27 @@ define logstash::input::sqs(
     }
   }
 
-  if $message_format { 
+  if $message_format {
     validate_string($message_format)
     $opt_message_format = "  message_format => \"${message_format}\"\n"
   }
 
-  if $secret_key { 
+  if $secret_key {
     validate_string($secret_key)
     $opt_secret_key = "  secret_key => \"${secret_key}\"\n"
   }
 
-  if $queue { 
+  if $queue {
     validate_string($queue)
     $opt_queue = "  queue => \"${queue}\"\n"
   }
 
-  if $access_key { 
+  if $access_key {
     validate_string($access_key)
     $opt_access_key = "  access_key => \"${access_key}\"\n"
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }

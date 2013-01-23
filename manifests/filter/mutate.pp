@@ -1,7 +1,7 @@
 # == Define: logstash::filter::mutate
 #
 #   The mutate filter allows you to do general mutations to fields. You
-#   can rename, remove, replace, and modify fields in your events. 
+#   can rename, remove, replace, and modify fields in your events.
 #   TODO(sissel): Support regexp replacements like String#gsub ?
 #
 #
@@ -31,7 +31,7 @@
 #   Convert a field's value to a different type, like turning a string to
 #   an integer. If the field value is an array, all members will be
 #   converted. If the field is a hash, no action will be taken.  Valid
-#   conversion targets are: integer, float, string  Example:  filter {  
+#   conversion targets are: integer, float, string  Example:  filter {
 #   mutate {     convert =&gt; [ "fieldname", "integer" ]   } }
 #   Value type is hash
 #   Default value: None
@@ -46,7 +46,7 @@
 #
 # [*gsub*]
 #   Convert a string field by applying a regular expression and a
-#   replacement if the field is not a string, no action will be taken 
+#   replacement if the field is not a string, no action will be taken
 #   This configuration takes an array consisting of 3 elements per
 #   field/substitution.  be aware of escaping any backslash in the config
 #   file  for example:  filter {   mutate {     gsub =&gt; [       #
@@ -66,7 +66,7 @@
 #   This variable is optional
 #
 # [*lowercase*]
-#   Convert a string to its lowercase equivalent  Example:  filter {  
+#   Convert a string to its lowercase equivalent  Example:  filter {
 #   mutate {     lowercase =&gt; [ "fieldname" ]   } }
 #   Value type is array
 #   Default value: None
@@ -100,7 +100,7 @@
 #
 # [*replace*]
 #   Replace a field with a new value. The new value can include %{foo}
-#   strings to help you build a new value from other parts of the event. 
+#   strings to help you build a new value from other parts of the event.
 #   Example:  filter {   mutate {     replace =&gt; [ "@message",
 #   "%{source_host}: My new message" ]   } }
 #   Value type is hash
@@ -138,7 +138,7 @@
 #   This variable is optional
 #
 # [*uppercase*]
-#   Convert a string to its uppercase equivalent  Example:  filter {  
+#   Convert a string to its uppercase equivalent  Example:  filter {
 #   mutate {     uppercase =&gt; [ "fieldname" ]   } }
 #   Value type is array
 #   Default value: None
@@ -158,11 +158,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.9/filters/mutate
+#  http://logstash.net/docs/1.1.10.dev/filters/mutate
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -193,55 +193,55 @@ define logstash::filter::mutate(
   #### Validate parameters
   if $remove_tag {
     validate_array($remove_tag)
-    $arr_remove_tag = join($remove_tag, "', '")
+    $arr_remove_tag = join($remove_tag, '\', \'')
     $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
   }
 
   if $add_tag {
     validate_array($add_tag)
-    $arr_add_tag = join($add_tag, "', '")
+    $arr_add_tag = join($add_tag, '\', \'')
     $opt_add_tag = "  add_tag => ['${arr_add_tag}']\n"
   }
 
   if $uppercase {
     validate_array($uppercase)
-    $arr_uppercase = join($uppercase, "', '")
+    $arr_uppercase = join($uppercase, '\', \'')
     $opt_uppercase = "  uppercase => ['${arr_uppercase}']\n"
   }
 
   if $exclude_tags {
     validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, "', '")
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if $gsub {
     validate_array($gsub)
-    $arr_gsub = join($gsub, "', '")
+    $arr_gsub = join($gsub, '\', \'')
     $opt_gsub = "  gsub => ['${arr_gsub}']\n"
   }
 
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
   if $lowercase {
     validate_array($lowercase)
-    $arr_lowercase = join($lowercase, "', '")
+    $arr_lowercase = join($lowercase, '\', \'')
     $opt_lowercase = "  lowercase => ['${arr_lowercase}']\n"
   }
 
   if $remove {
     validate_array($remove)
-    $arr_remove = join($remove, "', '")
+    $arr_remove = join($remove, '\', \'')
     $opt_remove = "  remove => ['${arr_remove}']\n"
   }
 
   if $strip {
     validate_array($strip)
-    $arr_strip = join($strip, "', '")
+    $arr_strip = join($strip, '\', \'')
     $opt_strip = "  strip => ['${arr_strip}']\n"
   }
 
@@ -287,7 +287,7 @@ define logstash::filter::mutate(
     }
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }

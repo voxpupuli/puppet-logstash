@@ -59,7 +59,7 @@
 #
 # [*host*]
 #   The hostname(s) of your redis server(s). Ports may be specified on any
-#   hostname, which will override the global port config.  For example: 
+#   hostname, which will override the global port config.  For example:
 #   "127.0.0.1" ["127.0.0.1", "127.0.0.2"] ["127.0.0.1:6380", "127.0.0.1"]
 #   Value type is array
 #   Default value: ["127.0.0.1"]
@@ -120,11 +120,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.9/outputs/redis
+#  http://logstash.net/docs/1.1.10.dev/outputs/redis
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -153,25 +153,25 @@ define logstash::output::redis(
   #### Validate parameters
   if $fields {
     validate_array($fields)
-    $arr_fields = join($fields, "', '")
+    $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
   if $host {
     validate_array($host)
-    $arr_host = join($host, "', '")
+    $arr_host = join($host, '\', \'')
     $opt_host = "  host => ['${arr_host}']\n"
   }
 
   if $exclude_tags {
     validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, "', '")
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
@@ -233,17 +233,17 @@ define logstash::output::redis(
     }
   }
 
-  if $password { 
+  if $password {
     validate_string($password)
     $opt_password = "  password => \"${password}\"\n"
   }
 
-  if $key { 
+  if $key {
     validate_string($key)
     $opt_key = "  key => \"${key}\"\n"
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }

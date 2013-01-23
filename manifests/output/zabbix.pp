@@ -11,9 +11,9 @@
 #   pattern to send events to zabbix, so use grep to match and also to add
 #   the required fields.   filter {    grep {      type =&gt;
 #   "linux-syslog"      match =&gt; [ "@message", "(error|ERROR|CRITICAL)"
-#   ]      add_tag =&gt; [ "zabbix-sender" ]      add_field =&gt; [       
-#   "zabbix_host", "%{@source_host}",        "zabbix_item", "item.key"    
-#   ]   } }  output {   zabbix {     # only process events with this tag  
+#   ]      add_tag =&gt; [ "zabbix-sender" ]      add_field =&gt; [
+#   "zabbix_host", "%{@source_host}",        "zabbix_item", "item.key"
+#   ]   } }  output {   zabbix {     # only process events with this tag
 #   tags =&gt; "zabbix-sender"      # specify the hostname or ip of your
 #   zabbix server     # (defaults to localhost)     host =&gt; "localhost"
 #   # specify the port to connect to (default 10051)     port =&gt;
@@ -76,11 +76,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.9/outputs/zabbix
+#  http://logstash.net/docs/1.1.10.dev/outputs/zabbix
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -101,19 +101,19 @@ define logstash::output::zabbix(
   #### Validate parameters
   if $exclude_tags {
     validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, "', '")
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if $fields {
     validate_array($fields)
-    $arr_fields = join($fields, "', '")
+    $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
@@ -125,17 +125,17 @@ define logstash::output::zabbix(
     }
   }
 
-  if $host { 
+  if $host {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $zabbix_sender { 
+  if $zabbix_sender {
     validate_string($zabbix_sender)
     $opt_zabbix_sender = "  zabbix_sender => \"${zabbix_sender}\"\n"
   }

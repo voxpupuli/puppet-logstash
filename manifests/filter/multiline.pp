@@ -6,7 +6,7 @@
 #   filter was to allow joining of multi-line messages from files into a
 #   single event. For example - joining java exception and stacktrace
 #   messages into a single event.  TODO(sissel): Document any issues? The
-#   config looks like this:  filter {   multiline {     type =&gt; "type" 
+#   config looks like this:  filter {   multiline {     type =&gt; "type"
 #   pattern =&gt; "pattern, a regexp"     negate =&gt; boolean     what
 #   =&gt; "previous" or "next"   } }   The 'regexp' should match what you
 #   believe to be an indicator that the field is part of a multi-line
@@ -16,12 +16,12 @@
 #   will constitute a match of the multiline filter and the what will be
 #   applied. (vice-versa is also true)  For example, java stack traces are
 #   multiline and usually have the message starting at the far-left, then
-#   each subsequent line indented. Do this:  filter {   multiline {    
+#   each subsequent line indented. Do this:  filter {   multiline {
 #   type =&gt; "somefiletype"     pattern =&gt; "^\s"     what =&gt;
 #   "previous"   } }   This says that any line starting with whitespace
 #   belongs to the previous line.  Another example is C line continuations
 #   (backslash). Here's how to do that:  filter {   multiline {     type
-#   =&gt; "somefiletype "     pattern =&gt; "\\$"     what =&gt; "next"  
+#   =&gt; "somefiletype "     pattern =&gt; "\\$"     what =&gt; "next"
 #   } }
 #
 #
@@ -138,11 +138,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.9/filters/multiline
+#  http://logstash.net/docs/1.1.10.dev/filters/multiline
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -168,31 +168,31 @@ define logstash::filter::multiline(
   #### Validate parameters
   if $remove_tag {
     validate_array($remove_tag)
-    $arr_remove_tag = join($remove_tag, "', '")
+    $arr_remove_tag = join($remove_tag, '\', \'')
     $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
   }
 
   if $add_tag {
     validate_array($add_tag)
-    $arr_add_tag = join($add_tag, "', '")
+    $arr_add_tag = join($add_tag, '\', \'')
     $opt_add_tag = "  add_tag => ['${arr_add_tag}']\n"
   }
 
   if $exclude_tags {
     validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, "', '")
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
   if $patterns_dir {
     validate_array($patterns_dir)
-    $arr_patterns_dir = join($patterns_dir, "', '")
+    $arr_patterns_dir = join($patterns_dir, '\', \'')
     $opt_patterns_dir = "  patterns_dir => ['${arr_patterns_dir}']\n"
   }
 
@@ -221,17 +221,17 @@ define logstash::filter::multiline(
     }
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $pattern { 
+  if $pattern {
     validate_string($pattern)
     $opt_pattern = "  pattern => \"${pattern}\"\n"
   }
 
-  if $stream_identity { 
+  if $stream_identity {
     validate_string($stream_identity)
     $opt_stream_identity = "  stream_identity => \"${stream_identity}\"\n"
   }

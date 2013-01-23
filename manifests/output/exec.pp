@@ -1,6 +1,6 @@
 # == Define: logstash::output::exec
 #
-#   This output will run a command for any matching event.  Example: 
+#   This output will run a command for any matching event.  Example:
 #   output {   exec {     type =&gt; abuse     command =&gt; "iptables -A
 #   INPUT -s %{clientip} -j DROP"   } }   Run subprocesses via system ruby
 #   function  WARNING: if you want it non-blocking you should use &amp; or
@@ -53,11 +53,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.9/outputs/exec
+#  http://logstash.net/docs/1.1.10.dev/outputs/exec
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -76,28 +76,28 @@ define logstash::output::exec(
   #### Validate parameters
   if $fields {
     validate_array($fields)
-    $arr_fields = join($fields, "', '")
+    $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
   if $exclude_tags {
     validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, "', '")
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $command { 
+  if $command {
     validate_string($command)
     $opt_command = "  command => \"${command}\"\n"
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }

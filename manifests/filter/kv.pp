@@ -34,8 +34,8 @@
 #   This variable is optional
 #
 # [*container*]
-#   The name of the container to put all of the key-value pairs into 
-#   Example, to place all keys into container kv:  filter { kv { conatiner
+#   The name of the container to put all of the key-value pairs into
+#   Example, to place all keys into container kv:  filter { kv { container
 #   =&gt; "kv" } }
 #   Value type is string
 #   Default value: "@fields"
@@ -52,7 +52,7 @@
 #   A string of characters to use as delimiters for parsing out key-value
 #   pairs.  Example with URL Query Strings  Example, to split out the args
 #   from a url query string such as
-#   '?pin=12345~0&amp;d=123&amp;e=foo@bar.com&amp;oq=bobo&amp;ss=12345': 
+#   '?pin=12345~0&amp;d=123&amp;e=foo@bar.com&amp;oq=bobo&amp;ss=12345':
 #   filter {   kv {     field_split =&gt; "&amp;?"    } }   The above
 #   splits on both "&amp;" and "?" characters, giving you the following
 #   fields:  pin: 12345~0 d: 123 e: foo@bar.com oq: bobo ss: 12345
@@ -130,11 +130,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.9/filters/kv
+#  http://logstash.net/docs/1.1.10.dev/filters/kv
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -161,31 +161,31 @@ define logstash::filter::kv(
   #### Validate parameters
   if $fields {
     validate_array($fields)
-    $arr_fields = join($fields, "', '")
+    $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
   if $add_tag {
     validate_array($add_tag)
-    $arr_add_tag = join($add_tag, "', '")
+    $arr_add_tag = join($add_tag, '\', \'')
     $opt_add_tag = "  add_tag => ['${arr_add_tag}']\n"
   }
 
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
   if $remove_tag {
     validate_array($remove_tag)
-    $arr_remove_tag = join($remove_tag, "', '")
+    $arr_remove_tag = join($remove_tag, '\', \'')
     $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
   }
 
   if $exclude_tags {
     validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, "', '")
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
@@ -201,32 +201,32 @@ define logstash::filter::kv(
     }
   }
 
-  if $field_split { 
+  if $field_split {
     validate_string($field_split)
     $opt_field_split = "  field_split => \"${field_split}\"\n"
   }
 
-  if $container { 
+  if $container {
     validate_string($container)
     $opt_container = "  container => \"${container}\"\n"
   }
 
-  if $trim { 
+  if $trim {
     validate_string($trim)
     $opt_trim = "  trim => \"${trim}\"\n"
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $value_split { 
+  if $value_split {
     validate_string($value_split)
     $opt_value_split = "  value_split => \"${value_split}\"\n"
   }
 
-  if $prefix { 
+  if $prefix {
     validate_string($prefix)
     $opt_prefix = "  prefix => \"${prefix}\"\n"
   }

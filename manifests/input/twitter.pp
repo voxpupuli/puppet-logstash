@@ -117,11 +117,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this input can be found at:
-#  http://logstash.net/docs/1.1.9/inputs/twitter
+#  http://logstash.net/docs/1.1.10.dev/inputs/twitter
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -145,13 +145,13 @@ define logstash::input::twitter(
   #### Validate parameters
   if $keywords {
     validate_array($keywords)
-    $arr_keywords = join($keywords, "', '")
+    $arr_keywords = join($keywords, '\', \'')
     $opt_keywords = "  keywords => ['${arr_keywords}']\n"
   }
 
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
@@ -182,22 +182,22 @@ define logstash::input::twitter(
     }
   }
 
-  if $password { 
+  if $password {
     validate_string($password)
     $opt_password = "  password => \"${password}\"\n"
   }
 
-  if $message_format { 
+  if $message_format {
     validate_string($message_format)
     $opt_message_format = "  message_format => \"${message_format}\"\n"
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $user { 
+  if $user {
     validate_string($user)
     $opt_user = "  user => \"${user}\"\n"
   }

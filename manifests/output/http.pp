@@ -70,7 +70,7 @@
 #   This variable is optional
 #
 # [*url*]
-#   This output lets you PUT or POST events to a generic HTTP(S) endpoint 
+#   This output lets you PUT or POST events to a generic HTTP(S) endpoint
 #   Additionally, you are given the option to customize the headers sent
 #   as well as basic customization of the event json itself. URL to use
 #   Value type is string
@@ -92,11 +92,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.9/outputs/http
+#  http://logstash.net/docs/1.1.10.dev/outputs/http
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -121,19 +121,19 @@ define logstash::output::http(
   #### Validate parameters
   if $fields {
     validate_array($fields)
-    $arr_fields = join($fields, "', '")
+    $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
   if $exclude_tags {
     validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, "', '")
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
@@ -170,17 +170,17 @@ define logstash::output::http(
     }
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $url { 
+  if $url {
     validate_string($url)
     $opt_url = "  url => \"${url}\"\n"
   }
 
-  if $content_type { 
+  if $content_type {
     validate_string($content_type)
     $opt_content_type = "  content_type => \"${content_type}\"\n"
   }

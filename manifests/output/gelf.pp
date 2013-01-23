@@ -143,11 +143,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.9/outputs/gelf
+#  http://logstash.net/docs/1.1.10.dev/outputs/gelf
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -178,31 +178,31 @@ define logstash::output::gelf(
   #### Validate parameters
   if $ignore_metadata {
     validate_array($ignore_metadata)
-    $arr_ignore_metadata = join($ignore_metadata, "', '")
+    $arr_ignore_metadata = join($ignore_metadata, '\', \'')
     $opt_ignore_metadata = "  ignore_metadata => ['${arr_ignore_metadata}']\n"
   }
 
   if $level {
     validate_array($level)
-    $arr_level = join($level, "', '")
+    $arr_level = join($level, '\', \'')
     $opt_level = "  level => ['${arr_level}']\n"
   }
 
   if $exclude_tags {
     validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, "', '")
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if $fields {
     validate_array($fields)
-    $arr_fields = join($fields, "', '")
+    $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
@@ -233,42 +233,42 @@ define logstash::output::gelf(
     }
   }
 
-  if $sender { 
+  if $sender {
     validate_string($sender)
     $opt_sender = "  sender => \"${sender}\"\n"
   }
 
-  if $line { 
+  if $line {
     validate_string($line)
     $opt_line = "  line => \"${line}\"\n"
   }
 
-  if $host { 
+  if $host {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
   }
 
-  if $full_message { 
+  if $full_message {
     validate_string($full_message)
     $opt_full_message = "  full_message => \"${full_message}\"\n"
   }
 
-  if $file { 
+  if $file {
     validate_string($file)
     $opt_file = "  file => \"${file}\"\n"
   }
 
-  if $short_message { 
+  if $short_message {
     validate_string($short_message)
     $opt_short_message = "  short_message => \"${short_message}\"\n"
   }
 
-  if $facility { 
+  if $facility {
     validate_string($facility)
     $opt_facility = "  facility => \"${facility}\"\n"
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }

@@ -22,12 +22,12 @@
 #   This variable is optional
 #
 # [*cache_xml_file*]
-#   The path to a GemFire client cache XML file.  Example:  
+#   The path to a GemFire client cache XML file.  Example:
 #   &lt;client-cache&gt;    &lt;pool name="client-pool"
-#   subscription-enabled="true" subscription-redundancy="1"&gt;       
-#   &lt;locator host="localhost" port="31331"/&gt;    &lt;/pool&gt;   
+#   subscription-enabled="true" subscription-redundancy="1"&gt;
+#   &lt;locator host="localhost" port="31331"/&gt;    &lt;/pool&gt;
 #   &lt;region name="Logstash"&gt;        &lt;region-attributes
-#   refid="CACHING_PROXY" pool-name="client-pool" &gt;       
+#   refid="CACHING_PROXY" pool-name="client-pool" &gt;
 #   &lt;/region-attributes&gt;    &lt;/region&gt;  &lt;/client-cache&gt;
 #   Value type is string
 #   Default value: nil
@@ -157,11 +157,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this input can be found at:
-#  http://logstash.net/docs/1.1.9/inputs/gemfire
+#  http://logstash.net/docs/1.1.10.dev/inputs/gemfire
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -189,7 +189,7 @@ define logstash::input::gemfire(
   #### Validate parameters
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
@@ -228,42 +228,42 @@ define logstash::input::gemfire(
     }
   }
 
-  if $message_format { 
+  if $message_format {
     validate_string($message_format)
     $opt_message_format = "  message_format => \"${message_format}\"\n"
   }
 
-  if $interest_regexp { 
+  if $interest_regexp {
     validate_string($interest_regexp)
     $opt_interest_regexp = "  interest_regexp => \"${interest_regexp}\"\n"
   }
 
-  if $query { 
+  if $query {
     validate_string($query)
     $opt_query = "  query => \"${query}\"\n"
   }
 
-  if $region_name { 
+  if $region_name {
     validate_string($region_name)
     $opt_region_name = "  region_name => \"${region_name}\"\n"
   }
 
-  if $serialization { 
+  if $serialization {
     validate_string($serialization)
     $opt_serialization = "  serialization => \"${serialization}\"\n"
   }
 
-  if $cache_xml_file { 
+  if $cache_xml_file {
     validate_string($cache_xml_file)
     $opt_cache_xml_file = "  cache_xml_file => \"${cache_xml_file}\"\n"
   }
 
-  if $cache_name { 
+  if $cache_name {
     validate_string($cache_name)
     $opt_cache_name = "  cache_name => \"${cache_name}\"\n"
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }

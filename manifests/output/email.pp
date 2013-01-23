@@ -70,23 +70,23 @@
 #   the options to use: smtp: address, port, enablestarttlsauto,
 #   user_name, password, authentication(bool), domain sendmail: location,
 #   arguments If you do not specify anything, you will get the following
-#   equivalent code set in every new mail object:    Mail.defaults do 
-#   delivery_method :smtp, { :address              =&gt; "localhost",     
-#   :port                 =&gt; 25,                          :domain      
-#   =&gt; 'localhost.localdomain',                          :user_name    
-#   =&gt; nil,                          :password             =&gt; nil,  
-#   :authentication       =&gt; nil,(plain, login and cram_md5)           
+#   equivalent code set in every new mail object:    Mail.defaults do
+#   delivery_method :smtp, { :address              =&gt; "localhost",
+#   :port                 =&gt; 25,                          :domain
+#   =&gt; 'localhost.localdomain',                          :user_name
+#   =&gt; nil,                          :password             =&gt; nil,
+#   :authentication       =&gt; nil,(plain, login and cram_md5)
 #   :enable_starttls_auto =&gt; true  }  retriever_method :pop3, {
-#   :address             =&gt; "localhost",                          
-#   :port                =&gt; 995,                           :user_name  
-#   =&gt; nil,                           :password            =&gt; nil,  
-#   :enable_ssl          =&gt; true }     end    Mail.deliverymethod.new 
+#   :address             =&gt; "localhost",
+#   :port                =&gt; 995,                           :user_name
+#   =&gt; nil,                           :password            =&gt; nil,
+#   :enable_ssl          =&gt; true }     end    Mail.deliverymethod.new
 #   #=&gt; Mail::SMTP instance   Mail.retrievermethod.new #=&gt;
 #   Mail::POP3 instance  Each mail object inherits the default set in
 #   Mail.delivery_method, however, on a per email basis, you can override
 #   the method:    mail.delivery_method :sendmail  Or you can override the
 #   method and pass in settings:    mail.delivery_method :sendmail, {
-#   :address =&gt; 'some.host' }  You can also just modify the settings:  
+#   :address =&gt; 'some.host' }  You can also just modify the settings:
 #   mail.delivery_settings = { :address =&gt; 'some.host' }  The passed in
 #   hash is just merged against the defaults with +merge!+ and the result
 #   assigned the mail object.  So the above example will change only the
@@ -138,11 +138,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.9/outputs/email
+#  http://logstash.net/docs/1.1.10.dev/outputs/email
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -171,25 +171,25 @@ define logstash::output::email(
   #### Validate parameters
   if $attachments {
     validate_array($attachments)
-    $arr_attachments = join($attachments, "', '")
+    $arr_attachments = join($attachments, '\', \'')
     $opt_attachments = "  attachments => ['${arr_attachments}']\n"
   }
 
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
   if $exclude_tags {
     validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, "', '")
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if $fields {
     validate_array($fields)
-    $arr_fields = join($fields, "', '")
+    $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
@@ -205,47 +205,47 @@ define logstash::output::email(
     $opt_match = "  match => ${arr_match}\n"
   }
 
-  if $htmlbody { 
+  if $htmlbody {
     validate_string($htmlbody)
     $opt_htmlbody = "  htmlbody => \"${htmlbody}\"\n"
   }
 
-  if $from { 
+  if $from {
     validate_string($from)
     $opt_from = "  from => \"${from}\"\n"
   }
 
-  if $contenttype { 
+  if $contenttype {
     validate_string($contenttype)
     $opt_contenttype = "  contenttype => \"${contenttype}\"\n"
   }
 
-  if $cc { 
+  if $cc {
     validate_string($cc)
     $opt_cc = "  cc => \"${cc}\"\n"
   }
 
-  if $subject { 
+  if $subject {
     validate_string($subject)
     $opt_subject = "  subject => \"${subject}\"\n"
   }
 
-  if $body { 
+  if $body {
     validate_string($body)
     $opt_body = "  body => \"${body}\"\n"
   }
 
-  if $to { 
+  if $to {
     validate_string($to)
     $opt_to = "  to => \"${to}\"\n"
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $via { 
+  if $via {
     validate_string($via)
     $opt_via = "  via => \"${via}\"\n"
   }

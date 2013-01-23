@@ -130,11 +130,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this input can be found at:
-#  http://logstash.net/docs/1.1.9/inputs/xmpp
+#  http://logstash.net/docs/1.1.10.dev/inputs/xmpp
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -159,13 +159,13 @@ define logstash::input::xmpp(
   #### Validate parameters
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
   if $rooms {
     validate_array($rooms)
-    $arr_rooms = join($rooms, "', '")
+    $arr_rooms = join($rooms, '\', \'')
     $opt_rooms = "  rooms => ['${arr_rooms}']\n"
   }
 
@@ -196,27 +196,27 @@ define logstash::input::xmpp(
     }
   }
 
-  if $password { 
+  if $password {
     validate_string($password)
     $opt_password = "  password => \"${password}\"\n"
   }
 
-  if $message_format { 
+  if $message_format {
     validate_string($message_format)
     $opt_message_format = "  message_format => \"${message_format}\"\n"
   }
 
-  if $host { 
+  if $host {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $user { 
+  if $user {
     validate_string($user)
     $opt_user = "  user => \"${user}\"\n"
   }

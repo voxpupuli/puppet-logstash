@@ -13,9 +13,9 @@
 #   matching a given pattern to send events to nagios. So use grep to
 #   match and also to add the required fields.  filter {   grep {     type
 #   =&gt; "linux-syslog"     match =&gt; [ "@message",
-#   "(error|ERROR|CRITICAL)" ]     add_tag =&gt; [ "nagios-update" ]    
-#   add_field =&gt; [       "nagios_host", "%{@source_host}",      
-#   "nagios_service", "the name of your nagios service check"     ]   } } 
+#   "(error|ERROR|CRITICAL)" ]     add_tag =&gt; [ "nagios-update" ]
+#   add_field =&gt; [       "nagios_host", "%{@source_host}",
+#   "nagios_service", "the name of your nagios service check"     ]   } }
 #   output{   nagios {     # only process events with this tag     tags
 #   =&gt; "nagios-update"   } }
 #
@@ -72,11 +72,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.9/outputs/nagios
+#  http://logstash.net/docs/1.1.10.dev/outputs/nagios
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -96,19 +96,19 @@ define logstash::output::nagios(
   #### Validate parameters
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
   if $exclude_tags {
     validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, "', '")
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if $fields {
     validate_array($fields)
-    $arr_fields = join($fields, "', '")
+    $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
@@ -120,12 +120,12 @@ define logstash::output::nagios(
     }
   }
 
-  if $commandfile { 
+  if $commandfile {
     validate_string($commandfile)
     $opt_commandfile = "  commandfile => \"${commandfile}\"\n"
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }

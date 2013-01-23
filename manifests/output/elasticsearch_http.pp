@@ -30,7 +30,7 @@
 #   This variable is optional
 #
 # [*flush_size*]
-#   Set the number of events to queue up before writing to elasticsearch. 
+#   Set the number of events to queue up before writing to elasticsearch.
 #   If this value is set to 1, the normal 'index api'. Otherwise, the bulk
 #   api will be used.
 #   Value type is number
@@ -92,11 +92,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.9/outputs/elasticsearch_http
+#  http://logstash.net/docs/1.1.10.dev/outputs/elasticsearch_http
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -120,19 +120,19 @@ define logstash::output::elasticsearch_http(
   #### Validate parameters
   if $exclude_tags {
     validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, "', '")
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
   if $fields {
     validate_array($fields)
-    $arr_fields = join($fields, "', '")
+    $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
@@ -152,27 +152,27 @@ define logstash::output::elasticsearch_http(
     }
   }
 
-  if $index { 
+  if $index {
     validate_string($index)
     $opt_index = "  index => \"${index}\"\n"
   }
 
-  if $index_type { 
+  if $index_type {
     validate_string($index_type)
     $opt_index_type = "  index_type => \"${index_type}\"\n"
   }
 
-  if $host { 
+  if $host {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
   }
 
-  if $document_id { 
+  if $document_id {
     validate_string($document_id)
     $opt_document_id = "  document_id => \"${document_id}\"\n"
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }

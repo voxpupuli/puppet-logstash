@@ -13,14 +13,14 @@
 #   sqs:ChangeMessageVisibilityBatch sqs:GetQueueAttributes
 #   sqs:GetQueueUrl sqs:ListQueues sqs:SendMessage sqs:SendMessageBatch
 #   Typically, you should setup an IAM policy, create a user and apply the
-#   IAM policy to the user. A sample policy is as follows:   {   
-#   "Statement": [      {        "Sid": "Stmt1347986764948",       
-#   "Action": [          "sqs:ChangeMessageVisibility",         
-#   "sqs:ChangeMessageVisibilityBatch",          "sqs:DeleteMessage",     
-#   "sqs:DeleteMessageBatch",          "sqs:GetQueueAttributes",         
-#   "sqs:GetQueueUrl",          "sqs:ListQueues",         
-#   "sqs:ReceiveMessage"        ],        "Effect": "Allow",       
-#   "Resource": [          "arn:aws:sqs:us-east-1:200850199751:Logstash"  
+#   IAM policy to the user. A sample policy is as follows:   {
+#   "Statement": [      {        "Sid": "Stmt1347986764948",
+#   "Action": [          "sqs:ChangeMessageVisibility",
+#   "sqs:ChangeMessageVisibilityBatch",          "sqs:DeleteMessage",
+#   "sqs:DeleteMessageBatch",          "sqs:GetQueueAttributes",
+#   "sqs:GetQueueUrl",          "sqs:ListQueues",
+#   "sqs:ReceiveMessage"        ],        "Effect": "Allow",
+#   "Resource": [          "arn:aws:sqs:us-east-1:200850199751:Logstash"
 #   ]      }    ]  }   See http://aws.amazon.com/iam/ for more details on
 #   setting up AWS identities.
 #
@@ -83,11 +83,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.9/outputs/sqs
+#  http://logstash.net/docs/1.1.10.dev/outputs/sqs
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -108,38 +108,38 @@ define logstash::output::sqs(
   #### Validate parameters
   if $exclude_tags {
     validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, "', '")
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
   if $fields {
     validate_array($fields)
-    $arr_fields = join($fields, "', '")
+    $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $queue { 
+  if $queue {
     validate_string($queue)
     $opt_queue = "  queue => \"${queue}\"\n"
   }
 
-  if $secret_key { 
+  if $secret_key {
     validate_string($secret_key)
     $opt_secret_key = "  secret_key => \"${secret_key}\"\n"
   }
 
-  if $access_key { 
+  if $access_key {
     validate_string($access_key)
     $opt_access_key = "  access_key => \"${access_key}\"\n"
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }

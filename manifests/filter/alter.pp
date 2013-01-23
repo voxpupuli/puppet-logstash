@@ -30,7 +30,7 @@
 #
 # [*coalesce*]
 #   Sets the value of field_name to the first nonnull expression among its
-#   arguments.  Example:  filter {   alter =&gt; {     coalesce =&gt; [   
+#   arguments.  Example:  filter {   alter =&gt; {     coalesce =&gt; [
 #   "field_name", "value1", "value2", "value3", ...     ]   } }
 #   Value type is array
 #   Default value: None
@@ -38,9 +38,9 @@
 #
 # [*condrewrite*]
 #   Change the content of the field to the specified value if the actual
-#   content is equal to the expected one.  Example:  filter {   alter {   
+#   content is equal to the expected one.  Example:  filter {   alter {
 #   condrewrite =&gt; [           "field_name", "expected_value",
-#   "new_value"           "field_name2", "expected_value2, "new_value2"   
+#   "new_value"           "field_name2", "expected_value2, "new_value2"
 #   ....        ]   } }
 #   Value type is array
 #   Default value: None
@@ -48,10 +48,10 @@
 #
 # [*condrewriteother*]
 #   Change the content of the field to the specified value if the content
-#   of another field is equal to the expected one.  Example:  filter {  
+#   of another field is equal to the expected one.  Example:  filter {
 #   alter =&gt; {     condrewriteother =&gt; [           "field_name",
-#   "expected_value", "field_name_to_change", "value",         
-#   "field_name2", "expected_value2, "field_name_to_change2", "value2",   
+#   "expected_value", "field_name_to_change", "value",
+#   "field_name2", "expected_value2, "field_name_to_change2", "value2",
 #   ....     ]   } }
 #   Value type is array
 #   Default value: None
@@ -104,11 +104,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.9/filters/alter
+#  http://logstash.net/docs/1.1.10.dev/filters/alter
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -132,43 +132,43 @@ define logstash::filter::alter(
   #### Validate parameters
   if $exclude_tags {
     validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, "', '")
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if $add_tag {
     validate_array($add_tag)
-    $arr_add_tag = join($add_tag, "', '")
+    $arr_add_tag = join($add_tag, '\', \'')
     $opt_add_tag = "  add_tag => ['${arr_add_tag}']\n"
   }
 
   if $coalesce {
     validate_array($coalesce)
-    $arr_coalesce = join($coalesce, "', '")
+    $arr_coalesce = join($coalesce, '\', \'')
     $opt_coalesce = "  coalesce => ['${arr_coalesce}']\n"
   }
 
   if $condrewrite {
     validate_array($condrewrite)
-    $arr_condrewrite = join($condrewrite, "', '")
+    $arr_condrewrite = join($condrewrite, '\', \'')
     $opt_condrewrite = "  condrewrite => ['${arr_condrewrite}']\n"
   }
 
   if $condrewriteother {
     validate_array($condrewriteother)
-    $arr_condrewriteother = join($condrewriteother, "', '")
+    $arr_condrewriteother = join($condrewriteother, '\', \'')
     $opt_condrewriteother = "  condrewriteother => ['${arr_condrewriteother}']\n"
   }
 
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
   if $remove_tag {
     validate_array($remove_tag)
-    $arr_remove_tag = join($remove_tag, "', '")
+    $arr_remove_tag = join($remove_tag, '\', \'')
     $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
   }
 
@@ -184,7 +184,7 @@ define logstash::filter::alter(
     }
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }

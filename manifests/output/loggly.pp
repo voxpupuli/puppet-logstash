@@ -31,9 +31,9 @@
 #
 # [*key*]
 #   The loggly http input key to send to. This is usually visible in the
-#   Loggly 'Inputs' page as something like this 
+#   Loggly 'Inputs' page as something like this
 #   https://logs.hoover.loggly.net/inputs/abcdef12-3456-7890-abcd-ef0123456789
-#   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                                  
+#   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 #   \----------&gt;   key   &lt;-------------/   You can use %{foo} field
 #   lookups here if you need to pull the api key from the event. This is
 #   mainly aimed at multitenant hosting providers who want to offer
@@ -73,11 +73,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.9/outputs/loggly
+#  http://logstash.net/docs/1.1.10.dev/outputs/loggly
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -98,38 +98,38 @@ define logstash::output::loggly(
   #### Validate parameters
   if $exclude_tags {
     validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, "', '")
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if $fields {
     validate_array($fields)
-    $arr_fields = join($fields, "', '")
+    $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $key { 
+  if $key {
     validate_string($key)
     $opt_key = "  key => \"${key}\"\n"
   }
 
-  if $proto { 
+  if $proto {
     validate_string($proto)
     $opt_proto = "  proto => \"${proto}\"\n"
   }
 
-  if $host { 
+  if $host {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }

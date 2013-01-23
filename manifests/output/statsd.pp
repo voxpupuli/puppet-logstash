@@ -4,7 +4,7 @@
 #   to graphite.  The general idea is that you send statsd count or
 #   latency data and every few seconds it will emit the aggregated values
 #   to graphite (aggregates like average, max, stddev, etc)  You can learn
-#   about statsd here: 
+#   about statsd here:
 #   http://codeascraft.etsy.com/2011/02/15/measure-anything-measure-everything/
 #   https://github.com/etsy/statsd A simple example usage of this is to
 #   count HTTP hits by response code; to learn more about that, check out
@@ -111,11 +111,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.9/outputs/statsd
+#  http://logstash.net/docs/1.1.10.dev/outputs/statsd
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -143,31 +143,31 @@ define logstash::output::statsd(
   #### Validate parameters
   if $increment {
     validate_array($increment)
-    $arr_increment = join($increment, "', '")
+    $arr_increment = join($increment, '\', \'')
     $opt_increment = "  increment => ['${arr_increment}']\n"
   }
 
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
   if $decrement {
     validate_array($decrement)
-    $arr_decrement = join($decrement, "', '")
+    $arr_decrement = join($decrement, '\', \'')
     $opt_decrement = "  decrement => ['${arr_decrement}']\n"
   }
 
   if $fields {
     validate_array($fields)
-    $arr_fields = join($fields, "', '")
+    $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
   if $exclude_tags {
     validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, "', '")
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
@@ -204,22 +204,22 @@ define logstash::output::statsd(
     }
   }
 
-  if $namespace { 
+  if $namespace {
     validate_string($namespace)
     $opt_namespace = "  namespace => \"${namespace}\"\n"
   }
 
-  if $sender { 
+  if $sender {
     validate_string($sender)
     $opt_sender = "  sender => \"${sender}\"\n"
   }
 
-  if $host { 
+  if $host {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }

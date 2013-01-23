@@ -3,7 +3,7 @@
 #   The metrics filter is useful for aggregating metrics.  For example, if
 #   you have a field 'response' that is a http response code, and you want
 #   to count each kind of response, you can do this:  filter {   metrics {
-#   meter =&gt; [ "http.%{response}" ]     add_tag =&gt; metric   } }  
+#   meter =&gt; [ "http.%{response}" ]     add_tag =&gt; metric   } }
 #   Metrics are flushed every 5 seconds. Metrics appear as new events in
 #   the event stream and go through any filters that occur after as well
 #   as outputs.  In general, you will want to add a tag to your metrics
@@ -24,14 +24,14 @@
 #   event rate  For a simple example, let's track how many events per
 #   second are running through logstash:  input {   generator {     type
 #   =&gt; "generated"   } }  filter {   metrics {     type =&gt;
-#   "generated"     meter =&gt; "events"     add_tag =&gt; "metric"   } } 
-#   output {   stdout {     # only emit events with the 'metric' tag    
-#   tags =&gt; "metric"     message =&gt; "rate: %{events.rate_1m}"   } } 
+#   "generated"     meter =&gt; "events"     add_tag =&gt; "metric"   } }
+#   output {   stdout {     # only emit events with the 'metric' tag
+#   tags =&gt; "metric"     message =&gt; "rate: %{events.rate_1m}"   } }
 #   Running the above:  % java -jar logstash.jar agent -f example.conf
 #   rate: 23721.983566819246 rate: 24811.395722536377 rate:
 #   25875.892745934525 rate: 26836.42375967113   We see the output
 #   includes our 'events' 1-minute rate.  In the real world, you would
-#   emit this to graphite or another metrics store, like so:  output {  
+#   emit this to graphite or another metrics store, like so:  output {
 #   graphite {     metrics =&gt; [ "events.rate_1m", "%{events.rate_1m}" ]
 #   } }
 #
@@ -117,11 +117,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.9/filters/metrics
+#  http://logstash.net/docs/1.1.10.dev/filters/metrics
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -144,31 +144,31 @@ define logstash::filter::metrics(
   #### Validate parameters
   if $remove_tag {
     validate_array($remove_tag)
-    $arr_remove_tag = join($remove_tag, "', '")
+    $arr_remove_tag = join($remove_tag, '\', \'')
     $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
   }
 
   if $add_tag {
     validate_array($add_tag)
-    $arr_add_tag = join($add_tag, "', '")
+    $arr_add_tag = join($add_tag, '\', \'')
     $opt_add_tag = "  add_tag => ['${arr_add_tag}']\n"
   }
 
   if $exclude_tags {
     validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, "', '")
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if $meter {
     validate_array($meter)
-    $arr_meter = join($meter, "', '")
+    $arr_meter = join($meter, '\', \'')
     $opt_meter = "  meter => ['${arr_meter}']\n"
   }
 
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
@@ -190,7 +190,7 @@ define logstash::filter::metrics(
     }
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }

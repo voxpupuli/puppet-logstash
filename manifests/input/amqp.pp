@@ -224,11 +224,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this input can be found at:
-#  http://logstash.net/docs/1.1.9/inputs/amqp
+#  http://logstash.net/docs/1.1.10.dev/inputs/amqp
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -267,13 +267,13 @@ define logstash::input::amqp(
   #### Validate parameters
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
   if $arguments {
     validate_array($arguments)
-    $arr_arguments = join($arguments, "', '")
+    $arr_arguments = join($arguments, '\', \'')
     $opt_arguments = "  arguments => ['${arr_arguments}']\n"
   }
 
@@ -363,47 +363,47 @@ define logstash::input::amqp(
     }
   }
 
-  if $password { 
+  if $password {
     validate_string($password)
     $opt_password = "  password => \"${password}\"\n"
   }
 
-  if $queue { 
+  if $queue {
     validate_string($queue)
     $opt_queue = "  queue => \"${queue}\"\n"
   }
 
-  if $message_format { 
+  if $message_format {
     validate_string($message_format)
     $opt_message_format = "  message_format => \"${message_format}\"\n"
   }
 
-  if $key { 
+  if $key {
     validate_string($key)
     $opt_key = "  key => \"${key}\"\n"
   }
 
-  if $host { 
+  if $host {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $user { 
+  if $user {
     validate_string($user)
     $opt_user = "  user => \"${user}\"\n"
   }
 
-  if $exchange { 
+  if $exchange {
     validate_string($exchange)
     $opt_exchange = "  exchange => \"${exchange}\"\n"
   }
 
-  if $vhost { 
+  if $vhost {
     validate_string($vhost)
     $opt_vhost = "  vhost => \"${vhost}\"\n"
   }

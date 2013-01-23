@@ -2,7 +2,7 @@
 #
 #   Add GeoIP fields from Maxmind database  GeoIP filter, adds information
 #   about geographical location of IP addresses. This filter uses Maxmind
-#   GeoIP databases, have a look at https://www.maxmind.com/app/geolite 
+#   GeoIP databases, have a look at https://www.maxmind.com/app/geolite
 #   Logstash releases ship with the GeoLiteCity database made available
 #   from Maxmind with a CCA-ShareAlike 3.0 license. For more details on
 #   geolite, see http://www.maxmind.com/en/geolite.
@@ -92,11 +92,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.9/filters/geoip
+#  http://logstash.net/docs/1.1.10.dev/filters/geoip
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -119,25 +119,25 @@ define logstash::filter::geoip(
   #### Validate parameters
   if $remove_tag {
     validate_array($remove_tag)
-    $arr_remove_tag = join($remove_tag, "', '")
+    $arr_remove_tag = join($remove_tag, '\', \'')
     $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
   }
 
   if $add_tag {
     validate_array($add_tag)
-    $arr_add_tag = join($add_tag, "', '")
+    $arr_add_tag = join($add_tag, '\', \'')
     $opt_add_tag = "  add_tag => ['${arr_add_tag}']\n"
   }
 
   if $exclude_tags {
     validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, "', '")
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
@@ -153,17 +153,17 @@ define logstash::filter::geoip(
     }
   }
 
-  if $database { 
+  if $database {
     validate_string($database)
     $opt_database = "  database => \"${database}\"\n"
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $field { 
+  if $field {
     validate_string($field)
     $opt_field = "  field => \"${field}\"\n"
   }

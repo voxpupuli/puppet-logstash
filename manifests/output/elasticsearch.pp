@@ -3,11 +3,11 @@
 #   This output lets you store logs in elasticsearch and is the most
 #   recommended output for logstash. If you plan on using the logstash web
 #   interface, you'll need to use this output.    VERSION NOTE: Your
-#   elasticsearch cluster must be running elasticsearch  
+#   elasticsearch cluster must be running elasticsearch
 #   %ELASTICSEARCH_VERSION%. If you use any other version of
-#   elasticsearch,   you should consider using the elasticsearch_http  
+#   elasticsearch,   you should consider using the elasticsearch_http
 #   output instead.  If you want to set other elasticsearch options that
-#   are not exposed directly as config options, there are two options: 
+#   are not exposed directly as config options, there are two options:
 #   create an elasticsearch.yml file in the $PWD of the logstash process
 #   pass in es.* java properties (java -Des.node.foo= or ruby
 #   -J-Des.node.foo=) This plugin will join your elasticsearch cluster, so
@@ -92,7 +92,7 @@
 #   This variable is optional
 #
 # [*max_inflight_requests*]
-#   Configure the maximum number of in-flight requests to ElasticSearch. 
+#   Configure the maximum number of in-flight requests to ElasticSearch.
 #   Note: This setting may be removed in the future.
 #   Value type is number
 #   Default value: 50
@@ -136,11 +136,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10.dev
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.9/outputs/elasticsearch
+#  http://logstash.net/docs/1.1.10.dev/outputs/elasticsearch
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10.dev/learn
 #
 # === Authors
 #
@@ -169,19 +169,19 @@ define logstash::output::elasticsearch(
   #### Validate parameters
   if $exclude_tags {
     validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, "', '")
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if $tags {
     validate_array($tags)
-    $arr_tags = join($tags, "', '")
+    $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
   if $fields {
     validate_array($fields)
-    $arr_fields = join($fields, "', '")
+    $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
@@ -206,47 +206,47 @@ define logstash::output::elasticsearch(
     }
   }
 
-  if $host { 
+  if $host {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
   }
 
-  if $embedded_http_port { 
+  if $embedded_http_port {
     validate_string($embedded_http_port)
     $opt_embedded_http_port = "  embedded_http_port => \"${embedded_http_port}\"\n"
   }
 
-  if $index { 
+  if $index {
     validate_string($index)
     $opt_index = "  index => \"${index}\"\n"
   }
 
-  if $index_type { 
+  if $index_type {
     validate_string($index_type)
     $opt_index_type = "  index_type => \"${index_type}\"\n"
   }
 
-  if $bind_host { 
+  if $bind_host {
     validate_string($bind_host)
     $opt_bind_host = "  bind_host => \"${bind_host}\"\n"
   }
 
-  if $node_name { 
+  if $node_name {
     validate_string($node_name)
     $opt_node_name = "  node_name => \"${node_name}\"\n"
   }
 
-  if $document_id { 
+  if $document_id {
     validate_string($document_id)
     $opt_document_id = "  document_id => \"${document_id}\"\n"
   }
 
-  if $cluster { 
+  if $cluster {
     validate_string($cluster)
     $opt_cluster = "  cluster => \"${cluster}\"\n"
   }
 
-  if $type { 
+  if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
