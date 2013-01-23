@@ -47,6 +47,8 @@ class logstash::params {
   # Config directory
   $configdir = '/etc/logstash/conf.d'
 
+  # Logging dir
+  $logdir = '/var/log/logstash/'
 
   #### Internal module values
 

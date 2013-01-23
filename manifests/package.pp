@@ -72,7 +72,13 @@ class logstash::package {
       command => "mkdir -p ${logstash::installpath}";
     }
 
-    file { "${logstash::installpath}/${jarfile}":
+    exec { 'create_log_dir':
+      cwd     => '/',
+      path    => ['/usr/bin', '/bin'],
+      command => 'mkdir -p /var/log/logstash';
+    }
+
+    file { "${logstash::installpath}/logstash.jar":
       ensure  => present,
       source  => $logstash::jarfile,
       require => Exec['create_dir']
