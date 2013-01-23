@@ -63,7 +63,7 @@
 #   The order variable decides in which sequence the filters are loaded.
 #   Value type is number
 #   Default value: 10
-#   This variable is optional  
+#   This variable is optional
 #
 #
 # === Examples
