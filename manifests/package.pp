@@ -86,9 +86,18 @@ class logstash::package {
 
     file { '/etc/init.d/logstash':
       ensure => present,
-      source => $logstash::initfile,
-      mode   => '0755'
+      mode   => '0755',
+      # ... but what do you put in it? see below:
+    }
+
+    if $logstash::initfile == undef {
+      File['/etc/init.d/logstash'] {
+        content => template('logstash/init.d.logstash.erb'),
+      }
+    } else {
+      File['/etc/init.d/logstash'] {
+        source  => $logstash::initfile,
+      }
     }
   }
-
 }
