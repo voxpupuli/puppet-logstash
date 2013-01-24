@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/sh
 
 ### BEGIN INIT INFO
 # Provides:          logstash
@@ -22,46 +22,49 @@ pid_file="/var/run/$name.pid"
 NICE_LEVEL="-n 19"
 
 start () {
-       command="/usr/bin/nice ${NICE_LEVEL} ${logstash_bin} agent -f $logstash_conf --lo
+	command="/usr/bin/nice ${NICE_LEVEL} ${logstash_bin} agent -f $logstash_conf --log ${logstash_log}"
 
-       log_daemon_msg "Starting" "$name"
-       if start-stop-daemon --start --quiet --oknodo --pidfile "$pid_file" -b -m --exec 
-               log_end_msg 0
-       else
-               log_end_msg 1
-       fi
+	log_daemon_msg "Starting" "$name"
+	if start-stop-daemon --start --quiet --oknodo --pidfile "$pid_file" -b -m --exec $command; then
+		log_end_msg 0
+	else
+		log_end_msg 1
+	fi
 }
 
 stop () {
-       start-stop-daemon --stop --quiet --oknodo --pidfile "$pid_file"
+	start-stop-daemon --stop --quiet --oknodo --pidfile "$pid_file"
 }
 
 status () {
-       status_of_proc -p $pid_file "" "$name"
+	status_of_proc -p $pid_file "" "$name"
 }
 
 case $1 in
-       start)
-               if status; then exit 0; fi
-               start
-               ;;
-       stop)
-               stop
-               ;;
-       reload)
-        env pkill -HUP -F $pid_file
-               ;;
-       restart)
-               stop
-               start
-               ;;
-       status)
-               status && exit 0 || exit $?
-               ;;
-       *)
-               echo "Usage: $0 {start|stop|restart|reload|status}"
-               exit 1
-               ;;
+	start)
+		if status; then exit 0; fi
+		start
+		;;
+	stop)
+		stop
+		;;
+	reload)
+        # HUP kills jar-run logstash on precise?!
+        # env pkill -HUP -F $pid_file
+        stop
+        start
+		;;
+	restart)
+		stop
+		start
+		;;
+	status)
+		status && exit 0 || exit $?
+		;;
+	*)
+		echo "Usage: $0 {start|stop|restart|reload|status}"
+		exit 1
+		;;
 esac
 
 exit 0
