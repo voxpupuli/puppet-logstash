@@ -10,6 +10,13 @@ Installation, make sure service is running and will be started at boot time:
 
      class { 'logstash': }
 
+Installation from JAR file:
+
+     class { 'logstash':
+       jarfile  => $jarfilepath,
+       provider => 'custom',
+     }
+
 Removal/decommissioning:
 
      class { 'logstash':
