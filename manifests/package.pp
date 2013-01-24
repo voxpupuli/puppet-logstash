@@ -56,11 +56,18 @@ class logstash::package {
   }
 
   if ($logstash::provider == 'package') {
+    if ($logstash::jarfile != undef) {
+      fail('logstash needs provider == custom when specifying jarfile')
+    }
+
     # action
     package { $logstash::params::package:
       ensure => $package_ensure,
     }
   } elsif ($logstash::provider == 'custom') {
+    if $logstash::jarfile == undef {
+      fail('logstash needs jarfile argument when using custom provider')
+    }
 
     $jarfile_arr = split($logstash::jarfile, '/')
     $jarfile_arr2 = reverse($jarfile_arr)
