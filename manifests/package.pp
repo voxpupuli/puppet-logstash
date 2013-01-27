@@ -92,11 +92,11 @@ class logstash::package {
 
     if $logstash::initfile == undef {
       case $::osfamily {
-        debian:  { $template = 'logstash/init.d.logstash.erb' }
+        debian:  { $templname = "logstash-debian" }
         default: { fail("please set initfile: no template for ${::osfamily}") }
       }
       File['/etc/init.d/logstash'] {
-        content => template($template)
+        content => template("${module_name}/etc/init.d/${templname}.erb"),
       }
     } else {
       File['/etc/init.d/logstash'] {
