@@ -91,24 +91,29 @@ class logstash::package {
       require => Exec['create_dir']
     }
 
-    file { '/etc/init.d/logstash':
-      ensure => present,
-      mode   => '0755',
-      # ... but what do you put in it? see below:
-    }
+    # We only care about an init.d file if the service is managed
+    if $logstash::status != 'unmanaged' {
 
-    if $logstash::initfile == undef {
-      case $::osfamily {
-        debian:  { $templname = "logstash-debian" }
-        default: { fail("please set initfile: no template for ${::osfamily}") }
+      file { '/etc/init.d/logstash':
+        ensure => present,
+        mode   => '0755',
+        # ... but what do you put in it? see below:
       }
-      File['/etc/init.d/logstash'] {
-        content => template("${module_name}/etc/init.d/${templname}.erb"),
+
+      if $logstash::initfile == undef {
+        case $::osfamily {
+          debian:  { $templname = 'logstash-debian' }
+          default: { fail("please set initfile: no template for ${::osfamily}") }
+        }
+        File['/etc/init.d/logstash'] {
+          content => template("${module_name}/etc/init.d/${templname}.erb"),
+        }
+      } else {
+        File['/etc/init.d/logstash'] {
+          source  => $logstash::initfile,
+        }
       }
-    } else {
-      File['/etc/init.d/logstash'] {
-        source  => $logstash::initfile,
-      }
+
     }
   }
 }
