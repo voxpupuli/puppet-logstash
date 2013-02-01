@@ -93,9 +93,22 @@ class logstash::package {
 
     file { '/etc/init.d/logstash':
       ensure => present,
-      source => $logstash::initfile,
-      mode   => '0755'
+      mode   => '0755',
+      # ... but what do you put in it? see below:
+    }
+
+    if $logstash::initfile == undef {
+      case $::osfamily {
+        debian:  { $templname = "logstash-debian" }
+        default: { fail("please set initfile: no template for ${::osfamily}") }
+      }
+      File['/etc/init.d/logstash'] {
+        content => template("${module_name}/etc/init.d/${templname}.erb"),
+      }
+    } else {
+      File['/etc/init.d/logstash'] {
+        source  => $logstash::initfile,
+      }
     }
   }
-
 }
