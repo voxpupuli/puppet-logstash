@@ -167,17 +167,17 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10.dev
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.10.dev/outputs/elasticsearch_river
+#  http://logstash.net/docs/1.1.9/outputs/elasticsearch_river
 #
-#  Need help? http://logstash.net/docs/1.1.10.dev/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
-define logstash::output::elasticsearch_river(
+define logstash::output::elasticsearch_river (
   $amqp_host,
   $es_host,
   $fields             = '',
@@ -200,8 +200,9 @@ define logstash::output::elasticsearch_river(
   $tags               = '',
   $type               = '',
   $user               = '',
-  $vhost              = '',
+  $vhost              = ''
 ) {
+
 
   require logstash::params
 

@@ -27,8 +27,8 @@
 #
 # [*algorithm*]
 #   digest/hash type
-#   Value can be any of: "SHA1", "SHA256", "SHA384", "SHA512", "MD5",
-#   "MURMUR3", "IPV4_NETWORK"
+#   Value can be any of: "SHA1", "SHA224", "SHA256", "SHA384", "SHA512",
+#   "MD4", "MD5", "MURMUR3", "IPV4_NETWORK"
 #   Default value: "SHA1"
 #   This variable is required
 #
@@ -92,17 +92,17 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10.dev
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.10.dev/filters/anonymize
+#  http://logstash.net/docs/1.1.9/filters/anonymize
 #
-#  Need help? http://logstash.net/docs/1.1.10.dev/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
-define logstash::filter::anonymize(
+define logstash::filter::anonymize (
   $key,
   $fields,
   $algorithm,
@@ -112,8 +112,9 @@ define logstash::filter::anonymize(
   $remove_tag   = '',
   $tags         = '',
   $type         = '',
-  $order        = 10,
+  $order        = 10
 ) {
+
 
   require logstash::params
 
@@ -161,7 +162,7 @@ define logstash::filter::anonymize(
   }
 
   if $algorithm {
-    if ! ($algorithm in ['SHA1', 'SHA256', 'SHA384', 'SHA512', 'MD5', 'MURMUR3', 'IPV4_NETWORK']) {
+    if ! ($algorithm in ['SHA1', 'SHA224', 'SHA256', 'SHA384', 'SHA512', 'MD4', 'MD5', 'MURMUR3', 'IPV4_NETWORK']) {
       fail("\"${algorithm}\" is not a valid algorithm parameter value")
     } else {
       $opt_algorithm = "  algorithm => \"${algorithm}\"\n"

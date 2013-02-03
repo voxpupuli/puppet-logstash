@@ -116,17 +116,17 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10.dev
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this input can be found at:
-#  http://logstash.net/docs/1.1.10.dev/inputs/relp
+#  http://logstash.net/docs/1.1.9/inputs/relp
 #
-#  Need help? http://logstash.net/docs/1.1.10.dev/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
-define logstash::input::relp(
+define logstash::input::relp (
   $type,
   $port,
   $host           = '',
@@ -135,8 +135,9 @@ define logstash::input::relp(
   $message_format = '',
   $charset        = '',
   $tags           = '',
-  $add_field      = '',
+  $add_field      = ''
 ) {
+
 
   require logstash::params
 

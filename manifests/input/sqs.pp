@@ -147,17 +147,17 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10.dev
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this input can be found at:
-#  http://logstash.net/docs/1.1.10.dev/inputs/sqs
+#  http://logstash.net/docs/1.1.9/inputs/sqs
 #
-#  Need help? http://logstash.net/docs/1.1.10.dev/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
-define logstash::input::sqs(
+define logstash::input::sqs (
   $access_key,
   $secret_key,
   $queue,
@@ -168,8 +168,9 @@ define logstash::input::sqs(
   $add_field      = '',
   $tags           = '',
   $threads        = '',
-  $message_format = '',
+  $message_format = ''
 ) {
+
 
   require logstash::params
 

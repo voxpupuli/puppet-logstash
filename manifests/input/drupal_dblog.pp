@@ -138,17 +138,17 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10.dev
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this input can be found at:
-#  http://logstash.net/docs/1.1.10.dev/inputs/drupal_dblog
+#  http://logstash.net/docs/1.1.9/inputs/drupal_dblog
 #
-#  Need help? http://logstash.net/docs/1.1.10.dev/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
-define logstash::input::drupal_dblog(
+define logstash::input::drupal_dblog (
   $add_field      = '',
   $add_usernames  = '',
   $bulksize       = '',
@@ -159,8 +159,9 @@ define logstash::input::drupal_dblog(
   $interval       = '',
   $message_format = '',
   $tags           = '',
-  $type           = '',
+  $type           = ''
 ) {
+
 
   require logstash::params
 

@@ -107,17 +107,17 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10.dev
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this input can be found at:
-#  http://logstash.net/docs/1.1.10.dev/inputs/eventlog
+#  http://logstash.net/docs/1.1.9/inputs/eventlog
 #
-#  Need help? http://logstash.net/docs/1.1.10.dev/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
-define logstash::input::eventlog(
+define logstash::input::eventlog (
   $type,
   $logfile        = '',
   $debug          = '',
@@ -125,8 +125,9 @@ define logstash::input::eventlog(
   $charset        = '',
   $message_format = '',
   $tags           = '',
-  $add_field      = '',
+  $add_field      = ''
 ) {
+
 
   require logstash::params
 

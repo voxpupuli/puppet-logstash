@@ -112,17 +112,17 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10.dev
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this input can be found at:
-#  http://logstash.net/docs/1.1.10.dev/inputs/ganglia
+#  http://logstash.net/docs/1.1.9/inputs/ganglia
 #
-#  Need help? http://logstash.net/docs/1.1.10.dev/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
-define logstash::input::ganglia(
+define logstash::input::ganglia (
   $type,
   $host           = '',
   $debug          = '',
@@ -131,8 +131,9 @@ define logstash::input::ganglia(
   $message_format = '',
   $port           = '',
   $tags           = '',
-  $add_field      = '',
+  $add_field      = ''
 ) {
+
 
   require logstash::params
 

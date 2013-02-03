@@ -138,17 +138,17 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10.dev
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.10.dev/outputs/email
+#  http://logstash.net/docs/1.1.9/outputs/email
 #
-#  Need help? http://logstash.net/docs/1.1.10.dev/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
-define logstash::output::email(
+define logstash::output::email (
   $match,
   $to,
   $htmlbody     = '',
@@ -163,8 +163,9 @@ define logstash::output::email(
   $tags         = '',
   $body         = '',
   $type         = '',
-  $via          = '',
+  $via          = ''
 ) {
+
 
   require logstash::params
 

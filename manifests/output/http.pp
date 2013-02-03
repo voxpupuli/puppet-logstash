@@ -92,17 +92,17 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10.dev
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.10.dev/outputs/http
+#  http://logstash.net/docs/1.1.9/outputs/http
 #
-#  Need help? http://logstash.net/docs/1.1.10.dev/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
-define logstash::output::http(
+define logstash::output::http (
   $http_method,
   $url,
   $content_type = '',
@@ -113,8 +113,9 @@ define logstash::output::http(
   $tags         = '',
   $type         = '',
   $exclude_tags = '',
-  $verify_ssl   = '',
+  $verify_ssl   = ''
 ) {
+
 
   require logstash::params
 

@@ -158,17 +158,17 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10.dev
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.10.dev/filters/mutate
+#  http://logstash.net/docs/1.1.9/filters/mutate
 #
-#  Need help? http://logstash.net/docs/1.1.10.dev/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
-define logstash::filter::mutate(
+define logstash::filter::mutate (
   $add_field    = '',
   $add_tag      = '',
   $convert      = '',
@@ -185,8 +185,9 @@ define logstash::filter::mutate(
   $tags         = '',
   $type         = '',
   $uppercase    = '',
-  $order        = 10,
+  $order        = 10
 ) {
+
 
   require logstash::params
 

@@ -157,17 +157,17 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10.dev
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this input can be found at:
-#  http://logstash.net/docs/1.1.10.dev/inputs/gemfire
+#  http://logstash.net/docs/1.1.9/inputs/gemfire
 #
-#  Need help? http://logstash.net/docs/1.1.10.dev/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
-define logstash::input::gemfire(
+define logstash::input::gemfire (
   $type,
   $message_format  = '',
   $cache_xml_file  = '',
@@ -181,8 +181,9 @@ define logstash::input::gemfire(
   $serialization   = '',
   $tags            = '',
   $threads         = '',
-  $add_field       = '',
+  $add_field       = ''
 ) {
+
 
   require logstash::params
 

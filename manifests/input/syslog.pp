@@ -138,17 +138,17 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10.dev
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this input can be found at:
-#  http://logstash.net/docs/1.1.10.dev/inputs/syslog
+#  http://logstash.net/docs/1.1.9/inputs/syslog
 #
-#  Need help? http://logstash.net/docs/1.1.10.dev/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
-define logstash::input::syslog(
+define logstash::input::syslog (
   $type,
   $message_format  = '',
   $debug           = '',
@@ -160,8 +160,9 @@ define logstash::input::syslog(
   $severity_labels = '',
   $tags            = '',
   $add_field       = '',
-  $use_labels      = '',
+  $use_labels      = ''
 ) {
+
 
   require logstash::params
 

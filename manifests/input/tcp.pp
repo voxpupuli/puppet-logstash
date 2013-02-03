@@ -130,17 +130,17 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10.dev
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this input can be found at:
-#  http://logstash.net/docs/1.1.10.dev/inputs/tcp
+#  http://logstash.net/docs/1.1.9/inputs/tcp
 #
-#  Need help? http://logstash.net/docs/1.1.10.dev/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
-define logstash::input::tcp(
+define logstash::input::tcp (
   $type,
   $port,
   $host           = '',
@@ -151,8 +151,9 @@ define logstash::input::tcp(
   $mode           = '',
   $charset        = '',
   $tags           = '',
-  $add_field      = '',
+  $add_field      = ''
 ) {
+
 
   require logstash::params
 

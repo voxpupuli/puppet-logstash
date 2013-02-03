@@ -79,17 +79,17 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10.dev
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.10.dev/filters/environment
+#  http://logstash.net/docs/1.1.9/filters/environment
 #
-#  Need help? http://logstash.net/docs/1.1.10.dev/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
-define logstash::filter::environment(
+define logstash::filter::environment (
   $add_field          = '',
   $add_field_from_env = '',
   $add_tag            = '',
@@ -97,8 +97,9 @@ define logstash::filter::environment(
   $remove_tag         = '',
   $tags               = '',
   $type               = '',
-  $order              = 10,
+  $order              = 10
 ) {
+
 
   require logstash::params
 
