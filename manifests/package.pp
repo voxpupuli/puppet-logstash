@@ -56,64 +56,42 @@ class logstash::package {
   }
 
   if ($logstash::provider == 'package') {
-    if ($logstash::jarfile != undef) {
-      fail('logstash needs provider == custom when specifying jarfile')
-    }
-
-    # action
+    # We are using a package provided by a repository
     package { $logstash::params::package:
       ensure => $package_ensure,
     }
+
   } elsif ($logstash::provider == 'custom') {
+    # We are using an external provided jar file
+
     if $logstash::jarfile == undef {
       fail('logstash needs jarfile argument when using custom provider')
     }
 
-    $jarfile_arr = split($logstash::jarfile, '/')
-    $jarfile_arr2 = reverse($jarfile_arr)
-    $jarfile = $jarfile_arr2[0]
+    if $logstash::installpath == undef {
+      fail('logstash need installpath argument when using custom provider')
+    }
 
-    exec { 'create_dir':
+    # Create directory to place the jar file
+    exec { 'create_install_dir':
       cwd     => '/',
       path    => ['/usr/bin', '/bin'],
       command => "mkdir -p ${logstash::installpath}";
     }
 
+    # Create log directory
     exec { 'create_log_dir':
       cwd     => '/',
       path    => ['/usr/bin', '/bin'],
-      command => 'mkdir -p /var/log/logstash';
+      command => "mkdir -p ${logstash::params::logdir}";
     }
 
+    # Place the jar file
     file { "${logstash::installpath}/logstash.jar":
       ensure  => present,
       source  => $logstash::jarfile,
-      require => Exec['create_dir']
+      require => Exec['create_install_dir']
     }
 
-    # We only care about an init.d file if the service is managed
-    if $logstash::status != 'unmanaged' {
-
-      file { '/etc/init.d/logstash':
-        ensure => present,
-        mode   => '0755',
-        # ... but what do you put in it? see below:
-      }
-
-      if $logstash::initfile == undef {
-        case $::osfamily {
-          debian:  { $templname = 'logstash-debian' }
-          default: { fail("please set initfile: no template for ${::osfamily}") }
-        }
-        File['/etc/init.d/logstash'] {
-          content => template("${module_name}/etc/init.d/${templname}.erb"),
-        }
-      } else {
-        File['/etc/init.d/logstash'] {
-          source  => $logstash::initfile,
-        }
-      }
-
-    }
   }
 }

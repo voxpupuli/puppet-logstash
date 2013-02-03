@@ -1,3 +1,9 @@
+0.0.3 ( xxxx )
+  Clarify jarfile usage and validation ( PR #6 by Garth Kidd )
+  Add default Debian Init script when non provided and using custom source ( PR #7 by Garth Kidd )
+  Add RedHat as OS type ( PR #8 by Dan )
+  Skip init script when status = unmanaged ( PR #9 by Tavis Aitken )
+
 0.0.2 ( Jan 19, 2013 )
   Adding a way to provide jar and init file instead of depending on a package
 

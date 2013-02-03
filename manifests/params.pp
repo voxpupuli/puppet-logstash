@@ -75,16 +75,40 @@ class logstash::params {
       $service_hasrestart = true
       $service_hasstatus  = true
       $service_pattern    = $service_name
+      $defaults_location  = '/etc/sysconfig'
     }
     'Debian', 'Ubuntu': {
       $service_name       = 'logstash'
       $service_hasrestart = true
       $service_hasstatus  = true
       $service_pattern    = $service_name
+      $defaults_location  = '/etc/defaults'
     }
     default: {
       fail("\"${module_name}\" provides no service parameters
             for \"${::operatingsystem}\"")
+    }
+  }
+
+  # parameters when using a custom jar sourcea
+  if $logstash::provider == 'custom' {
+    ## Set initfile to undef when using an external init file
+    if $logstash::initfile != undef {
+      $initfile = undef
+    } else {
+      ## Get the init file we provide
+      case $::operatingsystem {
+        'RedHat', 'CentOS', 'Fedora', 'Scientific': {
+          $initfile = template("${module_name}/etc/init.d/logstash.init.RedHat.erb")
+        }
+        'Debian', 'Ubuntu': {
+          $initfile = template("${module_name}/etc/init.d/logstash.init.Debian.erb")
+        }
+        default: {
+          fail("\"${module_name}\" provides no default init file
+                for \"${::operatingsystem}\"")
+        }
+      }
     }
   }
 
