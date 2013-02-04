@@ -84,11 +84,33 @@ class logstash::service {
     # If we are using a custom provider, thus not using the package
     if $logstash::provider == 'custom' {
 
+      ## Set initfile to undef when using an external init file
+      if $logstash::initfile != undef {
+        $initscript = undef
+
+      } else {
+        ## Get the init file we provide
+        case $::operatingsystem {
+          'RedHat', 'CentOS', 'Fedora', 'Scientific': {
+            $initscript = template("${module_name}/etc/init.d/logstash.init.RedHat.erb")
+          }
+          'Debian', 'Ubuntu': {
+            $initscript = template("${module_name}/etc/init.d/logstash.init.Debian.erb")
+          }
+          default: {
+            fail("\"${module_name}\" provides no default init file
+                  for \"${::operatingsystem}\"")
+          }
+
+        }
+
+      }
+
       file { '/etc/init.d/logstash':
         ensure  => present,
         mode    => '0755',
-        content => $logstash::params::initfile, # undef when using an external source, otherwise content of our own init script
-        source  => $logstash::initfile,         # undef when using content of our own init script, otherwise it contains the source of the external init script
+        content => $initscript,         # undef when using an external source, otherwise content of our own init script
+        source  => $logstash::initfile, # undef when using content of our own init script, otherwise it contains the source of the external init script
       }
     }
 

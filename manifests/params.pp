@@ -90,26 +90,4 @@ class logstash::params {
     }
   }
 
-  # parameters when using a custom jar sourcea
-  if $logstash::provider == 'custom' {
-    ## Set initfile to undef when using an external init file
-    if $logstash::initfile != undef {
-      $initfile = undef
-    } else {
-      ## Get the init file we provide
-      case $::operatingsystem {
-        'RedHat', 'CentOS', 'Fedora', 'Scientific': {
-          $initfile = template("${module_name}/etc/init.d/logstash.init.RedHat.erb")
-        }
-        'Debian', 'Ubuntu': {
-          $initfile = template("${module_name}/etc/init.d/logstash.init.Debian.erb")
-        }
-        default: {
-          fail("\"${module_name}\" provides no default init file
-                for \"${::operatingsystem}\"")
-        }
-      }
-    }
-  }
-
 }
