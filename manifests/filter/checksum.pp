@@ -88,17 +88,17 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10.dev
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.10.dev/filters/checksum
+#  http://logstash.net/docs/1.1.9/filters/checksum
 #
-#  Need help? http://logstash.net/docs/1.1.10.dev/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
-define logstash::filter::checksum(
+define logstash::filter::checksum (
   $add_field    = '',
   $add_tag      = '',
   $algorithm    = '',
@@ -107,8 +107,9 @@ define logstash::filter::checksum(
   $remove_tag   = '',
   $tags         = '',
   $type         = '',
-  $order        = 10,
+  $order        = 10
 ) {
+
 
   require logstash::params
 

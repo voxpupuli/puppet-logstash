@@ -29,7 +29,8 @@ class logstash::config {
   exec { 'create_config_dir':
     cwd     => '/',
     path    => ['/usr/bin', '/bin'],
-    command => "mkdir -p ${logstash::params::configdir}";
+    command => "mkdir -p ${logstash::params::configdir}",
+    creates => $logstash::params::configdir;
   }
 
   ### Manage the config directory

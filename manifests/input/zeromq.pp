@@ -154,17 +154,17 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10.dev
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this input can be found at:
-#  http://logstash.net/docs/1.1.10.dev/inputs/zeromq
+#  http://logstash.net/docs/1.1.9/inputs/zeromq
 #
-#  Need help? http://logstash.net/docs/1.1.10.dev/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
-define logstash::input::zeromq(
+define logstash::input::zeromq (
   $type,
   $topology,
   $mode           = '',
@@ -177,8 +177,9 @@ define logstash::input::zeromq(
   $tags           = '',
   $topic          = '',
   $address        = '',
-  $add_field      = '',
+  $add_field      = ''
 ) {
+
 
   require logstash::params
 

@@ -73,25 +73,26 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10.dev
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.10.dev/filters/gelfify
+#  http://logstash.net/docs/1.1.9/filters/gelfify
 #
-#  Need help? http://logstash.net/docs/1.1.10.dev/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
-define logstash::filter::gelfify(
+define logstash::filter::gelfify (
   $add_field    = '',
   $add_tag      = '',
   $exclude_tags = '',
   $remove_tag   = '',
   $tags         = '',
   $type         = '',
-  $order        = 10,
+  $order        = 10
 ) {
+
 
   require logstash::params
 

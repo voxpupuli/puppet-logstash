@@ -84,17 +84,17 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10.dev
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.10.dev/outputs/xmpp
+#  http://logstash.net/docs/1.1.9/outputs/xmpp
 #
-#  Need help? http://logstash.net/docs/1.1.10.dev/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
-define logstash::output::xmpp(
+define logstash::output::xmpp (
   $message,
   $user,
   $password,
@@ -104,8 +104,9 @@ define logstash::output::xmpp(
   $tags         = '',
   $type         = '',
   $fields       = '',
-  $users        = '',
+  $users        = ''
 ) {
+
 
   require logstash::params
 

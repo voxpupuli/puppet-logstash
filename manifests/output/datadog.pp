@@ -93,17 +93,17 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10.dev
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.10.dev/outputs/datadog
+#  http://logstash.net/docs/1.1.9/outputs/datadog
 #
-#  Need help? http://logstash.net/docs/1.1.10.dev/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
-define logstash::output::datadog(
+define logstash::output::datadog (
   $api_key,
   $priority         = '',
   $date_happened    = '',
@@ -115,8 +115,9 @@ define logstash::output::datadog(
   $tags             = '',
   $text             = '',
   $title            = '',
-  $type             = '',
+  $type             = ''
 ) {
+
 
   require logstash::params
 

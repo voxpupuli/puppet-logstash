@@ -43,22 +43,23 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10.dev
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.10.dev/outputs/null
+#  http://logstash.net/docs/1.1.9/outputs/null
 #
-#  Need help? http://logstash.net/docs/1.1.10.dev/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
-define logstash::output::null(
+define logstash::output::null (
   $exclude_tags = '',
   $fields       = '',
   $tags         = '',
-  $type         = '',
+  $type         = ''
 ) {
+
 
   require logstash::params
 

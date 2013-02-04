@@ -143,17 +143,17 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10.dev
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.10.dev/outputs/gelf
+#  http://logstash.net/docs/1.1.9/outputs/gelf
 #
-#  Need help? http://logstash.net/docs/1.1.10.dev/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
-define logstash::output::gelf(
+define logstash::output::gelf (
   $host,
   $ignore_metadata = '',
   $exclude_tags    = '',
@@ -170,8 +170,9 @@ define logstash::output::gelf(
   $ship_metadata   = '',
   $short_message   = '',
   $tags            = '',
-  $type            = '',
+  $type            = ''
 ) {
+
 
   require logstash::params
 

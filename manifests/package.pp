@@ -56,59 +56,44 @@ class logstash::package {
   }
 
   if ($logstash::provider == 'package') {
-    if ($logstash::jarfile != undef) {
-      fail('logstash needs provider == custom when specifying jarfile')
-    }
-
-    # action
+    # We are using a package provided by a repository
     package { $logstash::params::package:
       ensure => $package_ensure,
     }
+
   } elsif ($logstash::provider == 'custom') {
+    # We are using an external provided jar file
+
     if $logstash::jarfile == undef {
       fail('logstash needs jarfile argument when using custom provider')
     }
 
-    $jarfile_arr = split($logstash::jarfile, '/')
-    $jarfile_arr2 = reverse($jarfile_arr)
-    $jarfile = $jarfile_arr2[0]
-
-    exec { 'create_dir':
-      cwd     => '/',
-      path    => ['/usr/bin', '/bin'],
-      command => "mkdir -p ${logstash::installpath}";
+    if $logstash::installpath == undef {
+      fail('logstash need installpath argument when using custom provider')
     }
 
+    # Create directory to place the jar file
+    exec { 'create_install_dir':
+      cwd     => '/',
+      path    => ['/usr/bin', '/bin'],
+      command => "mkdir -p ${logstash::installpath}",
+      creates => $logstash::installpath;
+    }
+
+    # Create log directory
     exec { 'create_log_dir':
       cwd     => '/',
       path    => ['/usr/bin', '/bin'],
-      command => 'mkdir -p /var/log/logstash';
+      command => "mkdir -p ${logstash::params::logdir}",
+      creates => $logstash::params::logdir;
     }
 
+    # Place the jar file
     file { "${logstash::installpath}/logstash.jar":
       ensure  => present,
       source  => $logstash::jarfile,
-      require => Exec['create_dir']
+      require => Exec['create_install_dir']
     }
 
-    file { '/etc/init.d/logstash':
-      ensure => present,
-      mode   => '0755',
-      # ... but what do you put in it? see below:
-    }
-
-    if $logstash::initfile == undef {
-      case $::osfamily {
-        debian:  { $template = 'logstash/init.d.logstash.erb' }
-        default: { fail("please set initfile: no template for ${::osfamily}") }
-      }
-      File['/etc/init.d/logstash'] {
-        content => template($template)
-      }
-    } else {
-      File['/etc/init.d/logstash'] {
-        source  => $logstash::initfile,
-      }
-    }
   }
 }

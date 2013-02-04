@@ -84,17 +84,17 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10.dev
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.10.dev/filters/urldecode
+#  http://logstash.net/docs/1.1.9/filters/urldecode
 #
-#  Need help? http://logstash.net/docs/1.1.10.dev/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
-define logstash::filter::urldecode(
+define logstash::filter::urldecode (
   $add_field    = '',
   $add_tag      = '',
   $all_fields   = '',
@@ -103,8 +103,9 @@ define logstash::filter::urldecode(
   $remove_tag   = '',
   $tags         = '',
   $type         = '',
-  $order        = 10,
+  $order        = 10
 ) {
+
 
   require logstash::params
 

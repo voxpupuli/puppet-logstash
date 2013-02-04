@@ -99,17 +99,17 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10.dev
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.10.dev/outputs/nagios_nsca
+#  http://logstash.net/docs/1.1.9/outputs/nagios_nsca
 #
-#  Need help? http://logstash.net/docs/1.1.10.dev/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
-define logstash::output::nagios_nsca(
+define logstash::output::nagios_nsca (
   $nagios_status,
   $exclude_tags     = '',
   $host             = '',
@@ -120,8 +120,9 @@ define logstash::output::nagios_nsca(
   $send_nsca_bin    = '',
   $send_nsca_config = '',
   $tags             = '',
-  $type             = '',
+  $type             = ''
 ) {
+
 
   require logstash::params
 

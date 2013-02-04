@@ -90,17 +90,17 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10.dev
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.10.dev/outputs/juggernaut
+#  http://logstash.net/docs/1.1.9/outputs/juggernaut
 #
-#  Need help? http://logstash.net/docs/1.1.10.dev/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
-define logstash::output::juggernaut(
+define logstash::output::juggernaut (
   $channels,
   $message_format = '',
   $exclude_tags   = '',
@@ -111,8 +111,9 @@ define logstash::output::juggernaut(
   $port           = '',
   $tags           = '',
   $timeout        = '',
-  $type           = '',
+  $type           = ''
 ) {
+
 
   require logstash::params
 

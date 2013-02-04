@@ -7,7 +7,7 @@
 #   format that is generally written for humans and not computer
 #   consumption.  Logstash ships with about 120 patterns by default. You
 #   can find them here:
-#   https://github.com/logstash/logstash/tree/v1.1.10.dev/patterns. You can
+#   https://github.com/logstash/logstash/tree/v1.1.9/patterns. You can
 #   add your own trivially. (See the patterns_dir setting)  If you need
 #   help building patterns to match your logs, you will find the
 #   http://grokdebug.herokuapp.com too quite useful!  Grok Basics  Grok
@@ -189,17 +189,17 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10.dev
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.10.dev/filters/grok
+#  http://logstash.net/docs/1.1.9/filters/grok
 #
-#  Need help? http://logstash.net/docs/1.1.10.dev/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
-define logstash::filter::grok(
+define logstash::filter::grok (
   $add_field           = '',
   $add_tag             = '',
   $break_on_match      = '',
@@ -214,8 +214,9 @@ define logstash::filter::grok(
   $singles             = '',
   $tags                = '',
   $type                = '',
-  $order               = 10,
+  $order               = 10
 ) {
+
 
   require logstash::params
 

@@ -128,17 +128,17 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10.dev
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this input can be found at:
-#  http://logstash.net/docs/1.1.10.dev/inputs/stomp
+#  http://logstash.net/docs/1.1.9/inputs/stomp
 #
-#  Need help? http://logstash.net/docs/1.1.10.dev/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
-define logstash::input::stomp(
+define logstash::input::stomp (
   $destination,
   $type,
   $host,
@@ -150,8 +150,9 @@ define logstash::input::stomp(
   $port           = '',
   $tags           = '',
   $charset        = '',
-  $user           = '',
+  $user           = ''
 ) {
+
 
   require logstash::params
 

@@ -35,7 +35,7 @@
 #
 # [*container*]
 #   The name of the container to put all of the key-value pairs into
-#   Example, to place all keys into container kv:  filter { kv { container
+#   Example, to place all keys into container kv:  filter { kv { conatiner
 #   =&gt; "kv" } }
 #   Value type is string
 #   Default value: "@fields"
@@ -130,17 +130,17 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10.dev
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.10.dev/filters/kv
+#  http://logstash.net/docs/1.1.9/filters/kv
 #
-#  Need help? http://logstash.net/docs/1.1.10.dev/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
-define logstash::filter::kv(
+define logstash::filter::kv (
   $add_field    = '',
   $add_tag      = '',
   $container    = '',
@@ -153,8 +153,9 @@ define logstash::filter::kv(
   $trim         = '',
   $type         = '',
   $value_split  = '',
-  $order        = 10,
+  $order        = 10
 ) {
+
 
   require logstash::params
 

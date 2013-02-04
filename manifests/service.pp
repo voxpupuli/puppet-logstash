@@ -72,14 +72,50 @@ class logstash::service {
 
   }
 
-  # action
-  service { 'logstash':
-    ensure     => $service_ensure,
-    enable     => $service_enable,
-    name       => $logstash::params::service_name,
-    hasstatus  => $logstash::params::service_hasstatus,
-    hasrestart => $logstash::params::service_hasrestart,
-    pattern    => $logstash::params::service_pattern,
+  # If we are managing the init script
+  if $logstash::status != 'unmanaged' {
+
+    File {
+      owner => 'root',
+      group => 'root',
+      mode  => '0644'
+    }
+
+    # If we are using a custom provider, thus not using the package
+    if $logstash::provider == 'custom' {
+
+      file { '/etc/init.d/logstash':
+        ensure  => present,
+        mode    => '0755',
+        content => $logstash::params::initfile, # undef when using an external source, otherwise content of our own init script
+        source  => $logstash::initfile,         # undef when using content of our own init script, otherwise it contains the source of the external init script
+      }
+    }
+
+    # If we supply a defaults file, place it.
+    if $logstash::defaultsfile != undef {
+
+      file { "${logstash::params::defaults_location}/logstash":
+        ensure => present,
+        source => $logstash::defaultsfile,
+      }
+
+    }
+
+  }
+
+  # Only not managed the init file when we are using an external jar file and use an other service manager
+  if $logstash::jarfile != undef and $logstash::status != 'unmanaged' {
+
+    service { 'logstash':
+      ensure     => $service_ensure,
+      enable     => $service_enable,
+      name       => $logstash::params::service_name,
+      hasstatus  => $logstash::params::service_hasstatus,
+      hasrestart => $logstash::params::service_hasrestart,
+      pattern    => $logstash::params::service_pattern,
+    }
+
   }
 
 }

@@ -108,17 +108,17 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10.dev
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this input can be found at:
-#  http://logstash.net/docs/1.1.10.dev/inputs/pipe
+#  http://logstash.net/docs/1.1.9/inputs/pipe
 #
-#  Need help? http://logstash.net/docs/1.1.10.dev/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
-define logstash::input::pipe(
+define logstash::input::pipe (
   $type,
   $command,
   $format         = '',
@@ -126,8 +126,9 @@ define logstash::input::pipe(
   $charset        = '',
   $message_format = '',
   $tags           = '',
-  $add_field      = '',
+  $add_field      = ''
 ) {
+
 
   require logstash::params
 

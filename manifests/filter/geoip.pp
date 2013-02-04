@@ -92,17 +92,17 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10.dev
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.10.dev/filters/geoip
+#  http://logstash.net/docs/1.1.9/filters/geoip
 #
-#  Need help? http://logstash.net/docs/1.1.10.dev/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
-define logstash::filter::geoip(
+define logstash::filter::geoip (
   $field,
   $add_field    = '',
   $database     = '',
@@ -111,8 +111,9 @@ define logstash::filter::geoip(
   $remove_tag   = '',
   $tags         = '',
   $type         = '',
-  $order        = 10,
+  $order        = 10
 ) {
+
 
   require logstash::params
 

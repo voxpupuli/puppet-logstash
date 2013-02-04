@@ -59,25 +59,26 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10.dev
+#  This define is created based on LogStash version 1.1.9
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.10.dev/outputs/stdout
+#  http://logstash.net/docs/1.1.9/outputs/stdout
 #
-#  Need help? http://logstash.net/docs/1.1.10.dev/learn
+#  Need help? http://logstash.net/docs/1.1.9/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
-define logstash::output::stdout(
+define logstash::output::stdout (
   $debug        = '',
   $debug_format = '',
   $exclude_tags = '',
   $fields       = '',
   $message      = '',
   $tags         = '',
-  $type         = '',
+  $type         = ''
 ) {
+
 
   require logstash::params
 
