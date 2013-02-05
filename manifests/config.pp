@@ -24,24 +24,6 @@
 #
 class logstash::config {
 
-  #### Configuration
-
-  exec { 'create_config_dir':
-    cwd     => '/',
-    path    => ['/usr/bin', '/bin'],
-    command => "mkdir -p ${logstash::params::configdir}",
-    creates => $logstash::params::configdir;
-  }
-
-  ### Manage the config directory
-  file { $logstash::params::configdir:
-    ensure  => directory,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    purge   => true,
-    recurse => true,
-    require => Exec['create_config_dir']
-  }
+  logstash::confdir { $logstash::instances:; }
 
 }

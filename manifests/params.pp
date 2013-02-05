@@ -45,10 +45,12 @@ class logstash::params {
   #### Defaults for other files
 
   # Config directory
-  $configdir = '/etc/logstash/conf.d'
+  $configdir = '/etc/logstash'
 
   # Logging dir
   $logdir = '/var/log/logstash/'
+
+  $installpath = '/usr/share/logstash/'
 
   #### Internal module values
 

@@ -89,6 +89,8 @@ class logstash(
   $installpath  = undef,
   $java_install = false,
   $java_package = undef
+  $instances    = [ 'agent' ],
+  $defaults     = { 'agent' => "puppet:///modules/${module_name}/etc/default/agent" }
 ) inherits logstash::params {
 
   #### Validate parameters
@@ -105,8 +107,6 @@ class logstash(
   if ! ($status in [ 'enabled', 'disabled', 'running', 'unmanaged' ]) {
     fail("\"${status}\" is not a valid status parameter value")
   }
-
-
 
   #### Manage actions
 
