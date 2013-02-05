@@ -10,13 +10,6 @@ Installation, make sure service is running and will be started at boot time:
 
      class { 'logstash': }
 
-Installation from JAR file:
-
-     class { 'logstash':
-       jarfile  => $jarfilepath,
-       provider => 'custom',
-     }
-
 Removal/decommissioning:
 
      class { 'logstash':
@@ -27,6 +20,30 @@ Install everything but disable service(s) afterwards:
 
      class { 'logstash':
        status => 'disabled',
+     }
+
+Installation with a JAR file:
+
+     class { 'logstash':
+       provider => 'custom',
+       jarfile  => 'puppet:///path/to/jarfile'
+     }
+
+When no init script is provided when using custom provider, built in init script will be placed.
+You can however supply your own init script and defaults file.
+
+     class { 'logstash':
+       provider     => 'custom',
+       jarfile      => 'puppet:///path/to/jarfile',
+       initfile     => 'puppet:///path/to/initfile',
+       defaultsfile => 'puppet:///path/to/defaultsfile'
+     }
+
+When you want to use an other service manager like 'runit' or 'daemontools':
+
+     class { 'logstash':
+       provider => 'custom',
+       status   => 'unmanaged'
      }
 
 ## Plugins
