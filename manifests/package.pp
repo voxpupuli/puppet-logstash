@@ -89,11 +89,19 @@ class logstash::package {
     }
 
     # Place the jar file
-    file { "${logstash::installpath}/logstash.jar":
+    $filenameArray = split($logstash::jarfile, '/')
+    $basefilename = $filenameArray[-1]
+    file { "${logstash::installpath}/${basefilename}":
       ensure  => present,
       source  => $logstash::jarfile,
       require => Exec['create_install_dir']
     }
+    file { "${logstash::installpath}/logstash.jar":
+      ensure  => present,
+      target  => "${logstash::installpath}/${basefilename}",
+      require => File["${logstash::installpath}/${basefilename}"]
+    }
+
 
   }
 }

@@ -91,7 +91,7 @@ class logstash::service {
       } else {
         ## Get the init file we provide
         case $::operatingsystem {
-          'RedHat', 'CentOS', 'Fedora', 'Scientific': {
+          'RedHat', 'CentOS', 'Fedora', 'Scientific', 'Amazon': {
             $initscript = template("${module_name}/etc/init.d/logstash.init.RedHat.erb")
           }
           'Debian', 'Ubuntu': {
