@@ -97,7 +97,7 @@ class logstash::package {
       require => Exec['create_install_dir']
     }
     file { "${logstash::installpath}/logstash.jar":
-      ensure  => present,
+      ensure  => 'link',
       target  => "${logstash::installpath}/${basefilename}",
       require => File["${logstash::installpath}/${basefilename}"]
     }
