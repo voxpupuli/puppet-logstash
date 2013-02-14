@@ -86,7 +86,9 @@ class logstash(
   $jarfile      = undef,
   $initfile     = undef,
   $defaultsfile = undef,
-  $installpath  = undef
+  $installpath  = undef,
+  $java_install = false,
+  $java_package = undef
 ) inherits logstash::params {
 
   #### Validate parameters
@@ -117,6 +119,10 @@ class logstash(
   # service(s)
   class { 'logstash::service': }
 
+  if $java_install == true {
+    # Install java
+    class { 'logstash::java': }
+  }
 
 
   #### Manage relationships
