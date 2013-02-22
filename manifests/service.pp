@@ -127,7 +127,10 @@ class logstash::service {
   }
 
   # Only not managed the init file when we are using an external jar file and use an other service manager
-  if $logstash::jarfile == undef and $logstash::status != 'unmanaged' {
+  # TODO: This is an ugly hack for now because i can't think up a better solution.
+  if ($logstash::jarfile != undef and $logstash::status == 'unmanaged') {
+    # Don't manage the service
+  } else {
 
     service { 'logstash':
       ensure     => $service_ensure,
