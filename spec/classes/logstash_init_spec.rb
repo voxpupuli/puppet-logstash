@@ -137,6 +137,32 @@ describe 'logstash', :type => 'class' do
  
       it { expect { should raise_error(Puppet::Error) } }
     end
+
+    context "With a custom init script" do
+
+      let :facts do {
+        :operatingsystem => 'CentOS'
+      } end
+
+      let :params do {
+        :initfile => 'puppet:///path/to/init'
+      } end
+
+      # init.pp
+      it { should contain_class('logstash::package') }
+      it { should contain_class('logstash::config') }
+      it { should contain_class('logstash::service') }
+
+      # package.pp
+      it { should contain_package('logstash') }
+
+      # service.pp
+      it { should contain_service('logstash') }
+      it { should contain_file('/etc/init.d/logstash').with(
+        :source => 'puppet:///path/to/init',
+        :content => nil
+      ) }
+    end
   end
 
   context "With custom jar file" do

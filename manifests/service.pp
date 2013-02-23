@@ -81,50 +81,50 @@ class logstash::service {
       mode  => '0644'
     }
 
-    # If we are using a custom provider, thus not using the package
-    if $logstash::provider == 'custom' {
+    # Do we get a custom init script?
+    if $logstash::initfile != undef {
 
-      ## Set initfile to undef when using an external init file
-      if $logstash::initfile != undef {
-        $initscript = undef
+      # Set initscript to undef
+      $initscript = undef
+    }
 
-      } else {
-        ## Get the init file we provide
-        case $::operatingsystem {
-          'RedHat', 'CentOS', 'Fedora', 'Scientific', 'Amazon': {
-            $initscript = template("${module_name}/etc/init.d/logstash.init.RedHat.erb")
-          }
-          'Debian', 'Ubuntu': {
-            $initscript = template("${module_name}/etc/init.d/logstash.init.Debian.erb")
-          }
-          default: {
-            fail("\"${module_name}\" provides no default init file
-                  for \"${::operatingsystem}\"")
-          }
+    # If we are using a custom provider, thus not using the package and not supplying a custom init script use our own init script
+    if $logstash::provider == 'custom' and $logstash::initfile == undef {
 
+      ## Get the init file we provide
+      case $::operatingsystem {
+        'RedHat', 'CentOS', 'Fedora', 'Scientific', 'Amazon': {
+          $initscript = template("${module_name}/etc/init.d/logstash.init.RedHat.erb")
+        }
+        'Debian', 'Ubuntu': {
+          $initscript = template("${module_name}/etc/init.d/logstash.init.Debian.erb")
+        }
+        default: {
+          fail("\"${module_name}\" provides no default init file
+                for \"${::operatingsystem}\"")
         }
 
       }
-
-      file { '/etc/init.d/logstash':
-        ensure  => present,
-        mode    => '0755',
-        content => $initscript,         # undef when using an external source, otherwise content of our own init script
-        source  => $logstash::initfile, # undef when using content of our own init script, otherwise it contains the source of the external init script
-      }
     }
 
-    # If we supply a defaults file, place it.
-    if $logstash::defaultsfile != undef {
+    file { '/etc/init.d/logstash':
+      ensure  => present,
+      mode    => '0755',
+      content => $initscript,         # undef when using an external source, otherwise content of our own init script
+      source  => $logstash::initfile, # undef when using content of our own init script, otherwise it contains the source of the external init script
+    }
+  }
 
-      file { "${logstash::params::defaults_location}/logstash":
-        ensure => present,
-        source => $logstash::defaultsfile,
-      }
+  # If we supply a defaults file, place it.
+  if $logstash::defaultsfile != undef {
 
+    file { "${logstash::params::defaults_location}/logstash":
+      ensure => present,
+      source => $logstash::defaultsfile,
     }
 
   }
+
 
   # Only not managed the init file when we are using an external jar file and use an other service manager
   # TODO: This is an ugly hack for now because i can't think up a better solution.

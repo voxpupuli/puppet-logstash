@@ -82,7 +82,7 @@ class logstash::params {
       $service_hasrestart = true
       $service_hasstatus  = true
       $service_pattern    = $service_name
-      $defaults_location  = '/etc/defaults'
+      $defaults_location  = '/etc/default'
     }
     default: {
       fail("\"${module_name}\" provides no service parameters

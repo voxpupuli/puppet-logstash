@@ -2,7 +2,10 @@
 
 A puppet module for managing and configuring Logstash
 
-This module is puppet 3 tested
+http://www.logstash.net
+
+[![Build Status](https://travis-ci.org/electrical/puppet-logstash.png?branch=master)](https://travis-ci.org/electrical/logstash)
+
 
 ## Usage
 
@@ -22,6 +25,24 @@ Install everything but disable service(s) afterwards:
        status => 'disabled',
      }
 
+When you want to use an other service manager like 'runit' or 'daemontools':
+
+     class { 'logstash':
+       status   => 'unmanaged'
+     }
+
+If you rather supply your own init script:
+
+     class { 'logstash':
+       initfile => 'puppet:///path/to/initfile'
+     }
+
+In all cases you can supply a defaults file:
+
+     class { 'logstash':
+       defaultsfile => 'puppet:///path/to/defaults'
+     }
+
 Installation with a JAR file:
 
      class { 'logstash':
@@ -39,11 +60,10 @@ You can however supply your own init script and defaults file.
        defaultsfile => 'puppet:///path/to/defaultsfile'
      }
 
-When you want to use an other service manager like 'runit' or 'daemontools':
+If you want java to be installed by the module:
 
      class { 'logstash':
-       provider => 'custom',
-       status   => 'unmanaged'
+       java_install => true
      }
 
 ## Plugins
