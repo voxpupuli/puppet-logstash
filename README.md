@@ -47,7 +47,8 @@ Installation with a JAR file:
 
      class { 'logstash':
        provider => 'custom',
-       jarfile  => 'puppet:///path/to/jarfile'
+       jarfile  => 'puppet:///path/to/jarfile',
+       installpath => '/path/to/install/dir'
      }
 
 When no init script is provided when using custom provider, built in init script will be placed.
