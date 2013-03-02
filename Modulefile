@@ -1,5 +1,5 @@
 name    'ispavailability-logstash'
-version '0.0.4'
+version '0.0.5'
 source 'https://github.com/electrical/puppet-logstash'
 author 'ispavailability'
 license 'Apache License, Version 2.0'

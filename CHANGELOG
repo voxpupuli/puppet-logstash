@@ -1,10 +1,15 @@
-0.0.4 ( Feb 10 2013 )
+0.0.5 ( Mar 02, 2013 )
+  Adding spec tests
+  Update Readme ( PR #20 by rjw1 )
+  New feature to install java
+
+0.0.4 ( Feb 10, 2013 )
   Rename Redhat to RedHat for init file ( PR #12 by pkubat )
   Adding Amazon as Operating system ( PR #12 by pkubat )
   Symlinking Jar file to generic name ( PR #12 by pkubat )
   Correting symlink ( PR #14 by Jeff Wong )
 
-0.0.3 ( Feb  5 2013 )
+0.0.3 ( Feb  5, 2013 )
   Clarify jarfile usage and validation ( PR #6 by Garth Kidd )
   Add default Debian Init script when non provided and using custom source ( PR #7 by Garth Kidd )
   Add RedHat as OS type ( PR #8 by Dan )

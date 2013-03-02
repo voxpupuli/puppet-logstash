@@ -67,6 +67,13 @@ If you want java to be installed by the module:
        java_install => true
      }
 
+If you want a specific java package/version:
+
+     class { 'logstash':
+       java_install => true,
+       java_package => 'packagename'
+     }
+
 ## Plugins
 
 Every plugin in Logstash has its own define file.
