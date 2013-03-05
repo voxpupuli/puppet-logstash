@@ -88,13 +88,15 @@
 #   This variable is required
 #
 # [*ssl_certificate*]
-#   ssl certificate to use
+#   ssl certificate to use, format should follow the file source definition
+#   should be in format "puppet:///" or "file://"
 #   Value type is string
 #   Default value: None
 #   This variable is required
 #
 # [*ssl_key*]
-#   ssl key to use
+#   ssl key to use, format should follow the file source definition.
+#   should be in format "puppet:///" or "file://"
 #   Value type is string
 #   Default value: None
 #   This variable is required
@@ -208,12 +210,12 @@ define logstash::input::lumberjack (
 
   if $ssl_key {
     validate_string($ssl_key)
-    $opt_ssl_key = "  ssl_key => \"${ssl_key}\"\n"
+    $opt_ssl_key = "  ssl_key => \"${logstash::params::configbase}/lumberjack/${name}.key\"\n"
   }
 
   if $ssl_certificate {
     validate_string($ssl_certificate)
-    $opt_ssl_certificate = "  ssl_certificate => \"${ssl_certificate}\"\n"
+    $opt_ssl_certificate = "  ssl_certificate => \"${logstash::params::configbase}/lumberjack/${name}.crt\"\n"
   }
 
   if $host {
@@ -230,6 +232,36 @@ define logstash::input::lumberjack (
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
+
+  #### Write Lumberjack PKI
+  file { "${logstash::params::configbase}/lumberjack":
+    ensure => directory,
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0644',
+    notify  => Class['logstash::service'],
+    require => Class['logstash::package', 'logstash::config']
+  }
+  
+  file { "${logstash::params::configbase}/lumberjack/${name}.crt":
+    ensure => present,
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0600',
+    source => $ssl_certificate,
+    notify  => Class['logstash::service'],
+    require => Class['logstash::package', 'logstash::config']
+  }
+  file { "${logstash::params::configbase}/lumberjack/${name}.key":
+    ensure => present,
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0600',
+    source => $ssl_key,
+    notify  => Class['logstash::service'],
+    require => Class['logstash::package', 'logstash::config']
+  }
+
 
   #### Write config file
 
