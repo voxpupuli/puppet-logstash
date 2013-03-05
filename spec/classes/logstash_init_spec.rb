@@ -19,6 +19,7 @@ describe 'logstash', :type => 'class' do
 
       # service.pp
       it { should contain_service('logstash') }
+      it { should_not contain_file('/etc/init.d/logstash') }
 
     end
 
@@ -37,6 +38,7 @@ describe 'logstash', :type => 'class' do
 
       # service.pp
       it { should contain_service('logstash') }
+      it { should_not contain_file('/etc/init.d/logstash') }
 
     end
 
@@ -55,6 +57,7 @@ describe 'logstash', :type => 'class' do
 
       # service.pp
       it { should contain_service('logstash') }
+      it { should_not contain_file('/etc/init.d/logstash') }
 
     end
 
@@ -73,6 +76,7 @@ describe 'logstash', :type => 'class' do
 
       # service.pp
       it { should contain_service('logstash') }
+      it { should_not contain_file('/etc/init.d/logstash') }
 
     end
 
@@ -91,6 +95,7 @@ describe 'logstash', :type => 'class' do
 
       # service.pp
       it { should contain_service('logstash') }
+      it { should_not contain_file('/etc/init.d/logstash') }
 
     end
 
@@ -109,6 +114,7 @@ describe 'logstash', :type => 'class' do
 
       # service.pp
       it { should contain_service('logstash') }
+      it { should_not contain_file('/etc/init.d/logstash') }
 
     end
 
@@ -127,6 +133,7 @@ describe 'logstash', :type => 'class' do
 
       # service.pp
       it { should contain_service('logstash') }
+      it { should_not contain_file('/etc/init.d/logstash') }
    
     end
 
@@ -180,7 +187,7 @@ describe 'logstash', :type => 'class' do
       } end
 
       it { should_not contain_package('logstash') }
-      it { should contain_file('/etc/init.d/logstash') }
+      it { should contain_file('/etc/init.d/logstash').with(:source => nil) }
       it { should contain_service('logstash') }
 
     end
@@ -199,7 +206,9 @@ describe 'logstash', :type => 'class' do
       } end
 
       it { should_not contain_package('logstash') }
-      it { should contain_file('/etc/init.d/logstash').with('source' => 'puppet:///path/to/logstash.init') }
+      it { should contain_file('/etc/init.d/logstash').with(
+        :source => 'puppet:///path/to/logstash.init')
+      }
       it { should contain_service('logstash') }
 
     end
