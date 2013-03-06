@@ -122,6 +122,9 @@ class logstash(
   if $java_install == true {
     # Install java
     class { 'logstash::java': }
+
+    # ensure we first java java and then manage the service
+    Class['logstash::java'] -> Class['logstash::service']
   }
 
 
