@@ -24,7 +24,7 @@ define logstash::confdir {
   exec { "create_config_dir_${name}":
     cwd     => '/',
     path    => ['/usr/bin', '/bin'],
-    command => "mkdir -p ${$dir}",
+    command => "mkdir -p ${dir}",
     creates => $dir;
   }
 

@@ -88,7 +88,7 @@ class logstash(
   $defaultsfile = undef,
   $installpath  = undef,
   $java_install = false,
-  $java_package = undef
+  $java_package = undef,
   $instances    = [ 'agent' ],
   $defaults     = { 'agent' => "puppet:///modules/${module_name}/etc/default/agent" }
 ) inherits logstash::params {

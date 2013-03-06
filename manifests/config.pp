@@ -24,6 +24,7 @@
 #
 class logstash::config {
 
+  ## Create and manage the config directories for the different instances
   logstash::confdir { $logstash::instances:; }
 
 }

@@ -38,7 +38,7 @@ define logstash::servicefile (
 
   case $::operatingsystem {
     'RedHat', 'CentOS', 'Fedora', 'Scientific': {
-      $initscript = template("${module_name}/etc/init.d/logstash.init.Redhat.erb")
+      $initscript = template("${module_name}/etc/init.d/logstash.init.RedHat.erb")
     }
     'Debian', 'Ubuntu': {
       $initscript = template("${module_name}/etc/init.d/logstash.init.Debian.erb")
