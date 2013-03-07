@@ -44,8 +44,11 @@ class logstash::params {
 
   #### Defaults for other files
 
+  # Config base
+  $configbase = '/etc/logstash'
+
   # Config directory
-  $configdir = '/etc/logstash/conf.d'
+  $configdir = "${configbase}/conf.d"
 
   # Logging dir
   $logdir = '/var/log/logstash/'
