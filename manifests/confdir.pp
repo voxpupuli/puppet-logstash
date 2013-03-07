@@ -18,7 +18,7 @@ define logstash::confdir {
 
   require logstash::params
 
-  $dir = "${logstash::params::configdir}/${name}.d"
+  $dir = "${logstash::params::configdir}/${name}/config"
 
   #### Create the directory
   exec { "create_config_dir_${name}":
