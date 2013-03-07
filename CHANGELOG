@@ -1,3 +1,7 @@
+0.0.6 ( Mar 07, 2013 )
+  Fix issue that the init file was overwritten
+  Ensure we install java first before starting logstash if enabled
+
 0.0.5 ( Mar 02, 2013 )
   Adding spec tests
   Update Readme ( PR #20 by rjw1 )
