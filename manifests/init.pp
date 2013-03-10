@@ -78,19 +78,18 @@
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
 class logstash(
-  $ensure       = $logstash::params::ensure,
-  $autoupgrade  = $logstash::params::autoupgrade,
-  $status       = $logstash::params::status,
-  $version      = false,
-  $provider     = 'package',
-  $jarfile      = undef,
-  $initfile     = undef,
-  $defaultsfile = undef,
-  $installpath  = undef,
-  $java_install = false,
-  $java_package = undef,
-  $instances    = [ 'agent' ],
-  $defaults     = { 'agent' => "puppet:///modules/${module_name}/etc/default/agent" }
+  $ensure        = $logstash::params::ensure,
+  $autoupgrade   = $logstash::params::autoupgrade,
+  $status        = $logstash::params::status,
+  $version       = false,
+  $provider      = 'package',
+  $jarfile       = undef,
+  $installpath   = $logstash::params::installpath,
+  $java_install  = false,
+  $java_package  = undef,
+  $instances     = [ 'agent' ],
+  $initfiles     = undef,
+  $defaultsfiles = undef
 ) inherits logstash::params {
 
   #### Validate parameters
@@ -106,6 +105,15 @@ class logstash(
   # service status
   if ! ($status in [ 'enabled', 'disabled', 'running', 'unmanaged' ]) {
     fail("\"${status}\" is not a valid status parameter value")
+  }
+
+  #### Deprecation notices
+  if $defaults_file {
+    fail("The variable \"defaults_file\" has been deprecated. Please use the \"defaultsfiles\" hash variable")
+  }
+
+  if $initfile {
+    fail("The variable \"initfile\" has been deprecated. Please use the \"initfiles\" hash variable")
   }
 
   #### Manage actions

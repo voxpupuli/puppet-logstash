@@ -14,7 +14,7 @@
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
-define logstash::confdir {
+define logstash::configdir {
 
   require logstash::params
 
@@ -36,7 +36,8 @@ define logstash::confdir {
     mode    => '0644',
     purge   => true,
     recurse => true,
-    require => Exec["create_config_dir_${name}"]
+    require => Exec["create_config_dir_${name}"],
+    notify  => Service["logstash-${name}"]
   }
 
 }

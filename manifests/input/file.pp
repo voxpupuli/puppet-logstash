@@ -283,16 +283,18 @@ define logstash::input::file (
 
   #### Write config file
 
-  $out = prefix($instances, "${logstash::params::configdir}/")
-  $files = suffix($out, "/config/input_file_${name}")
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/input_file_${name}")
+  $services = prefix($instances, 'logstash-')
 
-  file { $files:
+  file { $conffiles:
     ensure  => present,
-    content => "input {\n file {\n${opt_add_field}${opt_charset}${opt_debug}${opt_discover_interval}${opt_exclude}${opt_format}${opt_message_format}${opt_path}${opt_sincedb_path}${opt_sincedb_write_interval}${opt_start_position}${opt_stat_interval}${opt_tags}${opt_type} }\n}\n"
+    content => "input {\n file {\n${opt_add_field}${opt_charset}${opt_debug}${opt_discover_interval}${opt_exclude}${opt_format}${opt_message_format}${opt_path}${opt_sincedb_path}${opt_sincedb_write_interval}${opt_start_position}${opt_stat_interval}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
-    require => Class['logstash::package', 'logstash::config']
+    notify  => Service[$services],
+    require => Class['logstash::package', 'logstash::config' ]
   }
+
 }
