@@ -227,20 +227,6 @@ describe 'logstash', :type => 'class' do
     end
   end
 
-  context "without service management" do
-
-    let :facts do {
-      :operatingsystem => 'CentOS'
-    } end
-
-    let :params do {
-      :status => 'unmanaged'
-    } end
-
-    it { should_not contain_servce('logstash-agent') }
-
-  end
-
   context "Do not manage the service" do
 
     context "with a package" do

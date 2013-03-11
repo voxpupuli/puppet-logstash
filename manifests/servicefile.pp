@@ -21,8 +21,8 @@
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
 define logstash::servicefile (
-  $service_ensure,
-  $service_enable
+  $service_enable,
+  $service_ensure = undef
 ) {
 
   require logstash::params
