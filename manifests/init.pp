@@ -89,7 +89,9 @@ class logstash(
   $java_package  = undef,
   $instances     = [ 'agent' ],
   $initfiles     = undef,
-  $defaultsfiles = undef
+  $defaultsfiles = undef,
+  $defaults_file = undef,
+  $initfile      = undef
 ) inherits logstash::params {
 
   #### Validate parameters
@@ -109,11 +111,11 @@ class logstash(
 
   #### Deprecation notices
   if $defaults_file {
-    fail("The variable \"defaults_file\" has been deprecated. Please use the \"defaultsfiles\" hash variable")
+    fail('The variable \"defaults_file\" has been deprecated. Please use the "defaultsfiles" hash variable')
   }
 
   if $initfile {
-    fail("The variable \"initfile\" has been deprecated. Please use the \"initfiles\" hash variable")
+    fail('The variable "initfile" has been deprecated. Please use the "initfiles" hash variable')
   }
 
   #### Manage actions

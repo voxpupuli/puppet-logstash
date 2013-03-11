@@ -79,8 +79,8 @@ class logstash::service {
     }
 
     service { 'logstash':
-      enable => false,
-      ensure => 'stopped'
+      ensure => 'stopped',
+      enable => false
     }
   }
 
