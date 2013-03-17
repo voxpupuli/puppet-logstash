@@ -1,6 +1,6 @@
 #! /bin/sh
 #
-#       /etc/rc.d/init.d/logstash
+#       /etc/rc.d/init.d/logstash-<%=name%>
 #
 #       Starts Logstash as a daemon
 #
@@ -8,7 +8,7 @@
 # description: Starts Logstash as a daemon
 
 ### BEGIN INIT INFO
-# Provides: logstash
+# Provides: logstash-<%=name%>
 # Required-Start: $local_fs $remote_fs
 # Required-Stop: $local_fs $remote_fs
 # Default-Start: 2 3 4 5
@@ -21,8 +21,8 @@
 . /etc/rc.d/init.d/functions
 
 PATH=/bin:/usr/bin:/sbin:/usr/sbin
-NAME=logstash
-DESC="Logstash Daemon"
+NAME=logstash-<%= name %>
+DESC="Logstash Daemon <%= name %>"
 DEFAULT=/etc/sysconfig/$NAME
 
 if [ `id -u` -ne 0 ]; then
@@ -38,13 +38,13 @@ export JAVA_HOME=/usr
 LS_HOME=<%= scope.lookupvar('logstash::installpath') %>
 
 # Additional Java OPTS
-LS_JAVA_OPTS='-Xms256m -Xmx256m'
+LS_JAVA_OPTS="-Xmx256m -Djava.io.tmpdir=$LS_HOME/tmp"
 
 # logstash log directory
 LOG_DIR=/var/log/logstash
 
 # logstash configuration directory
-CONF_DIR=/etc/logstash/conf.d
+CONF_DIR=<%= configdir %>
 
 # logstash log file
 LOG_FILE=$LOG_DIR/$NAME.log
@@ -59,7 +59,7 @@ NICE=19
 FILTER_THREADS=1
 
 # Path to sincedb files
-SINCEDB_PATH=/var/lib/logstash
+SINCEDB_PATH=/etc/logstash/<%= name %>/sincedb/
 
 # End of variables that can be overwritten in $DEFAULT
 
@@ -70,32 +70,51 @@ fi
 # Define other required variables
 PID_FILE=/var/run/$NAME.pid
 
-DAEMON=`which java`
-ARGS="${LS_JAVA_OPTS} -jar ${LS_HOME}/logstash.jar agent --config ${CONF_DIR} --log ${LOG_FILE} -w ${FILTER_THREADS}"
+JAVA=`which java`
+JAR="${LS_HOME}/logstash.jar"
+ARGS="${LS_JAVA_OPTS} -jar ${JAR} agent --config ${CONF_DIR} --log ${LOG_FILE} -w ${FILTER_THREADS}"
 
 export SINCEDB_PATH=$SINCEDB_PATH
 
-# Exit if the package is not installed
-if [ ! -x "$DAEMON" ]; then
-{
-  echo "Couldn't find $DAEMON"
-  exit 99
+is_true() {
+    if [ "x$1" = "xtrue" -o "x$1" = "xyes" -o "x$1" = "x1" ] ; then
+        return 0
+    else
+        return 1
+    fi
 }
-fi
-
 
 #
 # Function that starts the daemon/service
 #
 do_start()
 {
+
+  if ! is_true "$START" ; then
+    echo "logstash not configured to start, please edit $DEFAULT to enable"
+    exit 0
+  fi
+
+  if [ -z "$JAVA" ]; then
+    echo "no JDK found - $JAVA"
+    exit 1
+  fi
+
+  if ! test -e "${JAR}"; then
+    echo "Daemon $DAEMON doesn't exist"
+    exit 1
+  fi
+
   if pidofproc -p "$PID_FILE" >/dev/null; then
     failure
     exit 99
   fi
+
   ulimit -n $OPEN_FILES
+
   cd $LS_HOME
-  $DAEMON $ARGS > /dev/null 2>&1 &
+  $JAVA $ARGS > /dev/null 1>&1 &
+
   RETVAL=$?
   local PID=`pgrep -f "${DAEMON} ${ARGS}"`
   echo $PID > $PID_FILE

@@ -111,7 +111,7 @@ class logstash(
 
   #### Deprecation notices
   if $defaults_file {
-    fail('The variable \"defaults_file\" has been deprecated. Please use the "defaultsfiles" hash variable')
+    fail('The variable "defaults_file" has been deprecated. Please use the "defaultsfiles" hash variable')
   }
 
   if $initfile {
@@ -136,7 +136,6 @@ class logstash(
     # ensure we first java java and then manage the service
     Class['logstash::java'] -> Class['logstash::service']
   }
-
 
   #### Manage relationships
 

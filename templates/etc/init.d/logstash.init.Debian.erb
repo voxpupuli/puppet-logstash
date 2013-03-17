@@ -3,7 +3,7 @@
 # /etc/init.d/logstash -- startup script for LogStash.
 #
 ### BEGIN INIT INFO
-# Provides:          logstash
+# Provides:          logstash-<%=name%>
 # Required-Start:    $all
 # Required-Stop:     $all
 # Default-Start:     2 3 4 5
@@ -15,8 +15,8 @@
 set -e
 
 PATH=/bin:/usr/bin:/sbin:/usr/sbin
-NAME=logstash
-DESC="Logstash Daemon"
+NAME=logstash-<%=name%>
+DESC="Logstash Daemon <%=name%>"
 DEFAULT=/etc/default/$NAME
 
 if [ `id -u` -ne 0 ]; then
@@ -33,22 +33,22 @@ fi
 # The following variables can be overwritten in $DEFAULT
 
 # Run logstash as this user ID and group ID
-LS_USER=root
-LS_GROUP=root
+LS_USER=logstash
+LS_GROUP=logstash
 
-export JAVA_HOME=/usr
+JAVA=/usr/bin/java
 
 # Directory where the logstash all in one jar lives
 LS_HOME=<%= scope.lookupvar('logstash::installpath') %>
 
 # Additional Java OPTS
-#LS_JAVA_OPTS=
+LS_JAVA_OPTS=" -Djava.io.tmpdir=/var/logstash/"
 
 # logstash log directory
 LOG_DIR=/var/log/logstash
 
 # logstash configuration directory
-CONF_DIR=/etc/logstash/conf.d
+CONF_DIR=<%= configdir %>
 
 # logstash log file
 LOG_FILE=$LOG_DIR/$NAME.log
@@ -59,11 +59,8 @@ OPEN_FILES=2048
 # Nice level
 NICE=19
 
-# Filter worker threads
+# Filter threads
 FILTER_THREADS=1
-
-# Path to sincedb files
-SINCEDB_PATH=/var/lib/logstash
 
 # End of variables that can be overwritten in $DEFAULT
 
@@ -77,7 +74,13 @@ PID_FILE=/var/run/$NAME.pid
 DAEMON=$LS_HOME/logstash.jar
 DAEMON_OPTS="agent -f ${CONF_DIR} --log ${LOG_FILE} -w ${FILTER_THREADS}"
 
-export SINCEDB_PATH=$SINCEDB_PATH 
+is_true() {
+    if [ "x$1" = "xtrue" -o "x$1" = "xyes" -o "x$1" = "x1" ] ; then
+        return 0
+    else
+        return 1
+    fi
+}
 
 # Check DAEMON exists
 if ! test -e $DAEMON; then
@@ -87,15 +90,26 @@ fi
 
 case "$1" in
    start)
-      if [ -z "$JAVA_HOME" ]; then
-         log_failure_msg "no JDK found - please set JAVA_HOME"
+      if ! is_true "$START" ; then
+         echo "logstash not configured to start, please edit $DEFAULT to enable"
+         exit 0
+      fi
+
+      if [ -z "$JAVA" ]; then
+         log_failure_msg "no JDK found - $JAVA"
+         exit 1
+      fi
+
+      # Check if a config file exists
+      if ! test -e $CONF_DIR; then
+         log_failure_msg "There aren't any configuration files in $CONF_DIR"
          exit 1
       fi
 
       log_daemon_msg "Starting $DESC"
-   
+
       if start-stop-daemon --test --start --pidfile "$PID_FILE" \
-         --user "$LS_USER" --exec "$JAVA_HOME/bin/java" \
+         --user "$LS_USER" --exec "$JAVA" \
       >/dev/null; then
          # Prepare environment
          ulimit -n $OPEN_FILES
@@ -103,12 +117,12 @@ case "$1" in
          # Start Daemon
          start-stop-daemon --start -b --user "$LS_USER" -c "$LS_USER":"$LS_GROUP" \
            -d "$LS_HOME" --pidfile "$PID_FILE" --make-pidfile \
-           --exec "$JAVA_HOME/bin/java" -- $LS_JAVA_OPTS -jar $DAEMON $DAEMON_OPTS
+           --exec "$JAVA" -- $LS_JAVA_OPTS -jar $DAEMON $DAEMON_OPTS
 
          sleep 1
 
          if start-stop-daemon --test --start --pidfile "$PID_FILE" \
-            --user "$LS_USER" --exec "$JAVA_HOME/bin/java" \
+            --user "$LS_USER" --exec "$JAVA" \
          >/dev/null; then
 
             if [ -f "$PID_FILE" ]; then
@@ -123,13 +137,13 @@ case "$1" in
          log_progress_msg "(already running)"
          log_end_msg 0
       fi
-   ;;    
+   ;;
    stop)
       log_daemon_msg "Stopping $DESC"
 
       set +e
 
-      if [ -f "$PID_FILE" ]; then 
+      if [ -f "$PID_FILE" ]; then
          start-stop-daemon --stop --pidfile "$PID_FILE" \
             --user "$LS_USER" \
             --retry=TERM/20/KILL/5 >/dev/null
@@ -154,7 +168,7 @@ case "$1" in
       set +e
 
       start-stop-daemon --test --start --pidfile "$PID_FILE" \
-         --user "$LS_USER" --exec "$JAVA_HOME/bin/java" \
+         --user "$LS_USER" --exec "$JAVA" \
       >/dev/null 2>&1
 
       if [ "$?" = "0" ]; then
@@ -186,3 +200,4 @@ case "$1" in
 esac
 
 exit 0
+

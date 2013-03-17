@@ -44,8 +44,7 @@ define logstash::servicefile (
       $defaults_file = $def[$name]
     }
 
-    $installpath = $logstash::params::installpath
-    $configdir = "${logstash::params::configdir}/${name}/conf"
+    $configdir = "${logstash::params::configdir}/${name}/config"
 
     # Do we get a custom init script?
     if $initfile != undef {
@@ -55,7 +54,7 @@ define logstash::servicefile (
     }
 
     # If we are using a custom provider, thus not using the package and not supplying a custom init script use our own init script
-    if $logstash::provider == 'custom' and $initfile == undef {
+    if $initfile == undef {
 
       ## Get the init file we provide
       case $::operatingsystem {
@@ -92,7 +91,7 @@ define logstash::servicefile (
         owner  => 'root',
         group  => 'root',
         mode   => '0644',
-        before => Service[ "logstash-${name}" ]
+        before => Service[ "logstash-${name}" ],
       }
     }
 
