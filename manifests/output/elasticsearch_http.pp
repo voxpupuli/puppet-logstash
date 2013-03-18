@@ -84,6 +84,12 @@
 #   This variable is optional
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -112,29 +118,32 @@ define logstash::output::elasticsearch_http (
   $index_type   = '',
   $port         = '',
   $tags         = '',
-  $type         = ''
+  $type         = '',
+  $instances    = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
   #### Validate parameters
+
+  validate_array($instances)
+
   if $exclude_tags {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $tags {
-    validate_array($tags)
-    $arr_tags = join($tags, '\', \'')
-    $opt_tags = "  tags => ['${arr_tags}']\n"
-  }
-
   if $fields {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
+  }
+
+  if $tags {
+    validate_array($tags)
+    $arr_tags = join($tags, '\', \'')
+    $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
   if $flush_size {
@@ -168,25 +177,29 @@ define logstash::output::elasticsearch_http (
     $opt_host = "  host => \"${host}\"\n"
   }
 
-  if $document_id {
-    validate_string($document_id)
-    $opt_document_id = "  document_id => \"${document_id}\"\n"
-  }
-
   if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
+  if $document_id {
+    validate_string($document_id)
+    $opt_document_id = "  document_id => \"${document_id}\"\n"
+  }
+
   #### Write config file
 
-  file { "${logstash::params::configdir}/output_elasticsearch_http_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_elasticsearch_http_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "output {\n elasticsearch_http {\n${opt_document_id}${opt_exclude_tags}${opt_fields}${opt_flush_size}${opt_host}${opt_index}${opt_index_type}${opt_port}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

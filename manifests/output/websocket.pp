@@ -48,6 +48,12 @@
 #   This variable is optional
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -72,9 +78,9 @@ define logstash::output::websocket (
   $host         = '',
   $port         = '',
   $tags         = '',
-  $type         = ''
+  $type         = '',
+  $instances    = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
@@ -97,6 +103,9 @@ define logstash::output::websocket (
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
+
+  validate_array($instances)
+
   if $port {
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
@@ -105,25 +114,29 @@ define logstash::output::websocket (
     }
   }
 
-  if $host {
-    validate_string($host)
-    $opt_host = "  host => \"${host}\"\n"
-  }
-
   if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
+  if $host {
+    validate_string($host)
+    $opt_host = "  host => \"${host}\"\n"
+  }
+
   #### Write config file
 
-  file { "${logstash::params::configdir}/output_websocket_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_websocket_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "output {\n websocket {\n${opt_exclude_tags}${opt_fields}${opt_host}${opt_port}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

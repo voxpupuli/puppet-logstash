@@ -91,6 +91,12 @@
 #   This variable is optional
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -111,18 +117,18 @@
 #
 define logstash::output::nagios_nsca (
   $nagios_status,
-  $exclude_tags     = '',
+  $port             = '',
   $host             = '',
   $nagios_host      = '',
   $nagios_service   = '',
+  $exclude_tags     = '',
   $fields           = '',
-  $port             = '',
   $send_nsca_bin    = '',
   $send_nsca_config = '',
   $tags             = '',
-  $type             = ''
+  $type             = '',
+  $instances        = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
@@ -145,6 +151,9 @@ define logstash::output::nagios_nsca (
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
+
+  validate_array($instances)
+
   if $port {
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
@@ -153,14 +162,9 @@ define logstash::output::nagios_nsca (
     }
   }
 
-  if $nagios_status {
-    validate_string($nagios_status)
-    $opt_nagios_status = "  nagios_status => \"${nagios_status}\"\n"
-  }
-
-  if $nagios_service {
-    validate_string($nagios_service)
-    $opt_nagios_service = "  nagios_service => \"${nagios_service}\"\n"
+  if $send_nsca_config {
+    validate_string($send_nsca_config)
+    $opt_send_nsca_config = "  send_nsca_config => \"${send_nsca_config}\"\n"
   }
 
   if $nagios_host {
@@ -173,9 +177,9 @@ define logstash::output::nagios_nsca (
     $opt_send_nsca_bin = "  send_nsca_bin => \"${send_nsca_bin}\"\n"
   }
 
-  if $send_nsca_config {
-    validate_string($send_nsca_config)
-    $opt_send_nsca_config = "  send_nsca_config => \"${send_nsca_config}\"\n"
+  if $nagios_status {
+    validate_string($nagios_status)
+    $opt_nagios_status = "  nagios_status => \"${nagios_status}\"\n"
   }
 
   if $host {
@@ -188,15 +192,24 @@ define logstash::output::nagios_nsca (
     $opt_type = "  type => \"${type}\"\n"
   }
 
+  if $nagios_service {
+    validate_string($nagios_service)
+    $opt_nagios_service = "  nagios_service => \"${nagios_service}\"\n"
+  }
+
   #### Write config file
 
-  file { "${logstash::params::configdir}/output_nagios_nsca_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_nagios_nsca_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "output {\n nagios_nsca {\n${opt_exclude_tags}${opt_fields}${opt_host}${opt_nagios_host}${opt_nagios_service}${opt_nagios_status}${opt_port}${opt_send_nsca_bin}${opt_send_nsca_config}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

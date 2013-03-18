@@ -81,6 +81,12 @@
 #   This variable is optional
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -101,16 +107,16 @@
 #
 define logstash::output::zeromq (
   $topology,
-  $sockopt      = '',
+  $tags         = '',
   $fields       = '',
   $mode         = '',
+  $sockopt      = '',
   $exclude_tags = '',
-  $tags         = '',
   $topic        = '',
   $address      = '',
-  $type         = ''
+  $type         = '',
+  $instances    = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
@@ -133,6 +139,9 @@ define logstash::output::zeromq (
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
+
+  validate_array($instances)
+
   if $tags {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
@@ -145,14 +154,6 @@ define logstash::output::zeromq (
     $opt_sockopt = "  sockopt => ${arr_sockopt}\n"
   }
 
-  if $mode {
-    if ! ($mode in ['server', 'client']) {
-      fail("\"${mode}\" is not a valid mode parameter value")
-    } else {
-      $opt_mode = "  mode => \"${mode}\"\n"
-    }
-  }
-
   if $topology {
     if ! ($topology in ['pushpull', 'pubsub', 'pair']) {
       fail("\"${topology}\" is not a valid topology parameter value")
@@ -161,9 +162,12 @@ define logstash::output::zeromq (
     }
   }
 
-  if $topic {
-    validate_string($topic)
-    $opt_topic = "  topic => \"${topic}\"\n"
+  if $mode {
+    if ! ($mode in ['server', 'client']) {
+      fail("\"${mode}\" is not a valid mode parameter value")
+    } else {
+      $opt_mode = "  mode => \"${mode}\"\n"
+    }
   }
 
   if $type {
@@ -171,15 +175,24 @@ define logstash::output::zeromq (
     $opt_type = "  type => \"${type}\"\n"
   }
 
+  if $topic {
+    validate_string($topic)
+    $opt_topic = "  topic => \"${topic}\"\n"
+  }
+
   #### Write config file
 
-  file { "${logstash::params::configdir}/output_zeromq_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_zeromq_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "output {\n zeromq {\n${opt_address}${opt_exclude_tags}${opt_fields}${opt_mode}${opt_sockopt}${opt_tags}${opt_topic}${opt_topology}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

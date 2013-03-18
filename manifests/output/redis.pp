@@ -112,6 +112,12 @@
 #   This variable is optional
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -145,29 +151,20 @@ define logstash::output::redis (
   $shuffle_hosts = '',
   $tags          = '',
   $timeout       = '',
-  $type          = ''
+  $type          = '',
+  $instances     = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
   #### Validate parameters
-  if $fields {
-    validate_array($fields)
-    $arr_fields = join($fields, '\', \'')
-    $opt_fields = "  fields => ['${arr_fields}']\n"
-  }
+
+  validate_array($instances)
 
   if $tags {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
-  }
-
-  if $host {
-    validate_array($host)
-    $arr_host = join($host, '\', \'')
-    $opt_host = "  host => ['${arr_host}']\n"
   }
 
   if $exclude_tags {
@@ -176,9 +173,16 @@ define logstash::output::redis (
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $batch {
-    validate_bool($batch)
-    $opt_batch = "  batch => ${batch}\n"
+  if $host {
+    validate_array($host)
+    $arr_host = join($host, '\', \'')
+    $opt_host = "  host => ['${arr_host}']\n"
+  }
+
+  if $fields {
+    validate_array($fields)
+    $arr_fields = join($fields, '\', \'')
+    $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
   if $shuffle_hosts {
@@ -186,19 +190,16 @@ define logstash::output::redis (
     $opt_shuffle_hosts = "  shuffle_hosts => ${shuffle_hosts}\n"
   }
 
+  if $batch {
+    validate_bool($batch)
+    $opt_batch = "  batch => ${batch}\n"
+  }
+
   if $db {
     if ! is_numeric($db) {
       fail("\"${db}\" is not a valid db parameter value")
     } else {
       $opt_db = "  db => ${db}\n"
-    }
-  }
-
-  if $batch_timeout {
-    if ! is_numeric($batch_timeout) {
-      fail("\"${batch_timeout}\" is not a valid batch_timeout parameter value")
-    } else {
-      $opt_batch_timeout = "  batch_timeout => ${batch_timeout}\n"
     }
   }
 
@@ -210,6 +211,14 @@ define logstash::output::redis (
     }
   }
 
+  if $batch_events {
+    if ! is_numeric($batch_events) {
+      fail("\"${batch_events}\" is not a valid batch_events parameter value")
+    } else {
+      $opt_batch_events = "  batch_events => ${batch_events}\n"
+    }
+  }
+
   if $port {
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
@@ -218,11 +227,11 @@ define logstash::output::redis (
     }
   }
 
-  if $batch_events {
-    if ! is_numeric($batch_events) {
-      fail("\"${batch_events}\" is not a valid batch_events parameter value")
+  if $batch_timeout {
+    if ! is_numeric($batch_timeout) {
+      fail("\"${batch_timeout}\" is not a valid batch_timeout parameter value")
     } else {
-      $opt_batch_events = "  batch_events => ${batch_events}\n"
+      $opt_batch_timeout = "  batch_timeout => ${batch_timeout}\n"
     }
   }
 
@@ -251,13 +260,17 @@ define logstash::output::redis (
 
   #### Write config file
 
-  file { "${logstash::params::configdir}/output_redis_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_redis_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "output {\n redis {\n${opt_batch}${opt_batch_events}${opt_batch_timeout}${opt_data_type}${opt_db}${opt_exclude_tags}${opt_fields}${opt_host}${opt_key}${opt_password}${opt_port}${opt_shuffle_hosts}${opt_tags}${opt_timeout}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

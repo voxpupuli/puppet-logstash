@@ -135,6 +135,12 @@
 #   This variable is optional
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -155,38 +161,35 @@
 #
 define logstash::output::gelf (
   $host,
-  $ignore_metadata = '',
+  $level           = '',
   $exclude_tags    = '',
   $facility        = '',
   $fields          = '',
   $file            = '',
   $full_message    = '',
   $chunksize       = '',
+  $ignore_metadata = '',
   $custom_fields   = '',
-  $level           = '',
   $line            = '',
   $port            = '',
   $sender          = '',
   $ship_metadata   = '',
   $short_message   = '',
   $tags            = '',
-  $type            = ''
+  $type            = '',
+  $instances       = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
   #### Validate parameters
-  if $ignore_metadata {
-    validate_array($ignore_metadata)
-    $arr_ignore_metadata = join($ignore_metadata, '\', \'')
-    $opt_ignore_metadata = "  ignore_metadata => ['${arr_ignore_metadata}']\n"
-  }
 
-  if $level {
-    validate_array($level)
-    $arr_level = join($level, '\', \'')
-    $opt_level = "  level => ['${arr_level}']\n"
+  validate_array($instances)
+
+  if $tags {
+    validate_array($tags)
+    $arr_tags = join($tags, '\', \'')
+    $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
   if $exclude_tags {
@@ -195,16 +198,22 @@ define logstash::output::gelf (
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
+  if $ignore_metadata {
+    validate_array($ignore_metadata)
+    $arr_ignore_metadata = join($ignore_metadata, '\', \'')
+    $opt_ignore_metadata = "  ignore_metadata => ['${arr_ignore_metadata}']\n"
+  }
+
   if $fields {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $tags {
-    validate_array($tags)
-    $arr_tags = join($tags, '\', \'')
-    $opt_tags = "  tags => ['${arr_tags}']\n"
+  if $level {
+    validate_array($level)
+    $arr_level = join($level, '\', \'')
+    $opt_level = "  level => ['${arr_level}']\n"
   }
 
   if $ship_metadata {
@@ -239,19 +248,14 @@ define logstash::output::gelf (
     $opt_sender = "  sender => \"${sender}\"\n"
   }
 
+  if $facility {
+    validate_string($facility)
+    $opt_facility = "  facility => \"${facility}\"\n"
+  }
+
   if $line {
     validate_string($line)
     $opt_line = "  line => \"${line}\"\n"
-  }
-
-  if $host {
-    validate_string($host)
-    $opt_host = "  host => \"${host}\"\n"
-  }
-
-  if $full_message {
-    validate_string($full_message)
-    $opt_full_message = "  full_message => \"${full_message}\"\n"
   }
 
   if $file {
@@ -264,9 +268,9 @@ define logstash::output::gelf (
     $opt_short_message = "  short_message => \"${short_message}\"\n"
   }
 
-  if $facility {
-    validate_string($facility)
-    $opt_facility = "  facility => \"${facility}\"\n"
+  if $host {
+    validate_string($host)
+    $opt_host = "  host => \"${host}\"\n"
   }
 
   if $type {
@@ -274,15 +278,24 @@ define logstash::output::gelf (
     $opt_type = "  type => \"${type}\"\n"
   }
 
+  if $full_message {
+    validate_string($full_message)
+    $opt_full_message = "  full_message => \"${full_message}\"\n"
+  }
+
   #### Write config file
 
-  file { "${logstash::params::configdir}/output_gelf_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_gelf_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "output {\n gelf {\n${opt_chunksize}${opt_custom_fields}${opt_exclude_tags}${opt_facility}${opt_fields}${opt_file}${opt_full_message}${opt_host}${opt_ignore_metadata}${opt_level}${opt_line}${opt_port}${opt_sender}${opt_ship_metadata}${opt_short_message}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

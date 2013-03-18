@@ -57,6 +57,12 @@
 #   This variable is optional
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -83,9 +89,9 @@ define logstash::output::lumberjack (
   $fields          = '',
   $tags            = '',
   $type            = '',
-  $window_size     = ''
+  $window_size     = '',
+  $instances       = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
@@ -102,17 +108,20 @@ define logstash::output::lumberjack (
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
+  if $hosts {
+    validate_array($hosts)
+    $arr_hosts = join($hosts, '\', \'')
+    $opt_hosts = "  hosts => ['${arr_hosts}']\n"
+  }
+
   if $tags {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $hosts {
-    validate_array($hosts)
-    $arr_hosts = join($hosts, '\', \'')
-    $opt_hosts = "  hosts => ['${arr_hosts}']\n"
-  }
+
+  validate_array($instances)
 
   if $port {
     if ! is_numeric($port) {
@@ -142,13 +151,17 @@ define logstash::output::lumberjack (
 
   #### Write config file
 
-  file { "${logstash::params::configdir}/output_lumberjack_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_lumberjack_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "output {\n lumberjack {\n${opt_exclude_tags}${opt_fields}${opt_hosts}${opt_port}${opt_ssl_certificate}${opt_tags}${opt_type}${opt_window_size} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

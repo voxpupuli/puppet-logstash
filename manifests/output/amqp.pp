@@ -118,6 +118,12 @@
 #   This variable is optional
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -153,13 +159,16 @@ define logstash::output::amqp (
   $type          = '',
   $user          = '',
   $verify_ssl    = '',
-  $vhost         = ''
+  $vhost         = '',
+  $instances     = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
   #### Validate parameters
+
+  validate_array($instances)
+
   if $fields {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
@@ -178,19 +187,9 @@ define logstash::output::amqp (
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $debug {
-    validate_bool($debug)
-    $opt_debug = "  debug => ${debug}\n"
-  }
-
   if $verify_ssl {
     validate_bool($verify_ssl)
     $opt_verify_ssl = "  verify_ssl => ${verify_ssl}\n"
-  }
-
-  if $persistent {
-    validate_bool($persistent)
-    $opt_persistent = "  persistent => ${persistent}\n"
   }
 
   if $durable {
@@ -201,6 +200,16 @@ define logstash::output::amqp (
   if $ssl {
     validate_bool($ssl)
     $opt_ssl = "  ssl => ${ssl}\n"
+  }
+
+  if $persistent {
+    validate_bool($persistent)
+    $opt_persistent = "  persistent => ${persistent}\n"
+  }
+
+  if $debug {
+    validate_bool($debug)
+    $opt_debug = "  debug => ${debug}\n"
   }
 
   if $port {
@@ -224,6 +233,11 @@ define logstash::output::amqp (
     $opt_password = "  password => \"${password}\"\n"
   }
 
+  if $type {
+    validate_string($type)
+    $opt_type = "  type => \"${type}\"\n"
+  }
+
   if $key {
     validate_string($key)
     $opt_key = "  key => \"${key}\"\n"
@@ -232,11 +246,6 @@ define logstash::output::amqp (
   if $host {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
-  }
-
-  if $type {
-    validate_string($type)
-    $opt_type = "  type => \"${type}\"\n"
   }
 
   if $user {
@@ -256,13 +265,17 @@ define logstash::output::amqp (
 
   #### Write config file
 
-  file { "${logstash::params::configdir}/output_amqp_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_amqp_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "output {\n amqp {\n${opt_debug}${opt_durable}${opt_exchange}${opt_exchange_type}${opt_exclude_tags}${opt_fields}${opt_host}${opt_key}${opt_password}${opt_persistent}${opt_port}${opt_ssl}${opt_tags}${opt_type}${opt_user}${opt_verify_ssl}${opt_vhost} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

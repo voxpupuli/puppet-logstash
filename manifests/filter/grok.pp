@@ -181,6 +181,12 @@
 #   Default value: 10
 #   This variable is optional
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -214,18 +220,15 @@ define logstash::filter::grok (
   $singles             = '',
   $tags                = '',
   $type                = '',
-  $order               = 10
+  $order               = 10,
+  $instances           = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
   #### Validate parameters
-  if $pattern {
-    validate_array($pattern)
-    $arr_pattern = join($pattern, '\', \'')
-    $opt_pattern = "  pattern => ['${arr_pattern}']\n"
-  }
+
+  validate_array($instances)
 
   if $tags {
     validate_array($tags)
@@ -239,22 +242,38 @@ define logstash::filter::grok (
     $opt_add_tag = "  add_tag => ['${arr_add_tag}']\n"
   }
 
-  if $remove_tag {
-    validate_array($remove_tag)
-    $arr_remove_tag = join($remove_tag, '\', \'')
-    $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
-  }
-
   if $patterns_dir {
     validate_array($patterns_dir)
     $arr_patterns_dir = join($patterns_dir, '\', \'')
     $opt_patterns_dir = "  patterns_dir => ['${arr_patterns_dir}']\n"
   }
 
+  if $pattern {
+    validate_array($pattern)
+    $arr_pattern = join($pattern, '\', \'')
+    $opt_pattern = "  pattern => ['${arr_pattern}']\n"
+  }
+
+  if $remove_tag {
+    validate_array($remove_tag)
+    $arr_remove_tag = join($remove_tag, '\', \'')
+    $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
+  }
+
   if $exclude_tags {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
+  }
+
+  if $singles {
+    validate_bool($singles)
+    $opt_singles = "  singles => ${singles}\n"
+  }
+
+  if $keep_empty_captures {
+    validate_bool($keep_empty_captures)
+    $opt_keep_empty_captures = "  keep_empty_captures => ${keep_empty_captures}\n"
   }
 
   if $drop_if_match {
@@ -267,19 +286,9 @@ define logstash::filter::grok (
     $opt_break_on_match = "  break_on_match => ${break_on_match}\n"
   }
 
-  if $singles {
-    validate_bool($singles)
-    $opt_singles = "  singles => ${singles}\n"
-  }
-
   if $named_captures_only {
     validate_bool($named_captures_only)
     $opt_named_captures_only = "  named_captures_only => ${named_captures_only}\n"
-  }
-
-  if $keep_empty_captures {
-    validate_bool($keep_empty_captures)
-    $opt_keep_empty_captures = "  keep_empty_captures => ${keep_empty_captures}\n"
   }
 
   if $match {
@@ -307,13 +316,17 @@ define logstash::filter::grok (
 
   #### Write config file
 
-  file { "${logstash::params::configdir}/filter_${order}_grok_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/filter_${order}_grok_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "filter {\n grok {\n${opt_add_field}${opt_add_tag}${opt_break_on_match}${opt_drop_if_match}${opt_exclude_tags}${opt_keep_empty_captures}${opt_match}${opt_named_captures_only}${opt_pattern}${opt_patterns_dir}${opt_remove_tag}${opt_singles}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

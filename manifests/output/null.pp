@@ -35,6 +35,12 @@
 #   This variable is optional
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -57,9 +63,9 @@ define logstash::output::null (
   $exclude_tags = '',
   $fields       = '',
   $tags         = '',
-  $type         = ''
+  $type         = '',
+  $instances    = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
@@ -76,6 +82,9 @@ define logstash::output::null (
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
+
+  validate_array($instances)
+
   if $tags {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
@@ -89,13 +98,17 @@ define logstash::output::null (
 
   #### Write config file
 
-  file { "${logstash::params::configdir}/output_null_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_null_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "output {\n null {\n${opt_exclude_tags}${opt_fields}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

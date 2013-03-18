@@ -59,6 +59,12 @@
 #   This variable is optional
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -81,26 +87,29 @@ define logstash::output::circonus (
   $annotation,
   $api_token,
   $app_name,
-  $exclude_tags = '',
   $fields       = '',
+  $exclude_tags = '',
   $tags         = '',
-  $type         = ''
+  $type         = '',
+  $instances    = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
   #### Validate parameters
-  if $exclude_tags {
-    validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, '\', \'')
-    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
-  }
+
+  validate_array($instances)
 
   if $tags {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
+  }
+
+  if $exclude_tags {
+    validate_array($exclude_tags)
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
+    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if $fields {
@@ -115,9 +124,9 @@ define logstash::output::circonus (
     $opt_annotation = "  annotation => ${arr_annotation}\n"
   }
 
-  if $app_name {
-    validate_string($app_name)
-    $opt_app_name = "  app_name => \"${app_name}\"\n"
+  if $type {
+    validate_string($type)
+    $opt_type = "  type => \"${type}\"\n"
   }
 
   if $api_token {
@@ -125,20 +134,24 @@ define logstash::output::circonus (
     $opt_api_token = "  api_token => \"${api_token}\"\n"
   }
 
-  if $type {
-    validate_string($type)
-    $opt_type = "  type => \"${type}\"\n"
+  if $app_name {
+    validate_string($app_name)
+    $opt_app_name = "  app_name => \"${app_name}\"\n"
   }
 
   #### Write config file
 
-  file { "${logstash::params::configdir}/output_circonus_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_circonus_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "output {\n circonus {\n${opt_annotation}${opt_api_token}${opt_app_name}${opt_exclude_tags}${opt_fields}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

@@ -159,6 +159,12 @@
 #   This variable is optional
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -200,18 +206,15 @@ define logstash::output::elasticsearch_river (
   $tags               = '',
   $type               = '',
   $user               = '',
-  $vhost              = ''
+  $vhost              = '',
+  $instances          = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
   #### Validate parameters
-  if $fields {
-    validate_array($fields)
-    $arr_fields = join($fields, '\', \'')
-    $opt_fields = "  fields => ['${arr_fields}']\n"
-  }
+
+  validate_array($instances)
 
   if $tags {
     validate_array($tags)
@@ -225,6 +228,17 @@ define logstash::output::elasticsearch_river (
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
+  if $fields {
+    validate_array($fields)
+    $arr_fields = join($fields, '\', \'')
+    $opt_fields = "  fields => ['${arr_fields}']\n"
+  }
+
+  if $durable {
+    validate_bool($durable)
+    $opt_durable = "  durable => ${durable}\n"
+  }
+
   if $persistent {
     validate_bool($persistent)
     $opt_persistent = "  persistent => ${persistent}\n"
@@ -235,9 +249,12 @@ define logstash::output::elasticsearch_river (
     $opt_debug = "  debug => ${debug}\n"
   }
 
-  if $durable {
-    validate_bool($durable)
-    $opt_durable = "  durable => ${durable}\n"
+  if $amqp_port {
+    if ! is_numeric($amqp_port) {
+      fail("\"${amqp_port}\" is not a valid amqp_port parameter value")
+    } else {
+      $opt_amqp_port = "  amqp_port => ${amqp_port}\n"
+    }
   }
 
   if $es_bulk_timeout_ms {
@@ -245,14 +262,6 @@ define logstash::output::elasticsearch_river (
       fail("\"${es_bulk_timeout_ms}\" is not a valid es_bulk_timeout_ms parameter value")
     } else {
       $opt_es_bulk_timeout_ms = "  es_bulk_timeout_ms => ${es_bulk_timeout_ms}\n"
-    }
-  }
-
-  if $amqp_port {
-    if ! is_numeric($amqp_port) {
-      fail("\"${amqp_port}\" is not a valid amqp_port parameter value")
-    } else {
-      $opt_amqp_port = "  amqp_port => ${amqp_port}\n"
     }
   }
 
@@ -280,14 +289,9 @@ define logstash::output::elasticsearch_river (
     }
   }
 
-  if $amqp_host {
-    validate_string($amqp_host)
-    $opt_amqp_host = "  amqp_host => \"${amqp_host}\"\n"
-  }
-
-  if $exchange {
-    validate_string($exchange)
-    $opt_exchange = "  exchange => \"${exchange}\"\n"
+  if $index_type {
+    validate_string($index_type)
+    $opt_index_type = "  index_type => \"${index_type}\"\n"
   }
 
   if $index {
@@ -295,9 +299,9 @@ define logstash::output::elasticsearch_river (
     $opt_index = "  index => \"${index}\"\n"
   }
 
-  if $index_type {
-    validate_string($index_type)
-    $opt_index_type = "  index_type => \"${index_type}\"\n"
+  if $document_id {
+    validate_string($document_id)
+    $opt_document_id = "  document_id => \"${document_id}\"\n"
   }
 
   if $key {
@@ -310,9 +314,9 @@ define logstash::output::elasticsearch_river (
     $opt_password = "  password => \"${password}\"\n"
   }
 
-  if $es_host {
-    validate_string($es_host)
-    $opt_es_host = "  es_host => \"${es_host}\"\n"
+  if $exchange {
+    validate_string($exchange)
+    $opt_exchange = "  exchange => \"${exchange}\"\n"
   }
 
   if $queue {
@@ -320,9 +324,9 @@ define logstash::output::elasticsearch_river (
     $opt_queue = "  queue => \"${queue}\"\n"
   }
 
-  if $document_id {
-    validate_string($document_id)
-    $opt_document_id = "  document_id => \"${document_id}\"\n"
+  if $es_host {
+    validate_string($es_host)
+    $opt_es_host = "  es_host => \"${es_host}\"\n"
   }
 
   if $type {
@@ -340,15 +344,24 @@ define logstash::output::elasticsearch_river (
     $opt_vhost = "  vhost => \"${vhost}\"\n"
   }
 
+  if $amqp_host {
+    validate_string($amqp_host)
+    $opt_amqp_host = "  amqp_host => \"${amqp_host}\"\n"
+  }
+
   #### Write config file
 
-  file { "${logstash::params::configdir}/output_elasticsearch_river_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_elasticsearch_river_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "output {\n elasticsearch_river {\n${opt_amqp_host}${opt_amqp_port}${opt_debug}${opt_document_id}${opt_durable}${opt_es_bulk_size}${opt_es_bulk_timeout_ms}${opt_es_host}${opt_es_port}${opt_exchange}${opt_exchange_type}${opt_exclude_tags}${opt_fields}${opt_index}${opt_index_type}${opt_key}${opt_password}${opt_persistent}${opt_queue}${opt_tags}${opt_type}${opt_user}${opt_vhost} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

@@ -71,6 +71,12 @@
 #   This variable is optional
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -99,23 +105,26 @@ define logstash::output::stomp (
   $port         = '',
   $tags         = '',
   $type         = '',
-  $user         = ''
+  $user         = '',
+  $instances    = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
   #### Validate parameters
-  if $exclude_tags {
-    validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, '\', \'')
-    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
-  }
+
+  validate_array($instances)
 
   if $tags {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
+  }
+
+  if $exclude_tags {
+    validate_array($exclude_tags)
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
+    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if $fields {
@@ -142,9 +151,9 @@ define logstash::output::stomp (
     $opt_password = "  password => \"${password}\"\n"
   }
 
-  if $host {
-    validate_string($host)
-    $opt_host = "  host => \"${host}\"\n"
+  if $type {
+    validate_string($type)
+    $opt_type = "  type => \"${type}\"\n"
   }
 
   if $destination {
@@ -152,25 +161,29 @@ define logstash::output::stomp (
     $opt_destination = "  destination => \"${destination}\"\n"
   }
 
-  if $type {
-    validate_string($type)
-    $opt_type = "  type => \"${type}\"\n"
-  }
-
   if $user {
     validate_string($user)
     $opt_user = "  user => \"${user}\"\n"
   }
 
+  if $host {
+    validate_string($host)
+    $opt_host = "  host => \"${host}\"\n"
+  }
+
   #### Write config file
 
-  file { "${logstash::params::configdir}/output_stomp_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_stomp_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "output {\n stomp {\n${opt_debug}${opt_destination}${opt_exclude_tags}${opt_fields}${opt_host}${opt_password}${opt_port}${opt_tags}${opt_type}${opt_user} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

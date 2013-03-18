@@ -65,6 +65,12 @@
 #   This variable is optional
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -85,14 +91,14 @@
 #
 define logstash::output::loggly (
   $key,
-  $exclude_tags = '',
-  $host         = '',
-  $fields       = '',
   $proto        = '',
+  $host         = '',
+  $exclude_tags = '',
+  $fields       = '',
   $tags         = '',
-  $type         = ''
+  $type         = '',
+  $instances    = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
@@ -115,14 +121,12 @@ define logstash::output::loggly (
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
+
+  validate_array($instances)
+
   if $key {
     validate_string($key)
     $opt_key = "  key => \"${key}\"\n"
-  }
-
-  if $proto {
-    validate_string($proto)
-    $opt_proto = "  proto => \"${proto}\"\n"
   }
 
   if $host {
@@ -135,15 +139,24 @@ define logstash::output::loggly (
     $opt_type = "  type => \"${type}\"\n"
   }
 
+  if $proto {
+    validate_string($proto)
+    $opt_proto = "  proto => \"${proto}\"\n"
+  }
+
   #### Write config file
 
-  file { "${logstash::params::configdir}/output_loggly_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_loggly_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "output {\n loggly {\n${opt_exclude_tags}${opt_fields}${opt_host}${opt_key}${opt_proto}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

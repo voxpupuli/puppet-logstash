@@ -73,6 +73,12 @@
 #   This variable is optional
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -93,16 +99,16 @@
 #
 define logstash::output::file (
   $path,
-  $max_size       = '',
+  $message_format = '',
   $flush_interval = '',
   $gzip           = '',
+  $max_size       = '',
   $fields         = '',
-  $message_format = '',
   $exclude_tags   = '',
   $tags           = '',
-  $type           = ''
+  $type           = '',
+  $instances      = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
@@ -124,6 +130,9 @@ define logstash::output::file (
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
+
+
+  validate_array($instances)
 
   if $gzip {
     validate_bool($gzip)
@@ -148,25 +157,29 @@ define logstash::output::file (
     $opt_path = "  path => \"${path}\"\n"
   }
 
-  if $message_format {
-    validate_string($message_format)
-    $opt_message_format = "  message_format => \"${message_format}\"\n"
-  }
-
   if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
+  if $message_format {
+    validate_string($message_format)
+    $opt_message_format = "  message_format => \"${message_format}\"\n"
+  }
+
   #### Write config file
 
-  file { "${logstash::params::configdir}/output_file_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_file_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "output {\n file {\n${opt_exclude_tags}${opt_fields}${opt_flush_interval}${opt_gzip}${opt_max_size}${opt_message_format}${opt_path}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

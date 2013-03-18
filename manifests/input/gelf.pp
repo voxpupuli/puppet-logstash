@@ -118,6 +118,12 @@
 #   This variable is required
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -146,27 +152,30 @@ define logstash::input::gelf (
   $port           = '',
   $remap          = '',
   $tags           = '',
-  $add_field      = ''
+  $add_field      = '',
+  $instances      = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
   #### Validate parameters
+
+  validate_array($instances)
+
   if $tags {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $remap {
-    validate_bool($remap)
-    $opt_remap = "  remap => ${remap}\n"
-  }
-
   if $debug {
     validate_bool($debug)
     $opt_debug = "  debug => ${debug}\n"
+  }
+
+  if $remap {
+    validate_bool($remap)
+    $opt_remap = "  remap => ${remap}\n"
   }
 
   if $add_field {
@@ -199,11 +208,6 @@ define logstash::input::gelf (
     }
   }
 
-  if $message_format {
-    validate_string($message_format)
-    $opt_message_format = "  message_format => \"${message_format}\"\n"
-  }
-
   if $host {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
@@ -214,15 +218,24 @@ define logstash::input::gelf (
     $opt_type = "  type => \"${type}\"\n"
   }
 
+  if $message_format {
+    validate_string($message_format)
+    $opt_message_format = "  message_format => \"${message_format}\"\n"
+  }
+
   #### Write config file
 
-  file { "${logstash::params::configdir}/input_gelf_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/input_gelf_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "input {\n gelf {\n${opt_add_field}${opt_charset}${opt_debug}${opt_format}${opt_host}${opt_message_format}${opt_port}${opt_remap}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

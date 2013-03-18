@@ -149,6 +149,12 @@
 #   This variable is required
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -168,32 +174,28 @@
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
 define logstash::input::file (
-  $type,
   $path,
-  $debug                  = '',
+  $type,
+  $add_field              = '',
   $discover_interval      = '',
   $exclude                = '',
   $format                 = '',
   $message_format         = '',
-  $charset                = '',
+  $debug                  = '',
   $sincedb_path           = '',
   $sincedb_write_interval = '',
   $start_position         = '',
   $stat_interval          = '',
   $tags                   = '',
-  $add_field              = '',
+  $charset                = '',
   $instances              = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
   #### Validate parameters
-  if $path {
-    validate_array($path)
-    $arr_path = join($path, '\', \'')
-    $opt_path = "  path => ['${arr_path}']\n"
-  }
+
+  validate_array($instances)
 
   if $tags {
     validate_array($tags)
@@ -205,6 +207,12 @@ define logstash::input::file (
     validate_array($exclude)
     $arr_exclude = join($exclude, '\', \'')
     $opt_exclude = "  exclude => ['${arr_exclude}']\n"
+  }
+
+  if $path {
+    validate_array($path)
+    $arr_path = join($path, '\', \'')
+    $opt_path = "  path => ['${arr_path}']\n"
   }
 
   if $debug {
@@ -226,19 +234,19 @@ define logstash::input::file (
     }
   }
 
-  if $stat_interval {
-    if ! is_numeric($stat_interval) {
-      fail("\"${stat_interval}\" is not a valid stat_interval parameter value")
-    } else {
-      $opt_stat_interval = "  stat_interval => ${stat_interval}\n"
-    }
-  }
-
   if $discover_interval {
     if ! is_numeric($discover_interval) {
       fail("\"${discover_interval}\" is not a valid discover_interval parameter value")
     } else {
       $opt_discover_interval = "  discover_interval => ${discover_interval}\n"
+    }
+  }
+
+  if $stat_interval {
+    if ! is_numeric($stat_interval) {
+      fail("\"${stat_interval}\" is not a valid stat_interval parameter value")
+    } else {
+      $opt_stat_interval = "  stat_interval => ${stat_interval}\n"
     }
   }
 
@@ -266,11 +274,6 @@ define logstash::input::file (
     }
   }
 
-  if $message_format {
-    validate_string($message_format)
-    $opt_message_format = "  message_format => \"${message_format}\"\n"
-  }
-
   if $sincedb_path {
     validate_string($sincedb_path)
     $opt_sincedb_path = "  sincedb_path => \"${sincedb_path}\"\n"
@@ -279,6 +282,11 @@ define logstash::input::file (
   if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
+  }
+
+  if $message_format {
+    validate_string($message_format)
+    $opt_message_format = "  message_format => \"${message_format}\"\n"
   }
 
   #### Write config file
@@ -294,7 +302,6 @@ define logstash::input::file (
     group   => 'root',
     mode    => '0644',
     notify  => Service[$services],
-    require => Class['logstash::package', 'logstash::config' ]
+    require => Class['logstash::package', 'logstash::config']
   }
-
 }

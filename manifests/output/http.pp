@@ -84,6 +84,12 @@
 #   This variable is optional
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -105,31 +111,34 @@
 define logstash::output::http (
   $http_method,
   $url,
-  $content_type = '',
+  $mapping      = '',
   $format       = '',
   $headers      = '',
+  $content_type = '',
   $fields       = '',
-  $mapping      = '',
   $tags         = '',
   $type         = '',
   $exclude_tags = '',
-  $verify_ssl   = ''
+  $verify_ssl   = '',
+  $instances    = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
   #### Validate parameters
-  if $fields {
-    validate_array($fields)
-    $arr_fields = join($fields, '\', \'')
-    $opt_fields = "  fields => ['${arr_fields}']\n"
-  }
+
+  validate_array($instances)
 
   if $exclude_tags {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
+  }
+
+  if $fields {
+    validate_array($fields)
+    $arr_fields = join($fields, '\', \'')
+    $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
   if $tags {
@@ -155,14 +164,6 @@ define logstash::output::http (
     $opt_mapping = "  mapping => ${arr_mapping}\n"
   }
 
-  if $format {
-    if ! ($format in ['json', 'form']) {
-      fail("\"${format}\" is not a valid format parameter value")
-    } else {
-      $opt_format = "  format => \"${format}\"\n"
-    }
-  }
-
   if $http_method {
     if ! ($http_method in ['put', 'post']) {
       fail("\"${http_method}\" is not a valid http_method parameter value")
@@ -171,14 +172,22 @@ define logstash::output::http (
     }
   }
 
-  if $type {
-    validate_string($type)
-    $opt_type = "  type => \"${type}\"\n"
+  if $format {
+    if ! ($format in ['json', 'form']) {
+      fail("\"${format}\" is not a valid format parameter value")
+    } else {
+      $opt_format = "  format => \"${format}\"\n"
+    }
   }
 
   if $url {
     validate_string($url)
     $opt_url = "  url => \"${url}\"\n"
+  }
+
+  if $type {
+    validate_string($type)
+    $opt_type = "  type => \"${type}\"\n"
   }
 
   if $content_type {
@@ -188,13 +197,17 @@ define logstash::output::http (
 
   #### Write config file
 
-  file { "${logstash::params::configdir}/output_http_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_http_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "output {\n http {\n${opt_content_type}${opt_exclude_tags}${opt_fields}${opt_format}${opt_headers}${opt_http_method}${opt_mapping}${opt_tags}${opt_type}${opt_url}${opt_verify_ssl} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

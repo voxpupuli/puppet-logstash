@@ -125,6 +125,12 @@
 #   This variable is required
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -145,32 +151,35 @@
 #
 define logstash::input::generator (
   $type,
-  $lines          = '',
+  $message        = '',
   $count          = '',
   $debug          = '',
   $format         = '',
+  $lines          = '',
   $charset        = '',
-  $message        = '',
   $message_format = '',
   $tags           = '',
   $threads        = '',
-  $add_field      = ''
+  $add_field      = '',
+  $instances      = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
   #### Validate parameters
-  if $lines {
-    validate_array($lines)
-    $arr_lines = join($lines, '\', \'')
-    $opt_lines = "  lines => ['${arr_lines}']\n"
-  }
+
+  validate_array($instances)
 
   if $tags {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
+  }
+
+  if $lines {
+    validate_array($lines)
+    $arr_lines = join($lines, '\', \'')
+    $opt_lines = "  lines => ['${arr_lines}']\n"
   }
 
   if $debug {
@@ -221,25 +230,29 @@ define logstash::input::generator (
     $opt_message_format = "  message_format => \"${message_format}\"\n"
   }
 
-  if $message {
-    validate_string($message)
-    $opt_message = "  message => \"${message}\"\n"
-  }
-
   if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
+  if $message {
+    validate_string($message)
+    $opt_message = "  message => \"${message}\"\n"
+  }
+
   #### Write config file
 
-  file { "${logstash::params::configdir}/input_generator_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/input_generator_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "input {\n generator {\n${opt_add_field}${opt_charset}${opt_count}${opt_debug}${opt_format}${opt_lines}${opt_message}${opt_message_format}${opt_tags}${opt_threads}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

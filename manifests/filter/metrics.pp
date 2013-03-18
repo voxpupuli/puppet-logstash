@@ -109,6 +109,12 @@
 #   Default value: 10
 #   This variable is optional
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -136,18 +142,15 @@ define logstash::filter::metrics (
   $tags         = '',
   $timer        = '',
   $type         = '',
-  $order        = 10
+  $order        = 10,
+  $instances    = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
   #### Validate parameters
-  if $remove_tag {
-    validate_array($remove_tag)
-    $arr_remove_tag = join($remove_tag, '\', \'')
-    $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
-  }
+
+  validate_array($instances)
 
   if $add_tag {
     validate_array($add_tag)
@@ -167,22 +170,28 @@ define logstash::filter::metrics (
     $opt_meter = "  meter => ['${arr_meter}']\n"
   }
 
+  if $remove_tag {
+    validate_array($remove_tag)
+    $arr_remove_tag = join($remove_tag, '\', \'')
+    $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
+  }
+
   if $tags {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $add_field {
-    validate_hash($add_field)
-    $arr_add_field = inline_template('<%= add_field.to_a.flatten.inspect %>')
-    $opt_add_field = "  add_field => ${arr_add_field}\n"
-  }
-
   if $timer {
     validate_hash($timer)
     $arr_timer = inline_template('<%= timer.to_a.flatten.inspect %>')
     $opt_timer = "  timer => ${arr_timer}\n"
+  }
+
+  if $add_field {
+    validate_hash($add_field)
+    $arr_add_field = inline_template('<%= add_field.to_a.flatten.inspect %>')
+    $opt_add_field = "  add_field => ${arr_add_field}\n"
   }
 
   if $order {
@@ -198,13 +207,17 @@ define logstash::filter::metrics (
 
   #### Write config file
 
-  file { "${logstash::params::configdir}/filter_${order}_metrics_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/filter_${order}_metrics_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "filter {\n metrics {\n${opt_add_field}${opt_add_tag}${opt_exclude_tags}${opt_meter}${opt_remove_tag}${opt_tags}${opt_timer}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

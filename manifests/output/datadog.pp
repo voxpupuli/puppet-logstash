@@ -85,6 +85,12 @@
 #   This variable is optional
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -115,18 +121,15 @@ define logstash::output::datadog (
   $tags             = '',
   $text             = '',
   $title            = '',
-  $type             = ''
+  $type             = '',
+  $instances        = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
   #### Validate parameters
-  if $fields {
-    validate_array($fields)
-    $arr_fields = join($fields, '\', \'')
-    $opt_fields = "  fields => ['${arr_fields}']\n"
-  }
+
+  validate_array($instances)
 
   if $tags {
     validate_array($tags)
@@ -134,10 +137,10 @@ define logstash::output::datadog (
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $exclude_tags {
-    validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, '\', \'')
-    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
+  if $fields {
+    validate_array($fields)
+    $arr_fields = join($fields, '\', \'')
+    $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
   if $dd_tags {
@@ -146,11 +149,17 @@ define logstash::output::datadog (
     $opt_dd_tags = "  dd_tags => ['${arr_dd_tags}']\n"
   }
 
-  if $source_type_name {
-    if ! ($source_type_name in ['nagios', 'hudson', 'jenkins', 'user', 'my apps', 'feed', 'chef', 'puppet', 'git', 'bitbucket']) {
-      fail("\"${source_type_name}\" is not a valid source_type_name parameter value")
+  if $exclude_tags {
+    validate_array($exclude_tags)
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
+    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
+  }
+
+  if $priority {
+    if ! ($priority in ['normal', 'low']) {
+      fail("\"${priority}\" is not a valid priority parameter value")
     } else {
-      $opt_source_type_name = "  source_type_name => \"${source_type_name}\"\n"
+      $opt_priority = "  priority => \"${priority}\"\n"
     }
   }
 
@@ -162,27 +171,22 @@ define logstash::output::datadog (
     }
   }
 
-  if $priority {
-    if ! ($priority in ['normal', 'low']) {
-      fail("\"${priority}\" is not a valid priority parameter value")
+  if $source_type_name {
+    if ! ($source_type_name in ['nagios', 'hudson', 'jenkins', 'user', 'my apps', 'feed', 'chef', 'puppet', 'git', 'bitbucket']) {
+      fail("\"${source_type_name}\" is not a valid source_type_name parameter value")
     } else {
-      $opt_priority = "  priority => \"${priority}\"\n"
+      $opt_source_type_name = "  source_type_name => \"${source_type_name}\"\n"
     }
-  }
-
-  if $date_happened {
-    validate_string($date_happened)
-    $opt_date_happened = "  date_happened => \"${date_happened}\"\n"
-  }
-
-  if $api_key {
-    validate_string($api_key)
-    $opt_api_key = "  api_key => \"${api_key}\"\n"
   }
 
   if $text {
     validate_string($text)
     $opt_text = "  text => \"${text}\"\n"
+  }
+
+  if $api_key {
+    validate_string($api_key)
+    $opt_api_key = "  api_key => \"${api_key}\"\n"
   }
 
   if $title {
@@ -195,15 +199,24 @@ define logstash::output::datadog (
     $opt_type = "  type => \"${type}\"\n"
   }
 
+  if $date_happened {
+    validate_string($date_happened)
+    $opt_date_happened = "  date_happened => \"${date_happened}\"\n"
+  }
+
   #### Write config file
 
-  file { "${logstash::params::configdir}/output_datadog_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_datadog_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "output {\n datadog {\n${opt_alert_type}${opt_api_key}${opt_date_happened}${opt_dd_tags}${opt_exclude_tags}${opt_fields}${opt_priority}${opt_source_type_name}${opt_tags}${opt_text}${opt_title}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

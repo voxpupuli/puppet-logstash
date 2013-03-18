@@ -73,6 +73,12 @@
 #   This variable is optional
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -101,23 +107,26 @@ define logstash::output::pagerduty (
   $pdurl        = '',
   $description  = '',
   $tags         = '',
-  $type         = ''
+  $type         = '',
+  $instances    = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
   #### Validate parameters
-  if $fields {
-    validate_array($fields)
-    $arr_fields = join($fields, '\', \'')
-    $opt_fields = "  fields => ['${arr_fields}']\n"
-  }
+
+  validate_array($instances)
 
   if $tags {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
+  }
+
+  if $fields {
+    validate_array($fields)
+    $arr_fields = join($fields, '\', \'')
+    $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
   if $exclude_tags {
@@ -145,19 +154,14 @@ define logstash::output::pagerduty (
     $opt_incident_key = "  incident_key => \"${incident_key}\"\n"
   }
 
-  if $pdurl {
-    validate_string($pdurl)
-    $opt_pdurl = "  pdurl => \"${pdurl}\"\n"
-  }
-
   if $service_key {
     validate_string($service_key)
     $opt_service_key = "  service_key => \"${service_key}\"\n"
   }
 
-  if $description {
-    validate_string($description)
-    $opt_description = "  description => \"${description}\"\n"
+  if $pdurl {
+    validate_string($pdurl)
+    $opt_pdurl = "  pdurl => \"${pdurl}\"\n"
   }
 
   if $type {
@@ -165,15 +169,24 @@ define logstash::output::pagerduty (
     $opt_type = "  type => \"${type}\"\n"
   }
 
+  if $description {
+    validate_string($description)
+    $opt_description = "  description => \"${description}\"\n"
+  }
+
   #### Write config file
 
-  file { "${logstash::params::configdir}/output_pagerduty_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_pagerduty_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "output {\n pagerduty {\n${opt_description}${opt_details}${opt_event_type}${opt_exclude_tags}${opt_fields}${opt_incident_key}${opt_pdurl}${opt_service_key}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

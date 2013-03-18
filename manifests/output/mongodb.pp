@@ -76,6 +76,12 @@
 #   This variable is optional
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -98,25 +104,22 @@ define logstash::output::mongodb (
   $collection,
   $database,
   $host,
-  $isodate      = '',
-  $exclude_tags = '',
-  $fields       = '',
   $password     = '',
+  $exclude_tags = '',
+  $isodate      = '',
+  $fields       = '',
   $port         = '',
   $tags         = '',
   $type         = '',
-  $user         = ''
+  $user         = '',
+  $instances    = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
   #### Validate parameters
-  if $fields {
-    validate_array($fields)
-    $arr_fields = join($fields, '\', \'')
-    $opt_fields = "  fields => ['${arr_fields}']\n"
-  }
+
+  validate_array($instances)
 
   if $tags {
     validate_array($tags)
@@ -128,6 +131,12 @@ define logstash::output::mongodb (
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
+  }
+
+  if $fields {
+    validate_array($fields)
+    $arr_fields = join($fields, '\', \'')
+    $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
   if $isodate {
@@ -146,11 +155,6 @@ define logstash::output::mongodb (
   if $password {
     validate_string($password)
     $opt_password = "  password => \"${password}\"\n"
-  }
-
-  if $collection {
-    validate_string($collection)
-    $opt_collection = "  collection => \"${collection}\"\n"
   }
 
   if $host {
@@ -173,15 +177,24 @@ define logstash::output::mongodb (
     $opt_user = "  user => \"${user}\"\n"
   }
 
+  if $collection {
+    validate_string($collection)
+    $opt_collection = "  collection => \"${collection}\"\n"
+  }
+
   #### Write config file
 
-  file { "${logstash::params::configdir}/output_mongodb_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_mongodb_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "output {\n mongodb {\n${opt_collection}${opt_database}${opt_exclude_tags}${opt_fields}${opt_host}${opt_isodate}${opt_password}${opt_port}${opt_tags}${opt_type}${opt_user} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

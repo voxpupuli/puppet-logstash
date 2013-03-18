@@ -204,6 +204,12 @@
 #   This variable is optional
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -225,15 +231,15 @@
 define logstash::output::cloudwatch (
   $access_key,
   $secret_key,
-  $metricname       = '',
+  $namespace        = '',
   $field_dimensions = '',
   $field_metricname = '',
   $field_namespace  = '',
   $field_unit       = '',
   $field_value      = '',
   $fields           = '',
+  $metricname       = '',
   $exclude_tags     = '',
-  $namespace        = '',
   $queue_size       = '',
   $region           = '',
   $dimensions       = '',
@@ -241,13 +247,16 @@ define logstash::output::cloudwatch (
   $timeframe        = '',
   $type             = '',
   $unit             = '',
-  $value            = ''
+  $value            = '',
+  $instances        = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
   #### Validate parameters
+
+  validate_array($instances)
+
   if $fields {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
@@ -296,14 +305,14 @@ define logstash::output::cloudwatch (
     }
   }
 
+  if $namespace {
+    validate_string($namespace)
+    $opt_namespace = "  namespace => \"${namespace}\"\n"
+  }
+
   if $metricname {
     validate_string($metricname)
     $opt_metricname = "  metricname => \"${metricname}\"\n"
-  }
-
-  if $field_unit {
-    validate_string($field_unit)
-    $opt_field_unit = "  field_unit => \"${field_unit}\"\n"
   }
 
   if $field_value {
@@ -311,9 +320,9 @@ define logstash::output::cloudwatch (
     $opt_field_value = "  field_value => \"${field_value}\"\n"
   }
 
-  if $namespace {
-    validate_string($namespace)
-    $opt_namespace = "  namespace => \"${namespace}\"\n"
+  if $field_unit {
+    validate_string($field_unit)
+    $opt_field_unit = "  field_unit => \"${field_unit}\"\n"
   }
 
   if $field_namespace {
@@ -321,19 +330,14 @@ define logstash::output::cloudwatch (
     $opt_field_namespace = "  field_namespace => \"${field_namespace}\"\n"
   }
 
-  if $field_metricname {
-    validate_string($field_metricname)
-    $opt_field_metricname = "  field_metricname => \"${field_metricname}\"\n"
-  }
-
   if $secret_key {
     validate_string($secret_key)
     $opt_secret_key = "  secret_key => \"${secret_key}\"\n"
   }
 
-  if $field_dimensions {
-    validate_string($field_dimensions)
-    $opt_field_dimensions = "  field_dimensions => \"${field_dimensions}\"\n"
+  if $field_metricname {
+    validate_string($field_metricname)
+    $opt_field_metricname = "  field_metricname => \"${field_metricname}\"\n"
   }
 
   if $timeframe {
@@ -346,9 +350,9 @@ define logstash::output::cloudwatch (
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $access_key {
-    validate_string($access_key)
-    $opt_access_key = "  access_key => \"${access_key}\"\n"
+  if $field_dimensions {
+    validate_string($field_dimensions)
+    $opt_field_dimensions = "  field_dimensions => \"${field_dimensions}\"\n"
   }
 
   if $value {
@@ -356,15 +360,24 @@ define logstash::output::cloudwatch (
     $opt_value = "  value => \"${value}\"\n"
   }
 
+  if $access_key {
+    validate_string($access_key)
+    $opt_access_key = "  access_key => \"${access_key}\"\n"
+  }
+
   #### Write config file
 
-  file { "${logstash::params::configdir}/output_cloudwatch_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_cloudwatch_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "output {\n cloudwatch {\n${opt_access_key}${opt_dimensions}${opt_exclude_tags}${opt_field_dimensions}${opt_field_metricname}${opt_field_namespace}${opt_field_unit}${opt_field_value}${opt_fields}${opt_metricname}${opt_namespace}${opt_queue_size}${opt_region}${opt_secret_key}${opt_tags}${opt_timeframe}${opt_type}${opt_unit}${opt_value} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

@@ -105,6 +105,12 @@
 #   This variable is optional
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -136,9 +142,9 @@ define logstash::output::riak (
   $proto         = '',
   $ssl_opts      = '',
   $tags          = '',
-  $type          = ''
+  $type          = '',
+  $instances     = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
@@ -155,12 +161,6 @@ define logstash::output::riak (
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $exclude_tags {
-    validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, '\', \'')
-    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
-  }
-
   if $fields {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
@@ -173,6 +173,15 @@ define logstash::output::riak (
     $opt_indices = "  indices => ['${arr_indices}']\n"
   }
 
+  if $exclude_tags {
+    validate_array($exclude_tags)
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
+    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
+  }
+
+
+  validate_array($instances)
+
   if $enable_ssl {
     validate_bool($enable_ssl)
     $opt_enable_ssl = "  enable_ssl => ${enable_ssl}\n"
@@ -183,16 +192,16 @@ define logstash::output::riak (
     $opt_enable_search = "  enable_search => ${enable_search}\n"
   }
 
-  if $bucket_props {
-    validate_hash($bucket_props)
-    $arr_bucket_props = inline_template('<%= bucket_props.to_a.flatten.inspect %>')
-    $opt_bucket_props = "  bucket_props => ${arr_bucket_props}\n"
-  }
-
   if $nodes {
     validate_hash($nodes)
     $arr_nodes = inline_template('<%= nodes.to_a.flatten.inspect %>')
     $opt_nodes = "  nodes => ${arr_nodes}\n"
+  }
+
+  if $bucket_props {
+    validate_hash($bucket_props)
+    $arr_bucket_props = inline_template('<%= bucket_props.to_a.flatten.inspect %>')
+    $opt_bucket_props = "  bucket_props => ${arr_bucket_props}\n"
   }
 
   if $ssl_opts {
@@ -209,25 +218,29 @@ define logstash::output::riak (
     }
   }
 
-  if $key_name {
-    validate_string($key_name)
-    $opt_key_name = "  key_name => \"${key_name}\"\n"
-  }
-
   if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
+  if $key_name {
+    validate_string($key_name)
+    $opt_key_name = "  key_name => \"${key_name}\"\n"
+  }
+
   #### Write config file
 
-  file { "${logstash::params::configdir}/output_riak_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_riak_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "output {\n riak {\n${opt_bucket}${opt_bucket_props}${opt_enable_search}${opt_enable_ssl}${opt_exclude_tags}${opt_fields}${opt_indices}${opt_key_name}${opt_nodes}${opt_proto}${opt_ssl_opts}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

@@ -130,6 +130,12 @@
 #   Default value: 10
 #   This variable is optional
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -160,18 +166,15 @@ define logstash::filter::multiline (
   $tags            = '',
   $type            = '',
   $what            = '',
-  $order           = 10
+  $order           = 10,
+  $instances       = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
   #### Validate parameters
-  if $remove_tag {
-    validate_array($remove_tag)
-    $arr_remove_tag = join($remove_tag, '\', \'')
-    $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
-  }
+
+  validate_array($instances)
 
   if $add_tag {
     validate_array($add_tag)
@@ -195,6 +198,12 @@ define logstash::filter::multiline (
     validate_array($patterns_dir)
     $arr_patterns_dir = join($patterns_dir, '\', \'')
     $opt_patterns_dir = "  patterns_dir => ['${arr_patterns_dir}']\n"
+  }
+
+  if $remove_tag {
+    validate_array($remove_tag)
+    $arr_remove_tag = join($remove_tag, '\', \'')
+    $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
   }
 
   if $negate {
@@ -227,25 +236,29 @@ define logstash::filter::multiline (
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $pattern {
-    validate_string($pattern)
-    $opt_pattern = "  pattern => \"${pattern}\"\n"
-  }
-
   if $stream_identity {
     validate_string($stream_identity)
     $opt_stream_identity = "  stream_identity => \"${stream_identity}\"\n"
   }
 
+  if $pattern {
+    validate_string($pattern)
+    $opt_pattern = "  pattern => \"${pattern}\"\n"
+  }
+
   #### Write config file
 
-  file { "${logstash::params::configdir}/filter_${order}_multiline_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/filter_${order}_multiline_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "filter {\n multiline {\n${opt_add_field}${opt_add_tag}${opt_exclude_tags}${opt_negate}${opt_pattern}${opt_patterns_dir}${opt_remove_tag}${opt_stream_identity}${opt_tags}${opt_type}${opt_what} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

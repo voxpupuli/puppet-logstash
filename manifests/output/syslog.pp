@@ -106,6 +106,12 @@
 #   This variable is optional
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -129,33 +135,30 @@ define logstash::output::syslog (
   $severity,
   $port,
   $host,
-  $procid       = '',
+  $protocol     = '',
   $msgid        = '',
   $appname      = '',
+  $procid       = '',
   $fields       = '',
-  $protocol     = '',
   $rfc          = '',
   $exclude_tags = '',
   $sourcehost   = '',
   $tags         = '',
   $timestamp    = '',
-  $type         = ''
+  $type         = '',
+  $instances    = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
   #### Validate parameters
+
+  validate_array($instances)
+
   if $exclude_tags {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
-  }
-
-  if $tags {
-    validate_array($tags)
-    $arr_tags = join($tags, '\', \'')
-    $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
   if $fields {
@@ -164,11 +167,25 @@ define logstash::output::syslog (
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
+  if $tags {
+    validate_array($tags)
+    $arr_tags = join($tags, '\', \'')
+    $opt_tags = "  tags => ['${arr_tags}']\n"
+  }
+
   if $port {
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
     } else {
       $opt_port = "  port => ${port}\n"
+    }
+  }
+
+  if $facility {
+    if ! ($facility in ['kernel', 'user-level', 'mail', 'daemon', 'security/authorization', 'syslogd', 'line printer', 'network news', 'uucp', 'clock', 'security/authorization', 'ftp', 'ntp', 'log audit', 'log alert', 'clock', 'local0', 'local1', 'local2', 'local3', 'local4', 'local5', 'local6', 'local7']) {
+      fail("\"${facility}\" is not a valid facility parameter value")
+    } else {
+      $opt_facility = "  facility => \"${facility}\"\n"
     }
   }
 
@@ -185,14 +202,6 @@ define logstash::output::syslog (
       fail("\"${rfc}\" is not a valid rfc parameter value")
     } else {
       $opt_rfc = "  rfc => \"${rfc}\"\n"
-    }
-  }
-
-  if $facility {
-    if ! ($facility in ['kernel', 'user-level', 'mail', 'daemon', 'security/authorization', 'syslogd', 'line printer', 'network news', 'uucp', 'clock', 'security/authorization', 'ftp', 'ntp', 'log audit', 'log alert', 'clock', 'local0', 'local1', 'local2', 'local3', 'local4', 'local5', 'local6', 'local7']) {
-      fail("\"${facility}\" is not a valid facility parameter value")
-    } else {
-      $opt_facility = "  facility => \"${facility}\"\n"
     }
   }
 
@@ -214,19 +223,14 @@ define logstash::output::syslog (
     $opt_msgid = "  msgid => \"${msgid}\"\n"
   }
 
-  if $host {
-    validate_string($host)
-    $opt_host = "  host => \"${host}\"\n"
-  }
-
   if $sourcehost {
     validate_string($sourcehost)
     $opt_sourcehost = "  sourcehost => \"${sourcehost}\"\n"
   }
 
-  if $appname {
-    validate_string($appname)
-    $opt_appname = "  appname => \"${appname}\"\n"
+  if $host {
+    validate_string($host)
+    $opt_host = "  host => \"${host}\"\n"
   }
 
   if $timestamp {
@@ -239,15 +243,24 @@ define logstash::output::syslog (
     $opt_type = "  type => \"${type}\"\n"
   }
 
+  if $appname {
+    validate_string($appname)
+    $opt_appname = "  appname => \"${appname}\"\n"
+  }
+
   #### Write config file
 
-  file { "${logstash::params::configdir}/output_syslog_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_syslog_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "output {\n syslog {\n${opt_appname}${opt_exclude_tags}${opt_facility}${opt_fields}${opt_host}${opt_msgid}${opt_port}${opt_procid}${opt_protocol}${opt_rfc}${opt_severity}${opt_sourcehost}${opt_tags}${opt_timestamp}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

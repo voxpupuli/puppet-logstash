@@ -139,6 +139,12 @@
 #   This variable is required
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -159,22 +165,25 @@
 #
 define logstash::input::sqs (
   $access_key,
+  $type,
   $secret_key,
   $queue,
-  $type,
   $format         = '',
+  $message_format = '',
   $debug          = '',
   $charset        = '',
-  $add_field      = '',
   $tags           = '',
   $threads        = '',
-  $message_format = ''
+  $add_field      = '',
+  $instances      = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
   #### Validate parameters
+
+  validate_array($instances)
+
   if $tags {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
@@ -216,9 +225,9 @@ define logstash::input::sqs (
     }
   }
 
-  if $message_format {
-    validate_string($message_format)
-    $opt_message_format = "  message_format => \"${message_format}\"\n"
+  if $queue {
+    validate_string($queue)
+    $opt_queue = "  queue => \"${queue}\"\n"
   }
 
   if $secret_key {
@@ -226,14 +235,9 @@ define logstash::input::sqs (
     $opt_secret_key = "  secret_key => \"${secret_key}\"\n"
   }
 
-  if $queue {
-    validate_string($queue)
-    $opt_queue = "  queue => \"${queue}\"\n"
-  }
-
-  if $access_key {
-    validate_string($access_key)
-    $opt_access_key = "  access_key => \"${access_key}\"\n"
+  if $message_format {
+    validate_string($message_format)
+    $opt_message_format = "  message_format => \"${message_format}\"\n"
   }
 
   if $type {
@@ -241,15 +245,24 @@ define logstash::input::sqs (
     $opt_type = "  type => \"${type}\"\n"
   }
 
+  if $access_key {
+    validate_string($access_key)
+    $opt_access_key = "  access_key => \"${access_key}\"\n"
+  }
+
   #### Write config file
 
-  file { "${logstash::params::configdir}/input_sqs_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/input_sqs_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "input {\n sqs {\n${opt_access_key}${opt_add_field}${opt_charset}${opt_debug}${opt_format}${opt_message_format}${opt_queue}${opt_secret_key}${opt_tags}${opt_threads}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

@@ -87,6 +87,12 @@
 #   This variable is required
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -106,20 +112,20 @@
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
 define logstash::output::ganglia (
-  $value,
   $metric,
+  $value,
   $metric_type  = '',
   $lifetime     = '',
   $max_interval = '',
-  $fields       = '',
+  $exclude_tags = '',
   $host         = '',
   $port         = '',
   $tags         = '',
   $type         = '',
   $units        = '',
-  $exclude_tags = ''
+  $fields       = '',
+  $instances    = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
@@ -142,13 +148,8 @@ define logstash::output::ganglia (
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $lifetime {
-    if ! is_numeric($lifetime) {
-      fail("\"${lifetime}\" is not a valid lifetime parameter value")
-    } else {
-      $opt_lifetime = "  lifetime => ${lifetime}\n"
-    }
-  }
+
+  validate_array($instances)
 
   if $max_interval {
     if ! is_numeric($max_interval) {
@@ -166,6 +167,14 @@ define logstash::output::ganglia (
     }
   }
 
+  if $lifetime {
+    if ! is_numeric($lifetime) {
+      fail("\"${lifetime}\" is not a valid lifetime parameter value")
+    } else {
+      $opt_lifetime = "  lifetime => ${lifetime}\n"
+    }
+  }
+
   if $metric_type {
     if ! ($metric_type in ['string', 'int8', 'uint8', 'int16', 'uint16', 'int32', 'uint32', 'float', 'double']) {
       fail("\"${metric_type}\" is not a valid metric_type parameter value")
@@ -177,11 +186,6 @@ define logstash::output::ganglia (
   if $metric {
     validate_string($metric)
     $opt_metric = "  metric => \"${metric}\"\n"
-  }
-
-  if $host {
-    validate_string($host)
-    $opt_host = "  host => \"${host}\"\n"
   }
 
   if $type {
@@ -199,15 +203,24 @@ define logstash::output::ganglia (
     $opt_value = "  value => \"${value}\"\n"
   }
 
+  if $host {
+    validate_string($host)
+    $opt_host = "  host => \"${host}\"\n"
+  }
+
   #### Write config file
 
-  file { "${logstash::params::configdir}/output_ganglia_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_ganglia_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "output {\n ganglia {\n${opt_exclude_tags}${opt_fields}${opt_host}${opt_lifetime}${opt_max_interval}${opt_metric}${opt_metric_type}${opt_port}${opt_tags}${opt_type}${opt_units}${opt_value} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

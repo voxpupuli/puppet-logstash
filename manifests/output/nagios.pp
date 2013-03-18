@@ -64,6 +64,12 @@
 #   This variable is optional
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -88,18 +94,15 @@ define logstash::output::nagios (
   $fields       = '',
   $nagios_level = '',
   $tags         = '',
-  $type         = ''
+  $type         = '',
+  $instances    = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
   #### Validate parameters
-  if $tags {
-    validate_array($tags)
-    $arr_tags = join($tags, '\', \'')
-    $opt_tags = "  tags => ['${arr_tags}']\n"
-  }
+
+  validate_array($instances)
 
   if $exclude_tags {
     validate_array($exclude_tags)
@@ -113,6 +116,12 @@ define logstash::output::nagios (
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
+  if $tags {
+    validate_array($tags)
+    $arr_tags = join($tags, '\', \'')
+    $opt_tags = "  tags => ['${arr_tags}']\n"
+  }
+
   if $nagios_level {
     if ! ($nagios_level in ['0', '1', '2', '3']) {
       fail("\"${nagios_level}\" is not a valid nagios_level parameter value")
@@ -121,25 +130,29 @@ define logstash::output::nagios (
     }
   }
 
-  if $commandfile {
-    validate_string($commandfile)
-    $opt_commandfile = "  commandfile => \"${commandfile}\"\n"
-  }
-
   if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
+  if $commandfile {
+    validate_string($commandfile)
+    $opt_commandfile = "  commandfile => \"${commandfile}\"\n"
+  }
+
   #### Write config file
 
-  file { "${logstash::params::configdir}/output_nagios_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_nagios_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "output {\n nagios {\n${opt_commandfile}${opt_exclude_tags}${opt_fields}${opt_nagios_level}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

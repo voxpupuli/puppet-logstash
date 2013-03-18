@@ -128,6 +128,12 @@
 #   This variable is optional
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -161,23 +167,26 @@ define logstash::output::elasticsearch (
   $node_name             = '',
   $port                  = '',
   $tags                  = '',
-  $type                  = ''
+  $type                  = '',
+  $instances             = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
   #### Validate parameters
-  if $exclude_tags {
-    validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, '\', \'')
-    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
-  }
+
+  validate_array($instances)
 
   if $tags {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
+  }
+
+  if $exclude_tags {
+    validate_array($exclude_tags)
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
+    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if $fields {
@@ -207,19 +216,14 @@ define logstash::output::elasticsearch (
     }
   }
 
-  if $host {
-    validate_string($host)
-    $opt_host = "  host => \"${host}\"\n"
-  }
-
-  if $embedded_http_port {
-    validate_string($embedded_http_port)
-    $opt_embedded_http_port = "  embedded_http_port => \"${embedded_http_port}\"\n"
-  }
-
   if $index {
     validate_string($index)
     $opt_index = "  index => \"${index}\"\n"
+  }
+
+  if $host {
+    validate_string($host)
+    $opt_host = "  host => \"${host}\"\n"
   }
 
   if $index_type {
@@ -227,9 +231,9 @@ define logstash::output::elasticsearch (
     $opt_index_type = "  index_type => \"${index_type}\"\n"
   }
 
-  if $bind_host {
-    validate_string($bind_host)
-    $opt_bind_host = "  bind_host => \"${bind_host}\"\n"
+  if $embedded_http_port {
+    validate_string($embedded_http_port)
+    $opt_embedded_http_port = "  embedded_http_port => \"${embedded_http_port}\"\n"
   }
 
   if $node_name {
@@ -252,15 +256,24 @@ define logstash::output::elasticsearch (
     $opt_type = "  type => \"${type}\"\n"
   }
 
+  if $bind_host {
+    validate_string($bind_host)
+    $opt_bind_host = "  bind_host => \"${bind_host}\"\n"
+  }
+
   #### Write config file
 
-  file { "${logstash::params::configdir}/output_elasticsearch_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_elasticsearch_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "output {\n elasticsearch {\n${opt_bind_host}${opt_cluster}${opt_document_id}${opt_embedded}${opt_embedded_http_port}${opt_exclude_tags}${opt_fields}${opt_host}${opt_index}${opt_index_type}${opt_max_inflight_requests}${opt_node_name}${opt_port}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

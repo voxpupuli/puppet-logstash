@@ -145,6 +145,12 @@
 #   This variable is required
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -165,26 +171,29 @@
 #
 define logstash::input::redis (
   $type,
-  $message_format = '',
   $data_type      = '',
   $db             = '',
   $debug          = '',
   $format         = '',
   $host           = '',
   $key            = '',
+  $message_format = '',
   $charset        = '',
   $password       = '',
   $port           = '',
   $tags           = '',
   $threads        = '',
   $timeout        = '',
-  $add_field      = ''
+  $add_field      = '',
+  $instances      = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
   #### Validate parameters
+
+  validate_array($instances)
+
   if $tags {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
@@ -210,19 +219,19 @@ define logstash::input::redis (
     }
   }
 
-  if $threads {
-    if ! is_numeric($threads) {
-      fail("\"${threads}\" is not a valid threads parameter value")
-    } else {
-      $opt_threads = "  threads => ${threads}\n"
-    }
-  }
-
   if $timeout {
     if ! is_numeric($timeout) {
       fail("\"${timeout}\" is not a valid timeout parameter value")
     } else {
       $opt_timeout = "  timeout => ${timeout}\n"
+    }
+  }
+
+  if $threads {
+    if ! is_numeric($threads) {
+      fail("\"${threads}\" is not a valid threads parameter value")
+    } else {
+      $opt_threads = "  threads => ${threads}\n"
     }
   }
 
@@ -268,14 +277,14 @@ define logstash::input::redis (
     $opt_message_format = "  message_format => \"${message_format}\"\n"
   }
 
-  if $key {
-    validate_string($key)
-    $opt_key = "  key => \"${key}\"\n"
-  }
-
   if $host {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
+  }
+
+  if $key {
+    validate_string($key)
+    $opt_key = "  key => \"${key}\"\n"
   }
 
   if $type {
@@ -285,13 +294,17 @@ define logstash::input::redis (
 
   #### Write config file
 
-  file { "${logstash::params::configdir}/input_redis_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/input_redis_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "input {\n redis {\n${opt_add_field}${opt_charset}${opt_data_type}${opt_db}${opt_debug}${opt_format}${opt_host}${opt_key}${opt_message_format}${opt_password}${opt_port}${opt_tags}${opt_threads}${opt_timeout}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

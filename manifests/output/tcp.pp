@@ -66,6 +66,12 @@
 #   This variable is optional
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -92,9 +98,9 @@ define logstash::output::tcp (
   $exclude_tags   = '',
   $fields         = '',
   $tags           = '',
-  $type           = ''
+  $type           = '',
+  $instances      = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
@@ -117,6 +123,9 @@ define logstash::output::tcp (
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
+
+  validate_array($instances)
+
   if $port {
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
@@ -133,11 +142,6 @@ define logstash::output::tcp (
     }
   }
 
-  if $message_format {
-    validate_string($message_format)
-    $opt_message_format = "  message_format => \"${message_format}\"\n"
-  }
-
   if $host {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
@@ -148,15 +152,24 @@ define logstash::output::tcp (
     $opt_type = "  type => \"${type}\"\n"
   }
 
+  if $message_format {
+    validate_string($message_format)
+    $opt_message_format = "  message_format => \"${message_format}\"\n"
+  }
+
   #### Write config file
 
-  file { "${logstash::params::configdir}/output_tcp_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_tcp_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "output {\n tcp {\n${opt_exclude_tags}${opt_fields}${opt_host}${opt_message_format}${opt_mode}${opt_port}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

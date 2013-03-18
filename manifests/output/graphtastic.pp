@@ -107,6 +107,12 @@
 #   This variable is optional
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -137,18 +143,15 @@ define logstash::output::graphtastic (
   $port         = '',
   $retries      = '',
   $tags         = '',
-  $type         = ''
+  $type         = '',
+  $instances    = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
   #### Validate parameters
-  if $exclude_tags {
-    validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, '\', \'')
-    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
-  }
+
+  validate_array($instances)
 
   if $tags {
     validate_array($tags)
@@ -162,18 +165,16 @@ define logstash::output::graphtastic (
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
+  if $exclude_tags {
+    validate_array($exclude_tags)
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
+    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
+  }
+
   if $metrics {
     validate_hash($metrics)
     $arr_metrics = inline_template('<%= metrics.to_a.flatten.inspect %>')
     $opt_metrics = "  metrics => ${arr_metrics}\n"
-  }
-
-  if $retries {
-    if ! is_numeric($retries) {
-      fail("\"${retries}\" is not a valid retries parameter value")
-    } else {
-      $opt_retries = "  retries => ${retries}\n"
-    }
   }
 
   if $port {
@@ -181,6 +182,14 @@ define logstash::output::graphtastic (
       fail("\"${port}\" is not a valid port parameter value")
     } else {
       $opt_port = "  port => ${port}\n"
+    }
+  }
+
+  if $retries {
+    if ! is_numeric($retries) {
+      fail("\"${retries}\" is not a valid retries parameter value")
+    } else {
+      $opt_retries = "  retries => ${retries}\n"
     }
   }
 
@@ -200,9 +209,9 @@ define logstash::output::graphtastic (
     }
   }
 
-  if $host {
-    validate_string($host)
-    $opt_host = "  host => \"${host}\"\n"
+  if $context {
+    validate_string($context)
+    $opt_context = "  context => \"${context}\"\n"
   }
 
   if $error_file {
@@ -210,25 +219,29 @@ define logstash::output::graphtastic (
     $opt_error_file = "  error_file => \"${error_file}\"\n"
   }
 
-  if $context {
-    validate_string($context)
-    $opt_context = "  context => \"${context}\"\n"
-  }
-
   if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
+  if $host {
+    validate_string($host)
+    $opt_host = "  host => \"${host}\"\n"
+  }
+
   #### Write config file
 
-  file { "${logstash::params::configdir}/output_graphtastic_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_graphtastic_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "output {\n graphtastic {\n${opt_batch_number}${opt_context}${opt_error_file}${opt_exclude_tags}${opt_fields}${opt_host}${opt_integration}${opt_metrics}${opt_port}${opt_retries}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

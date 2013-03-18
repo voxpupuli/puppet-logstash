@@ -82,6 +82,12 @@
 #   This variable is optional
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -112,9 +118,9 @@ define logstash::output::irc (
   $real         = '',
   $tags         = '',
   $type         = '',
-  $user         = ''
+  $user         = '',
+  $instances    = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
@@ -131,17 +137,20 @@ define logstash::output::irc (
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
+  if $fields {
+    validate_array($fields)
+    $arr_fields = join($fields, '\', \'')
+    $opt_fields = "  fields => ['${arr_fields}']\n"
+  }
+
   if $tags {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $fields {
-    validate_array($fields)
-    $arr_fields = join($fields, '\', \'')
-    $opt_fields = "  fields => ['${arr_fields}']\n"
-  }
+
+  validate_array($instances)
 
   if $port {
     if ! is_numeric($port) {
@@ -156,14 +165,9 @@ define logstash::output::irc (
     $opt_password = "  password => \"${password}\"\n"
   }
 
-  if $nick {
-    validate_string($nick)
-    $opt_nick = "  nick => \"${nick}\"\n"
-  }
-
-  if $host {
-    validate_string($host)
-    $opt_host = "  host => \"${host}\"\n"
+  if $format {
+    validate_string($format)
+    $opt_format = "  format => \"${format}\"\n"
   }
 
   if $real {
@@ -171,9 +175,9 @@ define logstash::output::irc (
     $opt_real = "  real => \"${real}\"\n"
   }
 
-  if $format {
-    validate_string($format)
-    $opt_format = "  format => \"${format}\"\n"
+  if $host {
+    validate_string($host)
+    $opt_host = "  host => \"${host}\"\n"
   }
 
   if $type {
@@ -186,15 +190,24 @@ define logstash::output::irc (
     $opt_user = "  user => \"${user}\"\n"
   }
 
+  if $nick {
+    validate_string($nick)
+    $opt_nick = "  nick => \"${nick}\"\n"
+  }
+
   #### Write config file
 
-  file { "${logstash::params::configdir}/output_irc_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_irc_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "output {\n irc {\n${opt_channels}${opt_exclude_tags}${opt_fields}${opt_format}${opt_host}${opt_nick}${opt_password}${opt_port}${opt_real}${opt_tags}${opt_type}${opt_user} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

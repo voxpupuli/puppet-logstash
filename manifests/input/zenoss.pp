@@ -189,6 +189,12 @@
 #   This variable is optional
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -232,13 +238,16 @@ define logstash::input::zenoss (
   $ack            = '',
   $user           = '',
   $verify_ssl     = '',
-  $vhost          = ''
+  $vhost          = '',
+  $instances      = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
   #### Validate parameters
+
+  validate_array($instances)
+
   if $tags {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
@@ -251,29 +260,9 @@ define logstash::input::zenoss (
     $opt_arguments = "  arguments => ['${arr_arguments}']\n"
   }
 
-  if $ssl {
-    validate_bool($ssl)
-    $opt_ssl = "  ssl => ${ssl}\n"
-  }
-
-  if $auto_delete {
-    validate_bool($auto_delete)
-    $opt_auto_delete = "  auto_delete => ${auto_delete}\n"
-  }
-
-  if $passive {
-    validate_bool($passive)
-    $opt_passive = "  passive => ${passive}\n"
-  }
-
   if $debug {
     validate_bool($debug)
     $opt_debug = "  debug => ${debug}\n"
-  }
-
-  if $durable {
-    validate_bool($durable)
-    $opt_durable = "  durable => ${durable}\n"
   }
 
   if $verify_ssl {
@@ -281,9 +270,19 @@ define logstash::input::zenoss (
     $opt_verify_ssl = "  verify_ssl => ${verify_ssl}\n"
   }
 
-  if $ack {
-    validate_bool($ack)
-    $opt_ack = "  ack => ${ack}\n"
+  if $auto_delete {
+    validate_bool($auto_delete)
+    $opt_auto_delete = "  auto_delete => ${auto_delete}\n"
+  }
+
+  if $durable {
+    validate_bool($durable)
+    $opt_durable = "  durable => ${durable}\n"
+  }
+
+  if $ssl {
+    validate_bool($ssl)
+    $opt_ssl = "  ssl => ${ssl}\n"
   }
 
   if $exclusive {
@@ -291,18 +290,20 @@ define logstash::input::zenoss (
     $opt_exclusive = "  exclusive => ${exclusive}\n"
   }
 
+  if $passive {
+    validate_bool($passive)
+    $opt_passive = "  passive => ${passive}\n"
+  }
+
+  if $ack {
+    validate_bool($ack)
+    $opt_ack = "  ack => ${ack}\n"
+  }
+
   if $add_field {
     validate_hash($add_field)
     $arr_add_field = inline_template('<%= add_field.to_a.flatten.inspect %>')
     $opt_add_field = "  add_field => ${arr_add_field}\n"
-  }
-
-  if $port {
-    if ! is_numeric($port) {
-      fail("\"${port}\" is not a valid port parameter value")
-    } else {
-      $opt_port = "  port => ${port}\n"
-    }
   }
 
   if $threads {
@@ -318,6 +319,14 @@ define logstash::input::zenoss (
       fail("\"${prefetch_count}\" is not a valid prefetch_count parameter value")
     } else {
       $opt_prefetch_count = "  prefetch_count => ${prefetch_count}\n"
+    }
+  }
+
+  if $port {
+    if ! is_numeric($port) {
+      fail("\"${port}\" is not a valid port parameter value")
+    } else {
+      $opt_port = "  port => ${port}\n"
     }
   }
 
@@ -342,14 +351,14 @@ define logstash::input::zenoss (
     $opt_password = "  password => \"${password}\"\n"
   }
 
+  if $exchange {
+    validate_string($exchange)
+    $opt_exchange = "  exchange => \"${exchange}\"\n"
+  }
+
   if $queue {
     validate_string($queue)
     $opt_queue = "  queue => \"${queue}\"\n"
-  }
-
-  if $message_format {
-    validate_string($message_format)
-    $opt_message_format = "  message_format => \"${message_format}\"\n"
   }
 
   if $key {
@@ -372,9 +381,9 @@ define logstash::input::zenoss (
     $opt_user = "  user => \"${user}\"\n"
   }
 
-  if $exchange {
-    validate_string($exchange)
-    $opt_exchange = "  exchange => \"${exchange}\"\n"
+  if $message_format {
+    validate_string($message_format)
+    $opt_message_format = "  message_format => \"${message_format}\"\n"
   }
 
   if $vhost {
@@ -384,13 +393,17 @@ define logstash::input::zenoss (
 
   #### Write config file
 
-  file { "${logstash::params::configdir}/input_zenoss_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/input_zenoss_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "input {\n zenoss {\n${opt_ack}${opt_add_field}${opt_arguments}${opt_auto_delete}${opt_charset}${opt_debug}${opt_durable}${opt_exchange}${opt_exclusive}${opt_format}${opt_host}${opt_key}${opt_message_format}${opt_passive}${opt_password}${opt_port}${opt_prefetch_count}${opt_queue}${opt_ssl}${opt_tags}${opt_threads}${opt_type}${opt_user}${opt_verify_ssl}${opt_vhost} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

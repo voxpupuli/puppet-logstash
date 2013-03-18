@@ -103,6 +103,12 @@
 #   Default value: 10
 #   This variable is optional
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -132,18 +138,15 @@ define logstash::filter::zeromq (
   $sockopt      = '',
   $tags         = '',
   $type         = '',
-  $order        = 10
+  $order        = 10,
+  $instances    = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
   #### Validate parameters
-  if $remove_tag {
-    validate_array($remove_tag)
-    $arr_remove_tag = join($remove_tag, '\', \'')
-    $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
-  }
+
+  validate_array($instances)
 
   if $add_tag {
     validate_array($add_tag)
@@ -163,16 +166,22 @@ define logstash::filter::zeromq (
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $sockopt {
-    validate_hash($sockopt)
-    $arr_sockopt = inline_template('<%= sockopt.to_a.flatten.inspect %>')
-    $opt_sockopt = "  sockopt => ${arr_sockopt}\n"
+  if $remove_tag {
+    validate_array($remove_tag)
+    $arr_remove_tag = join($remove_tag, '\', \'')
+    $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
   }
 
   if $add_field {
     validate_hash($add_field)
     $arr_add_field = inline_template('<%= add_field.to_a.flatten.inspect %>')
     $opt_add_field = "  add_field => ${arr_add_field}\n"
+  }
+
+  if $sockopt {
+    validate_hash($sockopt)
+    $arr_sockopt = inline_template('<%= sockopt.to_a.flatten.inspect %>')
+    $opt_sockopt = "  sockopt => ${arr_sockopt}\n"
   }
 
   if $order {
@@ -194,25 +203,29 @@ define logstash::filter::zeromq (
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $address {
-    validate_string($address)
-    $opt_address = "  address => \"${address}\"\n"
-  }
-
   if $field {
     validate_string($field)
     $opt_field = "  field => \"${field}\"\n"
   }
 
+  if $address {
+    validate_string($address)
+    $opt_address = "  address => \"${address}\"\n"
+  }
+
   #### Write config file
 
-  file { "${logstash::params::configdir}/filter_${order}_zeromq_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/filter_${order}_zeromq_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "filter {\n zeromq {\n${opt_add_field}${opt_add_tag}${opt_address}${opt_exclude_tags}${opt_field}${opt_mode}${opt_remove_tag}${opt_sockopt}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

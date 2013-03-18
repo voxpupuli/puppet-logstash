@@ -75,6 +75,12 @@
 #   This variable is optional
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -95,28 +101,25 @@
 #
 define logstash::output::sqs (
   $access_key,
-  $secret_key,
   $queue,
+  $secret_key,
   $fields       = '',
   $exclude_tags = '',
   $tags         = '',
-  $type         = ''
+  $type         = '',
+  $instances    = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
   #### Validate parameters
+
+  validate_array($instances)
+
   if $exclude_tags {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
-  }
-
-  if $tags {
-    validate_array($tags)
-    $arr_tags = join($tags, '\', \'')
-    $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
   if $fields {
@@ -125,9 +128,10 @@ define logstash::output::sqs (
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $queue {
-    validate_string($queue)
-    $opt_queue = "  queue => \"${queue}\"\n"
+  if $tags {
+    validate_array($tags)
+    $arr_tags = join($tags, '\', \'')
+    $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
   if $secret_key {
@@ -135,9 +139,9 @@ define logstash::output::sqs (
     $opt_secret_key = "  secret_key => \"${secret_key}\"\n"
   }
 
-  if $access_key {
-    validate_string($access_key)
-    $opt_access_key = "  access_key => \"${access_key}\"\n"
+  if $queue {
+    validate_string($queue)
+    $opt_queue = "  queue => \"${queue}\"\n"
   }
 
   if $type {
@@ -145,15 +149,24 @@ define logstash::output::sqs (
     $opt_type = "  type => \"${type}\"\n"
   }
 
+  if $access_key {
+    validate_string($access_key)
+    $opt_access_key = "  access_key => \"${access_key}\"\n"
+  }
+
   #### Write config file
 
-  file { "${logstash::params::configdir}/output_sqs_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_sqs_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "output {\n sqs {\n${opt_access_key}${opt_exclude_tags}${opt_fields}${opt_queue}${opt_secret_key}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

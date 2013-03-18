@@ -86,6 +86,12 @@
 #   This variable is optional
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -114,18 +120,15 @@ define logstash::output::sns (
   $publish_boot_message_arn = '',
   $secret_access_key        = '',
   $tags                     = '',
-  $type                     = ''
+  $type                     = '',
+  $instances                = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
   #### Validate parameters
-  if $exclude_tags {
-    validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, '\', \'')
-    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
-  }
+
+  validate_array($instances)
 
   if $tags {
     validate_array($tags)
@@ -139,17 +142,18 @@ define logstash::output::sns (
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
+  if $exclude_tags {
+    validate_array($exclude_tags)
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
+    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
+  }
+
   if $format {
     if ! ($format in ['json', 'plain']) {
       fail("\"${format}\" is not a valid format parameter value")
     } else {
       $opt_format = "  format => \"${format}\"\n"
     }
-  }
-
-  if $access_key_id {
-    validate_string($access_key_id)
-    $opt_access_key_id = "  access_key_id => \"${access_key_id}\"\n"
   }
 
   if $credentials {
@@ -177,15 +181,24 @@ define logstash::output::sns (
     $opt_type = "  type => \"${type}\"\n"
   }
 
+  if $access_key_id {
+    validate_string($access_key_id)
+    $opt_access_key_id = "  access_key_id => \"${access_key_id}\"\n"
+  }
+
   #### Write config file
 
-  file { "${logstash::params::configdir}/output_sns_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_sns_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "output {\n sns {\n${opt_access_key_id}${opt_arn}${opt_credentials}${opt_exclude_tags}${opt_fields}${opt_format}${opt_publish_boot_message_arn}${opt_secret_access_key}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

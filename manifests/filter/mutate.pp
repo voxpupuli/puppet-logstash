@@ -150,6 +150,12 @@
 #   Default value: 10
 #   This variable is optional
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -185,18 +191,15 @@ define logstash::filter::mutate (
   $tags         = '',
   $type         = '',
   $uppercase    = '',
-  $order        = 10
+  $order        = 10,
+  $instances    = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
   #### Validate parameters
-  if $remove_tag {
-    validate_array($remove_tag)
-    $arr_remove_tag = join($remove_tag, '\', \'')
-    $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
-  }
+
+  validate_array($instances)
 
   if $add_tag {
     validate_array($add_tag)
@@ -240,28 +243,16 @@ define logstash::filter::mutate (
     $opt_remove = "  remove => ['${arr_remove}']\n"
   }
 
+  if $remove_tag {
+    validate_array($remove_tag)
+    $arr_remove_tag = join($remove_tag, '\', \'')
+    $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
+  }
+
   if $strip {
     validate_array($strip)
     $arr_strip = join($strip, '\', \'')
     $opt_strip = "  strip => ['${arr_strip}']\n"
-  }
-
-  if $add_field {
-    validate_hash($add_field)
-    $arr_add_field = inline_template('<%= add_field.to_a.flatten.inspect %>')
-    $opt_add_field = "  add_field => ${arr_add_field}\n"
-  }
-
-  if $replace {
-    validate_hash($replace)
-    $arr_replace = inline_template('<%= replace.to_a.flatten.inspect %>')
-    $opt_replace = "  replace => ${arr_replace}\n"
-  }
-
-  if $split {
-    validate_hash($split)
-    $arr_split = inline_template('<%= split.to_a.flatten.inspect %>')
-    $opt_split = "  split => ${arr_split}\n"
   }
 
   if $rename {
@@ -270,16 +261,34 @@ define logstash::filter::mutate (
     $opt_rename = "  rename => ${arr_rename}\n"
   }
 
-  if $convert {
-    validate_hash($convert)
-    $arr_convert = inline_template('<%= convert.to_a.flatten.inspect %>')
-    $opt_convert = "  convert => ${arr_convert}\n"
+  if $split {
+    validate_hash($split)
+    $arr_split = inline_template('<%= split.to_a.flatten.inspect %>')
+    $opt_split = "  split => ${arr_split}\n"
+  }
+
+  if $replace {
+    validate_hash($replace)
+    $arr_replace = inline_template('<%= replace.to_a.flatten.inspect %>')
+    $opt_replace = "  replace => ${arr_replace}\n"
   }
 
   if $join {
     validate_hash($join)
     $arr_join = inline_template('<%= join.to_a.flatten.inspect %>')
     $opt_join = "  join => ${arr_join}\n"
+  }
+
+  if $convert {
+    validate_hash($convert)
+    $arr_convert = inline_template('<%= convert.to_a.flatten.inspect %>')
+    $opt_convert = "  convert => ${arr_convert}\n"
+  }
+
+  if $add_field {
+    validate_hash($add_field)
+    $arr_add_field = inline_template('<%= add_field.to_a.flatten.inspect %>')
+    $opt_add_field = "  add_field => ${arr_add_field}\n"
   }
 
   if $order {
@@ -295,13 +304,17 @@ define logstash::filter::mutate (
 
   #### Write config file
 
-  file { "${logstash::params::configdir}/filter_${order}_mutate_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/filter_${order}_mutate_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "filter {\n mutate {\n${opt_add_field}${opt_add_tag}${opt_convert}${opt_exclude_tags}${opt_gsub}${opt_join}${opt_lowercase}${opt_remove}${opt_remove_tag}${opt_rename}${opt_replace}${opt_split}${opt_strip}${opt_tags}${opt_type}${opt_uppercase} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

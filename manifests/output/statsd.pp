@@ -103,6 +103,12 @@
 #   This variable is optional
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -135,18 +141,15 @@ define logstash::output::statsd (
   $sender       = '',
   $tags         = '',
   $timing       = '',
-  $type         = ''
+  $type         = '',
+  $instances    = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
   #### Validate parameters
-  if $increment {
-    validate_array($increment)
-    $arr_increment = join($increment, '\', \'')
-    $opt_increment = "  increment => ['${arr_increment}']\n"
-  }
+
+  validate_array($instances)
 
   if $tags {
     validate_array($tags)
@@ -160,27 +163,27 @@ define logstash::output::statsd (
     $opt_decrement = "  decrement => ['${arr_decrement}']\n"
   }
 
-  if $fields {
-    validate_array($fields)
-    $arr_fields = join($fields, '\', \'')
-    $opt_fields = "  fields => ['${arr_fields}']\n"
-  }
-
   if $exclude_tags {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
+  if $increment {
+    validate_array($increment)
+    $arr_increment = join($increment, '\', \'')
+    $opt_increment = "  increment => ['${arr_increment}']\n"
+  }
+
+  if $fields {
+    validate_array($fields)
+    $arr_fields = join($fields, '\', \'')
+    $opt_fields = "  fields => ['${arr_fields}']\n"
+  }
+
   if $debug {
     validate_bool($debug)
     $opt_debug = "  debug => ${debug}\n"
-  }
-
-  if $count {
-    validate_hash($count)
-    $arr_count = inline_template('<%= count.to_a.flatten.inspect %>')
-    $opt_count = "  count => ${arr_count}\n"
   }
 
   if $timing {
@@ -189,12 +192,10 @@ define logstash::output::statsd (
     $opt_timing = "  timing => ${arr_timing}\n"
   }
 
-  if $port {
-    if ! is_numeric($port) {
-      fail("\"${port}\" is not a valid port parameter value")
-    } else {
-      $opt_port = "  port => ${port}\n"
-    }
+  if $count {
+    validate_hash($count)
+    $arr_count = inline_template('<%= count.to_a.flatten.inspect %>')
+    $opt_count = "  count => ${arr_count}\n"
   }
 
   if $sample_rate {
@@ -205,14 +206,12 @@ define logstash::output::statsd (
     }
   }
 
-  if $namespace {
-    validate_string($namespace)
-    $opt_namespace = "  namespace => \"${namespace}\"\n"
-  }
-
-  if $sender {
-    validate_string($sender)
-    $opt_sender = "  sender => \"${sender}\"\n"
+  if $port {
+    if ! is_numeric($port) {
+      fail("\"${port}\" is not a valid port parameter value")
+    } else {
+      $opt_port = "  port => ${port}\n"
+    }
   }
 
   if $host {
@@ -220,20 +219,34 @@ define logstash::output::statsd (
     $opt_host = "  host => \"${host}\"\n"
   }
 
+  if $sender {
+    validate_string($sender)
+    $opt_sender = "  sender => \"${sender}\"\n"
+  }
+
   if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
+  if $namespace {
+    validate_string($namespace)
+    $opt_namespace = "  namespace => \"${namespace}\"\n"
+  }
+
   #### Write config file
 
-  file { "${logstash::params::configdir}/output_statsd_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_statsd_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "output {\n statsd {\n${opt_count}${opt_debug}${opt_decrement}${opt_exclude_tags}${opt_fields}${opt_host}${opt_increment}${opt_namespace}${opt_port}${opt_sample_rate}${opt_sender}${opt_tags}${opt_timing}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

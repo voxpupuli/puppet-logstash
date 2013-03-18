@@ -66,6 +66,12 @@
 #   This variable is optional
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -92,23 +98,26 @@ define logstash::output::gemfire (
   $key_format     = '',
   $region_name    = '',
   $tags           = '',
-  $type           = ''
+  $type           = '',
+  $instances      = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
   #### Validate parameters
-  if $exclude_tags {
-    validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, '\', \'')
-    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
-  }
+
+  validate_array($instances)
 
   if $tags {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
+  }
+
+  if $exclude_tags {
+    validate_array($exclude_tags)
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
+    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if $fields {
@@ -120,11 +129,6 @@ define logstash::output::gemfire (
   if $key_format {
     validate_string($key_format)
     $opt_key_format = "  key_format => \"${key_format}\"\n"
-  }
-
-  if $cache_name {
-    validate_string($cache_name)
-    $opt_cache_name = "  cache_name => \"${cache_name}\"\n"
   }
 
   if $region_name {
@@ -142,15 +146,24 @@ define logstash::output::gemfire (
     $opt_type = "  type => \"${type}\"\n"
   }
 
+  if $cache_name {
+    validate_string($cache_name)
+    $opt_cache_name = "  cache_name => \"${cache_name}\"\n"
+  }
+
   #### Write config file
 
-  file { "${logstash::params::configdir}/output_gemfire_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_gemfire_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "output {\n gemfire {\n${opt_cache_name}${opt_cache_xml_file}${opt_exclude_tags}${opt_fields}${opt_key_format}${opt_region_name}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

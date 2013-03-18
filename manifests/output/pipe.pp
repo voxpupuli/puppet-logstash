@@ -59,6 +59,12 @@
 #   This variable is optional
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -79,28 +85,25 @@
 #
 define logstash::output::pipe (
   $command,
-  $message_format = '',
-  $fields         = '',
-  $exclude_tags   = '',
   $tags           = '',
+  $fields         = '',
+  $message_format = '',
+  $exclude_tags   = '',
   $ttl            = '',
-  $type           = ''
+  $type           = '',
+  $instances      = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
   #### Validate parameters
+
+  validate_array($instances)
+
   if $exclude_tags {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
-  }
-
-  if $tags {
-    validate_array($tags)
-    $arr_tags = join($tags, '\', \'')
-    $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
   if $fields {
@@ -109,12 +112,23 @@ define logstash::output::pipe (
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
+  if $tags {
+    validate_array($tags)
+    $arr_tags = join($tags, '\', \'')
+    $opt_tags = "  tags => ['${arr_tags}']\n"
+  }
+
   if $ttl {
     if ! is_numeric($ttl) {
       fail("\"${ttl}\" is not a valid ttl parameter value")
     } else {
       $opt_ttl = "  ttl => ${ttl}\n"
     }
+  }
+
+  if $type {
+    validate_string($type)
+    $opt_type = "  type => \"${type}\"\n"
   }
 
   if $message_format {
@@ -127,20 +141,19 @@ define logstash::output::pipe (
     $opt_command = "  command => \"${command}\"\n"
   }
 
-  if $type {
-    validate_string($type)
-    $opt_type = "  type => \"${type}\"\n"
-  }
-
   #### Write config file
 
-  file { "${logstash::params::configdir}/output_pipe_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_pipe_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "output {\n pipe {\n${opt_command}${opt_exclude_tags}${opt_fields}${opt_message_format}${opt_tags}${opt_ttl}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

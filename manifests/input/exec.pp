@@ -106,6 +106,12 @@
 #   This variable is required
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -125,21 +131,24 @@
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
 define logstash::input::exec (
-  $type,
   $interval,
+  $type,
   $command,
+  $add_field      = '',
   $format         = '',
   $debug          = '',
-  $charset        = '',
   $message_format = '',
   $tags           = '',
-  $add_field      = ''
+  $charset        = '',
+  $instances      = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
   #### Validate parameters
+
+  validate_array($instances)
+
   if $tags {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
@@ -181,9 +190,9 @@ define logstash::input::exec (
     }
   }
 
-  if $message_format {
-    validate_string($message_format)
-    $opt_message_format = "  message_format => \"${message_format}\"\n"
+  if $type {
+    validate_string($type)
+    $opt_type = "  type => \"${type}\"\n"
   }
 
   if $command {
@@ -191,20 +200,24 @@ define logstash::input::exec (
     $opt_command = "  command => \"${command}\"\n"
   }
 
-  if $type {
-    validate_string($type)
-    $opt_type = "  type => \"${type}\"\n"
+  if $message_format {
+    validate_string($message_format)
+    $opt_message_format = "  message_format => \"${message_format}\"\n"
   }
 
   #### Write config file
 
-  file { "${logstash::params::configdir}/input_exec_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/input_exec_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "input {\n exec {\n${opt_add_field}${opt_charset}${opt_command}${opt_debug}${opt_format}${opt_interval}${opt_message_format}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

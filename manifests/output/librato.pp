@@ -93,6 +93,12 @@
 #   This variable is optional
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -121,18 +127,15 @@ define logstash::output::librato (
   $fields       = '',
   $gauge        = '',
   $tags         = '',
-  $type         = ''
+  $type         = '',
+  $instances    = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
   #### Validate parameters
-  if $exclude_tags {
-    validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, '\', \'')
-    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
-  }
+
+  validate_array($instances)
 
   if $tags {
     validate_array($tags)
@@ -146,10 +149,10 @@ define logstash::output::librato (
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $annotation {
-    validate_hash($annotation)
-    $arr_annotation = inline_template('<%= annotation.to_a.flatten.inspect %>')
-    $opt_annotation = "  annotation => ${arr_annotation}\n"
+  if $exclude_tags {
+    validate_array($exclude_tags)
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
+    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if $counter {
@@ -158,20 +161,16 @@ define logstash::output::librato (
     $opt_counter = "  counter => ${arr_counter}\n"
   }
 
+  if $annotation {
+    validate_hash($annotation)
+    $arr_annotation = inline_template('<%= annotation.to_a.flatten.inspect %>')
+    $opt_annotation = "  annotation => ${arr_annotation}\n"
+  }
+
   if $gauge {
     validate_hash($gauge)
     $arr_gauge = inline_template('<%= gauge.to_a.flatten.inspect %>')
     $opt_gauge = "  gauge => ${arr_gauge}\n"
-  }
-
-  if $account_id {
-    validate_string($account_id)
-    $opt_account_id = "  account_id => \"${account_id}\"\n"
-  }
-
-  if $batch_size {
-    validate_string($batch_size)
-    $opt_batch_size = "  batch_size => \"${batch_size}\"\n"
   }
 
   if $api_token {
@@ -179,20 +178,34 @@ define logstash::output::librato (
     $opt_api_token = "  api_token => \"${api_token}\"\n"
   }
 
+  if $batch_size {
+    validate_string($batch_size)
+    $opt_batch_size = "  batch_size => \"${batch_size}\"\n"
+  }
+
   if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
+  if $account_id {
+    validate_string($account_id)
+    $opt_account_id = "  account_id => \"${account_id}\"\n"
+  }
+
   #### Write config file
 
-  file { "${logstash::params::configdir}/output_librato_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_librato_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "output {\n librato {\n${opt_account_id}${opt_annotation}${opt_api_token}${opt_batch_size}${opt_counter}${opt_exclude_tags}${opt_fields}${opt_gauge}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

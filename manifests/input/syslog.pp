@@ -130,6 +130,12 @@
 #   This variable is optional
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -160,13 +166,16 @@ define logstash::input::syslog (
   $severity_labels = '',
   $tags            = '',
   $add_field       = '',
-  $use_labels      = ''
+  $use_labels      = '',
+  $instances       = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
   #### Validate parameters
+
+  validate_array($instances)
+
   if $severity_labels {
     validate_array($severity_labels)
     $arr_severity_labels = join($severity_labels, '\', \'')
@@ -225,14 +234,14 @@ define logstash::input::syslog (
     }
   }
 
-  if $host {
-    validate_string($host)
-    $opt_host = "  host => \"${host}\"\n"
-  }
-
   if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
+  }
+
+  if $host {
+    validate_string($host)
+    $opt_host = "  host => \"${host}\"\n"
   }
 
   if $message_format {
@@ -242,13 +251,17 @@ define logstash::input::syslog (
 
   #### Write config file
 
-  file { "${logstash::params::configdir}/input_syslog_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/input_syslog_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "input {\n syslog {\n${opt_add_field}${opt_charset}${opt_debug}${opt_facility_labels}${opt_format}${opt_host}${opt_message_format}${opt_port}${opt_severity_labels}${opt_tags}${opt_type}${opt_use_labels} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

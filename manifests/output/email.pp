@@ -130,6 +130,12 @@
 #   This variable is optional
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -151,21 +157,21 @@
 define logstash::output::email (
   $match,
   $to,
-  $htmlbody     = '',
+  $attachments  = '',
   $contenttype  = '',
   $exclude_tags = '',
   $fields       = '',
   $from         = '',
+  $htmlbody     = '',
   $cc           = '',
-  $attachments  = '',
   $options      = '',
   $subject      = '',
   $tags         = '',
   $body         = '',
   $type         = '',
-  $via          = ''
+  $via          = '',
+  $instances    = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
@@ -194,11 +200,8 @@ define logstash::output::email (
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $options {
-    validate_hash($options)
-    $arr_options = inline_template('<%= options.to_a.flatten.inspect %>')
-    $opt_options = "  options => ${arr_options}\n"
-  }
+
+  validate_array($instances)
 
   if $match {
     validate_hash($match)
@@ -206,19 +209,15 @@ define logstash::output::email (
     $opt_match = "  match => ${arr_match}\n"
   }
 
-  if $htmlbody {
-    validate_string($htmlbody)
-    $opt_htmlbody = "  htmlbody => \"${htmlbody}\"\n"
+  if $options {
+    validate_hash($options)
+    $arr_options = inline_template('<%= options.to_a.flatten.inspect %>')
+    $opt_options = "  options => ${arr_options}\n"
   }
 
-  if $from {
-    validate_string($from)
-    $opt_from = "  from => \"${from}\"\n"
-  }
-
-  if $contenttype {
-    validate_string($contenttype)
-    $opt_contenttype = "  contenttype => \"${contenttype}\"\n"
+  if $subject {
+    validate_string($subject)
+    $opt_subject = "  subject => \"${subject}\"\n"
   }
 
   if $cc {
@@ -226,9 +225,14 @@ define logstash::output::email (
     $opt_cc = "  cc => \"${cc}\"\n"
   }
 
-  if $subject {
-    validate_string($subject)
-    $opt_subject = "  subject => \"${subject}\"\n"
+  if $from {
+    validate_string($from)
+    $opt_from = "  from => \"${from}\"\n"
+  }
+
+  if $htmlbody {
+    validate_string($htmlbody)
+    $opt_htmlbody = "  htmlbody => \"${htmlbody}\"\n"
   }
 
   if $body {
@@ -251,15 +255,24 @@ define logstash::output::email (
     $opt_via = "  via => \"${via}\"\n"
   }
 
+  if $contenttype {
+    validate_string($contenttype)
+    $opt_contenttype = "  contenttype => \"${contenttype}\"\n"
+  }
+
   #### Write config file
 
-  file { "${logstash::params::configdir}/output_email_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_email_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "output {\n email {\n${opt_attachments}${opt_body}${opt_cc}${opt_contenttype}${opt_exclude_tags}${opt_fields}${opt_from}${opt_htmlbody}${opt_match}${opt_options}${opt_subject}${opt_tags}${opt_to}${opt_type}${opt_via} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

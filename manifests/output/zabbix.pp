@@ -68,6 +68,12 @@
 #   This variable is optional
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -93,9 +99,9 @@ define logstash::output::zabbix (
   $port          = '',
   $tags          = '',
   $type          = '',
-  $zabbix_sender = ''
+  $zabbix_sender = '',
+  $instances     = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
@@ -112,6 +118,9 @@ define logstash::output::zabbix (
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
+
+  validate_array($instances)
+
   if $tags {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
@@ -126,9 +135,9 @@ define logstash::output::zabbix (
     }
   }
 
-  if $host {
-    validate_string($host)
-    $opt_host = "  host => \"${host}\"\n"
+  if $zabbix_sender {
+    validate_string($zabbix_sender)
+    $opt_zabbix_sender = "  zabbix_sender => \"${zabbix_sender}\"\n"
   }
 
   if $type {
@@ -136,20 +145,24 @@ define logstash::output::zabbix (
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $zabbix_sender {
-    validate_string($zabbix_sender)
-    $opt_zabbix_sender = "  zabbix_sender => \"${zabbix_sender}\"\n"
+  if $host {
+    validate_string($host)
+    $opt_host = "  host => \"${host}\"\n"
   }
 
   #### Write config file
 
-  file { "${logstash::params::configdir}/output_zabbix_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_zabbix_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "output {\n zabbix {\n${opt_exclude_tags}${opt_fields}${opt_host}${opt_port}${opt_tags}${opt_type}${opt_zabbix_sender} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

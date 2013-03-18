@@ -76,6 +76,12 @@
 #   This variable is optional
 #
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -104,9 +110,9 @@ define logstash::output::xmpp (
   $tags         = '',
   $type         = '',
   $fields       = '',
-  $users        = ''
+  $users        = '',
+  $instances    = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
@@ -122,6 +128,9 @@ define logstash::output::xmpp (
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
+
+
+  validate_array($instances)
 
   if $users {
     validate_array($users)
@@ -146,6 +155,11 @@ define logstash::output::xmpp (
     $opt_password = "  password => \"${password}\"\n"
   }
 
+  if $user {
+    validate_string($user)
+    $opt_user = "  user => \"${user}\"\n"
+  }
+
   if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
@@ -156,11 +170,6 @@ define logstash::output::xmpp (
     $opt_message = "  message => \"${message}\"\n"
   }
 
-  if $user {
-    validate_string($user)
-    $opt_user = "  user => \"${user}\"\n"
-  }
-
   if $host {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
@@ -168,13 +177,17 @@ define logstash::output::xmpp (
 
   #### Write config file
 
-  file { "${logstash::params::configdir}/output_xmpp_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_xmpp_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "output {\n xmpp {\n${opt_exclude_tags}${opt_fields}${opt_host}${opt_message}${opt_password}${opt_rooms}${opt_tags}${opt_type}${opt_user}${opt_users} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

@@ -122,6 +122,12 @@
 #   Default value: 10
 #   This variable is optional
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -153,18 +159,15 @@ define logstash::filter::kv (
   $trim         = '',
   $type         = '',
   $value_split  = '',
-  $order        = 10
+  $order        = 10,
+  $instances    = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
   #### Validate parameters
-  if $fields {
-    validate_array($fields)
-    $arr_fields = join($fields, '\', \'')
-    $opt_fields = "  fields => ['${arr_fields}']\n"
-  }
+
+  validate_array($instances)
 
   if $add_tag {
     validate_array($add_tag)
@@ -178,16 +181,22 @@ define logstash::filter::kv (
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $remove_tag {
-    validate_array($remove_tag)
-    $arr_remove_tag = join($remove_tag, '\', \'')
-    $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
-  }
-
   if $exclude_tags {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
+  }
+
+  if $fields {
+    validate_array($fields)
+    $arr_fields = join($fields, '\', \'')
+    $opt_fields = "  fields => ['${arr_fields}']\n"
+  }
+
+  if $remove_tag {
+    validate_array($remove_tag)
+    $arr_remove_tag = join($remove_tag, '\', \'')
+    $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
   }
 
   if $add_field {
@@ -202,14 +211,9 @@ define logstash::filter::kv (
     }
   }
 
-  if $field_split {
-    validate_string($field_split)
-    $opt_field_split = "  field_split => \"${field_split}\"\n"
-  }
-
-  if $container {
-    validate_string($container)
-    $opt_container = "  container => \"${container}\"\n"
+  if $type {
+    validate_string($type)
+    $opt_type = "  type => \"${type}\"\n"
   }
 
   if $trim {
@@ -217,14 +221,19 @@ define logstash::filter::kv (
     $opt_trim = "  trim => \"${trim}\"\n"
   }
 
-  if $type {
-    validate_string($type)
-    $opt_type = "  type => \"${type}\"\n"
+  if $container {
+    validate_string($container)
+    $opt_container = "  container => \"${container}\"\n"
   }
 
   if $value_split {
     validate_string($value_split)
     $opt_value_split = "  value_split => \"${value_split}\"\n"
+  }
+
+  if $field_split {
+    validate_string($field_split)
+    $opt_field_split = "  field_split => \"${field_split}\"\n"
   }
 
   if $prefix {
@@ -234,13 +243,17 @@ define logstash::filter::kv (
 
   #### Write config file
 
-  file { "${logstash::params::configdir}/filter_${order}_kv_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/filter_${order}_kv_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "filter {\n kv {\n${opt_add_field}${opt_add_tag}${opt_container}${opt_exclude_tags}${opt_field_split}${opt_fields}${opt_prefix}${opt_remove_tag}${opt_tags}${opt_trim}${opt_type}${opt_value_split} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }

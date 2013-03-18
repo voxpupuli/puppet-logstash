@@ -101,6 +101,12 @@
 #   Default value: 10
 #   This variable is optional
 #
+# [*instances*]
+#   Array of instance names to which this define is.
+#   Value type is array
+#   Default value: [ 'array' ]
+#   This variable is optional
+#
 #
 # === Examples
 #
@@ -128,23 +134,20 @@ define logstash::filter::xml (
   $tags         = '',
   $type         = '',
   $xpath        = '',
-  $order        = 10
+  $order        = 10,
+  $instances    = [ 'agent' ]
 ) {
-
 
   require logstash::params
 
   #### Validate parameters
+
+  validate_array($instances)
+
   if $tags {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
-  }
-
-  if $remove_tag {
-    validate_array($remove_tag)
-    $arr_remove_tag = join($remove_tag, '\', \'')
-    $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
   }
 
   if $add_tag {
@@ -159,21 +162,27 @@ define logstash::filter::xml (
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
+  if $remove_tag {
+    validate_array($remove_tag)
+    $arr_remove_tag = join($remove_tag, '\', \'')
+    $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
+  }
+
   if $store_xml {
     validate_bool($store_xml)
     $opt_store_xml = "  store_xml => ${store_xml}\n"
-  }
-
-  if $xpath {
-    validate_hash($xpath)
-    $arr_xpath = inline_template('<%= xpath.to_a.flatten.inspect %>')
-    $opt_xpath = "  xpath => ${arr_xpath}\n"
   }
 
   if $add_field {
     validate_hash($add_field)
     $arr_add_field = inline_template('<%= add_field.to_a.flatten.inspect %>')
     $opt_add_field = "  add_field => ${arr_add_field}\n"
+  }
+
+  if $xpath {
+    validate_hash($xpath)
+    $arr_xpath = inline_template('<%= xpath.to_a.flatten.inspect %>')
+    $opt_xpath = "  xpath => ${arr_xpath}\n"
   }
 
   if $order {
@@ -189,13 +198,17 @@ define logstash::filter::xml (
 
   #### Write config file
 
-  file { "${logstash::params::configdir}/filter_${order}_xml_${name}":
+  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/filter_${order}_xml_${name}")
+  $services = prefix($instances, 'logstash-')
+
+  file { $conffiles:
     ensure  => present,
     content => "filter {\n xml {\n${opt_add_field}${opt_add_tag}${opt_exclude_tags}${opt_remove_tag}${opt_store_xml}${opt_tags}${opt_type}${opt_xpath} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Class['logstash::service'],
+    notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
 }
