@@ -94,12 +94,14 @@ class logstash::package {
     file { "${logstash::installpath}/${basefilename}":
       ensure  => present,
       source  => $logstash::jarfile,
-      require => Exec['create_install_dir']
+      require => Exec['create_install_dir'],
+      backup  => false
     }
     file { "${logstash::installpath}/logstash.jar":
       ensure  => 'link',
       target  => "${logstash::installpath}/${basefilename}",
-      require => File["${logstash::installpath}/${basefilename}"]
+      require => File["${logstash::installpath}/${basefilename}"],
+      backup  => false
     }
 
 
