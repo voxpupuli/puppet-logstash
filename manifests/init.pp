@@ -90,8 +90,6 @@ class logstash(
   $instances     = [ 'agent' ],
   $initfiles     = undef,
   $defaultsfiles = undef,
-  $defaults_file = undef,
-  $initfile      = undef
 ) inherits logstash::params {
 
   #### Validate parameters
@@ -109,13 +107,10 @@ class logstash(
     fail("\"${status}\" is not a valid status parameter value")
   }
 
-  #### Deprecation notices
-  if $defaults_file {
-    fail('The variable "defaults_file" has been deprecated. Please use the "defaultsfiles" hash variable')
-  }
+  validate_array($instances)
 
-  if $initfile {
-    fail('The variable "initfile" has been deprecated. Please use the "initfiles" hash variable')
+  if $initfiles {
+    validate_hash($initfiles)
   }
 
   #### Manage actions

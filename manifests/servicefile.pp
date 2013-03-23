@@ -41,7 +41,7 @@ define logstash::servicefile (
 
     if $logstash::defaultsfiles {
       $def = $logstash::defaultsfiles
-      $defaults_file = $def[$name]
+      $def_file = $def[$name]
     }
 
     $configdir = "${logstash::params::configdir}/${name}/config"
@@ -70,6 +70,13 @@ define logstash::servicefile (
         }
 
       }
+    }
+
+    # If no custom defaults file is provided, lets use our default one
+    if $def_file {
+      $defaults_file = $def_file
+    } else {
+      $defaults_file = "puppet:///${module_name}/etc/sysconfig/logstash.defaults"
     }
 
     # Write service file
