@@ -6,6 +6,14 @@ http://www.logstash.net
 
 [![Build Status](https://travis-ci.org/electrical/puppet-logstash.png?branch=master)](https://travis-ci.org/electrical/logstash)
 
+## Note
+
+From version 0.0.6 to 0.1.0 the following has been removed/changed:
+
+initfile (string) => initfiles (hash)
+
+defaultsfile (string) => defaultsfiles (hash)
+
 
 ## Usage
 

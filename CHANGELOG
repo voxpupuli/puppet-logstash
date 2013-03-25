@@ -1,3 +1,7 @@
+0.1.0 ( Mar 25, 2013 )
+  Don't backup the Jar file or the symlink ( Issue #25 by Garth Kidd )
+  First implementation of the multi-instance feature. This will break certain functionality.
+
 0.0.6 ( Mar 07, 2013 )
   Fix issue that the init file was overwritten
   Ensure we install java first before starting logstash if enabled
