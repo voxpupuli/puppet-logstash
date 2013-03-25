@@ -4,7 +4,7 @@ A puppet module for managing and configuring Logstash
 
 http://www.logstash.net
 
-[![Build Status](https://travis-ci.org/electrical/puppet-logstash.png?branch=master)](https://travis-ci.org/electrical/logstash)
+[![Build Status](https://travis-ci.org/electrical/puppet-logstash.png?branch=master)](https://travis-ci.org/electrical/puppet-logstash)
 
 ## Note
 
