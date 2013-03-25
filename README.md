@@ -9,6 +9,8 @@ http://www.logstash.net
 
 ## Usage
 
+### Standard
+
 Installation, make sure service is running and will be started at boot time:
 
      class { 'logstash': }
@@ -31,16 +33,38 @@ When you want to use an other service manager like 'runit' or 'daemontools':
        status   => 'unmanaged'
      }
 
+### Multi-instance
+
+If you require running more then 1 instance on the same machine.
+If no instances are defined it will default to 'agent'.
+
+     class { 'logstash':
+       instances => [ 'instance1', 'instance2' ]
+     }
+
+All plugins can be defined to a certain instance. For example:
+
+     logstash::input::file { 'fileinput':
+       instances => [ 'instance1' ]
+     }
+
+     logstash::input::file { 'fileinput2':
+       instances => [ 'instance2' ]
+     }
+
+
+### Other options
+
 If you rather supply your own init script:
 
      class { 'logstash':
-       initfile => 'puppet:///path/to/initfile'
+       initfiles => { 'agent' => 'puppet:///path/to/initfile' }
      }
 
 In all cases you can supply a defaults file:
 
      class { 'logstash':
-       defaultsfile => 'puppet:///path/to/defaults'
+       defaultsfiles => { 'agent' => 'puppet:///path/to/defaults' }
      }
 
 Installation with a JAR file:
@@ -55,10 +79,10 @@ When no init script is provided when using custom provider, built in init script
 You can however supply your own init script and defaults file.
 
      class { 'logstash':
-       provider     => 'custom',
-       jarfile      => 'puppet:///path/to/jarfile',
-       initfile     => 'puppet:///path/to/initfile',
-       defaultsfile => 'puppet:///path/to/defaultsfile'
+       provider      => 'custom',
+       jarfile       => 'puppet:///path/to/jarfile',
+       initfiles     => { 'agent' => 'puppet:///path/to/initfile' },
+       defaultsfiles => { 'agent' => 'puppet:///path/to/defaultsfile' }
      }
 
 If you want java to be installed by the module:
