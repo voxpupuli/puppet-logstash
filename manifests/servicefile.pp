@@ -99,6 +99,7 @@ define logstash::servicefile (
         group  => 'root',
         mode   => '0644',
         before => Service[ "logstash-${name}" ],
+        notify => Service[ "logstash-${name}" ],
       }
     }
 
