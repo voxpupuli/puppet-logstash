@@ -31,17 +31,6 @@ class logstash::params {
 
   #### Default values for the parameters of the main module class, init.pp
 
-
-  # ensure
-  $ensure = 'present'
-
-  # autoupgrade
-  $autoupgrade = false
-
-  # service status
-  $status = 'enabled'
-
-
   #### Defaults for other files
 
   # Config directory

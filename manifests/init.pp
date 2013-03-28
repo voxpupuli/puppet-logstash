@@ -78,13 +78,13 @@
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
 class logstash(
-  $ensure        = $logstash::params::ensure,
-  $autoupgrade   = $logstash::params::autoupgrade,
-  $status        = $logstash::params::status,
+  $ensure        = 'present',
+  $autoupgrade   = false,
+  $status        = 'enabled',
   $version       = false,
   $provider      = 'package',
   $jarfile       = undef,
-  $installpath   = $logstash::params::installpath,
+  $installpath   = hiera('logstash::installpath', $logstash::params::installpath),
   $java_install  = false,
   $java_package  = undef,
   $instances     = [ 'agent' ],
