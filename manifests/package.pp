@@ -68,7 +68,7 @@ class logstash::package {
       fail('logstash needs jarfile argument when using custom provider')
     }
 
-    if $logstash::installpath == undef {
+    if $logstash::installpath_real == undef {
       fail('logstash need installpath argument when using custom provider')
     }
 
@@ -76,8 +76,8 @@ class logstash::package {
     exec { 'create_install_dir':
       cwd     => '/',
       path    => ['/usr/bin', '/bin'],
-      command => "mkdir -p ${logstash::installpath}",
-      creates => $logstash::installpath;
+      command => "mkdir -p ${logstash::installpath_real}",
+      creates => $logstash::installpath_real;
     }
 
     # Create log directory
@@ -91,16 +91,16 @@ class logstash::package {
     # Place the jar file
     $filenameArray = split($logstash::jarfile, '/')
     $basefilename = $filenameArray[-1]
-    file { "${logstash::installpath}/${basefilename}":
+    file { "${logstash::installpath_real}/${basefilename}":
       ensure  => present,
       source  => $logstash::jarfile,
       require => Exec['create_install_dir'],
       backup  => false
     }
-    file { "${logstash::installpath}/logstash.jar":
+    file { "${logstash::installpath_real}/logstash.jar":
       ensure  => 'link',
-      target  => "${logstash::installpath}/${basefilename}",
-      require => File["${logstash::installpath}/${basefilename}"],
+      target  => "${logstash::installpath_real}/${basefilename}",
+      require => File["${logstash::installpath_real}/${basefilename}"],
       backup  => false
     }
 

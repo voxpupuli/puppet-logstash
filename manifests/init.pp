@@ -78,13 +78,13 @@
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
 class logstash(
-  $ensure        = $logstash::params::ensure,
-  $autoupgrade   = $logstash::params::autoupgrade,
-  $status        = $logstash::params::status,
+  $ensure        = 'present',
+  $autoupgrade   = false,
+  $status        = 'enabled',
   $version       = false,
   $provider      = 'package',
   $jarfile       = undef,
-  $installpath   = $logstash::params::installpath,
+  $installpath   = '',
   $java_install  = false,
   $java_package  = undef,
   $instances     = [ 'agent' ],
@@ -111,6 +111,19 @@ class logstash(
 
   if $initfiles {
     validate_hash($initfiles)
+  }
+
+  if $install_path == '' {
+    case $::operatingsystem {
+      'RedHat', 'CentOS', 'Fedora', 'Scientific', 'RedHat', 'Amazon': {
+        $installpath_real = '/usr/share/logstash'
+      }
+      'Debian', 'Ubuntu': {
+        $installpath_real = '/var/lib/logstash'
+      }
+    }
+  } else {
+    $installpath_real = $install_path
   }
 
   #### Manage actions

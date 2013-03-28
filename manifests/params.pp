@@ -31,17 +31,6 @@ class logstash::params {
 
   #### Default values for the parameters of the main module class, init.pp
 
-
-  # ensure
-  $ensure = 'present'
-
-  # autoupgrade
-  $autoupgrade = false
-
-  # service status
-  $status = 'enabled'
-
-
   #### Defaults for other files
 
   # Config directory
@@ -57,12 +46,10 @@ class logstash::params {
     'RedHat', 'CentOS', 'Fedora', 'Scientific', 'RedHat', 'Amazon': {
       # main application
       $package     = [ 'logstash' ]
-      $installpath = '/usr/share/logstash'
     }
     'Debian', 'Ubuntu': {
       # main application
       $package     = [ 'logstash' ]
-      $installpath = '/var/lib/logstash'
     }
     default: {
       fail("\"${module_name}\" provides no package default value
