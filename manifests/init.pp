@@ -84,7 +84,7 @@ class logstash(
   $version       = false,
   $provider      = 'package',
   $jarfile       = undef,
-  $installpath   = hiera('logstash::installpath', $logstash::params::installpath),
+  $installpath   = '',
   $java_install  = false,
   $java_package  = undef,
   $instances     = [ 'agent' ],
@@ -111,6 +111,19 @@ class logstash(
 
   if $initfiles {
     validate_hash($initfiles)
+  }
+
+  if $install_path == '' {
+    case $::operatingsystem {
+      'RedHat', 'CentOS', 'Fedora', 'Scientific', 'RedHat', 'Amazon': {
+        $installpath_real = '/usr/share/logstash'
+      }
+      'Debian', 'Ubuntu': {
+        $installpath_real = '/var/lib/logstash'
+      }
+    }
+  } else {
+    $installpath_real = $install_path
   }
 
   #### Manage actions
