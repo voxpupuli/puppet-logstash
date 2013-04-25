@@ -33,7 +33,7 @@ define logstash::configdir {
     ensure  => directory,
     owner   => 'root',
     group   => 'root',
-    mode    => '0644',
+    mode    => '0640',
     purge   => true,
     recurse => true,
     require => Exec["create_config_dir_${name}"],
