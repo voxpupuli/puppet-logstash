@@ -62,48 +62,55 @@ class logstash::package {
     }
 
   } elsif ($logstash::provider == 'custom') {
-    # We are using an external provided jar file
+    if $logstash::ensure == 'present' {
 
-    if $logstash::jarfile == undef {
-      fail('logstash needs jarfile argument when using custom provider')
-    }
+      # We are using an external provided jar file
+      if $logstash::jarfile == undef {
+        fail('logstash needs jarfile argument when using custom provider')
+      }
 
-    if $logstash::installpath == undef {
-      fail('logstash need installpath argument when using custom provider')
-    }
+      if $logstash::installpath == undef {
+        fail('logstash need installpath argument when using custom provider')
+      }
 
-    # Create directory to place the jar file
-    exec { 'create_install_dir':
-      cwd     => '/',
-      path    => ['/usr/bin', '/bin'],
-      command => "mkdir -p ${logstash::installpath}",
-      creates => $logstash::installpath;
-    }
+      # Create directory to place the jar file
+      exec { 'create_install_dir':
+        cwd     => '/',
+        path    => ['/usr/bin', '/bin'],
+        command => "mkdir -p ${logstash::installpath}",
+        creates => $logstash::installpath;
+      }
 
-    # Create log directory
-    exec { 'create_log_dir':
-      cwd     => '/',
-      path    => ['/usr/bin', '/bin'],
-      command => "mkdir -p ${logstash::params::logdir}",
-      creates => $logstash::params::logdir;
-    }
+      # Create log directory
+      exec { 'create_log_dir':
+        cwd     => '/',
+        path    => ['/usr/bin', '/bin'],
+        command => "mkdir -p ${logstash::params::logdir}",
+        creates => $logstash::params::logdir;
+      }
 
-    # Place the jar file
-    $filenameArray = split($logstash::jarfile, '/')
-    $basefilename = $filenameArray[-1]
-    file { "${logstash::installpath}/${basefilename}":
-      ensure  => present,
-      source  => $logstash::jarfile,
-      require => Exec['create_install_dir'],
-      backup  => false
-    }
-    file { "${logstash::installpath}/logstash.jar":
-      ensure  => 'link',
-      target  => "${logstash::installpath}/${basefilename}",
-      require => File["${logstash::installpath}/${basefilename}"],
-      backup  => false
-    }
+      # Place the jar file
+      $filenameArray = split($logstash::jarfile, '/')
+      $basefilename = $filenameArray[-1]
 
+      file { "${logstash::installpath}/${basefilename}":
+        ensure  => present,
+        source  => $logstash::jarfile,
+        require => Exec['create_install_dir'],
+        backup  => false
+      }
+
+      # Create symlink
+      file { "${logstash::installpath}/logstash.jar":
+        ensure  => 'link',
+        target  => "${logstash::installpath}/${basefilename}",
+        require => File["${logstash::installpath}/${basefilename}"],
+        backup  => false
+      }
+
+    } else {
+      ## Do we need to do anything when removing ?
+    }
 
   }
 }
