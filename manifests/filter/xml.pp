@@ -6,18 +6,6 @@
 #
 # === Parameters
 #
-# [*(?-mix:[A-Za-z0-9_-]+)*]
-#   Config for xml to hash is:  source_field =&gt; destination_field   XML
-#   in the value of the source field will be expanded into a datastructure
-#   in the "dest" field. Note: if the "dest" field already exists, it will
-#   be overridden.  For example, if you have the whole xml document in
-#   your @message field:  filter {   xml {     "@message" =&gt; "doc"   }
-#   }   The above would parse the xml from @message and store the
-#   resulting document into the 'doc' field.
-#   Value type is string
-#   Default value: None
-#   This variable is optional
-#
 # [*add_field*]
 #   If this filter is successful, add any arbitrary fields to this event.
 #   Example:  filter {   xml {     add_field =&gt; [ "sample", "Hello
@@ -56,6 +44,15 @@
 #   Default value: []
 #   This variable is optional
 #
+# [*source*]
+#   Config for xml to hash is:  source =&gt; source_field   For example,
+#   if you have the whole xml document in your @message field:  filter {
+#   xml {     source =&gt; "@message"   } }   The above would parse the
+#   xml from the @message field
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
 # [*store_xml*]
 #   By default the filter will store the whole parsed xml in the
 #   destination field as described above. Setting this to false will
@@ -69,6 +66,16 @@
 #   type, the event must also match that type. Optional.
 #   Value type is array
 #   Default value: []
+#   This variable is optional
+#
+# [*target*]
+#   Define target for placing the data  for example if you want the data
+#   to be put in the 'doc' field:  filter {   xml {     target =&gt; "doc"
+#   } }   XML in the value of the source field will be expanded into a
+#   datastructure in the "target" field. Note: if the "target" field
+#   already exists, it will be overridden Required
+#   Value type is string
+#   Default value: None
 #   This variable is optional
 #
 # [*type*]
@@ -115,11 +122,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.9/filters/xml
+#  http://logstash.net/docs/1.1.10/filters/xml
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10/learn
 #
 # === Authors
 #
@@ -130,8 +137,10 @@ define logstash::filter::xml (
   $add_tag      = '',
   $exclude_tags = '',
   $remove_tag   = '',
+  $source       = '',
   $store_xml    = '',
   $tags         = '',
+  $target       = '',
   $type         = '',
   $xpath        = '',
   $order        = 10,
@@ -139,6 +148,11 @@ define logstash::filter::xml (
 ) {
 
   require logstash::params
+
+  $confdirstart = prefix($instances, "${logstash::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/filter_${order}_xml_${name}")
+  $services = prefix($instances, 'logstash-')
+  $filesdir = "${logstash::configdir}/files/filter/xml/${name}"
 
   #### Validate parameters
 
@@ -196,15 +210,21 @@ define logstash::filter::xml (
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  #### Write config file
+  if $target {
+    validate_string($target)
+    $opt_target = "  target => \"${target}\"\n"
+  }
 
-  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/filter_${order}_xml_${name}")
-  $services = prefix($instances, 'logstash-')
+  if $source {
+    validate_string($source)
+    $opt_source = "  source => \"${source}\"\n"
+  }
+
+  #### Write config file
 
   file { $conffiles:
     ensure  => present,
-    content => "filter {\n xml {\n${opt_add_field}${opt_add_tag}${opt_exclude_tags}${opt_remove_tag}${opt_store_xml}${opt_tags}${opt_type}${opt_xpath} }\n}\n",
+    content => "filter {\n xml {\n${opt_add_field}${opt_add_tag}${opt_exclude_tags}${opt_remove_tag}${opt_source}${opt_store_xml}${opt_tags}${opt_target}${opt_type}${opt_xpath} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',

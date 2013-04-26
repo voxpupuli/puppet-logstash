@@ -68,7 +68,7 @@
 #
 # [*format*]
 #   The format of input data (plain, json, json_event)
-#   Value can be any of: "plain", "json", "json_event"
+#   Value can be any of: "plain", "json", "json_event", "msgpack_event"
 #   Default value: None
 #   This variable is optional
 #
@@ -100,7 +100,11 @@
 #   activation.  If you create an input with type "foobar", then only
 #   filters which also have type "foobar" will act on them.  The type is
 #   also stored as part of the event itself, so you can also use the type
-#   to search for in the web interface.
+#   to search for in the web interface.  If you try to set a type on an
+#   event that already has one (for example when you send an event from a
+#   shipper to an indexer) then a new input will not override the existing
+#   type. A type set at the shipper stays with that event for its life
+#   even when sent to another LogStash server.
 #   Value type is string
 #   Default value: None
 #   This variable is required
@@ -120,11 +124,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10
 #  Extra information about this input can be found at:
-#  http://logstash.net/docs/1.1.9/inputs/exec
+#  http://logstash.net/docs/1.1.10/inputs/exec
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10/learn
 #
 # === Authors
 #
@@ -144,6 +148,11 @@ define logstash::input::exec (
 ) {
 
   require logstash::params
+
+  $confdirstart = prefix($instances, "${logstash::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/input_exec_${name}")
+  $services = prefix($instances, 'logstash-')
+  $filesdir = "${logstash::configdir}/files/input/exec/${name}"
 
   #### Validate parameters
 
@@ -183,7 +192,7 @@ define logstash::input::exec (
   }
 
   if $format {
-    if ! ($format in ['plain', 'json', 'json_event']) {
+    if ! ($format in ['plain', 'json', 'json_event', 'msgpack_event']) {
       fail("\"${format}\" is not a valid format parameter value")
     } else {
       $opt_format = "  format => \"${format}\"\n"
@@ -206,10 +215,6 @@ define logstash::input::exec (
   }
 
   #### Write config file
-
-  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/input_exec_${name}")
-  $services = prefix($instances, 'logstash-')
 
   file { $conffiles:
     ensure  => present,

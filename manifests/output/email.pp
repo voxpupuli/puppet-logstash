@@ -17,7 +17,7 @@
 #   This variable is optional
 #
 # [*cc*]
-#   cc - send to others
+#   cc - send to others See to field for accepted value description
 #   Value type is string
 #   Default value: ""
 #   This variable is optional
@@ -110,7 +110,10 @@
 #   This variable is optional
 #
 # [*to*]
-#   The To address setting - fully qualified email address to send to
+#   The To address setting - fully qualified email address to send to This
+#   field also accept a comma separated list of emails like "me@host.com,
+#   you@host.com" You can also use dynamic field from the event with the
+#   %{fieldname} syntax
 #   Value type is string
 #   Default value: None
 #   This variable is required
@@ -144,11 +147,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.9/outputs/email
+#  http://logstash.net/docs/1.1.10/outputs/email
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10/learn
 #
 # === Authors
 #
@@ -174,6 +177,11 @@ define logstash::output::email (
 ) {
 
   require logstash::params
+
+  $confdirstart = prefix($instances, "${logstash::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_email_${name}")
+  $services = prefix($instances, 'logstash-')
+  $filesdir = "${logstash::configdir}/files/output/email/${name}"
 
   #### Validate parameters
   if $attachments {
@@ -261,10 +269,6 @@ define logstash::output::email (
   }
 
   #### Write config file
-
-  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/output_email_${name}")
-  $services = prefix($instances, 'logstash-')
 
   file { $conffiles:
     ensure  => present,

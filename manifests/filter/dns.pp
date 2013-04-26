@@ -19,7 +19,7 @@
 #   Determine what action to do: append or replace the values in the
 #   fields specified under "reverse" and "resolve."
 #   Value can be any of: "append", "replace"
-#   Default value: None
+#   Default value: "append"
 #   This variable is optional
 #
 # [*add_field*]
@@ -107,11 +107,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.9/filters/dns
+#  http://logstash.net/docs/1.1.10/filters/dns
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10/learn
 #
 # === Authors
 #
@@ -132,6 +132,11 @@ define logstash::filter::dns (
 ) {
 
   require logstash::params
+
+  $confdirstart = prefix($instances, "${logstash::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/filter_${order}_dns_${name}")
+  $services = prefix($instances, 'logstash-')
+  $filesdir = "${logstash::configdir}/files/filter/dns/${name}"
 
   #### Validate parameters
 
@@ -199,10 +204,6 @@ define logstash::filter::dns (
   }
 
   #### Write config file
-
-  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/filter_${order}_dns_${name}")
-  $services = prefix($instances, 'logstash-')
 
   file { $conffiles:
     ensure  => present,

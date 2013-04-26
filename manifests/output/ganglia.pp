@@ -20,7 +20,7 @@
 #   This variable is optional
 #
 # [*host*]
-#   The address of the graphite server.
+#   The address of the ganglia server.
 #   Value type is string
 #   Default value: "localhost"
 #   This variable is optional
@@ -51,7 +51,7 @@
 #   This variable is optional
 #
 # [*port*]
-#   The port to connect on your graphite server.
+#   The port to connect on your ganglia server.
 #   Value type is number
 #   Default value: 8649
 #   This variable is optional
@@ -101,11 +101,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.9/outputs/ganglia
+#  http://logstash.net/docs/1.1.10/outputs/ganglia
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10/learn
 #
 # === Authors
 #
@@ -128,6 +128,11 @@ define logstash::output::ganglia (
 ) {
 
   require logstash::params
+
+  $confdirstart = prefix($instances, "${logstash::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_ganglia_${name}")
+  $services = prefix($instances, 'logstash-')
+  $filesdir = "${logstash::configdir}/files/output/ganglia/${name}"
 
   #### Validate parameters
   if $exclude_tags {
@@ -209,10 +214,6 @@ define logstash::output::ganglia (
   }
 
   #### Write config file
-
-  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/output_ganglia_${name}")
-  $services = prefix($instances, 'logstash-')
 
   file { $conffiles:
     ensure  => present,

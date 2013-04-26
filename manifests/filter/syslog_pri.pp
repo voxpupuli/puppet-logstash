@@ -107,11 +107,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.9/filters/syslog_pri
+#  http://logstash.net/docs/1.1.10/filters/syslog_pri
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10/learn
 #
 # === Authors
 #
@@ -133,6 +133,11 @@ define logstash::filter::syslog_pri (
 ) {
 
   require logstash::params
+
+  $confdirstart = prefix($instances, "${logstash::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/filter_${order}_syslog_pri_${name}")
+  $services = prefix($instances, 'logstash-')
+  $filesdir = "${logstash::configdir}/files/filter/syslog_pri/${name}"
 
   #### Validate parameters
 
@@ -202,10 +207,6 @@ define logstash::filter::syslog_pri (
   }
 
   #### Write config file
-
-  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/filter_${order}_syslog_pri_${name}")
-  $services = prefix($instances, 'logstash-')
 
   file { $conffiles:
     ensure  => present,

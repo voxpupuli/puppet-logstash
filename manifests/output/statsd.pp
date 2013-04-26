@@ -1,10 +1,12 @@
 # == Define: logstash::output::statsd
 #
 #   statsd is a server for aggregating counters and other metrics to ship
-#   to graphite.  The general idea is that you send statsd count or
-#   latency data and every few seconds it will emit the aggregated values
-#   to graphite (aggregates like average, max, stddev, etc)  You can learn
-#   about statsd here:
+#   to graphite.  The most basic coverage of this plugin is that the
+#   'namespace', 'sender', and 'metric' names are combined into the full
+#   metric path like so:  namespace.sender.metric   The general idea is
+#   that you send statsd count or latency data and every few seconds it
+#   will emit the aggregated values to graphite (aggregates like average,
+#   max, stddev, etc)  You can learn about statsd here:
 #   http://codeascraft.etsy.com/2011/02/15/measure-anything-measure-everything/
 #   https://github.com/etsy/statsd A simple example usage of this is to
 #   count HTTP hits by response code; to learn more about that, check out
@@ -117,11 +119,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.9/outputs/statsd
+#  http://logstash.net/docs/1.1.10/outputs/statsd
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10/learn
 #
 # === Authors
 #
@@ -146,6 +148,11 @@ define logstash::output::statsd (
 ) {
 
   require logstash::params
+
+  $confdirstart = prefix($instances, "${logstash::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_statsd_${name}")
+  $services = prefix($instances, 'logstash-')
+  $filesdir = "${logstash::configdir}/files/output/statsd/${name}"
 
   #### Validate parameters
 
@@ -235,10 +242,6 @@ define logstash::output::statsd (
   }
 
   #### Write config file
-
-  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/output_statsd_${name}")
-  $services = prefix($instances, 'logstash-')
 
   file { $conffiles:
     ensure  => present,

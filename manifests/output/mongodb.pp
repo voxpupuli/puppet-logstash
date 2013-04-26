@@ -55,6 +55,12 @@
 #   Default value: 27017
 #   This variable is optional
 #
+# [*retry_delay*]
+#   Number of seconds to wait after failure before retrying
+#   Value type is number
+#   Default value: 3
+#   This variable is optional
+#
 # [*tags*]
 #   Only handle events with all of these tags.  Note that if you specify a
 #   type, the event must also match that type. Optional.
@@ -90,11 +96,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.9/outputs/mongodb
+#  http://logstash.net/docs/1.1.10/outputs/mongodb
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10/learn
 #
 # === Authors
 #
@@ -109,6 +115,7 @@ define logstash::output::mongodb (
   $isodate      = '',
   $fields       = '',
   $port         = '',
+  $retry_delay  = '',
   $tags         = '',
   $type         = '',
   $user         = '',
@@ -116,6 +123,11 @@ define logstash::output::mongodb (
 ) {
 
   require logstash::params
+
+  $confdirstart = prefix($instances, "${logstash::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_mongodb_${name}")
+  $services = prefix($instances, 'logstash-')
+  $filesdir = "${logstash::configdir}/files/output/mongodb/${name}"
 
   #### Validate parameters
 
@@ -142,6 +154,14 @@ define logstash::output::mongodb (
   if $isodate {
     validate_bool($isodate)
     $opt_isodate = "  isodate => ${isodate}\n"
+  }
+
+  if $retry_delay {
+    if ! is_numeric($retry_delay) {
+      fail("\"${retry_delay}\" is not a valid retry_delay parameter value")
+    } else {
+      $opt_retry_delay = "  retry_delay => ${retry_delay}\n"
+    }
   }
 
   if $port {
@@ -184,13 +204,9 @@ define logstash::output::mongodb (
 
   #### Write config file
 
-  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/output_mongodb_${name}")
-  $services = prefix($instances, 'logstash-')
-
   file { $conffiles:
     ensure  => present,
-    content => "output {\n mongodb {\n${opt_collection}${opt_database}${opt_exclude_tags}${opt_fields}${opt_host}${opt_isodate}${opt_password}${opt_port}${opt_tags}${opt_type}${opt_user} }\n}\n",
+    content => "output {\n mongodb {\n${opt_collection}${opt_database}${opt_exclude_tags}${opt_fields}${opt_host}${opt_isodate}${opt_password}${opt_port}${opt_retry_delay}${opt_tags}${opt_type}${opt_user} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',

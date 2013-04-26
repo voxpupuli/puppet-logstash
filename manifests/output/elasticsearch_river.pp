@@ -1,28 +1,16 @@
 # == Define: logstash::output::elasticsearch_river
 #
 #   This output lets you store logs in elasticsearch. It's similar to the
-#   'elasticsearch' output but improves performance by using an AMQP
-#   server, such as rabbitmq, to send data to elasticsearch.  Upon
-#   startup, this output will automatically contact an elasticsearch
-#   cluster and configure it to read from the queue to which we write.
-#   You can learn more about elasticseasrch at http://elasticsearch.org
-#   More about the elasticsearch rabbitmq river plugin:
+#   'elasticsearch' output but improves performance by using a queue
+#   server, rabbitmq, to send data to elasticsearch.  Upon startup, this
+#   output will automatically contact an elasticsearch cluster and
+#   configure it to read from the queue to which we write.  You can learn
+#   more about elasticseasrch at http://elasticsearch.org More about the
+#   elasticsearch rabbitmq river plugin:
 #   https://github.com/elasticsearch/elasticsearch-river-rabbitmq/blob/master/README.md
 #
 #
 # === Parameters
-#
-# [*amqp_host*]
-#   Hostname of AMQP server
-#   Value type is string
-#   Default value: None
-#   This variable is required
-#
-# [*amqp_port*]
-#   Port of AMQP server
-#   Value type is number
-#   Default value: 5672
-#   This variable is optional
 #
 # [*debug*]
 #   Value type is boolean
@@ -37,7 +25,7 @@
 #   This variable is optional
 #
 # [*durable*]
-#   AMQP durability setting. Also used for ElasticSearch setting
+#   RabbitMQ durability setting. Also used for ElasticSearch setting
 #   Value type is boolean
 #   Default value: true
 #   This variable is optional
@@ -60,6 +48,12 @@
 #   Default value: None
 #   This variable is required
 #
+# [*es_ordered*]
+#   ElasticSearch river configuration: is ordered?
+#   Value type is boolean
+#   Default value: false
+#   This variable is optional
+#
 # [*es_port*]
 #   ElasticSearch API port
 #   Value type is number
@@ -67,7 +61,7 @@
 #   This variable is optional
 #
 # [*exchange*]
-#   AMQP exchange name
+#   RabbitMQ exchange name
 #   Value type is string
 #   Default value: "elasticsearch"
 #   This variable is optional
@@ -108,27 +102,39 @@
 #   This variable is optional
 #
 # [*key*]
-#   AMQP routing key
+#   RabbitMQ routing key
 #   Value type is string
 #   Default value: "elasticsearch"
 #   This variable is optional
 #
 # [*password*]
-#   AMQP password
+#   RabbitMQ password
 #   Value type is string
 #   Default value: "guest"
 #   This variable is optional
 #
 # [*persistent*]
-#   AMQP persistence setting
+#   RabbitMQ persistence setting
 #   Value type is boolean
 #   Default value: true
 #   This variable is optional
 #
 # [*queue*]
-#   AMQP queue name
+#   RabbitMQ queue name
 #   Value type is string
 #   Default value: "elasticsearch"
+#   This variable is optional
+#
+# [*rabbitmq_host*]
+#   Hostname of RabbitMQ server
+#   Value type is string
+#   Default value: None
+#   This variable is required
+#
+# [*rabbitmq_port*]
+#   Port of RabbitMQ server
+#   Value type is number
+#   Default value: 5672
 #   This variable is optional
 #
 # [*tags*]
@@ -147,13 +153,13 @@
 #   This variable is optional
 #
 # [*user*]
-#   AMQP user
+#   RabbitMQ user
 #   Value type is string
 #   Default value: "guest"
 #   This variable is optional
 #
 # [*vhost*]
-#   AMQP vhost
+#   RabbitMQ vhost
 #   Value type is string
 #   Default value: "/"
 #   This variable is optional
@@ -173,36 +179,37 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.9/outputs/elasticsearch_river
+#  http://logstash.net/docs/1.1.10/outputs/elasticsearch_river
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
 define logstash::output::elasticsearch_river (
-  $amqp_host,
   $es_host,
-  $fields             = '',
-  $document_id        = '',
-  $durable            = '',
+  $rabbitmq_host,
+  $index              = '',
   $es_bulk_size       = '',
   $es_bulk_timeout_ms = '',
-  $amqp_port          = '',
+  $debug              = '',
+  $es_ordered         = '',
   $es_port            = '',
   $exchange           = '',
   $exchange_type      = '',
   $exclude_tags       = '',
-  $debug              = '',
-  $index              = '',
+  $fields             = '',
+  $durable            = '',
   $index_type         = '',
   $key                = '',
   $password           = '',
   $persistent         = '',
   $queue              = '',
+  $document_id        = '',
+  $rabbitmq_port      = '',
   $tags               = '',
   $type               = '',
   $user               = '',
@@ -211,6 +218,11 @@ define logstash::output::elasticsearch_river (
 ) {
 
   require logstash::params
+
+  $confdirstart = prefix($instances, "${logstash::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_elasticsearch_river_${name}")
+  $services = prefix($instances, 'logstash-')
+  $filesdir = "${logstash::configdir}/files/output/elasticsearch_river/${name}"
 
   #### Validate parameters
 
@@ -222,21 +234,16 @@ define logstash::output::elasticsearch_river (
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $exclude_tags {
-    validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, '\', \'')
-    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
-  }
-
   if $fields {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $durable {
-    validate_bool($durable)
-    $opt_durable = "  durable => ${durable}\n"
+  if $exclude_tags {
+    validate_array($exclude_tags)
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
+    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if $persistent {
@@ -244,16 +251,26 @@ define logstash::output::elasticsearch_river (
     $opt_persistent = "  persistent => ${persistent}\n"
   }
 
+  if $durable {
+    validate_bool($durable)
+    $opt_durable = "  durable => ${durable}\n"
+  }
+
+  if $es_ordered {
+    validate_bool($es_ordered)
+    $opt_es_ordered = "  es_ordered => ${es_ordered}\n"
+  }
+
   if $debug {
     validate_bool($debug)
     $opt_debug = "  debug => ${debug}\n"
   }
 
-  if $amqp_port {
-    if ! is_numeric($amqp_port) {
-      fail("\"${amqp_port}\" is not a valid amqp_port parameter value")
+  if $es_bulk_size {
+    if ! is_numeric($es_bulk_size) {
+      fail("\"${es_bulk_size}\" is not a valid es_bulk_size parameter value")
     } else {
-      $opt_amqp_port = "  amqp_port => ${amqp_port}\n"
+      $opt_es_bulk_size = "  es_bulk_size => ${es_bulk_size}\n"
     }
   }
 
@@ -265,19 +282,19 @@ define logstash::output::elasticsearch_river (
     }
   }
 
+  if $rabbitmq_port {
+    if ! is_numeric($rabbitmq_port) {
+      fail("\"${rabbitmq_port}\" is not a valid rabbitmq_port parameter value")
+    } else {
+      $opt_rabbitmq_port = "  rabbitmq_port => ${rabbitmq_port}\n"
+    }
+  }
+
   if $es_port {
     if ! is_numeric($es_port) {
       fail("\"${es_port}\" is not a valid es_port parameter value")
     } else {
       $opt_es_port = "  es_port => ${es_port}\n"
-    }
-  }
-
-  if $es_bulk_size {
-    if ! is_numeric($es_bulk_size) {
-      fail("\"${es_bulk_size}\" is not a valid es_bulk_size parameter value")
-    } else {
-      $opt_es_bulk_size = "  es_bulk_size => ${es_bulk_size}\n"
     }
   }
 
@@ -289,19 +306,9 @@ define logstash::output::elasticsearch_river (
     }
   }
 
-  if $index_type {
-    validate_string($index_type)
-    $opt_index_type = "  index_type => \"${index_type}\"\n"
-  }
-
-  if $index {
-    validate_string($index)
-    $opt_index = "  index => \"${index}\"\n"
-  }
-
-  if $document_id {
-    validate_string($document_id)
-    $opt_document_id = "  document_id => \"${document_id}\"\n"
+  if $exchange {
+    validate_string($exchange)
+    $opt_exchange = "  exchange => \"${exchange}\"\n"
   }
 
   if $key {
@@ -314,9 +321,9 @@ define logstash::output::elasticsearch_river (
     $opt_password = "  password => \"${password}\"\n"
   }
 
-  if $exchange {
-    validate_string($exchange)
-    $opt_exchange = "  exchange => \"${exchange}\"\n"
+  if $index_type {
+    validate_string($index_type)
+    $opt_index_type = "  index_type => \"${index_type}\"\n"
   }
 
   if $queue {
@@ -324,9 +331,19 @@ define logstash::output::elasticsearch_river (
     $opt_queue = "  queue => \"${queue}\"\n"
   }
 
+  if $rabbitmq_host {
+    validate_string($rabbitmq_host)
+    $opt_rabbitmq_host = "  rabbitmq_host => \"${rabbitmq_host}\"\n"
+  }
+
   if $es_host {
     validate_string($es_host)
     $opt_es_host = "  es_host => \"${es_host}\"\n"
+  }
+
+  if $document_id {
+    validate_string($document_id)
+    $opt_document_id = "  document_id => \"${document_id}\"\n"
   }
 
   if $type {
@@ -344,20 +361,16 @@ define logstash::output::elasticsearch_river (
     $opt_vhost = "  vhost => \"${vhost}\"\n"
   }
 
-  if $amqp_host {
-    validate_string($amqp_host)
-    $opt_amqp_host = "  amqp_host => \"${amqp_host}\"\n"
+  if $index {
+    validate_string($index)
+    $opt_index = "  index => \"${index}\"\n"
   }
 
   #### Write config file
 
-  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/output_elasticsearch_river_${name}")
-  $services = prefix($instances, 'logstash-')
-
   file { $conffiles:
     ensure  => present,
-    content => "output {\n elasticsearch_river {\n${opt_amqp_host}${opt_amqp_port}${opt_debug}${opt_document_id}${opt_durable}${opt_es_bulk_size}${opt_es_bulk_timeout_ms}${opt_es_host}${opt_es_port}${opt_exchange}${opt_exchange_type}${opt_exclude_tags}${opt_fields}${opt_index}${opt_index_type}${opt_key}${opt_password}${opt_persistent}${opt_queue}${opt_tags}${opt_type}${opt_user}${opt_vhost} }\n}\n",
+    content => "output {\n elasticsearch_river {\n${opt_debug}${opt_document_id}${opt_durable}${opt_es_bulk_size}${opt_es_bulk_timeout_ms}${opt_es_host}${opt_es_ordered}${opt_es_port}${opt_exchange}${opt_exchange_type}${opt_exclude_tags}${opt_fields}${opt_index}${opt_index_type}${opt_key}${opt_password}${opt_persistent}${opt_queue}${opt_rabbitmq_host}${opt_rabbitmq_port}${opt_tags}${opt_type}${opt_user}${opt_vhost} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',

@@ -6,7 +6,8 @@
 # === Parameters
 #
 # [*channels*]
-#   Channels to broadcast to
+#   Channels to broadcast to.  These should be full channel names
+#   including the '#' symbol, such as "#logstash".
 #   Value type is array
 #   Default value: None
 #   This variable is required
@@ -96,11 +97,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.9/outputs/irc
+#  http://logstash.net/docs/1.1.10/outputs/irc
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10/learn
 #
 # === Authors
 #
@@ -123,6 +124,11 @@ define logstash::output::irc (
 ) {
 
   require logstash::params
+
+  $confdirstart = prefix($instances, "${logstash::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_irc_${name}")
+  $services = prefix($instances, 'logstash-')
+  $filesdir = "${logstash::configdir}/files/output/irc/${name}"
 
   #### Validate parameters
   if $channels {
@@ -196,10 +202,6 @@ define logstash::output::irc (
   }
 
   #### Write config file
-
-  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/output_irc_${name}")
-  $services = prefix($instances, 'logstash-')
 
   file { $conffiles:
     ensure  => present,

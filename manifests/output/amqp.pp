@@ -1,34 +1,25 @@
 # == Define: logstash::output::amqp
 #
-#   Push events to an AMQP exchange.   NOTE: THIS IS ONLY KNOWN TO WORK
-#   WITH RECENT RELEASES OF RABBITMQ. Any other amqp broker will not work
-#   with this plugin. I do not know why. If you need support for brokers
-#   other than rabbitmq, please file bugs here:
-#   https://github.com/ruby-amqp/bunny
 #
 #
 # === Parameters
 #
 # [*debug*]
-#   Enable or disable debugging
 #   Value type is boolean
 #   Default value: false
 #   This variable is optional
 #
 # [*durable*]
-#   Is this exchange durable? (aka; Should it survive a broker restart?)
 #   Value type is boolean
 #   Default value: true
 #   This variable is optional
 #
 # [*exchange*]
-#   The name of the exchange
 #   Value type is string
 #   Default value: None
-#   This variable is optional
+#   This variable is required
 #
 # [*exchange_type*]
-#   The exchange type (fanout, topic, direct)
 #   Value can be any of: "fanout", "direct", "topic"
 #   Default value: None
 #   This variable is required
@@ -46,40 +37,42 @@
 #   Default value: []
 #   This variable is optional
 #
+# [*fields_headers*]
+#   Value type is array
+#   Default value: {}
+#   This variable is optional
+#
+# [*frame_max*]
+#   Value type is number
+#   Default value: 131072
+#   This variable is optional
+#
 # [*host*]
-#   Your amqp server address
 #   Value type is string
 #   Default value: None
 #   This variable is required
 #
 # [*key*]
-#   Key to route to by default. Defaults to 'logstash'  Routing keys are
-#   ignored on fanout exchanges.
 #   Value type is string
 #   Default value: "logstash"
 #   This variable is optional
 #
 # [*password*]
-#   Your amqp password
 #   Value type is password
 #   Default value: "guest"
 #   This variable is optional
 #
 # [*persistent*]
-#   Should messages persist to disk on the AMQP broker until they are read
-#   by a consumer?
 #   Value type is boolean
 #   Default value: true
 #   This variable is optional
 #
 # [*port*]
-#   The AMQP port to connect on
 #   Value type is number
 #   Default value: 5672
 #   This variable is optional
 #
 # [*ssl*]
-#   Enable or disable SSL
 #   Value type is boolean
 #   Default value: false
 #   This variable is optional
@@ -100,19 +93,16 @@
 #   This variable is optional
 #
 # [*user*]
-#   Your amqp username
 #   Value type is string
 #   Default value: "guest"
 #   This variable is optional
 #
 # [*verify_ssl*]
-#   Validate SSL certificate
 #   Value type is boolean
 #   Default value: false
 #   This variable is optional
 #
 # [*vhost*]
-#   The vhost to use
 #   Value type is string
 #   Default value: "/"
 #   This variable is optional
@@ -132,42 +122,55 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.9/outputs/amqp
+#  http://logstash.net/docs/1.1.10/outputs/amqp
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
 define logstash::output::amqp (
-  $exchange_type,
+  $exchange,
   $host,
-  $password      = '',
-  $debug         = '',
-  $exclude_tags  = '',
-  $fields        = '',
-  $durable       = '',
-  $key           = '',
-  $exchange      = '',
-  $persistent    = '',
-  $port          = '',
-  $ssl           = '',
-  $tags          = '',
-  $type          = '',
-  $user          = '',
-  $verify_ssl    = '',
-  $vhost         = '',
-  $instances     = [ 'agent' ]
+  $exchange_type,
+  $password       = '',
+  $exclude_tags   = '',
+  $fields         = '',
+  $fields_headers = '',
+  $frame_max      = '',
+  $durable        = '',
+  $key            = '',
+  $debug          = '',
+  $persistent     = '',
+  $port           = '',
+  $ssl            = '',
+  $tags           = '',
+  $type           = '',
+  $user           = '',
+  $verify_ssl     = '',
+  $vhost          = '',
+  $instances      = [ 'agent' ]
 ) {
 
   require logstash::params
 
+  $confdirstart = prefix($instances, "${logstash::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_amqp_${name}")
+  $services = prefix($instances, 'logstash-')
+  $filesdir = "${logstash::configdir}/files/output/amqp/${name}"
+
   #### Validate parameters
 
   validate_array($instances)
+
+  if $fields_headers {
+    validate_array($fields_headers)
+    $arr_fields_headers = join($fields_headers, '\', \'')
+    $opt_fields_headers = "  fields_headers => ['${arr_fields_headers}']\n"
+  }
 
   if $fields {
     validate_array($fields)
@@ -212,6 +215,14 @@ define logstash::output::amqp (
     $opt_debug = "  debug => ${debug}\n"
   }
 
+  if $frame_max {
+    if ! is_numeric($frame_max) {
+      fail("\"${frame_max}\" is not a valid frame_max parameter value")
+    } else {
+      $opt_frame_max = "  frame_max => ${frame_max}\n"
+    }
+  }
+
   if $port {
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
@@ -238,11 +249,6 @@ define logstash::output::amqp (
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $key {
-    validate_string($key)
-    $opt_key = "  key => \"${key}\"\n"
-  }
-
   if $host {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
@@ -263,15 +269,16 @@ define logstash::output::amqp (
     $opt_vhost = "  vhost => \"${vhost}\"\n"
   }
 
-  #### Write config file
+  if $key {
+    validate_string($key)
+    $opt_key = "  key => \"${key}\"\n"
+  }
 
-  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/output_amqp_${name}")
-  $services = prefix($instances, 'logstash-')
+  #### Write config file
 
   file { $conffiles:
     ensure  => present,
-    content => "output {\n amqp {\n${opt_debug}${opt_durable}${opt_exchange}${opt_exchange_type}${opt_exclude_tags}${opt_fields}${opt_host}${opt_key}${opt_password}${opt_persistent}${opt_port}${opt_ssl}${opt_tags}${opt_type}${opt_user}${opt_verify_ssl}${opt_vhost} }\n}\n",
+    content => "output {\n amqp {\n${opt_debug}${opt_durable}${opt_exchange}${opt_exchange_type}${opt_exclude_tags}${opt_fields}${opt_fields_headers}${opt_frame_max}${opt_host}${opt_key}${opt_password}${opt_persistent}${opt_port}${opt_ssl}${opt_tags}${opt_type}${opt_user}${opt_verify_ssl}${opt_vhost} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',

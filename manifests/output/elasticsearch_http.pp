@@ -38,9 +38,7 @@
 #   This variable is optional
 #
 # [*host*]
-#   The name/address of the host to use for ElasticSearch unicast
-#   discovery This is only required if the normal multicast/cluster
-#   discovery stuff won't work in your environment.
+#   The hostname or ip address to reach your elasticsearch server.
 #   Value type is string
 #   Default value: None
 #   This variable is optional
@@ -62,8 +60,7 @@
 #   This variable is optional
 #
 # [*port*]
-#   The port for ElasticSearch transport to use. This is not the
-#   ElasticSearch REST API port (normally 9200).
+#   The port for ElasticSearch HTTP interface to use.
 #   Value type is number
 #   Default value: 9200
 #   This variable is optional
@@ -98,11 +95,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.9/outputs/elasticsearch_http
+#  http://logstash.net/docs/1.1.10/outputs/elasticsearch_http
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10/learn
 #
 # === Authors
 #
@@ -123,6 +120,11 @@ define logstash::output::elasticsearch_http (
 ) {
 
   require logstash::params
+
+  $confdirstart = prefix($instances, "${logstash::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_elasticsearch_http_${name}")
+  $services = prefix($instances, 'logstash-')
+  $filesdir = "${logstash::configdir}/files/output/elasticsearch_http/${name}"
 
   #### Validate parameters
 
@@ -188,10 +190,6 @@ define logstash::output::elasticsearch_http (
   }
 
   #### Write config file
-
-  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/output_elasticsearch_http_${name}")
-  $services = prefix($instances, 'logstash-')
 
   file { $conffiles:
     ensure  => present,

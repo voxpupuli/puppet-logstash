@@ -61,7 +61,7 @@
 #
 # [*format*]
 #   The format of input data (plain, json, json_event)
-#   Value can be any of: "plain", "json", "json_event"
+#   Value can be any of: "plain", "json", "json_event", "msgpack_event"
 #   Default value: None
 #   This variable is optional
 #
@@ -89,13 +89,13 @@
 #
 # [*ssl_certificate*]
 #   ssl certificate to use
-#   Value type is string
+#   Value type is path
 #   Default value: None
 #   This variable is required
 #
 # [*ssl_key*]
 #   ssl key to use
-#   Value type is string
+#   Value type is path
 #   Default value: None
 #   This variable is required
 #
@@ -117,7 +117,11 @@
 #   activation.  If you create an input with type "foobar", then only
 #   filters which also have type "foobar" will act on them.  The type is
 #   also stored as part of the event itself, so you can also use the type
-#   to search for in the web interface.
+#   to search for in the web interface.  If you try to set a type on an
+#   event that already has one (for example when you send an event from a
+#   shipper to an indexer) then a new input will not override the existing
+#   type. A type set at the shipper stays with that event for its life
+#   even when sent to another LogStash server.
 #   Value type is string
 #   Default value: None
 #   This variable is required
@@ -137,11 +141,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10
 #  Extra information about this input can be found at:
-#  http://logstash.net/docs/1.1.9/inputs/lumberjack
+#  http://logstash.net/docs/1.1.10/inputs/lumberjack
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10/learn
 #
 # === Authors
 #
@@ -164,6 +168,11 @@ define logstash::input::lumberjack (
 ) {
 
   require logstash::params
+
+  $confdirstart = prefix($instances, "${logstash::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/input_lumberjack_${name}")
+  $services = prefix($instances, 'logstash-')
+  $filesdir = "${logstash::configdir}/files/input/lumberjack/${name}"
 
   #### Validate parameters
 
@@ -203,7 +212,7 @@ define logstash::input::lumberjack (
   }
 
   if $format {
-    if ! ($format in ['plain', 'json', 'json_event']) {
+    if ! ($format in ['plain', 'json', 'json_event', 'msgpack_event']) {
       fail("\"${format}\" is not a valid format parameter value")
     } else {
       $opt_format = "  format => \"${format}\"\n"
@@ -215,14 +224,48 @@ define logstash::input::lumberjack (
     $opt_ssl_key_passphrase = "  ssl_key_passphrase => \"${ssl_key_passphrase}\"\n"
   }
 
-  if $ssl_key {
-    validate_string($ssl_key)
-    $opt_ssl_key = "  ssl_key => \"${ssl_key}\"\n"
+  if $ssl_certificate {
+    if $ssl_certificate =~ /^puppet\:\/\// {
+
+      validate_re($ssl_certificate, '\Apuppet:\/\/')
+
+      $filenameArray = split($ssl_certificate, '/')
+      $basefilename = $filenameArray[-1]
+
+      $opt_ssl_certificate = "  ssl_certificate => \"${filesdir}/${basefilename}\"\n"
+
+      file { "${filesdir}/${basefilename}":
+        source  => $ssl_certificate,
+        owner   => 'root',
+        group   => 'root',
+        mode    => '0640',
+        require => File[$filesdir]
+      }
+    } else {
+      $opt_ssl_certificate = "  ssl_certificate => \"${ssl_certificate}\"\n"
+    }
   }
 
-  if $ssl_certificate {
-    validate_string($ssl_certificate)
-    $opt_ssl_certificate = "  ssl_certificate => \"${ssl_certificate}\"\n"
+  if $ssl_key {
+    if $ssl_key =~ /^puppet\:\/\// {
+
+      validate_re($ssl_key, '\Apuppet:\/\/')
+
+      $filenameArray = split($ssl_key, '/')
+      $basefilename = $filenameArray[-1]
+
+      $opt_ssl_key = "  ssl_key => \"${filesdir}/${basefilename}\"\n"
+
+      file { "${filesdir}/${basefilename}":
+        source  => $ssl_key,
+        owner   => 'root',
+        group   => 'root',
+        mode    => '0640',
+        require => File[$filesdir]
+      }
+    } else {
+      $opt_ssl_key = "  ssl_key => \"${ssl_key}\"\n"
+    }
   }
 
   if $message_format {
@@ -240,11 +283,28 @@ define logstash::input::lumberjack (
     $opt_host = "  host => \"${host}\"\n"
   }
 
-  #### Write config file
 
-  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/input_lumberjack_${name}")
-  $services = prefix($instances, 'logstash-')
+  #### Create the directory where we place the files
+  exec { "create_files_dir_input_lumberjack_${name}":
+    cwd     => '/',
+    path    => ['/usr/bin', '/bin'],
+    command => "mkdir -p ${filesdir}",
+    creates => $filesdir
+  }
+
+  #### Manage the files directory
+  file { $filesdir:
+    ensure  => directory,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0640',
+    purge   => true,
+    recurse => true,
+    require => Exec["create_files_dir_input_lumberjack_${name}"],
+    notify  => Service[$services]
+  }
+
+  #### Write config file
 
   file { $conffiles:
     ensure  => present,

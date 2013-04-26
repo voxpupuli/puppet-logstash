@@ -7,10 +7,10 @@
 #   indexer node, with just AWS API credentials, and possibly a region
 #   and/or a namespace.  The output looks for fields present in events,
 #   and when it finds them, it uses them to calculate aggregate
-#   statistics.  If the "metricname" option is set in this output, then
-#   any events which pass through it will be aggregated &amp; sent to
+#   statistics.  If the metricname option is set in this output, then any
+#   events which pass through it will be aggregated &amp; sent to
 #   CloudWatch, but that is not recommended.  The intended use is to NOT
-#   set the metricname option here, and instead to add a "CW_metricname"
+#   set the metricname option here, and instead to add a CW_metricname
 #   field (and other fields) to only the events you want sent to
 #   CloudWatch.  When events pass through this output they are queued for
 #   background aggregation and sending, which happens every minute by
@@ -32,29 +32,33 @@
 #   then the default is used.  Notice, the event fields take precedence
 #   over the per-output defaults.  At a minimum events must have a "metric
 #   name" to be sent to CloudWatch. This can be achieved either by
-#   providing a default here OR by adding a "CW_metricname" field. By
+#   providing a default here OR by adding a CW_metricname field. By
 #   default, if no other configuration is provided besides a metric name,
 #   then events will be counted (Unit: Count, Value: 1) by their metric
 #   name (either a default or from their CW_metricname field)  Other
 #   fields which can be added to events to modify the behavior of this
-#   plugin are, "CW_namespace", "CW_unit", "CW_value", and
-#   "CW_dimensions".  All of these field names are configurable in this
-#   output.  You can also set per-output defaults for any of them. See
-#   below for details.  Read more about AWS CloudWatch, and the specific
-#   of API endpoint this output uses, PutMetricData
+#   plugin are, CW_namespace, CW_unit, CW_value, and CW_dimensions.  All
+#   of these field names are configurable in this output.  You can also
+#   set per-output defaults for any of them. See below for details.  Read
+#   more about AWS CloudWatch, and the specific of API endpoint this
+#   output uses, PutMetricData
 #
 #
 # === Parameters
 #
-# [*access_key*]
-#   The AWS Access Key ID
+# [*access_key_id*]
 #   Value type is string
 #   Default value: None
-#   This variable is required
+#   This variable is optional
+#
+# [*aws_credentials_file*]
+#   Value type is string
+#   Default value: None
+#   This variable is optional
 #
 # [*dimensions*]
 #   The default dimensions [ name, value, ... ] to use for events which do
-#   not have a "CW_dimensions" field
+#   not have a CW_dimensions field
 #   Value type is hash
 #   Default value: None
 #   This variable is optional
@@ -116,7 +120,7 @@
 #
 # [*metricname*]
 #   The default metric name to use for events which do not have a
-#   "CW_metricname" field.  Beware: If this is provided then all events
+#   CW_metricname field.  Beware: If this is provided then all events
 #   which pass through this output will be aggregated and sent to
 #   CloudWatch, so use this carefully.  Furthermore, when providing this
 #   option, you will probably want to also restrict events from passing
@@ -127,14 +131,14 @@
 #
 # [*namespace*]
 #   The default namespace to use for events which do not have a
-#   "CW_namespace" field
+#   CW_namespace field
 #   Value type is string
 #   Default value: "Logstash"
 #   This variable is optional
 #
 # [*queue_size*]
 #   How many events to queue before forcing a call to the CloudWatch API
-#   ahead of "timeframe" schedule  Set this to the number of
+#   ahead of timeframe schedule  Set this to the number of
 #   events-per-timeframe you will be sending to CloudWatch to avoid extra
 #   API calls
 #   Value type is number
@@ -142,18 +146,16 @@
 #   This variable is optional
 #
 # [*region*]
-#   Constants aggregate_key members Units The AWS Region to send logs to.
 #   Value can be any of: "us-east-1", "us-west-1", "us-west-2",
 #   "eu-west-1", "ap-southeast-1", "ap-southeast-2", "ap-northeast-1",
 #   "sa-east-1", "us-gov-west-1"
 #   Default value: "us-east-1"
 #   This variable is optional
 #
-# [*secret_key*]
-#   The AWS Secret Access Key
+# [*secret_access_key*]
 #   Value type is string
 #   Default value: None
-#   This variable is required
+#   This variable is optional
 #
 # [*tags*]
 #   Only handle events with all of these tags.  Note that if you specify a
@@ -181,7 +183,7 @@
 #   This variable is optional
 #
 # [*unit*]
-#   The default unit to use for events which do not have a "CW_unit" field
+#   The default unit to use for events which do not have a CW_unit field
 #   If you set this option you should probably set the "value" option
 #   along with it
 #   Value can be any of: "Seconds", "Microseconds", "Milliseconds",
@@ -194,11 +196,16 @@
 #   Default value: "Count"
 #   This variable is optional
 #
+# [*use_ssl*]
+#   Value type is boolean
+#   Default value: true
+#   This variable is optional
+#
 # [*value*]
-#   The default value to use for events which do not have a "CW_value"
-#   field  If provided, this must be a string which can be converted to a
-#   float, for example...  "1", "2.34", ".5", and "0.67"   If you set this
-#   option you should probably set the "unit" option along with it
+#   The default value to use for events which do not have a CW_value field
+#   If provided, this must be a string which can be converted to a float,
+#   for example...  "1", "2.34", ".5", and "0.67"   If you set this option
+#   you should probably set the unit option along with it
 #   Value type is string
 #   Default value: "1"
 #   This variable is optional
@@ -218,40 +225,47 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.9/outputs/cloudwatch
+#  http://logstash.net/docs/1.1.10/outputs/cloudwatch
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
 define logstash::output::cloudwatch (
-  $access_key,
-  $secret_key,
-  $namespace        = '',
-  $field_dimensions = '',
-  $field_metricname = '',
-  $field_namespace  = '',
-  $field_unit       = '',
-  $field_value      = '',
-  $fields           = '',
-  $metricname       = '',
-  $exclude_tags     = '',
-  $queue_size       = '',
-  $region           = '',
-  $dimensions       = '',
-  $tags             = '',
-  $timeframe        = '',
-  $type             = '',
-  $unit             = '',
-  $value            = '',
-  $instances        = [ 'agent' ]
+  $access_key_id        = '',
+  $aws_credentials_file = '',
+  $dimensions           = '',
+  $exclude_tags         = '',
+  $field_dimensions     = '',
+  $field_metricname     = '',
+  $field_namespace      = '',
+  $field_unit           = '',
+  $field_value          = '',
+  $fields               = '',
+  $metricname           = '',
+  $namespace            = '',
+  $queue_size           = '',
+  $region               = '',
+  $secret_access_key    = '',
+  $tags                 = '',
+  $timeframe            = '',
+  $type                 = '',
+  $unit                 = '',
+  $use_ssl              = '',
+  $value                = '',
+  $instances            = [ 'agent' ]
 ) {
 
   require logstash::params
+
+  $confdirstart = prefix($instances, "${logstash::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_cloudwatch_${name}")
+  $services = prefix($instances, 'logstash-')
+  $filesdir = "${logstash::configdir}/files/output/cloudwatch/${name}"
 
   #### Validate parameters
 
@@ -263,16 +277,21 @@ define logstash::output::cloudwatch (
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
+  if $tags {
+    validate_array($tags)
+    $arr_tags = join($tags, '\', \'')
+    $opt_tags = "  tags => ['${arr_tags}']\n"
+  }
+
   if $exclude_tags {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $tags {
-    validate_array($tags)
-    $arr_tags = join($tags, '\', \'')
-    $opt_tags = "  tags => ['${arr_tags}']\n"
+  if $use_ssl {
+    validate_bool($use_ssl)
+    $opt_use_ssl = "  use_ssl => ${use_ssl}\n"
   }
 
   if $dimensions {
@@ -289,14 +308,6 @@ define logstash::output::cloudwatch (
     }
   }
 
-  if $region {
-    if ! ($region in ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1', 'us-gov-west-1']) {
-      fail("\"${region}\" is not a valid region parameter value")
-    } else {
-      $opt_region = "  region => \"${region}\"\n"
-    }
-  }
-
   if $unit {
     if ! ($unit in ['Seconds', 'Microseconds', 'Milliseconds', 'Bytes', 'Kilobytes', 'Megabytes', 'Gigabytes', 'Terabytes', 'Bits', 'Kilobits', 'Megabits', 'Gigabits', 'Terabits', 'Percent', 'Count', 'Bytes/Second', 'Kilobytes/Second', 'Megabytes/Second', 'Gigabytes/Second', 'Terabytes/Second', 'Bits/Second', 'Kilobits/Second', 'Megabits/Second', 'Gigabits/Second', 'Terabits/Second', 'Count/Second', 'None']) {
       fail("\"${unit}\" is not a valid unit parameter value")
@@ -305,9 +316,22 @@ define logstash::output::cloudwatch (
     }
   }
 
+  if $region {
+    if ! ($region in ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1', 'us-gov-west-1']) {
+      fail("\"${region}\" is not a valid region parameter value")
+    } else {
+      $opt_region = "  region => \"${region}\"\n"
+    }
+  }
+
   if $namespace {
     validate_string($namespace)
     $opt_namespace = "  namespace => \"${namespace}\"\n"
+  }
+
+  if $field_unit {
+    validate_string($field_unit)
+    $opt_field_unit = "  field_unit => \"${field_unit}\"\n"
   }
 
   if $metricname {
@@ -320,24 +344,24 @@ define logstash::output::cloudwatch (
     $opt_field_value = "  field_value => \"${field_value}\"\n"
   }
 
-  if $field_unit {
-    validate_string($field_unit)
-    $opt_field_unit = "  field_unit => \"${field_unit}\"\n"
-  }
-
   if $field_namespace {
     validate_string($field_namespace)
     $opt_field_namespace = "  field_namespace => \"${field_namespace}\"\n"
   }
 
-  if $secret_key {
-    validate_string($secret_key)
-    $opt_secret_key = "  secret_key => \"${secret_key}\"\n"
-  }
-
   if $field_metricname {
     validate_string($field_metricname)
     $opt_field_metricname = "  field_metricname => \"${field_metricname}\"\n"
+  }
+
+  if $secret_access_key {
+    validate_string($secret_access_key)
+    $opt_secret_access_key = "  secret_access_key => \"${secret_access_key}\"\n"
+  }
+
+  if $field_dimensions {
+    validate_string($field_dimensions)
+    $opt_field_dimensions = "  field_dimensions => \"${field_dimensions}\"\n"
   }
 
   if $timeframe {
@@ -350,9 +374,14 @@ define logstash::output::cloudwatch (
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $field_dimensions {
-    validate_string($field_dimensions)
-    $opt_field_dimensions = "  field_dimensions => \"${field_dimensions}\"\n"
+  if $aws_credentials_file {
+    validate_string($aws_credentials_file)
+    $opt_aws_credentials_file = "  aws_credentials_file => \"${aws_credentials_file}\"\n"
+  }
+
+  if $access_key_id {
+    validate_string($access_key_id)
+    $opt_access_key_id = "  access_key_id => \"${access_key_id}\"\n"
   }
 
   if $value {
@@ -360,20 +389,11 @@ define logstash::output::cloudwatch (
     $opt_value = "  value => \"${value}\"\n"
   }
 
-  if $access_key {
-    validate_string($access_key)
-    $opt_access_key = "  access_key => \"${access_key}\"\n"
-  }
-
   #### Write config file
-
-  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/output_cloudwatch_${name}")
-  $services = prefix($instances, 'logstash-')
 
   file { $conffiles:
     ensure  => present,
-    content => "output {\n cloudwatch {\n${opt_access_key}${opt_dimensions}${opt_exclude_tags}${opt_field_dimensions}${opt_field_metricname}${opt_field_namespace}${opt_field_unit}${opt_field_value}${opt_fields}${opt_metricname}${opt_namespace}${opt_queue_size}${opt_region}${opt_secret_key}${opt_tags}${opt_timeframe}${opt_type}${opt_unit}${opt_value} }\n}\n",
+    content => "output {\n cloudwatch {\n${opt_access_key_id}${opt_aws_credentials_file}${opt_dimensions}${opt_exclude_tags}${opt_field_dimensions}${opt_field_metricname}${opt_field_namespace}${opt_field_unit}${opt_field_value}${opt_fields}${opt_metricname}${opt_namespace}${opt_queue_size}${opt_region}${opt_secret_access_key}${opt_tags}${opt_timeframe}${opt_type}${opt_unit}${opt_use_ssl}${opt_value} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',

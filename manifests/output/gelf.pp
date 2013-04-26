@@ -74,9 +74,11 @@
 #   The GELF message level. Dynamic values like %{level} are permitted
 #   here; useful if you want to parse the 'log level' from an event and
 #   use that as the gelf level/severity.  Values here can be integers
-#   [0..7] inclusive or any of "debug", "info", "warn", "error", "fatal",
-#   "unknown" (case insensitive). Single-character versions of these are
-#   also valid, "d", "i", "w", "e", "f", "u"
+#   [0..7] inclusive or any of "debug", "info", "warn", "error", "fatal"
+#   (case insensitive). Single-character versions of these are also valid,
+#   "d", "i", "w", "e", "f", "u" The following additional severitylabels
+#   from logstash's  syslogpri filter are accepted: "emergency", "alert",
+#   "critical",  "warning", "notice", and "informational"
 #   Value type is array
 #   Default value: ["%{severity}", "INFO"]
 #   This variable is optional
@@ -108,6 +110,13 @@
 #   Ship metadata within event object? This will cause logstash to ship
 #   any fields in the event (such as those created by grok) in the GELF
 #   messages.
+#   Value type is boolean
+#   Default value: true
+#   This variable is optional
+#
+# [*ship_tags*]
+#   Ship tags within events. This will cause logstash to ship the tags of
+#   an event as the field _tags.
 #   Value type is boolean
 #   Default value: true
 #   This variable is optional
@@ -149,11 +158,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.9/outputs/gelf
+#  http://logstash.net/docs/1.1.10/outputs/gelf
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10/learn
 #
 # === Authors
 #
@@ -174,6 +183,7 @@ define logstash::output::gelf (
   $port            = '',
   $sender          = '',
   $ship_metadata   = '',
+  $ship_tags       = '',
   $short_message   = '',
   $tags            = '',
   $type            = '',
@@ -181,6 +191,11 @@ define logstash::output::gelf (
 ) {
 
   require logstash::params
+
+  $confdirstart = prefix($instances, "${logstash::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_gelf_${name}")
+  $services = prefix($instances, 'logstash-')
+  $filesdir = "${logstash::configdir}/files/output/gelf/${name}"
 
   #### Validate parameters
 
@@ -216,6 +231,11 @@ define logstash::output::gelf (
     $opt_level = "  level => ['${arr_level}']\n"
   }
 
+  if $ship_tags {
+    validate_bool($ship_tags)
+    $opt_ship_tags = "  ship_tags => ${ship_tags}\n"
+  }
+
   if $ship_metadata {
     validate_bool($ship_metadata)
     $opt_ship_metadata = "  ship_metadata => ${ship_metadata}\n"
@@ -248,14 +268,14 @@ define logstash::output::gelf (
     $opt_sender = "  sender => \"${sender}\"\n"
   }
 
-  if $facility {
-    validate_string($facility)
-    $opt_facility = "  facility => \"${facility}\"\n"
-  }
-
   if $line {
     validate_string($line)
     $opt_line = "  line => \"${line}\"\n"
+  }
+
+  if $facility {
+    validate_string($facility)
+    $opt_facility = "  facility => \"${facility}\"\n"
   }
 
   if $file {
@@ -285,13 +305,9 @@ define logstash::output::gelf (
 
   #### Write config file
 
-  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/output_gelf_${name}")
-  $services = prefix($instances, 'logstash-')
-
   file { $conffiles:
     ensure  => present,
-    content => "output {\n gelf {\n${opt_chunksize}${opt_custom_fields}${opt_exclude_tags}${opt_facility}${opt_fields}${opt_file}${opt_full_message}${opt_host}${opt_ignore_metadata}${opt_level}${opt_line}${opt_port}${opt_sender}${opt_ship_metadata}${opt_short_message}${opt_tags}${opt_type} }\n}\n",
+    content => "output {\n gelf {\n${opt_chunksize}${opt_custom_fields}${opt_exclude_tags}${opt_facility}${opt_fields}${opt_file}${opt_full_message}${opt_host}${opt_ignore_metadata}${opt_level}${opt_line}${opt_port}${opt_sender}${opt_ship_metadata}${opt_ship_tags}${opt_short_message}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',

@@ -64,7 +64,7 @@
 #   The regular expression to match
 #   Value type is string
 #   Default value: None
-#   This variable is optional
+#   This variable is required
 #
 # [*patterns_dir*]
 #   logstash ships by default with a bunch of patterns, so you don't
@@ -122,7 +122,7 @@
 #   event?
 #   Value can be any of: "previous", "next"
 #   Default value: None
-#   This variable is optional
+#   This variable is required
 #
 # [*order*]
 #   The order variable decides in which sequence the filters are loaded.
@@ -144,33 +144,38 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.9/filters/multiline
+#  http://logstash.net/docs/1.1.10/filters/multiline
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
 define logstash::filter::multiline (
-  $add_field       = '',
-  $add_tag         = '',
-  $exclude_tags    = '',
-  $negate          = '',
-  $pattern         = '',
-  $patterns_dir    = '',
+  $pattern,
+  $what,
   $remove_tag      = '',
+  $negate          = '',
+  $add_field       = '',
+  $patterns_dir    = '',
+  $exclude_tags    = '',
   $stream_identity = '',
   $tags            = '',
   $type            = '',
-  $what            = '',
+  $add_tag         = '',
   $order           = 10,
   $instances       = [ 'agent' ]
 ) {
 
   require logstash::params
+
+  $confdirstart = prefix($instances, "${logstash::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/filter_${order}_multiline_${name}")
+  $services = prefix($instances, 'logstash-')
+  $filesdir = "${logstash::configdir}/files/filter/multiline/${name}"
 
   #### Validate parameters
 
@@ -247,10 +252,6 @@ define logstash::filter::multiline (
   }
 
   #### Write config file
-
-  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/filter_${order}_multiline_${name}")
-  $services = prefix($instances, 'logstash-')
 
   file { $conffiles:
     ensure  => present,

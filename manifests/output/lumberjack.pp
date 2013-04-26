@@ -31,7 +31,7 @@
 #
 # [*ssl_certificate*]
 #   ssl certificate to use
-#   Value type is string
+#   Value type is path
 #   Default value: None
 #   This variable is required
 #
@@ -71,11 +71,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.9/outputs/lumberjack
+#  http://logstash.net/docs/1.1.10/outputs/lumberjack
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10/learn
 #
 # === Authors
 #
@@ -94,6 +94,11 @@ define logstash::output::lumberjack (
 ) {
 
   require logstash::params
+
+  $confdirstart = prefix($instances, "${logstash::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_lumberjack_${name}")
+  $services = prefix($instances, 'logstash-')
+  $filesdir = "${logstash::configdir}/files/output/lumberjack/${name}"
 
   #### Validate parameters
   if $exclude_tags {
@@ -139,21 +144,55 @@ define logstash::output::lumberjack (
     }
   }
 
+  if $ssl_certificate {
+    if $ssl_certificate =~ /^puppet\:\/\// {
+
+      validate_re($ssl_certificate, '\Apuppet:\/\/')
+
+      $filenameArray = split($ssl_certificate, '/')
+      $basefilename = $filenameArray[-1]
+
+      $opt_ssl_certificate = "  ssl_certificate => \"${filesdir}/${basefilename}\"\n"
+
+      file { "${filesdir}/${basefilename}":
+        source  => $ssl_certificate,
+        owner   => 'root',
+        group   => 'root',
+        mode    => '0640',
+        require => File[$filesdir]
+      }
+    } else {
+      $opt_ssl_certificate = "  ssl_certificate => \"${ssl_certificate}\"\n"
+    }
+  }
+
   if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $ssl_certificate {
-    validate_string($ssl_certificate)
-    $opt_ssl_certificate = "  ssl_certificate => \"${ssl_certificate}\"\n"
+
+  #### Create the directory where we place the files
+  exec { "create_files_dir_output_lumberjack_${name}":
+    cwd     => '/',
+    path    => ['/usr/bin', '/bin'],
+    command => "mkdir -p ${filesdir}",
+    creates => $filesdir
+  }
+
+  #### Manage the files directory
+  file { $filesdir:
+    ensure  => directory,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0640',
+    purge   => true,
+    recurse => true,
+    require => Exec["create_files_dir_output_lumberjack_${name}"],
+    notify  => Service[$services]
   }
 
   #### Write config file
-
-  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/output_lumberjack_${name}")
-  $services = prefix($instances, 'logstash-')
 
   file { $conffiles:
     ensure  => present,

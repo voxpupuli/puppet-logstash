@@ -64,14 +64,14 @@
 #
 # [*send_nsca_bin*]
 #   The path to the 'send_nsca' binary on the local host.
-#   Value type is string
+#   Value type is path
 #   Default value: "/usr/sbin/send_nsca"
 #   This variable is optional
 #
 # [*send_nsca_config*]
 #   The path to the send_nsca config file on the local host. Leave blank
 #   if you don't want to provide a config file.
-#   Value type is string
+#   Value type is path
 #   Default value: None
 #   This variable is optional
 #
@@ -105,11 +105,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.9/outputs/nagios_nsca
+#  http://logstash.net/docs/1.1.10/outputs/nagios_nsca
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10/learn
 #
 # === Authors
 #
@@ -131,6 +131,11 @@ define logstash::output::nagios_nsca (
 ) {
 
   require logstash::params
+
+  $confdirstart = prefix($instances, "${logstash::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_nagios_nsca_${name}")
+  $services = prefix($instances, 'logstash-')
+  $filesdir = "${logstash::configdir}/files/output/nagios_nsca/${name}"
 
   #### Validate parameters
   if $exclude_tags {
@@ -162,19 +167,53 @@ define logstash::output::nagios_nsca (
     }
   }
 
+  if $send_nsca_bin {
+    if $send_nsca_bin =~ /^puppet\:\/\// {
+
+      validate_re($send_nsca_bin, '\Apuppet:\/\/')
+
+      $filenameArray = split($send_nsca_bin, '/')
+      $basefilename = $filenameArray[-1]
+
+      $opt_send_nsca_bin = "  send_nsca_bin => \"${filesdir}/${basefilename}\"\n"
+
+      file { "${filesdir}/${basefilename}":
+        source  => $send_nsca_bin,
+        owner   => 'root',
+        group   => 'root',
+        mode    => '0640',
+        require => File[$filesdir]
+      }
+    } else {
+      $opt_send_nsca_bin = "  send_nsca_bin => \"${send_nsca_bin}\"\n"
+    }
+  }
+
   if $send_nsca_config {
-    validate_string($send_nsca_config)
-    $opt_send_nsca_config = "  send_nsca_config => \"${send_nsca_config}\"\n"
+    if $send_nsca_config =~ /^puppet\:\/\// {
+
+      validate_re($send_nsca_config, '\Apuppet:\/\/')
+
+      $filenameArray = split($send_nsca_config, '/')
+      $basefilename = $filenameArray[-1]
+
+      $opt_send_nsca_config = "  send_nsca_config => \"${filesdir}/${basefilename}\"\n"
+
+      file { "${filesdir}/${basefilename}":
+        source  => $send_nsca_config,
+        owner   => 'root',
+        group   => 'root',
+        mode    => '0640',
+        require => File[$filesdir]
+      }
+    } else {
+      $opt_send_nsca_config = "  send_nsca_config => \"${send_nsca_config}\"\n"
+    }
   }
 
   if $nagios_host {
     validate_string($nagios_host)
     $opt_nagios_host = "  nagios_host => \"${nagios_host}\"\n"
-  }
-
-  if $send_nsca_bin {
-    validate_string($send_nsca_bin)
-    $opt_send_nsca_bin = "  send_nsca_bin => \"${send_nsca_bin}\"\n"
   }
 
   if $nagios_status {
@@ -197,11 +236,28 @@ define logstash::output::nagios_nsca (
     $opt_nagios_service = "  nagios_service => \"${nagios_service}\"\n"
   }
 
-  #### Write config file
 
-  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/output_nagios_nsca_${name}")
-  $services = prefix($instances, 'logstash-')
+  #### Create the directory where we place the files
+  exec { "create_files_dir_output_nagios_nsca_${name}":
+    cwd     => '/',
+    path    => ['/usr/bin', '/bin'],
+    command => "mkdir -p ${filesdir}",
+    creates => $filesdir
+  }
+
+  #### Manage the files directory
+  file { $filesdir:
+    ensure  => directory,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0640',
+    purge   => true,
+    recurse => true,
+    require => Exec["create_files_dir_output_nagios_nsca_${name}"],
+    notify  => Service[$services]
+  }
+
+  #### Write config file
 
   file { $conffiles:
     ensure  => present,

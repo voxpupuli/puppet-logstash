@@ -50,9 +50,9 @@
 #   This configuration takes an array consisting of 3 elements per
 #   field/substitution.  be aware of escaping any backslash in the config
 #   file  for example:  filter {   mutate {     gsub =&gt; [       #
-#   replace all forward slashes with underscore       "fieldname", "\\/",
-#   "_",        # replace backslashes, question marks, hashes and minuses
-#   with       # underscore       "fieldname", "[\\?#-]", "_"     ]   } }
+#   replace all forward slashes with underscore       "fieldname", "/",
+#   "_",        # replace backslashes, question marks, hashes, and minuses
+#   with       # dot       "fieldname2", "[\\?#-]", "."     ]   } }
 #   Value type is array
 #   Default value: None
 #   This variable is optional
@@ -69,6 +69,16 @@
 #   Convert a string to its lowercase equivalent  Example:  filter {
 #   mutate {     lowercase =&gt; [ "fieldname" ]   } }
 #   Value type is array
+#   Default value: None
+#   This variable is optional
+#
+# [*merge*]
+#   merge two fields or arrays or hashes String fields will be converted
+#   in array, so  array + string will work  string + string will result in
+#   an 2 entry array in dest_field  array and hash will not work  Example:
+#   filter {   mutate {       merge =&gt; ["dest_field", "added_field"]
+#   } }
+#   Value type is hash
 #   Default value: None
 #   This variable is optional
 #
@@ -164,11 +174,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.9/filters/mutate
+#  http://logstash.net/docs/1.1.10/filters/mutate
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10/learn
 #
 # === Authors
 #
@@ -182,6 +192,7 @@ define logstash::filter::mutate (
   $gsub         = '',
   $join         = '',
   $lowercase    = '',
+  $merge        = '',
   $remove       = '',
   $remove_tag   = '',
   $rename       = '',
@@ -196,6 +207,11 @@ define logstash::filter::mutate (
 ) {
 
   require logstash::params
+
+  $confdirstart = prefix($instances, "${logstash::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/filter_${order}_mutate_${name}")
+  $services = prefix($instances, 'logstash-')
+  $filesdir = "${logstash::configdir}/files/filter/mutate/${name}"
 
   #### Validate parameters
 
@@ -237,6 +253,12 @@ define logstash::filter::mutate (
     $opt_lowercase = "  lowercase => ['${arr_lowercase}']\n"
   }
 
+  if $strip {
+    validate_array($strip)
+    $arr_strip = join($strip, '\', \'')
+    $opt_strip = "  strip => ['${arr_strip}']\n"
+  }
+
   if $remove {
     validate_array($remove)
     $arr_remove = join($remove, '\', \'')
@@ -249,22 +271,10 @@ define logstash::filter::mutate (
     $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
   }
 
-  if $strip {
-    validate_array($strip)
-    $arr_strip = join($strip, '\', \'')
-    $opt_strip = "  strip => ['${arr_strip}']\n"
-  }
-
   if $rename {
     validate_hash($rename)
     $arr_rename = inline_template('<%= rename.to_a.flatten.inspect %>')
     $opt_rename = "  rename => ${arr_rename}\n"
-  }
-
-  if $split {
-    validate_hash($split)
-    $arr_split = inline_template('<%= split.to_a.flatten.inspect %>')
-    $opt_split = "  split => ${arr_split}\n"
   }
 
   if $replace {
@@ -273,10 +283,16 @@ define logstash::filter::mutate (
     $opt_replace = "  replace => ${arr_replace}\n"
   }
 
-  if $join {
-    validate_hash($join)
-    $arr_join = inline_template('<%= join.to_a.flatten.inspect %>')
-    $opt_join = "  join => ${arr_join}\n"
+  if $split {
+    validate_hash($split)
+    $arr_split = inline_template('<%= split.to_a.flatten.inspect %>')
+    $opt_split = "  split => ${arr_split}\n"
+  }
+
+  if $merge {
+    validate_hash($merge)
+    $arr_merge = inline_template('<%= merge.to_a.flatten.inspect %>')
+    $opt_merge = "  merge => ${arr_merge}\n"
   }
 
   if $convert {
@@ -289,6 +305,12 @@ define logstash::filter::mutate (
     validate_hash($add_field)
     $arr_add_field = inline_template('<%= add_field.to_a.flatten.inspect %>')
     $opt_add_field = "  add_field => ${arr_add_field}\n"
+  }
+
+  if $join {
+    validate_hash($join)
+    $arr_join = inline_template('<%= join.to_a.flatten.inspect %>')
+    $opt_join = "  join => ${arr_join}\n"
   }
 
   if $order {
@@ -304,13 +326,9 @@ define logstash::filter::mutate (
 
   #### Write config file
 
-  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/filter_${order}_mutate_${name}")
-  $services = prefix($instances, 'logstash-')
-
   file { $conffiles:
     ensure  => present,
-    content => "filter {\n mutate {\n${opt_add_field}${opt_add_tag}${opt_convert}${opt_exclude_tags}${opt_gsub}${opt_join}${opt_lowercase}${opt_remove}${opt_remove_tag}${opt_rename}${opt_replace}${opt_split}${opt_strip}${opt_tags}${opt_type}${opt_uppercase} }\n}\n",
+    content => "filter {\n mutate {\n${opt_add_field}${opt_add_tag}${opt_convert}${opt_exclude_tags}${opt_gsub}${opt_join}${opt_lowercase}${opt_merge}${opt_remove}${opt_remove_tag}${opt_rename}${opt_replace}${opt_split}${opt_strip}${opt_tags}${opt_type}${opt_uppercase} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',

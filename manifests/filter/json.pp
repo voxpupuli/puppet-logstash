@@ -6,17 +6,6 @@
 #
 # === Parameters
 #
-# [*(?-mix:[A-Za-z0-9_@-]+)*]
-#   Config for json is:  source =&gt; dest For example, if you have a
-#   field named 'foo' that contains your json, and you want to store the
-#   evaluated json object in 'bar', do this:  filter {   json {     foo
-#   =&gt; bar   } }   JSON in the value of the source field will be
-#   expanded into a datastructure in the "dest" field.  Note: if the
-#   "dest" field already exists, it will be overridden.
-#   Value type is string
-#   Default value: None
-#   This variable is optional
-#
 # [*add_field*]
 #   If this filter is successful, add any arbitrary fields to this event.
 #   Example:  filter {   json {     add_field =&gt; [ "sample", "Hello
@@ -55,11 +44,30 @@
 #   Default value: []
 #   This variable is optional
 #
+# [*source*]
+#   Config for json is:  source =&gt; source_field   For example, if you
+#   have json data in the @message field:  filter {   json {     source
+#   =&gt; "@message"   } }   The above would parse the xml from the
+#   @message field
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
 # [*tags*]
 #   Only handle events with all of these tags.  Note that if you specify a
 #   type, the event must also match that type. Optional.
 #   Value type is array
 #   Default value: []
+#   This variable is optional
+#
+# [*target*]
+#   Define target for placing the data  for example if you want the data
+#   to be put in the 'doc' field:  filter {   json {     target =&gt;
+#   "doc"   } }   json in the value of the source field will be expanded
+#   into a datastructure in the "target" field. Note: if the "target"
+#   field already exists, it will be overridden Required
+#   Value type is string
+#   Default value: None
 #   This variable is optional
 #
 # [*type*]
@@ -90,11 +98,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.9/filters/json
+#  http://logstash.net/docs/1.1.10/filters/json
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10/learn
 #
 # === Authors
 #
@@ -105,13 +113,20 @@ define logstash::filter::json (
   $add_tag      = '',
   $exclude_tags = '',
   $remove_tag   = '',
+  $source       = '',
   $tags         = '',
+  $target       = '',
   $type         = '',
   $order        = 10,
   $instances    = [ 'agent' ]
 ) {
 
   require logstash::params
+
+  $confdirstart = prefix($instances, "${logstash::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/filter_${order}_json_${name}")
+  $services = prefix($instances, 'logstash-')
+  $filesdir = "${logstash::configdir}/files/filter/json/${name}"
 
   #### Validate parameters
 
@@ -129,16 +144,16 @@ define logstash::filter::json (
     $opt_add_tag = "  add_tag => ['${arr_add_tag}']\n"
   }
 
-  if $exclude_tags {
-    validate_array($exclude_tags)
-    $arr_exclude_tags = join($exclude_tags, '\', \'')
-    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
-  }
-
   if $remove_tag {
     validate_array($remove_tag)
     $arr_remove_tag = join($remove_tag, '\', \'')
     $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
+  }
+
+  if $exclude_tags {
+    validate_array($exclude_tags)
+    $arr_exclude_tags = join($exclude_tags, '\', \'')
+    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if $add_field {
@@ -153,20 +168,26 @@ define logstash::filter::json (
     }
   }
 
+  if $source {
+    validate_string($source)
+    $opt_source = "  source => \"${source}\"\n"
+  }
+
   if $type {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  #### Write config file
+  if $target {
+    validate_string($target)
+    $opt_target = "  target => \"${target}\"\n"
+  }
 
-  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/filter_${order}_json_${name}")
-  $services = prefix($instances, 'logstash-')
+  #### Write config file
 
   file { $conffiles:
     ensure  => present,
-    content => "filter {\n json {\n${opt_add_field}${opt_add_tag}${opt_exclude_tags}${opt_remove_tag}${opt_tags}${opt_type} }\n}\n",
+    content => "filter {\n json {\n${opt_add_field}${opt_add_tag}${opt_exclude_tags}${opt_remove_tag}${opt_source}${opt_tags}${opt_target}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',

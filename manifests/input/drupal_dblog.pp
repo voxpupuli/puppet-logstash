@@ -92,7 +92,7 @@
 #
 # [*format*]
 #   The format of input data (plain, json, json_event)
-#   Value can be any of: "plain", "json", "json_event"
+#   Value can be any of: "plain", "json", "json_event", "msgpack_event"
 #   Default value: None
 #   This variable is optional
 #
@@ -144,11 +144,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10
 #  Extra information about this input can be found at:
-#  http://logstash.net/docs/1.1.9/inputs/drupal_dblog
+#  http://logstash.net/docs/1.1.10/inputs/drupal_dblog
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10/learn
 #
 # === Authors
 #
@@ -170,6 +170,11 @@ define logstash::input::drupal_dblog (
 ) {
 
   require logstash::params
+
+  $confdirstart = prefix($instances, "${logstash::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/input_drupal_dblog_${name}")
+  $services = prefix($instances, 'logstash-')
+  $filesdir = "${logstash::configdir}/files/input/drupal_dblog/${name}"
 
   #### Validate parameters
 
@@ -228,7 +233,7 @@ define logstash::input::drupal_dblog (
   }
 
   if $format {
-    if ! ($format in ['plain', 'json', 'json_event']) {
+    if ! ($format in ['plain', 'json', 'json_event', 'msgpack_event']) {
       fail("\"${format}\" is not a valid format parameter value")
     } else {
       $opt_format = "  format => \"${format}\"\n"
@@ -246,10 +251,6 @@ define logstash::input::drupal_dblog (
   }
 
   #### Write config file
-
-  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/input_drupal_dblog_${name}")
-  $services = prefix($instances, 'logstash-')
 
   file { $conffiles:
     ensure  => present,

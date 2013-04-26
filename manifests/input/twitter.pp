@@ -59,7 +59,7 @@
 #
 # [*format*]
 #   The format of input data (plain, json, json_event)
-#   Value can be any of: "plain", "json", "json_event"
+#   Value can be any of: "plain", "json", "json_event", "msgpack_event"
 #   Default value: None
 #   This variable is optional
 #
@@ -85,6 +85,30 @@
 #   Default value: None
 #   This variable is required
 #
+# [*proxy_host*]
+#   Proxy Host
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
+# [*proxy_password*]
+#   Proxy Password
+#   Value type is password
+#   Default value: None
+#   This variable is optional
+#
+# [*proxy_port*]
+#   Proxy Port
+#   Value type is number
+#   Default value: None
+#   This variable is optional
+#
+# [*proxy_user*]
+#   Proxy Username
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
 # [*tags*]
 #   Add any number of arbitrary tags to your event.  This can help with
 #   processing later.
@@ -97,7 +121,11 @@
 #   activation.  If you create an input with type "foobar", then only
 #   filters which also have type "foobar" will act on them.  The type is
 #   also stored as part of the event itself, so you can also use the type
-#   to search for in the web interface.
+#   to search for in the web interface.  If you try to set a type on an
+#   event that already has one (for example when you send an event from a
+#   shipper to an indexer) then a new input will not override the existing
+#   type. A type set at the shipper stays with that event for its life
+#   even when sent to another LogStash server.
 #   Value type is string
 #   Default value: None
 #   This variable is required
@@ -123,11 +151,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10
 #  Extra information about this input can be found at:
-#  http://logstash.net/docs/1.1.9/inputs/twitter
+#  http://logstash.net/docs/1.1.10/inputs/twitter
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10/learn
 #
 # === Authors
 #
@@ -138,9 +166,13 @@ define logstash::input::twitter (
   $user,
   $type,
   $password,
+  $proxy_host     = '',
   $message_format = '',
-  $add_field      = '',
   $format         = '',
+  $add_field      = '',
+  $proxy_password = '',
+  $proxy_port     = '',
+  $proxy_user     = '',
   $tags           = '',
   $debug          = '',
   $charset        = '',
@@ -148,6 +180,11 @@ define logstash::input::twitter (
 ) {
 
   require logstash::params
+
+  $confdirstart = prefix($instances, "${logstash::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/input_twitter_${name}")
+  $services = prefix($instances, 'logstash-')
+  $filesdir = "${logstash::configdir}/files/input/twitter/${name}"
 
   #### Validate parameters
 
@@ -176,11 +213,11 @@ define logstash::input::twitter (
     $opt_add_field = "  add_field => ${arr_add_field}\n"
   }
 
-  if $format {
-    if ! ($format in ['plain', 'json', 'json_event']) {
-      fail("\"${format}\" is not a valid format parameter value")
+  if $proxy_port {
+    if ! is_numeric($proxy_port) {
+      fail("\"${proxy_port}\" is not a valid proxy_port parameter value")
     } else {
-      $opt_format = "  format => \"${format}\"\n"
+      $opt_proxy_port = "  proxy_port => ${proxy_port}\n"
     }
   }
 
@@ -192,9 +229,32 @@ define logstash::input::twitter (
     }
   }
 
+  if $format {
+    if ! ($format in ['plain', 'json', 'json_event', 'msgpack_event']) {
+      fail("\"${format}\" is not a valid format parameter value")
+    } else {
+      $opt_format = "  format => \"${format}\"\n"
+    }
+  }
+
+  if $proxy_password {
+    validate_string($proxy_password)
+    $opt_proxy_password = "  proxy_password => \"${proxy_password}\"\n"
+  }
+
   if $password {
     validate_string($password)
     $opt_password = "  password => \"${password}\"\n"
+  }
+
+  if $proxy_user {
+    validate_string($proxy_user)
+    $opt_proxy_user = "  proxy_user => \"${proxy_user}\"\n"
+  }
+
+  if $message_format {
+    validate_string($message_format)
+    $opt_message_format = "  message_format => \"${message_format}\"\n"
   }
 
   if $type {
@@ -207,20 +267,16 @@ define logstash::input::twitter (
     $opt_user = "  user => \"${user}\"\n"
   }
 
-  if $message_format {
-    validate_string($message_format)
-    $opt_message_format = "  message_format => \"${message_format}\"\n"
+  if $proxy_host {
+    validate_string($proxy_host)
+    $opt_proxy_host = "  proxy_host => \"${proxy_host}\"\n"
   }
 
   #### Write config file
 
-  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/input_twitter_${name}")
-  $services = prefix($instances, 'logstash-')
-
   file { $conffiles:
     ensure  => present,
-    content => "input {\n twitter {\n${opt_add_field}${opt_charset}${opt_debug}${opt_format}${opt_keywords}${opt_message_format}${opt_password}${opt_tags}${opt_type}${opt_user} }\n}\n",
+    content => "input {\n twitter {\n${opt_add_field}${opt_charset}${opt_debug}${opt_format}${opt_keywords}${opt_message_format}${opt_password}${opt_proxy_host}${opt_proxy_password}${opt_proxy_port}${opt_proxy_user}${opt_tags}${opt_type}${opt_user} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',

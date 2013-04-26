@@ -27,8 +27,8 @@
 #
 # [*algorithm*]
 #   digest/hash type
-#   Value can be any of: "SHA1", "SHA224", "SHA256", "SHA384", "SHA512",
-#   "MD4", "MD5", "MURMUR3", "IPV4_NETWORK"
+#   Value can be any of: "SHA1", "SHA256", "SHA384", "SHA512", "MD5",
+#   "MURMUR3", "IPV4_NETWORK"
 #   Default value: "SHA1"
 #   This variable is required
 #
@@ -98,11 +98,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.9/filters/anonymize
+#  http://logstash.net/docs/1.1.10/filters/anonymize
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10/learn
 #
 # === Authors
 #
@@ -123,6 +123,11 @@ define logstash::filter::anonymize (
 ) {
 
   require logstash::params
+
+  $confdirstart = prefix($instances, "${logstash::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/filter_${order}_anonymize_${name}")
+  $services = prefix($instances, 'logstash-')
+  $filesdir = "${logstash::configdir}/files/filter/anonymize/${name}"
 
   #### Validate parameters
 
@@ -171,7 +176,7 @@ define logstash::filter::anonymize (
   }
 
   if $algorithm {
-    if ! ($algorithm in ['SHA1', 'SHA224', 'SHA256', 'SHA384', 'SHA512', 'MD4', 'MD5', 'MURMUR3', 'IPV4_NETWORK']) {
+    if ! ($algorithm in ['SHA1', 'SHA256', 'SHA384', 'SHA512', 'MD5', 'MURMUR3', 'IPV4_NETWORK']) {
       fail("\"${algorithm}\" is not a valid algorithm parameter value")
     } else {
       $opt_algorithm = "  algorithm => \"${algorithm}\"\n"
@@ -189,10 +194,6 @@ define logstash::filter::anonymize (
   }
 
   #### Write config file
-
-  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/filter_${order}_anonymize_${name}")
-  $services = prefix($instances, 'logstash-')
 
   file { $conffiles:
     ensure  => present,

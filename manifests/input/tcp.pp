@@ -69,7 +69,7 @@
 #
 # [*format*]
 #   The format of input data (plain, json, json_event)
-#   Value can be any of: "plain", "json", "json_event"
+#   Value can be any of: "plain", "json", "json_event", "msgpack_event"
 #   Default value: None
 #   This variable is optional
 #
@@ -104,6 +104,45 @@
 #   Default value: None
 #   This variable is required
 #
+# [*ssl_cacert*]
+#   ssl CA certificate, chainfile or CA path The system CA path is
+#   automatically included
+#   Value type is path
+#   Default value: None
+#   This variable is optional
+#
+# [*ssl_cert*]
+#   ssl certificate
+#   Value type is path
+#   Default value: None
+#   This variable is optional
+#
+# [*ssl_enable*]
+#   Enable ssl (must be set for other ssl_ options to take effect)
+#   Value type is boolean
+#   Default value: false
+#   This variable is optional
+#
+# [*ssl_key*]
+#   ssl key
+#   Value type is path
+#   Default value: None
+#   This variable is optional
+#
+# [*ssl_key_passphrase*]
+#   ssl key passphrase
+#   Value type is password
+#   Default value: nil
+#   This variable is optional
+#
+# [*ssl_verify*]
+#   Verify the identity of the other end of the ssl connection against the
+#   CA For input, sets the @field.sslsubject to that of the client
+#   certificate
+#   Value type is boolean
+#   Default value: false
+#   This variable is optional
+#
 # [*tags*]
 #   Add any number of arbitrary tags to your event.  This can help with
 #   processing later.
@@ -116,7 +155,11 @@
 #   activation.  If you create an input with type "foobar", then only
 #   filters which also have type "foobar" will act on them.  The type is
 #   also stored as part of the event itself, so you can also use the type
-#   to search for in the web interface.
+#   to search for in the web interface.  If you try to set a type on an
+#   event that already has one (for example when you send an event from a
+#   shipper to an indexer) then a new input will not override the existing
+#   type. A type set at the shipper stays with that event for its life
+#   even when sent to another LogStash server.
 #   Value type is string
 #   Default value: None
 #   This variable is required
@@ -136,11 +179,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10
 #  Extra information about this input can be found at:
-#  http://logstash.net/docs/1.1.9/inputs/tcp
+#  http://logstash.net/docs/1.1.10/inputs/tcp
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10/learn
 #
 # === Authors
 #
@@ -149,19 +192,30 @@
 define logstash::input::tcp (
   $port,
   $type,
-  $message_format = '',
-  $debug          = '',
-  $format         = '',
-  $host           = '',
-  $data_timeout   = '',
-  $mode           = '',
-  $add_field      = '',
-  $tags           = '',
-  $charset        = '',
-  $instances      = [ 'agent' ]
+  $ssl_cacert         = '',
+  $debug              = '',
+  $format             = '',
+  $host               = '',
+  $message_format     = '',
+  $mode               = '',
+  $add_field          = '',
+  $data_timeout       = '',
+  $ssl_cert           = '',
+  $ssl_enable         = '',
+  $ssl_key            = '',
+  $ssl_key_passphrase = '',
+  $ssl_verify         = '',
+  $tags               = '',
+  $charset            = '',
+  $instances          = [ 'agent' ]
 ) {
 
   require logstash::params
+
+  $confdirstart = prefix($instances, "${logstash::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/input_tcp_${name}")
+  $services = prefix($instances, 'logstash-')
+  $filesdir = "${logstash::configdir}/files/input/tcp/${name}"
 
   #### Validate parameters
 
@@ -173,23 +227,25 @@ define logstash::input::tcp (
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
+  if $ssl_verify {
+    validate_bool($ssl_verify)
+    $opt_ssl_verify = "  ssl_verify => ${ssl_verify}\n"
+  }
+
   if $debug {
     validate_bool($debug)
     $opt_debug = "  debug => ${debug}\n"
+  }
+
+  if $ssl_enable {
+    validate_bool($ssl_enable)
+    $opt_ssl_enable = "  ssl_enable => ${ssl_enable}\n"
   }
 
   if $add_field {
     validate_hash($add_field)
     $arr_add_field = inline_template('<%= add_field.to_a.flatten.inspect %>')
     $opt_add_field = "  add_field => ${arr_add_field}\n"
-  }
-
-  if $port {
-    if ! is_numeric($port) {
-      fail("\"${port}\" is not a valid port parameter value")
-    } else {
-      $opt_port = "  port => ${port}\n"
-    }
   }
 
   if $data_timeout {
@@ -200,11 +256,11 @@ define logstash::input::tcp (
     }
   }
 
-  if $format {
-    if ! ($format in ['plain', 'json', 'json_event']) {
-      fail("\"${format}\" is not a valid format parameter value")
+  if $port {
+    if ! is_numeric($port) {
+      fail("\"${port}\" is not a valid port parameter value")
     } else {
-      $opt_format = "  format => \"${format}\"\n"
+      $opt_port = "  port => ${port}\n"
     }
   }
 
@@ -216,11 +272,90 @@ define logstash::input::tcp (
     }
   }
 
+  if $format {
+    if ! ($format in ['plain', 'json', 'json_event', 'msgpack_event']) {
+      fail("\"${format}\" is not a valid format parameter value")
+    } else {
+      $opt_format = "  format => \"${format}\"\n"
+    }
+  }
+
   if $charset {
     if ! ($charset in ['ASCII-8BIT', 'UTF-8', 'US-ASCII', 'Big5', 'Big5-HKSCS', 'Big5-UAO', 'CP949', 'Emacs-Mule', 'EUC-JP', 'EUC-KR', 'EUC-TW', 'GB18030', 'GBK', 'ISO-8859-1', 'ISO-8859-2', 'ISO-8859-3', 'ISO-8859-4', 'ISO-8859-5', 'ISO-8859-6', 'ISO-8859-7', 'ISO-8859-8', 'ISO-8859-9', 'ISO-8859-10', 'ISO-8859-11', 'ISO-8859-13', 'ISO-8859-14', 'ISO-8859-15', 'ISO-8859-16', 'KOI8-R', 'KOI8-U', 'Shift_JIS', 'UTF-16BE', 'UTF-16LE', 'UTF-32BE', 'UTF-32LE', 'Windows-1251', 'BINARY', 'IBM437', 'CP437', 'IBM737', 'CP737', 'IBM775', 'CP775', 'CP850', 'IBM850', 'IBM852', 'CP852', 'IBM855', 'CP855', 'IBM857', 'CP857', 'IBM860', 'CP860', 'IBM861', 'CP861', 'IBM862', 'CP862', 'IBM863', 'CP863', 'IBM864', 'CP864', 'IBM865', 'CP865', 'IBM866', 'CP866', 'IBM869', 'CP869', 'Windows-1258', 'CP1258', 'GB1988', 'macCentEuro', 'macCroatian', 'macCyrillic', 'macGreek', 'macIceland', 'macRoman', 'macRomania', 'macThai', 'macTurkish', 'macUkraine', 'CP950', 'Big5-HKSCS:2008', 'CP951', 'stateless-ISO-2022-JP', 'eucJP', 'eucJP-ms', 'euc-jp-ms', 'CP51932', 'eucKR', 'eucTW', 'GB2312', 'EUC-CN', 'eucCN', 'GB12345', 'CP936', 'ISO-2022-JP', 'ISO2022-JP', 'ISO-2022-JP-2', 'ISO2022-JP2', 'CP50220', 'CP50221', 'ISO8859-1', 'Windows-1252', 'CP1252', 'ISO8859-2', 'Windows-1250', 'CP1250', 'ISO8859-3', 'ISO8859-4', 'ISO8859-5', 'ISO8859-6', 'Windows-1256', 'CP1256', 'ISO8859-7', 'Windows-1253', 'CP1253', 'ISO8859-8', 'Windows-1255', 'CP1255', 'ISO8859-9', 'Windows-1254', 'CP1254', 'ISO8859-10', 'ISO8859-11', 'TIS-620', 'Windows-874', 'CP874', 'ISO8859-13', 'Windows-1257', 'CP1257', 'ISO8859-14', 'ISO8859-15', 'ISO8859-16', 'CP878', 'Windows-31J', 'CP932', 'csWindows31J', 'SJIS', 'PCK', 'MacJapanese', 'MacJapan', 'ASCII', 'ANSI_X3.4-1968', '646', 'UTF-7', 'CP65000', 'CP65001', 'UTF8-MAC', 'UTF-8-MAC', 'UTF-8-HFS', 'UTF-16', 'UTF-32', 'UCS-2BE', 'UCS-4BE', 'UCS-4LE', 'CP1251', 'UTF8-DoCoMo', 'SJIS-DoCoMo', 'UTF8-KDDI', 'SJIS-KDDI', 'ISO-2022-JP-KDDI', 'stateless-ISO-2022-JP-KDDI', 'UTF8-SoftBank', 'SJIS-SoftBank', 'locale', 'external', 'filesystem', 'internal']) {
       fail("\"${charset}\" is not a valid charset parameter value")
     } else {
       $opt_charset = "  charset => \"${charset}\"\n"
+    }
+  }
+
+  if $ssl_key_passphrase {
+    validate_string($ssl_key_passphrase)
+    $opt_ssl_key_passphrase = "  ssl_key_passphrase => \"${ssl_key_passphrase}\"\n"
+  }
+
+  if $ssl_cert {
+    if $ssl_cert =~ /^puppet\:\/\// {
+
+      validate_re($ssl_cert, '\Apuppet:\/\/')
+
+      $filenameArray = split($ssl_cert, '/')
+      $basefilename = $filenameArray[-1]
+
+      $opt_ssl_cert = "  ssl_cert => \"${filesdir}/${basefilename}\"\n"
+
+      file { "${filesdir}/${basefilename}":
+        source  => $ssl_cert,
+        owner   => 'root',
+        group   => 'root',
+        mode    => '0640',
+        require => File[$filesdir]
+      }
+    } else {
+      $opt_ssl_cert = "  ssl_cert => \"${ssl_cert}\"\n"
+    }
+  }
+
+  if $ssl_cacert {
+    if $ssl_cacert =~ /^puppet\:\/\// {
+
+      validate_re($ssl_cacert, '\Apuppet:\/\/')
+
+      $filenameArray = split($ssl_cacert, '/')
+      $basefilename = $filenameArray[-1]
+
+      $opt_ssl_cacert = "  ssl_cacert => \"${filesdir}/${basefilename}\"\n"
+
+      file { "${filesdir}/${basefilename}":
+        source  => $ssl_cacert,
+        owner   => 'root',
+        group   => 'root',
+        mode    => '0640',
+        require => File[$filesdir]
+      }
+    } else {
+      $opt_ssl_cacert = "  ssl_cacert => \"${ssl_cacert}\"\n"
+    }
+  }
+
+  if $ssl_key {
+    if $ssl_key =~ /^puppet\:\/\// {
+
+      validate_re($ssl_key, '\Apuppet:\/\/')
+
+      $filenameArray = split($ssl_key, '/')
+      $basefilename = $filenameArray[-1]
+
+      $opt_ssl_key = "  ssl_key => \"${filesdir}/${basefilename}\"\n"
+
+      file { "${filesdir}/${basefilename}":
+        source  => $ssl_key,
+        owner   => 'root',
+        group   => 'root',
+        mode    => '0640',
+        require => File[$filesdir]
+      }
+    } else {
+      $opt_ssl_key = "  ssl_key => \"${ssl_key}\"\n"
     }
   }
 
@@ -239,15 +374,32 @@ define logstash::input::tcp (
     $opt_message_format = "  message_format => \"${message_format}\"\n"
   }
 
-  #### Write config file
 
-  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/input_tcp_${name}")
-  $services = prefix($instances, 'logstash-')
+  #### Create the directory where we place the files
+  exec { "create_files_dir_input_tcp_${name}":
+    cwd     => '/',
+    path    => ['/usr/bin', '/bin'],
+    command => "mkdir -p ${filesdir}",
+    creates => $filesdir
+  }
+
+  #### Manage the files directory
+  file { $filesdir:
+    ensure  => directory,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0640',
+    purge   => true,
+    recurse => true,
+    require => Exec["create_files_dir_input_tcp_${name}"],
+    notify  => Service[$services]
+  }
+
+  #### Write config file
 
   file { $conffiles:
     ensure  => present,
-    content => "input {\n tcp {\n${opt_add_field}${opt_charset}${opt_data_timeout}${opt_debug}${opt_format}${opt_host}${opt_message_format}${opt_mode}${opt_port}${opt_tags}${opt_type} }\n}\n",
+    content => "input {\n tcp {\n${opt_add_field}${opt_charset}${opt_data_timeout}${opt_debug}${opt_format}${opt_host}${opt_message_format}${opt_mode}${opt_port}${opt_ssl_cacert}${opt_ssl_cert}${opt_ssl_enable}${opt_ssl_key}${opt_ssl_key_passphrase}${opt_ssl_verify}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',

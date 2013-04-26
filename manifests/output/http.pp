@@ -28,8 +28,10 @@
 # [*format*]
 #   Set the format of the http body.  If form, then the body will be the
 #   mapping (or whole event) converted into a query parameter string
-#   (foo=bar&amp;baz=fizz...)  Otherwise, the event is sent as json.
-#   Value can be any of: "json", "form"
+#   (foo=bar&amp;baz=fizz...)  If message, then the body will be the
+#   result of formatting the event according to message  Otherwise, the
+#   event is sent as json.
+#   Value can be any of: "json", "form", "message"
 #   Default value: "json"
 #   This variable is optional
 #
@@ -51,6 +53,11 @@
 #   sent.  For example:     mapping =&gt; ["foo", "%{@source_host}",
 #   "bar", "%{@type}"]
 #   Value type is hash
+#   Default value: None
+#   This variable is optional
+#
+# [*message*]
+#   Value type is string
 #   Default value: None
 #   This variable is optional
 #
@@ -98,11 +105,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.9/outputs/http
+#  http://logstash.net/docs/1.1.10/outputs/http
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10/learn
 #
 # === Authors
 #
@@ -116,6 +123,7 @@ define logstash::output::http (
   $headers      = '',
   $content_type = '',
   $fields       = '',
+  $message      = '',
   $tags         = '',
   $type         = '',
   $exclude_tags = '',
@@ -124,6 +132,11 @@ define logstash::output::http (
 ) {
 
   require logstash::params
+
+  $confdirstart = prefix($instances, "${logstash::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_http_${name}")
+  $services = prefix($instances, 'logstash-')
+  $filesdir = "${logstash::configdir}/files/output/http/${name}"
 
   #### Validate parameters
 
@@ -173,7 +186,7 @@ define logstash::output::http (
   }
 
   if $format {
-    if ! ($format in ['json', 'form']) {
+    if ! ($format in ['json', 'form', 'message']) {
       fail("\"${format}\" is not a valid format parameter value")
     } else {
       $opt_format = "  format => \"${format}\"\n"
@@ -190,6 +203,11 @@ define logstash::output::http (
     $opt_type = "  type => \"${type}\"\n"
   }
 
+  if $message {
+    validate_string($message)
+    $opt_message = "  message => \"${message}\"\n"
+  }
+
   if $content_type {
     validate_string($content_type)
     $opt_content_type = "  content_type => \"${content_type}\"\n"
@@ -197,13 +215,9 @@ define logstash::output::http (
 
   #### Write config file
 
-  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/output_http_${name}")
-  $services = prefix($instances, 'logstash-')
-
   file { $conffiles:
     ensure  => present,
-    content => "output {\n http {\n${opt_content_type}${opt_exclude_tags}${opt_fields}${opt_format}${opt_headers}${opt_http_method}${opt_mapping}${opt_tags}${opt_type}${opt_url}${opt_verify_ssl} }\n}\n",
+    content => "output {\n http {\n${opt_content_type}${opt_exclude_tags}${opt_fields}${opt_format}${opt_headers}${opt_http_method}${opt_mapping}${opt_message}${opt_tags}${opt_type}${opt_url}${opt_verify_ssl} }\n}\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',

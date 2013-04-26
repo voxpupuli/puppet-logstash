@@ -30,7 +30,7 @@
 #
 # [*coalesce*]
 #   Sets the value of field_name to the first nonnull expression among its
-#   arguments.  Example:  filter {   alter =&gt; {     coalesce =&gt; [
+#   arguments.  Example:  filter {   alter {     coalesce =&gt; [
 #   "field_name", "value1", "value2", "value3", ...     ]   } }
 #   Value type is array
 #   Default value: None
@@ -49,7 +49,7 @@
 # [*condrewriteother*]
 #   Change the content of the field to the specified value if the content
 #   of another field is equal to the expected one.  Example:  filter {
-#   alter =&gt; {     condrewriteother =&gt; [           "field_name",
+#   alter {     condrewriteother =&gt; [           "field_name",
 #   "expected_value", "field_name_to_change", "value",
 #   "field_name2", "expected_value2, "field_name_to_change2", "value2",
 #   ....     ]   } }
@@ -110,11 +110,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.9/filters/alter
+#  http://logstash.net/docs/1.1.10/filters/alter
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10/learn
 #
 # === Authors
 #
@@ -135,6 +135,11 @@ define logstash::filter::alter (
 ) {
 
   require logstash::params
+
+  $confdirstart = prefix($instances, "${logstash::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/filter_${order}_alter_${name}")
+  $services = prefix($instances, 'logstash-')
+  $filesdir = "${logstash::configdir}/files/filter/alter/${name}"
 
   #### Validate parameters
 
@@ -200,10 +205,6 @@ define logstash::filter::alter (
   }
 
   #### Write config file
-
-  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/filter_${order}_alter_${name}")
-  $services = prefix($instances, 'logstash-')
 
   file { $conffiles:
     ensure  => present,

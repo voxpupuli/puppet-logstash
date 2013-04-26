@@ -63,7 +63,7 @@
 #   This variable is optional
 #
 # [*zabbix_sender*]
-#   Value type is string
+#   Value type is path
 #   Default value: "/usr/local/bin/zabbix_sender"
 #   This variable is optional
 #
@@ -82,11 +82,11 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.9
+#  This define is created based on LogStash version 1.1.10
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.9/outputs/zabbix
+#  http://logstash.net/docs/1.1.10/outputs/zabbix
 #
-#  Need help? http://logstash.net/docs/1.1.9/learn
+#  Need help? http://logstash.net/docs/1.1.10/learn
 #
 # === Authors
 #
@@ -104,6 +104,11 @@ define logstash::output::zabbix (
 ) {
 
   require logstash::params
+
+  $confdirstart = prefix($instances, "${logstash::configdir}/")
+  $conffiles = suffix($confdirstart, "/config/output_zabbix_${name}")
+  $services = prefix($instances, 'logstash-')
+  $filesdir = "${logstash::configdir}/files/output/zabbix/${name}"
 
   #### Validate parameters
   if $exclude_tags {
@@ -136,8 +141,25 @@ define logstash::output::zabbix (
   }
 
   if $zabbix_sender {
-    validate_string($zabbix_sender)
-    $opt_zabbix_sender = "  zabbix_sender => \"${zabbix_sender}\"\n"
+    if $zabbix_sender =~ /^puppet\:\/\// {
+
+      validate_re($zabbix_sender, '\Apuppet:\/\/')
+
+      $filenameArray = split($zabbix_sender, '/')
+      $basefilename = $filenameArray[-1]
+
+      $opt_zabbix_sender = "  zabbix_sender => \"${filesdir}/${basefilename}\"\n"
+
+      file { "${filesdir}/${basefilename}":
+        source  => $zabbix_sender,
+        owner   => 'root',
+        group   => 'root',
+        mode    => '0640',
+        require => File[$filesdir]
+      }
+    } else {
+      $opt_zabbix_sender = "  zabbix_sender => \"${zabbix_sender}\"\n"
+    }
   }
 
   if $type {
@@ -150,11 +172,28 @@ define logstash::output::zabbix (
     $opt_host = "  host => \"${host}\"\n"
   }
 
-  #### Write config file
 
-  $confdirstart = prefix($instances, "${logstash::params::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/output_zabbix_${name}")
-  $services = prefix($instances, 'logstash-')
+  #### Create the directory where we place the files
+  exec { "create_files_dir_output_zabbix_${name}":
+    cwd     => '/',
+    path    => ['/usr/bin', '/bin'],
+    command => "mkdir -p ${filesdir}",
+    creates => $filesdir
+  }
+
+  #### Manage the files directory
+  file { $filesdir:
+    ensure  => directory,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0640',
+    purge   => true,
+    recurse => true,
+    require => Exec["create_files_dir_output_zabbix_${name}"],
+    notify  => Service[$services]
+  }
+
+  #### Write config file
 
   file { $conffiles:
     ensure  => present,
