@@ -260,7 +260,7 @@ define logstash::output::syslog (
     content => "output {\n syslog {\n${opt_appname}${opt_exclude_tags}${opt_facility}${opt_fields}${opt_host}${opt_msgid}${opt_port}${opt_procid}${opt_protocol}${opt_rfc}${opt_severity}${opt_sourcehost}${opt_tags}${opt_timestamp}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
-    mode    => '0644',
+    mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

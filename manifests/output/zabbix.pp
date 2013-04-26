@@ -200,7 +200,7 @@ define logstash::output::zabbix (
     content => "output {\n zabbix {\n${opt_exclude_tags}${opt_fields}${opt_host}${opt_port}${opt_tags}${opt_type}${opt_zabbix_sender} }\n}\n",
     owner   => 'root',
     group   => 'root',
-    mode    => '0644',
+    mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

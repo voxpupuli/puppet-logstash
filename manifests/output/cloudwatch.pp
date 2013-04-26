@@ -396,7 +396,7 @@ define logstash::output::cloudwatch (
     content => "output {\n cloudwatch {\n${opt_access_key_id}${opt_aws_credentials_file}${opt_dimensions}${opt_exclude_tags}${opt_field_dimensions}${opt_field_metricname}${opt_field_namespace}${opt_field_unit}${opt_field_value}${opt_fields}${opt_metricname}${opt_namespace}${opt_queue_size}${opt_region}${opt_secret_access_key}${opt_tags}${opt_timeframe}${opt_type}${opt_unit}${opt_use_ssl}${opt_value} }\n}\n",
     owner   => 'root',
     group   => 'root',
-    mode    => '0644',
+    mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

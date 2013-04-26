@@ -344,7 +344,7 @@ define logstash::filter::grok (
     content => "filter {\n grok {\n${opt_add_field}${opt_add_tag}${opt_break_on_match}${opt_drop_if_match}${opt_exclude_tags}${opt_keep_empty_captures}${opt_match}${opt_named_captures_only}${opt_pattern}${opt_patterns_dir}${opt_remove_tag}${opt_singles}${opt_tag_on_failure}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
-    mode    => '0644',
+    mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

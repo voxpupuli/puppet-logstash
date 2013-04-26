@@ -192,7 +192,7 @@ define logstash::output::zeromq (
     content => "output {\n zeromq {\n${opt_address}${opt_exclude_tags}${opt_fields}${opt_mode}${opt_sockopt}${opt_tags}${opt_topic}${opt_topology}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
-    mode    => '0644',
+    mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

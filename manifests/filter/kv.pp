@@ -266,7 +266,7 @@ define logstash::filter::kv (
     content => "filter {\n kv {\n${opt_add_field}${opt_add_tag}${opt_exclude_tags}${opt_field_split}${opt_fields}${opt_prefix}${opt_remove_tag}${opt_source}${opt_tags}${opt_target}${opt_trim}${opt_type}${opt_value_split} }\n}\n",
     owner   => 'root',
     group   => 'root',
-    mode    => '0644',
+    mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

@@ -182,7 +182,7 @@ define logstash::output::hipchat (
     content => "output {\n hipchat {\n${opt_color}${opt_exclude_tags}${opt_fields}${opt_format}${opt_from}${opt_notify}${opt_room_id}${opt_tags}${opt_token}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
-    mode    => '0644',
+    mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

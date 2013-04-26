@@ -258,7 +258,7 @@ define logstash::filter::multiline (
     content => "filter {\n multiline {\n${opt_add_field}${opt_add_tag}${opt_exclude_tags}${opt_negate}${opt_pattern}${opt_patterns_dir}${opt_remove_tag}${opt_stream_identity}${opt_tags}${opt_type}${opt_what} }\n}\n",
     owner   => 'root',
     group   => 'root',
-    mode    => '0644',
+    mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

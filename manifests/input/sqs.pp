@@ -302,7 +302,7 @@ define logstash::input::sqs (
     content => "input {\n sqs {\n${opt_access_key_id}${opt_add_field}${opt_aws_credentials_file}${opt_charset}${opt_debug}${opt_format}${opt_message_format}${opt_queue}${opt_region}${opt_secret_access_key}${opt_tags}${opt_threads}${opt_type}${opt_use_ssl} }\n}\n",
     owner   => 'root',
     group   => 'root',
-    mode    => '0644',
+    mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

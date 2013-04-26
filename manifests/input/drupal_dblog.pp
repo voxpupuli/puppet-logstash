@@ -257,7 +257,7 @@ define logstash::input::drupal_dblog (
     content => "input {\n drupal_dblog {\n${opt_add_field}${opt_add_usernames}${opt_bulksize}${opt_charset}${opt_databases}${opt_debug}${opt_format}${opt_interval}${opt_message_format}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
-    mode    => '0644',
+    mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

@@ -275,7 +275,7 @@ define logstash::output::email (
     content => "output {\n email {\n${opt_attachments}${opt_body}${opt_cc}${opt_contenttype}${opt_exclude_tags}${opt_fields}${opt_from}${opt_htmlbody}${opt_match}${opt_options}${opt_subject}${opt_tags}${opt_to}${opt_type}${opt_via} }\n}\n",
     owner   => 'root',
     group   => 'root',
-    mode    => '0644',
+    mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

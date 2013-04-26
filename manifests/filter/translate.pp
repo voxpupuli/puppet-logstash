@@ -309,7 +309,7 @@ define logstash::filter::translate (
     content => "filter {\n translate {\n${opt_add_field}${opt_add_tag}${opt_destination}${opt_dictionary}${opt_dictionary_path}${opt_exact}${opt_exclude_tags}${opt_fallback}${opt_field}${opt_override}${opt_regex}${opt_remove_tag}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
-    mode    => '0644',
+    mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

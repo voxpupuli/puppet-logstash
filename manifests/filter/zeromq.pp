@@ -225,7 +225,7 @@ define logstash::filter::zeromq (
     content => "filter {\n zeromq {\n${opt_add_field}${opt_add_tag}${opt_address}${opt_exclude_tags}${opt_field}${opt_mode}${opt_remove_tag}${opt_sockopt}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
-    mode    => '0644',
+    mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

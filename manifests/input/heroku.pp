@@ -209,7 +209,7 @@ define logstash::input::heroku (
     content => "input {\n heroku {\n${opt_add_field}${opt_app}${opt_charset}${opt_debug}${opt_format}${opt_message_format}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
-    mode    => '0644',
+    mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

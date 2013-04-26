@@ -201,7 +201,7 @@ define logstash::filter::useragent (
     content => "filter {\n useragent {\n${opt_add_field}${opt_add_tag}${opt_exclude_tags}${opt_regexes}${opt_remove_tag}${opt_source}${opt_tags}${opt_target}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
-    mode    => '0644',
+    mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

@@ -381,7 +381,7 @@ define logstash::input::graphite (
     content => "input {\n graphite {\n${opt_add_field}${opt_charset}${opt_data_timeout}${opt_debug}${opt_format}${opt_host}${opt_message_format}${opt_mode}${opt_port}${opt_ssl_cacert}${opt_ssl_cert}${opt_ssl_enable}${opt_ssl_key}${opt_ssl_key_passphrase}${opt_ssl_verify}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
-    mode    => '0644',
+    mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

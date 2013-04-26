@@ -221,7 +221,7 @@ define logstash::input::exec (
     content => "input {\n exec {\n${opt_add_field}${opt_charset}${opt_command}${opt_debug}${opt_format}${opt_interval}${opt_message_format}${opt_tags}${opt_type} }\n}\n",
     owner   => 'root',
     group   => 'root',
-    mode    => '0644',
+    mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

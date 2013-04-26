@@ -222,7 +222,7 @@ define logstash::input::websocket (
     content => "input {\n websocket {\n${opt_add_field}${opt_charset}${opt_debug}${opt_format}${opt_message_format}${opt_mode}${opt_tags}${opt_type}${opt_url} }\n}\n",
     owner   => 'root',
     group   => 'root',
-    mode    => '0644',
+    mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
