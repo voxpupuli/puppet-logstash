@@ -269,71 +269,71 @@ define logstash::input::zenoss (
 
   validate_array($instances)
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $arguments {
+  if ($arguments != '') {
     validate_array($arguments)
     $arr_arguments = join($arguments, '\', \'')
     $opt_arguments = "  arguments => ['${arr_arguments}']\n"
   }
 
-  if $headers_fields {
+  if ($headers_fields != '') {
     validate_array($headers_fields)
     $arr_headers_fields = join($headers_fields, '\', \'')
     $opt_headers_fields = "  headers_fields => ['${arr_headers_fields}']\n"
   }
 
-  if $auto_delete {
+  if ($auto_delete != '') {
     validate_bool($auto_delete)
     $opt_auto_delete = "  auto_delete => ${auto_delete}\n"
   }
 
-  if $verify_ssl {
+  if ($verify_ssl != '') {
     validate_bool($verify_ssl)
     $opt_verify_ssl = "  verify_ssl => ${verify_ssl}\n"
   }
 
-  if $durable {
+  if ($durable != '') {
     validate_bool($durable)
     $opt_durable = "  durable => ${durable}\n"
   }
 
-  if $ssl {
+  if ($ssl != '') {
     validate_bool($ssl)
     $opt_ssl = "  ssl => ${ssl}\n"
   }
 
-  if $exclusive {
+  if ($exclusive != '') {
     validate_bool($exclusive)
     $opt_exclusive = "  exclusive => ${exclusive}\n"
   }
 
-  if $passive {
+  if ($passive != '') {
     validate_bool($passive)
     $opt_passive = "  passive => ${passive}\n"
   }
 
-  if $debug {
+  if ($debug != '') {
     validate_bool($debug)
     $opt_debug = "  debug => ${debug}\n"
   }
 
-  if $ack {
+  if ($ack != '') {
     validate_bool($ack)
     $opt_ack = "  ack => ${ack}\n"
   }
 
-  if $add_field {
+  if ($add_field != '') {
     validate_hash($add_field)
     $arr_add_field = inline_template('<%= add_field.to_a.flatten.inspect %>')
     $opt_add_field = "  add_field => ${arr_add_field}\n"
   }
 
-  if $threads {
+  if ($threads != '') {
     if ! is_numeric($threads) {
       fail("\"${threads}\" is not a valid threads parameter value")
     } else {
@@ -341,7 +341,7 @@ define logstash::input::zenoss (
     }
   }
 
-  if $frame_max {
+  if ($frame_max != '') {
     if ! is_numeric($frame_max) {
       fail("\"${frame_max}\" is not a valid frame_max parameter value")
     } else {
@@ -349,7 +349,7 @@ define logstash::input::zenoss (
     }
   }
 
-  if $prefetch_count {
+  if ($prefetch_count != '') {
     if ! is_numeric($prefetch_count) {
       fail("\"${prefetch_count}\" is not a valid prefetch_count parameter value")
     } else {
@@ -357,7 +357,7 @@ define logstash::input::zenoss (
     }
   }
 
-  if $port {
+  if ($port != '') {
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
     } else {
@@ -365,7 +365,7 @@ define logstash::input::zenoss (
     }
   }
 
-  if $format {
+  if ($format != '') {
     if ! ($format in ['plain', 'json', 'json_event', 'msgpack_event']) {
       fail("\"${format}\" is not a valid format parameter value")
     } else {
@@ -373,7 +373,7 @@ define logstash::input::zenoss (
     }
   }
 
-  if $charset {
+  if ($charset != '') {
     if ! ($charset in ['ASCII-8BIT', 'UTF-8', 'US-ASCII', 'Big5', 'Big5-HKSCS', 'Big5-UAO', 'CP949', 'Emacs-Mule', 'EUC-JP', 'EUC-KR', 'EUC-TW', 'GB18030', 'GBK', 'ISO-8859-1', 'ISO-8859-2', 'ISO-8859-3', 'ISO-8859-4', 'ISO-8859-5', 'ISO-8859-6', 'ISO-8859-7', 'ISO-8859-8', 'ISO-8859-9', 'ISO-8859-10', 'ISO-8859-11', 'ISO-8859-13', 'ISO-8859-14', 'ISO-8859-15', 'ISO-8859-16', 'KOI8-R', 'KOI8-U', 'Shift_JIS', 'UTF-16BE', 'UTF-16LE', 'UTF-32BE', 'UTF-32LE', 'Windows-1251', 'BINARY', 'IBM437', 'CP437', 'IBM737', 'CP737', 'IBM775', 'CP775', 'CP850', 'IBM850', 'IBM852', 'CP852', 'IBM855', 'CP855', 'IBM857', 'CP857', 'IBM860', 'CP860', 'IBM861', 'CP861', 'IBM862', 'CP862', 'IBM863', 'CP863', 'IBM864', 'CP864', 'IBM865', 'CP865', 'IBM866', 'CP866', 'IBM869', 'CP869', 'Windows-1258', 'CP1258', 'GB1988', 'macCentEuro', 'macCroatian', 'macCyrillic', 'macGreek', 'macIceland', 'macRoman', 'macRomania', 'macThai', 'macTurkish', 'macUkraine', 'CP950', 'Big5-HKSCS:2008', 'CP951', 'stateless-ISO-2022-JP', 'eucJP', 'eucJP-ms', 'euc-jp-ms', 'CP51932', 'eucKR', 'eucTW', 'GB2312', 'EUC-CN', 'eucCN', 'GB12345', 'CP936', 'ISO-2022-JP', 'ISO2022-JP', 'ISO-2022-JP-2', 'ISO2022-JP2', 'CP50220', 'CP50221', 'ISO8859-1', 'Windows-1252', 'CP1252', 'ISO8859-2', 'Windows-1250', 'CP1250', 'ISO8859-3', 'ISO8859-4', 'ISO8859-5', 'ISO8859-6', 'Windows-1256', 'CP1256', 'ISO8859-7', 'Windows-1253', 'CP1253', 'ISO8859-8', 'Windows-1255', 'CP1255', 'ISO8859-9', 'Windows-1254', 'CP1254', 'ISO8859-10', 'ISO8859-11', 'TIS-620', 'Windows-874', 'CP874', 'ISO8859-13', 'Windows-1257', 'CP1257', 'ISO8859-14', 'ISO8859-15', 'ISO8859-16', 'CP878', 'Windows-31J', 'CP932', 'csWindows31J', 'SJIS', 'PCK', 'MacJapanese', 'MacJapan', 'ASCII', 'ANSI_X3.4-1968', '646', 'UTF-7', 'CP65000', 'CP65001', 'UTF8-MAC', 'UTF-8-MAC', 'UTF-8-HFS', 'UTF-16', 'UTF-32', 'UCS-2BE', 'UCS-4BE', 'UCS-4LE', 'CP1251', 'UTF8-DoCoMo', 'SJIS-DoCoMo', 'UTF8-KDDI', 'SJIS-KDDI', 'ISO-2022-JP-KDDI', 'stateless-ISO-2022-JP-KDDI', 'UTF8-SoftBank', 'SJIS-SoftBank', 'locale', 'external', 'filesystem', 'internal']) {
       fail("\"${charset}\" is not a valid charset parameter value")
     } else {
@@ -381,47 +381,47 @@ define logstash::input::zenoss (
     }
   }
 
-  if $password {
+  if ($password != '') {
     validate_string($password)
     $opt_password = "  password => \"${password}\"\n"
   }
 
-  if $exchange {
+  if ($exchange != '') {
     validate_string($exchange)
     $opt_exchange = "  exchange => \"${exchange}\"\n"
   }
 
-  if $queue {
+  if ($queue != '') {
     validate_string($queue)
     $opt_queue = "  queue => \"${queue}\"\n"
   }
 
-  if $host {
+  if ($host != '') {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $user {
+  if ($user != '') {
     validate_string($user)
     $opt_user = "  user => \"${user}\"\n"
   }
 
-  if $key {
+  if ($key != '') {
     validate_string($key)
     $opt_key = "  key => \"${key}\"\n"
   }
 
-  if $vhost {
+  if ($vhost != '') {
     validate_string($vhost)
     $opt_vhost = "  vhost => \"${vhost}\"\n"
   }
 
-  if $message_format {
+  if ($message_format != '') {
     validate_string($message_format)
     $opt_message_format = "  message_format => \"${message_format}\"\n"
   }

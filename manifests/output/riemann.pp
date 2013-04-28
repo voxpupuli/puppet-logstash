@@ -133,36 +133,36 @@ define logstash::output::riemann (
 
   validate_array($instances)
 
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $fields {
+  if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $debug {
+  if ($debug != '') {
     validate_bool($debug)
     $opt_debug = "  debug => ${debug}\n"
   }
 
-  if $riemann_event {
+  if ($riemann_event != '') {
     validate_hash($riemann_event)
     $arr_riemann_event = inline_template('<%= riemann_event.to_a.flatten.inspect %>')
     $opt_riemann_event = "  riemann_event => ${arr_riemann_event}\n"
   }
 
-  if $port {
+  if ($port != '') {
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
     } else {
@@ -170,7 +170,7 @@ define logstash::output::riemann (
     }
   }
 
-  if $protocol {
+  if ($protocol != '') {
     if ! ($protocol in ['tcp', 'udp']) {
       fail("\"${protocol}\" is not a valid protocol parameter value")
     } else {
@@ -178,17 +178,17 @@ define logstash::output::riemann (
     }
   }
 
-  if $sender {
+  if ($sender != '') {
     validate_string($sender)
     $opt_sender = "  sender => \"${sender}\"\n"
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $host {
+  if ($host != '') {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
   }

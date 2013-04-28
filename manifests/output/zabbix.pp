@@ -111,13 +111,13 @@ define logstash::output::zabbix (
   $filesdir = "${logstash::configdir}/files/output/zabbix/${name}"
 
   #### Validate parameters
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $fields {
+  if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
@@ -126,13 +126,13 @@ define logstash::output::zabbix (
 
   validate_array($instances)
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $port {
+  if ($port != '') {
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
     } else {
@@ -140,17 +140,17 @@ define logstash::output::zabbix (
     }
   }
 
-  if $zabbix_sender {
+  if ($zabbix_sender != '') {
     if $zabbix_sender =~ /^puppet\:\/\// {
 
       validate_re($zabbix_sender, '\Apuppet:\/\/')
 
-      $filenameArray = split($zabbix_sender, '/')
-      $basefilename = $filenameArray[-1]
+      $filenameArray_zabbix_sender = split($zabbix_sender, '/')
+      $basefilename_zabbix_sender = $filenameArray_zabbix_sender[-1]
 
-      $opt_zabbix_sender = "  zabbix_sender => \"${filesdir}/${basefilename}\"\n"
+      $opt_zabbix_sender = "  zabbix_sender => \"${filesdir}/${basefilename_zabbix_sender}\"\n"
 
-      file { "${filesdir}/${basefilename}":
+      file { "${filesdir}/${basefilename_zabbix_sender}":
         source  => $zabbix_sender,
         owner   => 'root',
         group   => 'root',
@@ -162,12 +162,12 @@ define logstash::output::zabbix (
     }
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $host {
+  if ($host != '') {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
   }

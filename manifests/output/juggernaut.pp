@@ -129,25 +129,25 @@ define logstash::output::juggernaut (
   $filesdir = "${logstash::configdir}/files/output/juggernaut/${name}"
 
   #### Validate parameters
-  if $channels {
+  if ($channels != '') {
     validate_array($channels)
     $arr_channels = join($channels, '\', \'')
     $opt_channels = "  channels => ['${arr_channels}']\n"
   }
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $fields {
+  if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
@@ -156,7 +156,7 @@ define logstash::output::juggernaut (
 
   validate_array($instances)
 
-  if $db {
+  if ($db != '') {
     if ! is_numeric($db) {
       fail("\"${db}\" is not a valid db parameter value")
     } else {
@@ -164,7 +164,7 @@ define logstash::output::juggernaut (
     }
   }
 
-  if $timeout {
+  if ($timeout != '') {
     if ! is_numeric($timeout) {
       fail("\"${timeout}\" is not a valid timeout parameter value")
     } else {
@@ -172,7 +172,7 @@ define logstash::output::juggernaut (
     }
   }
 
-  if $port {
+  if ($port != '') {
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
     } else {
@@ -180,22 +180,22 @@ define logstash::output::juggernaut (
     }
   }
 
-  if $password {
+  if ($password != '') {
     validate_string($password)
     $opt_password = "  password => \"${password}\"\n"
   }
 
-  if $host {
+  if ($host != '') {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $message_format {
+  if ($message_format != '') {
     validate_string($message_format)
     $opt_message_format = "  message_format => \"${message_format}\"\n"
   }

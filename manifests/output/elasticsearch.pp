@@ -182,30 +182,30 @@ define logstash::output::elasticsearch (
 
   validate_array($instances)
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $fields {
+  if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $embedded {
+  if ($embedded != '') {
     validate_bool($embedded)
     $opt_embedded = "  embedded => ${embedded}\n"
   }
 
-  if $port {
+  if ($port != '') {
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
     } else {
@@ -213,7 +213,7 @@ define logstash::output::elasticsearch (
     }
   }
 
-  if $max_inflight_requests {
+  if ($max_inflight_requests != '') {
     if ! is_numeric($max_inflight_requests) {
       fail("\"${max_inflight_requests}\" is not a valid max_inflight_requests parameter value")
     } else {
@@ -221,47 +221,47 @@ define logstash::output::elasticsearch (
     }
   }
 
-  if $index {
+  if ($index != '') {
     validate_string($index)
     $opt_index = "  index => \"${index}\"\n"
   }
 
-  if $host {
+  if ($host != '') {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
   }
 
-  if $index_type {
+  if ($index_type != '') {
     validate_string($index_type)
     $opt_index_type = "  index_type => \"${index_type}\"\n"
   }
 
-  if $embedded_http_port {
+  if ($embedded_http_port != '') {
     validate_string($embedded_http_port)
     $opt_embedded_http_port = "  embedded_http_port => \"${embedded_http_port}\"\n"
   }
 
-  if $node_name {
+  if ($node_name != '') {
     validate_string($node_name)
     $opt_node_name = "  node_name => \"${node_name}\"\n"
   }
 
-  if $document_id {
+  if ($document_id != '') {
     validate_string($document_id)
     $opt_document_id = "  document_id => \"${document_id}\"\n"
   }
 
-  if $cluster {
+  if ($cluster != '') {
     validate_string($cluster)
     $opt_cluster = "  cluster => \"${cluster}\"\n"
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $bind_host {
+  if ($bind_host != '') {
     validate_string($bind_host)
     $opt_bind_host = "  bind_host => \"${bind_host}\"\n"
   }

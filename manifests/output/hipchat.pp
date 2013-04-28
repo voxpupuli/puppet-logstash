@@ -122,55 +122,55 @@ define logstash::output::hipchat (
 
   validate_array($instances)
 
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $fields {
+  if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $notify {
+  if ($notify != '') {
     validate_bool($notify)
     $opt_notify = "  notify => ${notify}\n"
   }
 
-  if $from {
+  if ($from != '') {
     validate_string($from)
     $opt_from = "  from => \"${from}\"\n"
   }
 
-  if $room_id {
+  if ($room_id != '') {
     validate_string($room_id)
     $opt_room_id = "  room_id => \"${room_id}\"\n"
   }
 
-  if $format {
+  if ($format != '') {
     validate_string($format)
     $opt_format = "  format => \"${format}\"\n"
   }
 
-  if $token {
+  if ($token != '') {
     validate_string($token)
     $opt_token = "  token => \"${token}\"\n"
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $color {
+  if ($color != '') {
     validate_string($color)
     $opt_color = "  color => \"${color}\"\n"
   }

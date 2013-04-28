@@ -165,61 +165,61 @@ define logstash::output::metriccatcher (
 
   validate_array($instances)
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $fields {
+  if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $meter {
+  if ($meter != '') {
     validate_hash($meter)
     $arr_meter = inline_template('<%= meter.to_a.flatten.inspect %>')
     $opt_meter = "  meter => ${arr_meter}\n"
   }
 
-  if $biased {
+  if ($biased != '') {
     validate_hash($biased)
     $arr_biased = inline_template('<%= biased.to_a.flatten.inspect %>')
     $opt_biased = "  biased => ${arr_biased}\n"
   }
 
-  if $gauge {
+  if ($gauge != '') {
     validate_hash($gauge)
     $arr_gauge = inline_template('<%= gauge.to_a.flatten.inspect %>')
     $opt_gauge = "  gauge => ${arr_gauge}\n"
   }
 
-  if $uniform {
+  if ($uniform != '') {
     validate_hash($uniform)
     $arr_uniform = inline_template('<%= uniform.to_a.flatten.inspect %>')
     $opt_uniform = "  uniform => ${arr_uniform}\n"
   }
 
-  if $counter {
+  if ($counter != '') {
     validate_hash($counter)
     $arr_counter = inline_template('<%= counter.to_a.flatten.inspect %>')
     $opt_counter = "  counter => ${arr_counter}\n"
   }
 
-  if $timer {
+  if ($timer != '') {
     validate_hash($timer)
     $arr_timer = inline_template('<%= timer.to_a.flatten.inspect %>')
     $opt_timer = "  timer => ${arr_timer}\n"
   }
 
-  if $port {
+  if ($port != '') {
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
     } else {
@@ -227,12 +227,12 @@ define logstash::output::metriccatcher (
     }
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $host {
+  if ($host != '') {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
   }

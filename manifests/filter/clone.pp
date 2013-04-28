@@ -119,49 +119,49 @@ define logstash::filter::clone (
 
   validate_array($instances)
 
-  if $add_tag {
+  if ($add_tag != '') {
     validate_array($add_tag)
     $arr_add_tag = join($add_tag, '\', \'')
     $opt_add_tag = "  add_tag => ['${arr_add_tag}']\n"
   }
 
-  if $clones {
+  if ($clones != '') {
     validate_array($clones)
     $arr_clones = join($clones, '\', \'')
     $opt_clones = "  clones => ['${arr_clones}']\n"
   }
 
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $remove_tag {
+  if ($remove_tag != '') {
     validate_array($remove_tag)
     $arr_remove_tag = join($remove_tag, '\', \'')
     $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
   }
 
-  if $add_field {
+  if ($add_field != '') {
     validate_hash($add_field)
     $arr_add_field = inline_template('<%= add_field.to_a.flatten.inspect %>')
     $opt_add_field = "  add_field => ${arr_add_field}\n"
   }
 
-  if $order {
+  if ($order != '') {
     if ! is_numeric($order) {
       fail("\"${order}\" is not a valid order parameter value")
     }
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }

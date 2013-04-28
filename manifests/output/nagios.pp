@@ -109,25 +109,25 @@ define logstash::output::nagios (
 
   validate_array($instances)
 
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $fields {
+  if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $nagios_level {
+  if ($nagios_level != '') {
     if ! ($nagios_level in ['0', '1', '2', '3']) {
       fail("\"${nagios_level}\" is not a valid nagios_level parameter value")
     } else {
@@ -135,17 +135,17 @@ define logstash::output::nagios (
     }
   }
 
-  if $commandfile {
+  if ($commandfile != '') {
     if $commandfile =~ /^puppet\:\/\// {
 
       validate_re($commandfile, '\Apuppet:\/\/')
 
-      $filenameArray = split($commandfile, '/')
-      $basefilename = $filenameArray[-1]
+      $filenameArray_commandfile = split($commandfile, '/')
+      $basefilename_commandfile = $filenameArray_commandfile[-1]
 
-      $opt_commandfile = "  commandfile => \"${filesdir}/${basefilename}\"\n"
+      $opt_commandfile = "  commandfile => \"${filesdir}/${basefilename_commandfile}\"\n"
 
-      file { "${filesdir}/${basefilename}":
+      file { "${filesdir}/${basefilename_commandfile}":
         source  => $commandfile,
         owner   => 'root',
         group   => 'root',
@@ -157,7 +157,7 @@ define logstash::output::nagios (
     }
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }

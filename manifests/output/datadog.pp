@@ -136,31 +136,31 @@ define logstash::output::datadog (
 
   validate_array($instances)
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $fields {
+  if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $dd_tags {
+  if ($dd_tags != '') {
     validate_array($dd_tags)
     $arr_dd_tags = join($dd_tags, '\', \'')
     $opt_dd_tags = "  dd_tags => ['${arr_dd_tags}']\n"
   }
 
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $priority {
+  if ($priority != '') {
     if ! ($priority in ['normal', 'low']) {
       fail("\"${priority}\" is not a valid priority parameter value")
     } else {
@@ -168,7 +168,7 @@ define logstash::output::datadog (
     }
   }
 
-  if $alert_type {
+  if ($alert_type != '') {
     if ! ($alert_type in ['info', 'error', 'warning', 'success']) {
       fail("\"${alert_type}\" is not a valid alert_type parameter value")
     } else {
@@ -176,7 +176,7 @@ define logstash::output::datadog (
     }
   }
 
-  if $source_type_name {
+  if ($source_type_name != '') {
     if ! ($source_type_name in ['nagios', 'hudson', 'jenkins', 'user', 'my apps', 'feed', 'chef', 'puppet', 'git', 'bitbucket']) {
       fail("\"${source_type_name}\" is not a valid source_type_name parameter value")
     } else {
@@ -184,27 +184,27 @@ define logstash::output::datadog (
     }
   }
 
-  if $text {
+  if ($text != '') {
     validate_string($text)
     $opt_text = "  text => \"${text}\"\n"
   }
 
-  if $api_key {
+  if ($api_key != '') {
     validate_string($api_key)
     $opt_api_key = "  api_key => \"${api_key}\"\n"
   }
 
-  if $title {
+  if ($title != '') {
     validate_string($title)
     $opt_title = "  title => \"${title}\"\n"
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $date_happened {
+  if ($date_happened != '') {
     validate_string($date_happened)
     $opt_date_happened = "  date_happened => \"${date_happened}\"\n"
   }

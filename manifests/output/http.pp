@@ -142,42 +142,42 @@ define logstash::output::http (
 
   validate_array($instances)
 
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $fields {
+  if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $verify_ssl {
+  if ($verify_ssl != '') {
     validate_bool($verify_ssl)
     $opt_verify_ssl = "  verify_ssl => ${verify_ssl}\n"
   }
 
-  if $headers {
+  if ($headers != '') {
     validate_hash($headers)
     $arr_headers = inline_template('<%= headers.to_a.flatten.inspect %>')
     $opt_headers = "  headers => ${arr_headers}\n"
   }
 
-  if $mapping {
+  if ($mapping != '') {
     validate_hash($mapping)
     $arr_mapping = inline_template('<%= mapping.to_a.flatten.inspect %>')
     $opt_mapping = "  mapping => ${arr_mapping}\n"
   }
 
-  if $http_method {
+  if ($http_method != '') {
     if ! ($http_method in ['put', 'post']) {
       fail("\"${http_method}\" is not a valid http_method parameter value")
     } else {
@@ -185,7 +185,7 @@ define logstash::output::http (
     }
   }
 
-  if $format {
+  if ($format != '') {
     if ! ($format in ['json', 'form', 'message']) {
       fail("\"${format}\" is not a valid format parameter value")
     } else {
@@ -193,22 +193,22 @@ define logstash::output::http (
     }
   }
 
-  if $url {
+  if ($url != '') {
     validate_string($url)
     $opt_url = "  url => \"${url}\"\n"
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $message {
+  if ($message != '') {
     validate_string($message)
     $opt_message = "  message => \"${message}\"\n"
   }
 
-  if $content_type {
+  if ($content_type != '') {
     validate_string($content_type)
     $opt_content_type = "  content_type => \"${content_type}\"\n"
   }

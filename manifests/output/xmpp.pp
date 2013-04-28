@@ -122,13 +122,13 @@ define logstash::output::xmpp (
   $filesdir = "${logstash::configdir}/files/output/xmpp/${name}"
 
   #### Validate parameters
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $fields {
+  if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
@@ -137,45 +137,45 @@ define logstash::output::xmpp (
 
   validate_array($instances)
 
-  if $users {
+  if ($users != '') {
     validate_array($users)
     $arr_users = join($users, '\', \'')
     $opt_users = "  users => ['${arr_users}']\n"
   }
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $rooms {
+  if ($rooms != '') {
     validate_array($rooms)
     $arr_rooms = join($rooms, '\', \'')
     $opt_rooms = "  rooms => ['${arr_rooms}']\n"
   }
 
-  if $password {
+  if ($password != '') {
     validate_string($password)
     $opt_password = "  password => \"${password}\"\n"
   }
 
-  if $user {
+  if ($user != '') {
     validate_string($user)
     $opt_user = "  user => \"${user}\"\n"
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $message {
+  if ($message != '') {
     validate_string($message)
     $opt_message = "  message => \"${message}\"\n"
   }
 
-  if $host {
+  if ($host != '') {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
   }

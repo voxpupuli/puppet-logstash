@@ -158,54 +158,54 @@ define logstash::output::statsd (
 
   validate_array($instances)
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $decrement {
+  if ($decrement != '') {
     validate_array($decrement)
     $arr_decrement = join($decrement, '\', \'')
     $opt_decrement = "  decrement => ['${arr_decrement}']\n"
   }
 
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $increment {
+  if ($increment != '') {
     validate_array($increment)
     $arr_increment = join($increment, '\', \'')
     $opt_increment = "  increment => ['${arr_increment}']\n"
   }
 
-  if $fields {
+  if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $debug {
+  if ($debug != '') {
     validate_bool($debug)
     $opt_debug = "  debug => ${debug}\n"
   }
 
-  if $timing {
+  if ($timing != '') {
     validate_hash($timing)
     $arr_timing = inline_template('<%= timing.to_a.flatten.inspect %>')
     $opt_timing = "  timing => ${arr_timing}\n"
   }
 
-  if $count {
+  if ($count != '') {
     validate_hash($count)
     $arr_count = inline_template('<%= count.to_a.flatten.inspect %>')
     $opt_count = "  count => ${arr_count}\n"
   }
 
-  if $sample_rate {
+  if ($sample_rate != '') {
     if ! is_numeric($sample_rate) {
       fail("\"${sample_rate}\" is not a valid sample_rate parameter value")
     } else {
@@ -213,7 +213,7 @@ define logstash::output::statsd (
     }
   }
 
-  if $port {
+  if ($port != '') {
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
     } else {
@@ -221,22 +221,22 @@ define logstash::output::statsd (
     }
   }
 
-  if $host {
+  if ($host != '') {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
   }
 
-  if $sender {
+  if ($sender != '') {
     validate_string($sender)
     $opt_sender = "  sender => \"${sender}\"\n"
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $namespace {
+  if ($namespace != '') {
     validate_string($namespace)
     $opt_namespace = "  namespace => \"${namespace}\"\n"
   }

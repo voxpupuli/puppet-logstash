@@ -131,25 +131,25 @@ define logstash::output::irc (
   $filesdir = "${logstash::configdir}/files/output/irc/${name}"
 
   #### Validate parameters
-  if $channels {
+  if ($channels != '') {
     validate_array($channels)
     $arr_channels = join($channels, '\', \'')
     $opt_channels = "  channels => ['${arr_channels}']\n"
   }
 
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $fields {
+  if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
@@ -158,7 +158,7 @@ define logstash::output::irc (
 
   validate_array($instances)
 
-  if $port {
+  if ($port != '') {
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
     } else {
@@ -166,37 +166,37 @@ define logstash::output::irc (
     }
   }
 
-  if $password {
+  if ($password != '') {
     validate_string($password)
     $opt_password = "  password => \"${password}\"\n"
   }
 
-  if $format {
+  if ($format != '') {
     validate_string($format)
     $opt_format = "  format => \"${format}\"\n"
   }
 
-  if $real {
+  if ($real != '') {
     validate_string($real)
     $opt_real = "  real => \"${real}\"\n"
   }
 
-  if $host {
+  if ($host != '') {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $user {
+  if ($user != '') {
     validate_string($user)
     $opt_user = "  user => \"${user}\"\n"
   }
 
-  if $nick {
+  if ($nick != '') {
     validate_string($nick)
     $opt_nick = "  nick => \"${nick}\"\n"
   }

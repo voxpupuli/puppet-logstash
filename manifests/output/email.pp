@@ -184,25 +184,25 @@ define logstash::output::email (
   $filesdir = "${logstash::configdir}/files/output/email/${name}"
 
   #### Validate parameters
-  if $attachments {
+  if ($attachments != '') {
     validate_array($attachments)
     $arr_attachments = join($attachments, '\', \'')
     $opt_attachments = "  attachments => ['${arr_attachments}']\n"
   }
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $fields {
+  if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
@@ -211,59 +211,59 @@ define logstash::output::email (
 
   validate_array($instances)
 
-  if $match {
+  if ($match != '') {
     validate_hash($match)
     $arr_match = inline_template('<%= match.to_a.flatten.inspect %>')
     $opt_match = "  match => ${arr_match}\n"
   }
 
-  if $options {
+  if ($options != '') {
     validate_hash($options)
     $arr_options = inline_template('<%= options.to_a.flatten.inspect %>')
     $opt_options = "  options => ${arr_options}\n"
   }
 
-  if $subject {
+  if ($subject != '') {
     validate_string($subject)
     $opt_subject = "  subject => \"${subject}\"\n"
   }
 
-  if $cc {
+  if ($cc != '') {
     validate_string($cc)
     $opt_cc = "  cc => \"${cc}\"\n"
   }
 
-  if $from {
+  if ($from != '') {
     validate_string($from)
     $opt_from = "  from => \"${from}\"\n"
   }
 
-  if $htmlbody {
+  if ($htmlbody != '') {
     validate_string($htmlbody)
     $opt_htmlbody = "  htmlbody => \"${htmlbody}\"\n"
   }
 
-  if $body {
+  if ($body != '') {
     validate_string($body)
     $opt_body = "  body => \"${body}\"\n"
   }
 
-  if $to {
+  if ($to != '') {
     validate_string($to)
     $opt_to = "  to => \"${to}\"\n"
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $via {
+  if ($via != '') {
     validate_string($via)
     $opt_via = "  via => \"${via}\"\n"
   }
 
-  if $contenttype {
+  if ($contenttype != '') {
     validate_string($contenttype)
     $opt_contenttype = "  contenttype => \"${contenttype}\"\n"
   }

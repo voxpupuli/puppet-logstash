@@ -144,30 +144,30 @@ define logstash::output::sns (
 
   validate_array($instances)
 
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $fields {
+  if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $use_ssl {
+  if ($use_ssl != '') {
     validate_bool($use_ssl)
     $opt_use_ssl = "  use_ssl => ${use_ssl}\n"
   }
 
-  if $region {
+  if ($region != '') {
     if ! ($region in ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1', 'us-gov-west-1']) {
       fail("\"${region}\" is not a valid region parameter value")
     } else {
@@ -175,7 +175,7 @@ define logstash::output::sns (
     }
   }
 
-  if $format {
+  if ($format != '') {
     if ! ($format in ['json', 'plain']) {
       fail("\"${format}\" is not a valid format parameter value")
     } else {
@@ -183,32 +183,32 @@ define logstash::output::sns (
     }
   }
 
-  if $publish_boot_message_arn {
+  if ($publish_boot_message_arn != '') {
     validate_string($publish_boot_message_arn)
     $opt_publish_boot_message_arn = "  publish_boot_message_arn => \"${publish_boot_message_arn}\"\n"
   }
 
-  if $secret_access_key {
+  if ($secret_access_key != '') {
     validate_string($secret_access_key)
     $opt_secret_access_key = "  secret_access_key => \"${secret_access_key}\"\n"
   }
 
-  if $aws_credentials_file {
+  if ($aws_credentials_file != '') {
     validate_string($aws_credentials_file)
     $opt_aws_credentials_file = "  aws_credentials_file => \"${aws_credentials_file}\"\n"
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $arn {
+  if ($arn != '') {
     validate_string($arn)
     $opt_arn = "  arn => \"${arn}\"\n"
   }
 
-  if $access_key_id {
+  if ($access_key_id != '') {
     validate_string($access_key_id)
     $opt_access_key_id = "  access_key_id => \"${access_key_id}\"\n"
   }

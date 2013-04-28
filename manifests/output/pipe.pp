@@ -105,25 +105,25 @@ define logstash::output::pipe (
 
   validate_array($instances)
 
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $fields {
+  if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $ttl {
+  if ($ttl != '') {
     if ! is_numeric($ttl) {
       fail("\"${ttl}\" is not a valid ttl parameter value")
     } else {
@@ -131,17 +131,17 @@ define logstash::output::pipe (
     }
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $message_format {
+  if ($message_format != '') {
     validate_string($message_format)
     $opt_message_format = "  message_format => \"${message_format}\"\n"
   }
 
-  if $command {
+  if ($command != '') {
     validate_string($command)
     $opt_command = "  command => \"${command}\"\n"
   }

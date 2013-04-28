@@ -101,25 +101,25 @@ define logstash::output::lumberjack (
   $filesdir = "${logstash::configdir}/files/output/lumberjack/${name}"
 
   #### Validate parameters
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $fields {
+  if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $hosts {
+  if ($hosts != '') {
     validate_array($hosts)
     $arr_hosts = join($hosts, '\', \'')
     $opt_hosts = "  hosts => ['${arr_hosts}']\n"
   }
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
@@ -128,7 +128,7 @@ define logstash::output::lumberjack (
 
   validate_array($instances)
 
-  if $port {
+  if ($port != '') {
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
     } else {
@@ -136,7 +136,7 @@ define logstash::output::lumberjack (
     }
   }
 
-  if $window_size {
+  if ($window_size != '') {
     if ! is_numeric($window_size) {
       fail("\"${window_size}\" is not a valid window_size parameter value")
     } else {
@@ -144,17 +144,17 @@ define logstash::output::lumberjack (
     }
   }
 
-  if $ssl_certificate {
+  if ($ssl_certificate != '') {
     if $ssl_certificate =~ /^puppet\:\/\// {
 
       validate_re($ssl_certificate, '\Apuppet:\/\/')
 
-      $filenameArray = split($ssl_certificate, '/')
-      $basefilename = $filenameArray[-1]
+      $filenameArray_ssl_certificate = split($ssl_certificate, '/')
+      $basefilename_ssl_certificate = $filenameArray_ssl_certificate[-1]
 
-      $opt_ssl_certificate = "  ssl_certificate => \"${filesdir}/${basefilename}\"\n"
+      $opt_ssl_certificate = "  ssl_certificate => \"${filesdir}/${basefilename_ssl_certificate}\"\n"
 
-      file { "${filesdir}/${basefilename}":
+      file { "${filesdir}/${basefilename_ssl_certificate}":
         source  => $ssl_certificate,
         owner   => 'root',
         group   => 'root',
@@ -166,7 +166,7 @@ define logstash::output::lumberjack (
     }
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }

@@ -228,45 +228,45 @@ define logstash::output::elasticsearch_river (
 
   validate_array($instances)
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $fields {
+  if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $persistent {
+  if ($persistent != '') {
     validate_bool($persistent)
     $opt_persistent = "  persistent => ${persistent}\n"
   }
 
-  if $durable {
+  if ($durable != '') {
     validate_bool($durable)
     $opt_durable = "  durable => ${durable}\n"
   }
 
-  if $es_ordered {
+  if ($es_ordered != '') {
     validate_bool($es_ordered)
     $opt_es_ordered = "  es_ordered => ${es_ordered}\n"
   }
 
-  if $debug {
+  if ($debug != '') {
     validate_bool($debug)
     $opt_debug = "  debug => ${debug}\n"
   }
 
-  if $es_bulk_size {
+  if ($es_bulk_size != '') {
     if ! is_numeric($es_bulk_size) {
       fail("\"${es_bulk_size}\" is not a valid es_bulk_size parameter value")
     } else {
@@ -274,7 +274,7 @@ define logstash::output::elasticsearch_river (
     }
   }
 
-  if $es_bulk_timeout_ms {
+  if ($es_bulk_timeout_ms != '') {
     if ! is_numeric($es_bulk_timeout_ms) {
       fail("\"${es_bulk_timeout_ms}\" is not a valid es_bulk_timeout_ms parameter value")
     } else {
@@ -282,7 +282,7 @@ define logstash::output::elasticsearch_river (
     }
   }
 
-  if $rabbitmq_port {
+  if ($rabbitmq_port != '') {
     if ! is_numeric($rabbitmq_port) {
       fail("\"${rabbitmq_port}\" is not a valid rabbitmq_port parameter value")
     } else {
@@ -290,7 +290,7 @@ define logstash::output::elasticsearch_river (
     }
   }
 
-  if $es_port {
+  if ($es_port != '') {
     if ! is_numeric($es_port) {
       fail("\"${es_port}\" is not a valid es_port parameter value")
     } else {
@@ -298,7 +298,7 @@ define logstash::output::elasticsearch_river (
     }
   }
 
-  if $exchange_type {
+  if ($exchange_type != '') {
     if ! ($exchange_type in ['fanout', 'direct', 'topic']) {
       fail("\"${exchange_type}\" is not a valid exchange_type parameter value")
     } else {
@@ -306,62 +306,62 @@ define logstash::output::elasticsearch_river (
     }
   }
 
-  if $exchange {
+  if ($exchange != '') {
     validate_string($exchange)
     $opt_exchange = "  exchange => \"${exchange}\"\n"
   }
 
-  if $key {
+  if ($key != '') {
     validate_string($key)
     $opt_key = "  key => \"${key}\"\n"
   }
 
-  if $password {
+  if ($password != '') {
     validate_string($password)
     $opt_password = "  password => \"${password}\"\n"
   }
 
-  if $index_type {
+  if ($index_type != '') {
     validate_string($index_type)
     $opt_index_type = "  index_type => \"${index_type}\"\n"
   }
 
-  if $queue {
+  if ($queue != '') {
     validate_string($queue)
     $opt_queue = "  queue => \"${queue}\"\n"
   }
 
-  if $rabbitmq_host {
+  if ($rabbitmq_host != '') {
     validate_string($rabbitmq_host)
     $opt_rabbitmq_host = "  rabbitmq_host => \"${rabbitmq_host}\"\n"
   }
 
-  if $es_host {
+  if ($es_host != '') {
     validate_string($es_host)
     $opt_es_host = "  es_host => \"${es_host}\"\n"
   }
 
-  if $document_id {
+  if ($document_id != '') {
     validate_string($document_id)
     $opt_document_id = "  document_id => \"${document_id}\"\n"
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $user {
+  if ($user != '') {
     validate_string($user)
     $opt_user = "  user => \"${user}\"\n"
   }
 
-  if $vhost {
+  if ($vhost != '') {
     validate_string($vhost)
     $opt_vhost = "  vhost => \"${vhost}\"\n"
   }
 
-  if $index {
+  if ($index != '') {
     validate_string($index)
     $opt_index = "  index => \"${index}\"\n"
   }

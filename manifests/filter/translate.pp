@@ -182,74 +182,74 @@ define logstash::filter::translate (
 
   validate_array($instances)
 
-  if $add_tag {
+  if ($add_tag != '') {
     validate_array($add_tag)
     $arr_add_tag = join($add_tag, '\', \'')
     $opt_add_tag = "  add_tag => ['${arr_add_tag}']\n"
   }
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $remove_tag {
+  if ($remove_tag != '') {
     validate_array($remove_tag)
     $arr_remove_tag = join($remove_tag, '\', \'')
     $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
   }
 
-  if $exact {
+  if ($exact != '') {
     validate_bool($exact)
     $opt_exact = "  exact => ${exact}\n"
   }
 
-  if $override {
+  if ($override != '') {
     validate_bool($override)
     $opt_override = "  override => ${override}\n"
   }
 
-  if $regex {
+  if ($regex != '') {
     validate_bool($regex)
     $opt_regex = "  regex => ${regex}\n"
   }
 
-  if $dictionary {
+  if ($dictionary != '') {
     validate_hash($dictionary)
     $arr_dictionary = inline_template('<%= dictionary.to_a.flatten.inspect %>')
     $opt_dictionary = "  dictionary => ${arr_dictionary}\n"
   }
 
-  if $add_field {
+  if ($add_field != '') {
     validate_hash($add_field)
     $arr_add_field = inline_template('<%= add_field.to_a.flatten.inspect %>')
     $opt_add_field = "  add_field => ${arr_add_field}\n"
   }
 
-  if $order {
+  if ($order != '') {
     if ! is_numeric($order) {
       fail("\"${order}\" is not a valid order parameter value")
     }
   }
 
-  if $dictionary_path {
+  if ($dictionary_path != '') {
     if $dictionary_path =~ /^puppet\:\/\// {
 
       validate_re($dictionary_path, '\Apuppet:\/\/')
 
-      $filenameArray = split($dictionary_path, '/')
-      $basefilename = $filenameArray[-1]
+      $filenameArray_dictionary_path = split($dictionary_path, '/')
+      $basefilename_dictionary_path = $filenameArray_dictionary_path[-1]
 
-      $opt_dictionary_path = "  dictionary_path => \"${filesdir}/${basefilename}\"\n"
+      $opt_dictionary_path = "  dictionary_path => \"${filesdir}/${basefilename_dictionary_path}\"\n"
 
-      file { "${filesdir}/${basefilename}":
+      file { "${filesdir}/${basefilename_dictionary_path}":
         source  => $dictionary_path,
         owner   => 'root',
         group   => 'root',
@@ -261,22 +261,22 @@ define logstash::filter::translate (
     }
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $destination {
+  if ($destination != '') {
     validate_string($destination)
     $opt_destination = "  destination => \"${destination}\"\n"
   }
 
-  if $fallback {
+  if ($fallback != '') {
     validate_string($fallback)
     $opt_fallback = "  fallback => \"${fallback}\"\n"
   }
 
-  if $field {
+  if ($field != '') {
     validate_string($field)
     $opt_field = "  field => \"${field}\"\n"
   }

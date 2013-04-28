@@ -133,30 +133,30 @@ define logstash::output::mongodb (
 
   validate_array($instances)
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $fields {
+  if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $isodate {
+  if ($isodate != '') {
     validate_bool($isodate)
     $opt_isodate = "  isodate => ${isodate}\n"
   }
 
-  if $retry_delay {
+  if ($retry_delay != '') {
     if ! is_numeric($retry_delay) {
       fail("\"${retry_delay}\" is not a valid retry_delay parameter value")
     } else {
@@ -164,7 +164,7 @@ define logstash::output::mongodb (
     }
   }
 
-  if $port {
+  if ($port != '') {
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
     } else {
@@ -172,32 +172,32 @@ define logstash::output::mongodb (
     }
   }
 
-  if $password {
+  if ($password != '') {
     validate_string($password)
     $opt_password = "  password => \"${password}\"\n"
   }
 
-  if $host {
+  if ($host != '') {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
   }
 
-  if $database {
+  if ($database != '') {
     validate_string($database)
     $opt_database = "  database => \"${database}\"\n"
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $user {
+  if ($user != '') {
     validate_string($user)
     $opt_user = "  user => \"${user}\"\n"
   }
 
-  if $collection {
+  if ($collection != '') {
     validate_string($collection)
     $opt_collection = "  collection => \"${collection}\"\n"
   }

@@ -138,19 +138,19 @@ define logstash::output::nagios_nsca (
   $filesdir = "${logstash::configdir}/files/output/nagios_nsca/${name}"
 
   #### Validate parameters
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $fields {
+  if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
@@ -159,7 +159,7 @@ define logstash::output::nagios_nsca (
 
   validate_array($instances)
 
-  if $port {
+  if ($port != '') {
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
     } else {
@@ -167,17 +167,17 @@ define logstash::output::nagios_nsca (
     }
   }
 
-  if $send_nsca_bin {
+  if ($send_nsca_bin != '') {
     if $send_nsca_bin =~ /^puppet\:\/\// {
 
       validate_re($send_nsca_bin, '\Apuppet:\/\/')
 
-      $filenameArray = split($send_nsca_bin, '/')
-      $basefilename = $filenameArray[-1]
+      $filenameArray_send_nsca_bin = split($send_nsca_bin, '/')
+      $basefilename_send_nsca_bin = $filenameArray_send_nsca_bin[-1]
 
-      $opt_send_nsca_bin = "  send_nsca_bin => \"${filesdir}/${basefilename}\"\n"
+      $opt_send_nsca_bin = "  send_nsca_bin => \"${filesdir}/${basefilename_send_nsca_bin}\"\n"
 
-      file { "${filesdir}/${basefilename}":
+      file { "${filesdir}/${basefilename_send_nsca_bin}":
         source  => $send_nsca_bin,
         owner   => 'root',
         group   => 'root',
@@ -189,17 +189,17 @@ define logstash::output::nagios_nsca (
     }
   }
 
-  if $send_nsca_config {
+  if ($send_nsca_config != '') {
     if $send_nsca_config =~ /^puppet\:\/\// {
 
       validate_re($send_nsca_config, '\Apuppet:\/\/')
 
-      $filenameArray = split($send_nsca_config, '/')
-      $basefilename = $filenameArray[-1]
+      $filenameArray_send_nsca_config = split($send_nsca_config, '/')
+      $basefilename_send_nsca_config = $filenameArray_send_nsca_config[-1]
 
-      $opt_send_nsca_config = "  send_nsca_config => \"${filesdir}/${basefilename}\"\n"
+      $opt_send_nsca_config = "  send_nsca_config => \"${filesdir}/${basefilename_send_nsca_config}\"\n"
 
-      file { "${filesdir}/${basefilename}":
+      file { "${filesdir}/${basefilename_send_nsca_config}":
         source  => $send_nsca_config,
         owner   => 'root',
         group   => 'root',
@@ -211,27 +211,27 @@ define logstash::output::nagios_nsca (
     }
   }
 
-  if $nagios_host {
+  if ($nagios_host != '') {
     validate_string($nagios_host)
     $opt_nagios_host = "  nagios_host => \"${nagios_host}\"\n"
   }
 
-  if $nagios_status {
+  if ($nagios_status != '') {
     validate_string($nagios_status)
     $opt_nagios_status = "  nagios_status => \"${nagios_status}\"\n"
   }
 
-  if $host {
+  if ($host != '') {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $nagios_service {
+  if ($nagios_service != '') {
     validate_string($nagios_service)
     $opt_nagios_service = "  nagios_service => \"${nagios_service}\"\n"
   }

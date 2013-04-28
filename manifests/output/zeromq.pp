@@ -126,19 +126,19 @@ define logstash::output::zeromq (
   $filesdir = "${logstash::configdir}/files/output/zeromq/${name}"
 
   #### Validate parameters
-  if $address {
+  if ($address != '') {
     validate_array($address)
     $arr_address = join($address, '\', \'')
     $opt_address = "  address => ['${arr_address}']\n"
   }
 
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $fields {
+  if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
@@ -147,19 +147,19 @@ define logstash::output::zeromq (
 
   validate_array($instances)
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $sockopt {
+  if ($sockopt != '') {
     validate_hash($sockopt)
     $arr_sockopt = inline_template('<%= sockopt.to_a.flatten.inspect %>')
     $opt_sockopt = "  sockopt => ${arr_sockopt}\n"
   }
 
-  if $topology {
+  if ($topology != '') {
     if ! ($topology in ['pushpull', 'pubsub', 'pair']) {
       fail("\"${topology}\" is not a valid topology parameter value")
     } else {
@@ -167,7 +167,7 @@ define logstash::output::zeromq (
     }
   }
 
-  if $mode {
+  if ($mode != '') {
     if ! ($mode in ['server', 'client']) {
       fail("\"${mode}\" is not a valid mode parameter value")
     } else {
@@ -175,12 +175,12 @@ define logstash::output::zeromq (
     }
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $topic {
+  if ($topic != '') {
     validate_string($topic)
     $opt_topic = "  topic => \"${topic}\"\n"
   }

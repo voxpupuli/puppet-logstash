@@ -182,79 +182,79 @@ define logstash::filter::kv (
 
   validate_array($instances)
 
-  if $add_tag {
+  if ($add_tag != '') {
     validate_array($add_tag)
     $arr_add_tag = join($add_tag, '\', \'')
     $opt_add_tag = "  add_tag => ['${arr_add_tag}']\n"
   }
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $remove_tag {
+  if ($remove_tag != '') {
     validate_array($remove_tag)
     $arr_remove_tag = join($remove_tag, '\', \'')
     $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
   }
 
-  if $fields {
+  if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $add_field {
+  if ($add_field != '') {
     validate_hash($add_field)
     $arr_add_field = inline_template('<%= add_field.to_a.flatten.inspect %>')
     $opt_add_field = "  add_field => ${arr_add_field}\n"
   }
 
-  if $order {
+  if ($order != '') {
     if ! is_numeric($order) {
       fail("\"${order}\" is not a valid order parameter value")
     }
   }
 
-  if $trim {
+  if ($trim != '') {
     validate_string($trim)
     $opt_trim = "  trim => \"${trim}\"\n"
   }
 
-  if $target {
+  if ($target != '') {
     validate_string($target)
     $opt_target = "  target => \"${target}\"\n"
   }
 
-  if $field_split {
+  if ($field_split != '') {
     validate_string($field_split)
     $opt_field_split = "  field_split => \"${field_split}\"\n"
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $value_split {
+  if ($value_split != '') {
     validate_string($value_split)
     $opt_value_split = "  value_split => \"${value_split}\"\n"
   }
 
-  if $prefix {
+  if ($prefix != '') {
     validate_string($prefix)
     $opt_prefix = "  prefix => \"${prefix}\"\n"
   }
 
-  if $source {
+  if ($source != '') {
     validate_string($source)
     $opt_source = "  source => \"${source}\"\n"
   }

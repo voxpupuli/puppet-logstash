@@ -133,49 +133,49 @@ define logstash::filter::anonymize (
 
   validate_array($instances)
 
-  if $add_tag {
+  if ($add_tag != '') {
     validate_array($add_tag)
     $arr_add_tag = join($add_tag, '\', \'')
     $opt_add_tag = "  add_tag => ['${arr_add_tag}']\n"
   }
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $fields {
+  if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $remove_tag {
+  if ($remove_tag != '') {
     validate_array($remove_tag)
     $arr_remove_tag = join($remove_tag, '\', \'')
     $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
   }
 
-  if $add_field {
+  if ($add_field != '') {
     validate_hash($add_field)
     $arr_add_field = inline_template('<%= add_field.to_a.flatten.inspect %>')
     $opt_add_field = "  add_field => ${arr_add_field}\n"
   }
 
-  if $order {
+  if ($order != '') {
     if ! is_numeric($order) {
       fail("\"${order}\" is not a valid order parameter value")
     }
   }
 
-  if $algorithm {
+  if ($algorithm != '') {
     if ! ($algorithm in ['SHA1', 'SHA256', 'SHA384', 'SHA512', 'MD5', 'MURMUR3', 'IPV4_NETWORK']) {
       fail("\"${algorithm}\" is not a valid algorithm parameter value")
     } else {
@@ -183,12 +183,12 @@ define logstash::filter::anonymize (
     }
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $key {
+  if ($key != '') {
     validate_string($key)
     $opt_key = "  key => \"${key}\"\n"
   }

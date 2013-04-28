@@ -188,56 +188,56 @@ define logstash::output::rabbitmq (
 
   validate_array($instances)
 
-  if $fields_headers {
+  if ($fields_headers != '') {
     validate_array($fields_headers)
     $arr_fields_headers = join($fields_headers, '\', \'')
     $opt_fields_headers = "  fields_headers => ['${arr_fields_headers}']\n"
   }
 
-  if $fields {
+  if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $verify_ssl {
+  if ($verify_ssl != '') {
     validate_bool($verify_ssl)
     $opt_verify_ssl = "  verify_ssl => ${verify_ssl}\n"
   }
 
-  if $durable {
+  if ($durable != '') {
     validate_bool($durable)
     $opt_durable = "  durable => ${durable}\n"
   }
 
-  if $ssl {
+  if ($ssl != '') {
     validate_bool($ssl)
     $opt_ssl = "  ssl => ${ssl}\n"
   }
 
-  if $persistent {
+  if ($persistent != '') {
     validate_bool($persistent)
     $opt_persistent = "  persistent => ${persistent}\n"
   }
 
-  if $debug {
+  if ($debug != '') {
     validate_bool($debug)
     $opt_debug = "  debug => ${debug}\n"
   }
 
-  if $frame_max {
+  if ($frame_max != '') {
     if ! is_numeric($frame_max) {
       fail("\"${frame_max}\" is not a valid frame_max parameter value")
     } else {
@@ -245,7 +245,7 @@ define logstash::output::rabbitmq (
     }
   }
 
-  if $port {
+  if ($port != '') {
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
     } else {
@@ -253,7 +253,7 @@ define logstash::output::rabbitmq (
     }
   }
 
-  if $exchange_type {
+  if ($exchange_type != '') {
     if ! ($exchange_type in ['fanout', 'direct', 'topic']) {
       fail("\"${exchange_type}\" is not a valid exchange_type parameter value")
     } else {
@@ -261,37 +261,37 @@ define logstash::output::rabbitmq (
     }
   }
 
-  if $password {
+  if ($password != '') {
     validate_string($password)
     $opt_password = "  password => \"${password}\"\n"
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $host {
+  if ($host != '') {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
   }
 
-  if $user {
+  if ($user != '') {
     validate_string($user)
     $opt_user = "  user => \"${user}\"\n"
   }
 
-  if $exchange {
+  if ($exchange != '') {
     validate_string($exchange)
     $opt_exchange = "  exchange => \"${exchange}\"\n"
   }
 
-  if $vhost {
+  if ($vhost != '') {
     validate_string($vhost)
     $opt_vhost = "  vhost => \"${vhost}\"\n"
   }
 
-  if $key {
+  if ($key != '') {
     validate_string($key)
     $opt_key = "  key => \"${key}\"\n"
   }

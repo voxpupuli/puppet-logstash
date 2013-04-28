@@ -113,45 +113,45 @@ define logstash::output::gemfire (
 
   validate_array($instances)
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $fields {
+  if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $key_format {
+  if ($key_format != '') {
     validate_string($key_format)
     $opt_key_format = "  key_format => \"${key_format}\"\n"
   }
 
-  if $region_name {
+  if ($region_name != '') {
     validate_string($region_name)
     $opt_region_name = "  region_name => \"${region_name}\"\n"
   }
 
-  if $cache_xml_file {
+  if ($cache_xml_file != '') {
     validate_string($cache_xml_file)
     $opt_cache_xml_file = "  cache_xml_file => \"${cache_xml_file}\"\n"
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $cache_name {
+  if ($cache_name != '') {
     validate_string($cache_name)
     $opt_cache_name = "  cache_name => \"${cache_name}\"\n"
   }

@@ -135,19 +135,19 @@ define logstash::output::loggly (
   $filesdir = "${logstash::configdir}/files/output/loggly/${name}"
 
   #### Validate parameters
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $fields {
+  if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
@@ -156,7 +156,7 @@ define logstash::output::loggly (
 
   validate_array($instances)
 
-  if $proxy_port {
+  if ($proxy_port != '') {
     if ! is_numeric($proxy_port) {
       fail("\"${proxy_port}\" is not a valid proxy_port parameter value")
     } else {
@@ -164,37 +164,37 @@ define logstash::output::loggly (
     }
   }
 
-  if $proxy_password {
+  if ($proxy_password != '') {
     validate_string($proxy_password)
     $opt_proxy_password = "  proxy_password => \"${proxy_password}\"\n"
   }
 
-  if $proxy_user {
+  if ($proxy_user != '') {
     validate_string($proxy_user)
     $opt_proxy_user = "  proxy_user => \"${proxy_user}\"\n"
   }
 
-  if $proxy_host {
+  if ($proxy_host != '') {
     validate_string($proxy_host)
     $opt_proxy_host = "  proxy_host => \"${proxy_host}\"\n"
   }
 
-  if $key {
+  if ($key != '') {
     validate_string($key)
     $opt_key = "  key => \"${key}\"\n"
   }
 
-  if $host {
+  if ($host != '') {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $proto {
+  if ($proto != '') {
     validate_string($proto)
     $opt_proto = "  proto => \"${proto}\"\n"
   }

@@ -201,53 +201,53 @@ define logstash::output::gelf (
 
   validate_array($instances)
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $ignore_metadata {
+  if ($ignore_metadata != '') {
     validate_array($ignore_metadata)
     $arr_ignore_metadata = join($ignore_metadata, '\', \'')
     $opt_ignore_metadata = "  ignore_metadata => ['${arr_ignore_metadata}']\n"
   }
 
-  if $fields {
+  if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $level {
+  if ($level != '') {
     validate_array($level)
     $arr_level = join($level, '\', \'')
     $opt_level = "  level => ['${arr_level}']\n"
   }
 
-  if $ship_tags {
+  if ($ship_tags != '') {
     validate_bool($ship_tags)
     $opt_ship_tags = "  ship_tags => ${ship_tags}\n"
   }
 
-  if $ship_metadata {
+  if ($ship_metadata != '') {
     validate_bool($ship_metadata)
     $opt_ship_metadata = "  ship_metadata => ${ship_metadata}\n"
   }
 
-  if $custom_fields {
+  if ($custom_fields != '') {
     validate_hash($custom_fields)
     $arr_custom_fields = inline_template('<%= custom_fields.to_a.flatten.inspect %>')
     $opt_custom_fields = "  custom_fields => ${arr_custom_fields}\n"
   }
 
-  if $chunksize {
+  if ($chunksize != '') {
     if ! is_numeric($chunksize) {
       fail("\"${chunksize}\" is not a valid chunksize parameter value")
     } else {
@@ -255,7 +255,7 @@ define logstash::output::gelf (
     }
   }
 
-  if $port {
+  if ($port != '') {
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
     } else {
@@ -263,42 +263,42 @@ define logstash::output::gelf (
     }
   }
 
-  if $sender {
+  if ($sender != '') {
     validate_string($sender)
     $opt_sender = "  sender => \"${sender}\"\n"
   }
 
-  if $line {
+  if ($line != '') {
     validate_string($line)
     $opt_line = "  line => \"${line}\"\n"
   }
 
-  if $facility {
+  if ($facility != '') {
     validate_string($facility)
     $opt_facility = "  facility => \"${facility}\"\n"
   }
 
-  if $file {
+  if ($file != '') {
     validate_string($file)
     $opt_file = "  file => \"${file}\"\n"
   }
 
-  if $short_message {
+  if ($short_message != '') {
     validate_string($short_message)
     $opt_short_message = "  short_message => \"${short_message}\"\n"
   }
 
-  if $host {
+  if ($host != '') {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $full_message {
+  if ($full_message != '') {
     validate_string($full_message)
     $opt_full_message = "  full_message => \"${full_message}\"\n"
   }

@@ -162,58 +162,58 @@ define logstash::output::graphite (
 
   validate_array($instances)
 
-  if $exclude_metrics {
+  if ($exclude_metrics != '') {
     validate_array($exclude_metrics)
     $arr_exclude_metrics = join($exclude_metrics, '\', \'')
     $opt_exclude_metrics = "  exclude_metrics => ['${arr_exclude_metrics}']\n"
   }
 
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $fields {
+  if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $include_metrics {
+  if ($include_metrics != '') {
     validate_array($include_metrics)
     $arr_include_metrics = join($include_metrics, '\', \'')
     $opt_include_metrics = "  include_metrics => ['${arr_include_metrics}']\n"
   }
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $fields_are_metrics {
+  if ($fields_are_metrics != '') {
     validate_bool($fields_are_metrics)
     $opt_fields_are_metrics = "  fields_are_metrics => ${fields_are_metrics}\n"
   }
 
-  if $resend_on_failure {
+  if ($resend_on_failure != '') {
     validate_bool($resend_on_failure)
     $opt_resend_on_failure = "  resend_on_failure => ${resend_on_failure}\n"
   }
 
-  if $debug {
+  if ($debug != '') {
     validate_bool($debug)
     $opt_debug = "  debug => ${debug}\n"
   }
 
-  if $metrics {
+  if ($metrics != '') {
     validate_hash($metrics)
     $arr_metrics = inline_template('<%= metrics.to_a.flatten.inspect %>')
     $opt_metrics = "  metrics => ${arr_metrics}\n"
   }
 
-  if $reconnect_interval {
+  if ($reconnect_interval != '') {
     if ! is_numeric($reconnect_interval) {
       fail("\"${reconnect_interval}\" is not a valid reconnect_interval parameter value")
     } else {
@@ -221,7 +221,7 @@ define logstash::output::graphite (
     }
   }
 
-  if $port {
+  if ($port != '') {
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
     } else {
@@ -229,17 +229,17 @@ define logstash::output::graphite (
     }
   }
 
-  if $metrics_format {
+  if ($metrics_format != '') {
     validate_string($metrics_format)
     $opt_metrics_format = "  metrics_format => \"${metrics_format}\"\n"
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $host {
+  if ($host != '') {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
   }

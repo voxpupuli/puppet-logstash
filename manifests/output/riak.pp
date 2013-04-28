@@ -154,31 +154,31 @@ define logstash::output::riak (
   $filesdir = "${logstash::configdir}/files/output/riak/${name}"
 
   #### Validate parameters
-  if $bucket {
+  if ($bucket != '') {
     validate_array($bucket)
     $arr_bucket = join($bucket, '\', \'')
     $opt_bucket = "  bucket => ['${arr_bucket}']\n"
   }
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $fields {
+  if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $indices {
+  if ($indices != '') {
     validate_array($indices)
     $arr_indices = join($indices, '\', \'')
     $opt_indices = "  indices => ['${arr_indices}']\n"
   }
 
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
@@ -187,35 +187,35 @@ define logstash::output::riak (
 
   validate_array($instances)
 
-  if $enable_ssl {
+  if ($enable_ssl != '') {
     validate_bool($enable_ssl)
     $opt_enable_ssl = "  enable_ssl => ${enable_ssl}\n"
   }
 
-  if $enable_search {
+  if ($enable_search != '') {
     validate_bool($enable_search)
     $opt_enable_search = "  enable_search => ${enable_search}\n"
   }
 
-  if $nodes {
+  if ($nodes != '') {
     validate_hash($nodes)
     $arr_nodes = inline_template('<%= nodes.to_a.flatten.inspect %>')
     $opt_nodes = "  nodes => ${arr_nodes}\n"
   }
 
-  if $bucket_props {
+  if ($bucket_props != '') {
     validate_hash($bucket_props)
     $arr_bucket_props = inline_template('<%= bucket_props.to_a.flatten.inspect %>')
     $opt_bucket_props = "  bucket_props => ${arr_bucket_props}\n"
   }
 
-  if $ssl_opts {
+  if ($ssl_opts != '') {
     validate_hash($ssl_opts)
     $arr_ssl_opts = inline_template('<%= ssl_opts.to_a.flatten.inspect %>')
     $opt_ssl_opts = "  ssl_opts => ${arr_ssl_opts}\n"
   }
 
-  if $proto {
+  if ($proto != '') {
     if ! ($proto in ['http', 'pb']) {
       fail("\"${proto}\" is not a valid proto parameter value")
     } else {
@@ -223,12 +223,12 @@ define logstash::output::riak (
     }
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $key_name {
+  if ($key_name != '') {
     validate_string($key_name)
     $opt_key_name = "  key_name => \"${key_name}\"\n"
   }

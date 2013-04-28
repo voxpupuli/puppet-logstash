@@ -158,31 +158,31 @@ define logstash::output::graphtastic (
 
   validate_array($instances)
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $fields {
+  if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $metrics {
+  if ($metrics != '') {
     validate_hash($metrics)
     $arr_metrics = inline_template('<%= metrics.to_a.flatten.inspect %>')
     $opt_metrics = "  metrics => ${arr_metrics}\n"
   }
 
-  if $port {
+  if ($port != '') {
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
     } else {
@@ -190,7 +190,7 @@ define logstash::output::graphtastic (
     }
   }
 
-  if $retries {
+  if ($retries != '') {
     if ! is_numeric($retries) {
       fail("\"${retries}\" is not a valid retries parameter value")
     } else {
@@ -198,7 +198,7 @@ define logstash::output::graphtastic (
     }
   }
 
-  if $batch_number {
+  if ($batch_number != '') {
     if ! is_numeric($batch_number) {
       fail("\"${batch_number}\" is not a valid batch_number parameter value")
     } else {
@@ -206,7 +206,7 @@ define logstash::output::graphtastic (
     }
   }
 
-  if $integration {
+  if ($integration != '') {
     if ! ($integration in ['udp', 'tcp', 'rmi', 'rest']) {
       fail("\"${integration}\" is not a valid integration parameter value")
     } else {
@@ -214,22 +214,22 @@ define logstash::output::graphtastic (
     }
   }
 
-  if $context {
+  if ($context != '') {
     validate_string($context)
     $opt_context = "  context => \"${context}\"\n"
   }
 
-  if $error_file {
+  if ($error_file != '') {
     validate_string($error_file)
     $opt_error_file = "  error_file => \"${error_file}\"\n"
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $host {
+  if ($host != '') {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
   }

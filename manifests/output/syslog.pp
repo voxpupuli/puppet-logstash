@@ -160,25 +160,25 @@ define logstash::output::syslog (
 
   validate_array($instances)
 
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $fields {
+  if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $port {
+  if ($port != '') {
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
     } else {
@@ -186,7 +186,7 @@ define logstash::output::syslog (
     }
   }
 
-  if $facility {
+  if ($facility != '') {
     if ! ($facility in ['kernel', 'user-level', 'mail', 'daemon', 'security/authorization', 'syslogd', 'line printer', 'network news', 'uucp', 'clock', 'security/authorization', 'ftp', 'ntp', 'log audit', 'log alert', 'clock', 'local0', 'local1', 'local2', 'local3', 'local4', 'local5', 'local6', 'local7']) {
       fail("\"${facility}\" is not a valid facility parameter value")
     } else {
@@ -194,7 +194,7 @@ define logstash::output::syslog (
     }
   }
 
-  if $severity {
+  if ($severity != '') {
     if ! ($severity in ['emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'informational', 'debug']) {
       fail("\"${severity}\" is not a valid severity parameter value")
     } else {
@@ -202,7 +202,7 @@ define logstash::output::syslog (
     }
   }
 
-  if $rfc {
+  if ($rfc != '') {
     if ! ($rfc in ['rfc3164', 'rfc5424']) {
       fail("\"${rfc}\" is not a valid rfc parameter value")
     } else {
@@ -210,7 +210,7 @@ define logstash::output::syslog (
     }
   }
 
-  if $protocol {
+  if ($protocol != '') {
     if ! ($protocol in ['tcp', 'udp']) {
       fail("\"${protocol}\" is not a valid protocol parameter value")
     } else {
@@ -218,37 +218,37 @@ define logstash::output::syslog (
     }
   }
 
-  if $procid {
+  if ($procid != '') {
     validate_string($procid)
     $opt_procid = "  procid => \"${procid}\"\n"
   }
 
-  if $msgid {
+  if ($msgid != '') {
     validate_string($msgid)
     $opt_msgid = "  msgid => \"${msgid}\"\n"
   }
 
-  if $sourcehost {
+  if ($sourcehost != '') {
     validate_string($sourcehost)
     $opt_sourcehost = "  sourcehost => \"${sourcehost}\"\n"
   }
 
-  if $host {
+  if ($host != '') {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
   }
 
-  if $timestamp {
+  if ($timestamp != '') {
     validate_string($timestamp)
     $opt_timestamp = "  timestamp => \"${timestamp}\"\n"
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $appname {
+  if ($appname != '') {
     validate_string($appname)
     $opt_appname = "  appname => \"${appname}\"\n"
   }

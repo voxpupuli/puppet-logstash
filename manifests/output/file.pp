@@ -118,19 +118,19 @@ define logstash::output::file (
   $filesdir = "${logstash::configdir}/files/output/file/${name}"
 
   #### Validate parameters
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $fields {
+  if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
@@ -139,12 +139,12 @@ define logstash::output::file (
 
   validate_array($instances)
 
-  if $gzip {
+  if ($gzip != '') {
     validate_bool($gzip)
     $opt_gzip = "  gzip => ${gzip}\n"
   }
 
-  if $flush_interval {
+  if ($flush_interval != '') {
     if ! is_numeric($flush_interval) {
       fail("\"${flush_interval}\" is not a valid flush_interval parameter value")
     } else {
@@ -152,22 +152,22 @@ define logstash::output::file (
     }
   }
 
-  if $max_size {
+  if ($max_size != '') {
     validate_string($max_size)
     $opt_max_size = "  max_size => \"${max_size}\"\n"
   }
 
-  if $path {
+  if ($path != '') {
     validate_string($path)
     $opt_path = "  path => \"${path}\"\n"
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $message_format {
+  if ($message_format != '') {
     validate_string($message_format)
     $opt_message_format = "  message_format => \"${message_format}\"\n"
   }

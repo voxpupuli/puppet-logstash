@@ -130,25 +130,25 @@ define logstash::output::elasticsearch_http (
 
   validate_array($instances)
 
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $fields {
+  if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $flush_size {
+  if ($flush_size != '') {
     if ! is_numeric($flush_size) {
       fail("\"${flush_size}\" is not a valid flush_size parameter value")
     } else {
@@ -156,7 +156,7 @@ define logstash::output::elasticsearch_http (
     }
   }
 
-  if $port {
+  if ($port != '') {
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
     } else {
@@ -164,27 +164,27 @@ define logstash::output::elasticsearch_http (
     }
   }
 
-  if $index {
+  if ($index != '') {
     validate_string($index)
     $opt_index = "  index => \"${index}\"\n"
   }
 
-  if $index_type {
+  if ($index_type != '') {
     validate_string($index_type)
     $opt_index_type = "  index_type => \"${index_type}\"\n"
   }
 
-  if $host {
+  if ($host != '') {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $document_id {
+  if ($document_id != '') {
     validate_string($document_id)
     $opt_document_id = "  document_id => \"${document_id}\"\n"
   }

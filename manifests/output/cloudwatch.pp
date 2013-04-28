@@ -271,36 +271,36 @@ define logstash::output::cloudwatch (
 
   validate_array($instances)
 
-  if $fields {
+  if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $use_ssl {
+  if ($use_ssl != '') {
     validate_bool($use_ssl)
     $opt_use_ssl = "  use_ssl => ${use_ssl}\n"
   }
 
-  if $dimensions {
+  if ($dimensions != '') {
     validate_hash($dimensions)
     $arr_dimensions = inline_template('<%= dimensions.to_a.flatten.inspect %>')
     $opt_dimensions = "  dimensions => ${arr_dimensions}\n"
   }
 
-  if $queue_size {
+  if ($queue_size != '') {
     if ! is_numeric($queue_size) {
       fail("\"${queue_size}\" is not a valid queue_size parameter value")
     } else {
@@ -308,7 +308,7 @@ define logstash::output::cloudwatch (
     }
   }
 
-  if $unit {
+  if ($unit != '') {
     if ! ($unit in ['Seconds', 'Microseconds', 'Milliseconds', 'Bytes', 'Kilobytes', 'Megabytes', 'Gigabytes', 'Terabytes', 'Bits', 'Kilobits', 'Megabits', 'Gigabits', 'Terabits', 'Percent', 'Count', 'Bytes/Second', 'Kilobytes/Second', 'Megabytes/Second', 'Gigabytes/Second', 'Terabytes/Second', 'Bits/Second', 'Kilobits/Second', 'Megabits/Second', 'Gigabits/Second', 'Terabits/Second', 'Count/Second', 'None']) {
       fail("\"${unit}\" is not a valid unit parameter value")
     } else {
@@ -316,7 +316,7 @@ define logstash::output::cloudwatch (
     }
   }
 
-  if $region {
+  if ($region != '') {
     if ! ($region in ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1', 'us-gov-west-1']) {
       fail("\"${region}\" is not a valid region parameter value")
     } else {
@@ -324,67 +324,67 @@ define logstash::output::cloudwatch (
     }
   }
 
-  if $namespace {
+  if ($namespace != '') {
     validate_string($namespace)
     $opt_namespace = "  namespace => \"${namespace}\"\n"
   }
 
-  if $field_unit {
+  if ($field_unit != '') {
     validate_string($field_unit)
     $opt_field_unit = "  field_unit => \"${field_unit}\"\n"
   }
 
-  if $metricname {
+  if ($metricname != '') {
     validate_string($metricname)
     $opt_metricname = "  metricname => \"${metricname}\"\n"
   }
 
-  if $field_value {
+  if ($field_value != '') {
     validate_string($field_value)
     $opt_field_value = "  field_value => \"${field_value}\"\n"
   }
 
-  if $field_namespace {
+  if ($field_namespace != '') {
     validate_string($field_namespace)
     $opt_field_namespace = "  field_namespace => \"${field_namespace}\"\n"
   }
 
-  if $field_metricname {
+  if ($field_metricname != '') {
     validate_string($field_metricname)
     $opt_field_metricname = "  field_metricname => \"${field_metricname}\"\n"
   }
 
-  if $secret_access_key {
+  if ($secret_access_key != '') {
     validate_string($secret_access_key)
     $opt_secret_access_key = "  secret_access_key => \"${secret_access_key}\"\n"
   }
 
-  if $field_dimensions {
+  if ($field_dimensions != '') {
     validate_string($field_dimensions)
     $opt_field_dimensions = "  field_dimensions => \"${field_dimensions}\"\n"
   }
 
-  if $timeframe {
+  if ($timeframe != '') {
     validate_string($timeframe)
     $opt_timeframe = "  timeframe => \"${timeframe}\"\n"
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $aws_credentials_file {
+  if ($aws_credentials_file != '') {
     validate_string($aws_credentials_file)
     $opt_aws_credentials_file = "  aws_credentials_file => \"${aws_credentials_file}\"\n"
   }
 
-  if $access_key_id {
+  if ($access_key_id != '') {
     validate_string($access_key_id)
     $opt_access_key_id = "  access_key_id => \"${access_key_id}\"\n"
   }
 
-  if $value {
+  if ($value != '') {
     validate_string($value)
     $opt_value = "  value => \"${value}\"\n"
   }

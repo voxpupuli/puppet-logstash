@@ -122,31 +122,31 @@ define logstash::output::pagerduty (
 
   validate_array($instances)
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $fields {
+  if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $details {
+  if ($details != '') {
     validate_hash($details)
     $arr_details = inline_template('<%= details.to_a.flatten.inspect %>')
     $opt_details = "  details => ${arr_details}\n"
   }
 
-  if $event_type {
+  if ($event_type != '') {
     if ! ($event_type in ['trigger', 'acknowledge', 'resolve']) {
       fail("\"${event_type}\" is not a valid event_type parameter value")
     } else {
@@ -154,27 +154,27 @@ define logstash::output::pagerduty (
     }
   }
 
-  if $incident_key {
+  if ($incident_key != '') {
     validate_string($incident_key)
     $opt_incident_key = "  incident_key => \"${incident_key}\"\n"
   }
 
-  if $service_key {
+  if ($service_key != '') {
     validate_string($service_key)
     $opt_service_key = "  service_key => \"${service_key}\"\n"
   }
 
-  if $pdurl {
+  if ($pdurl != '') {
     validate_string($pdurl)
     $opt_pdurl = "  pdurl => \"${pdurl}\"\n"
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $description {
+  if ($description != '') {
     validate_string($description)
     $opt_description = "  description => \"${description}\"\n"
   }

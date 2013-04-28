@@ -248,91 +248,91 @@ define logstash::filter::grok (
 
   validate_array($instances)
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $add_tag {
+  if ($add_tag != '') {
     validate_array($add_tag)
     $arr_add_tag = join($add_tag, '\', \'')
     $opt_add_tag = "  add_tag => ['${arr_add_tag}']\n"
   }
 
-  if $remove_tag {
+  if ($remove_tag != '') {
     validate_array($remove_tag)
     $arr_remove_tag = join($remove_tag, '\', \'')
     $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
   }
 
-  if $patterns_dir {
+  if ($patterns_dir != '') {
     validate_array($patterns_dir)
     $arr_patterns_dir = join($patterns_dir, '\', \'')
     $opt_patterns_dir = "  patterns_dir => ['${arr_patterns_dir}']\n"
   }
 
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $pattern {
+  if ($pattern != '') {
     validate_array($pattern)
     $arr_pattern = join($pattern, '\', \'')
     $opt_pattern = "  pattern => ['${arr_pattern}']\n"
   }
 
-  if $singles {
+  if ($singles != '') {
     validate_bool($singles)
     $opt_singles = "  singles => ${singles}\n"
   }
 
-  if $named_captures_only {
+  if ($named_captures_only != '') {
     validate_bool($named_captures_only)
     $opt_named_captures_only = "  named_captures_only => ${named_captures_only}\n"
   }
 
-  if $keep_empty_captures {
+  if ($keep_empty_captures != '') {
     validate_bool($keep_empty_captures)
     $opt_keep_empty_captures = "  keep_empty_captures => ${keep_empty_captures}\n"
   }
 
-  if $drop_if_match {
+  if ($drop_if_match != '') {
     validate_bool($drop_if_match)
     $opt_drop_if_match = "  drop_if_match => ${drop_if_match}\n"
   }
 
-  if $break_on_match {
+  if ($break_on_match != '') {
     validate_bool($break_on_match)
     $opt_break_on_match = "  break_on_match => ${break_on_match}\n"
   }
 
-  if $tag_on_failure {
+  if ($tag_on_failure != '') {
     validate_bool($tag_on_failure)
     $opt_tag_on_failure = "  tag_on_failure => ${tag_on_failure}\n"
   }
 
-  if $match {
+  if ($match != '') {
     validate_hash($match)
     $arr_match = inline_template('<%= match.to_a.flatten.inspect %>')
     $opt_match = "  match => ${arr_match}\n"
   }
 
-  if $add_field {
+  if ($add_field != '') {
     validate_hash($add_field)
     $arr_add_field = inline_template('<%= add_field.to_a.flatten.inspect %>')
     $opt_add_field = "  add_field => ${arr_add_field}\n"
   }
 
-  if $order {
+  if ($order != '') {
     if ! is_numeric($order) {
       fail("\"${order}\" is not a valid order parameter value")
     }
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }

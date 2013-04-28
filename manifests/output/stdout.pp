@@ -97,30 +97,30 @@ define logstash::output::stdout (
 
   validate_array($instances)
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $fields {
+  if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $debug {
+  if ($debug != '') {
     validate_bool($debug)
     $opt_debug = "  debug => ${debug}\n"
   }
 
-  if $debug_format {
+  if ($debug_format != '') {
     if ! ($debug_format in ['ruby', 'json', 'dots']) {
       fail("\"${debug_format}\" is not a valid debug_format parameter value")
     } else {
@@ -128,12 +128,12 @@ define logstash::output::stdout (
     }
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $message {
+  if ($message != '') {
     validate_string($message)
     $opt_message = "  message => \"${message}\"\n"
   }

@@ -217,109 +217,110 @@ define logstash::filter::mutate (
 
   validate_array($instances)
 
-  if $add_tag {
+  if ($add_tag != '') {
     validate_array($add_tag)
     $arr_add_tag = join($add_tag, '\', \'')
     $opt_add_tag = "  add_tag => ['${arr_add_tag}']\n"
   }
 
-  if $uppercase {
+  if ($uppercase != '') {
     validate_array($uppercase)
     $arr_uppercase = join($uppercase, '\', \'')
     $opt_uppercase = "  uppercase => ['${arr_uppercase}']\n"
   }
 
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $gsub {
+  if ($gsub != '') {
     validate_array($gsub)
     $arr_gsub = join($gsub, '\', \'')
     $opt_gsub = "  gsub => ['${arr_gsub}']\n"
   }
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if $lowercase {
+  if ($lowercase != '') {
     validate_array($lowercase)
     $arr_lowercase = join($lowercase, '\', \'')
     $opt_lowercase = "  lowercase => ['${arr_lowercase}']\n"
   }
 
-  if $strip {
+  if ($strip != '') {
     validate_array($strip)
     $arr_strip = join($strip, '\', \'')
     $opt_strip = "  strip => ['${arr_strip}']\n"
   }
 
-  if $remove {
+  if ($remove != '') {
     validate_array($remove)
     $arr_remove = join($remove, '\', \'')
     $opt_remove = "  remove => ['${arr_remove}']\n"
   }
 
-  if $remove_tag {
+  if ($remove_tag != '') {
     validate_array($remove_tag)
     $arr_remove_tag = join($remove_tag, '\', \'')
     $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
   }
 
-  if $rename {
+  if ($rename != '') {
     validate_hash($rename)
     $arr_rename = inline_template('<%= rename.to_a.flatten.inspect %>')
     $opt_rename = "  rename => ${arr_rename}\n"
   }
 
-  if $replace {
+  if ($replace != '') {
     validate_hash($replace)
     $arr_replace = inline_template('<%= replace.to_a.flatten.inspect %>')
     $opt_replace = "  replace => ${arr_replace}\n"
   }
 
-  if $split {
+  if ($split != '') {
     validate_hash($split)
-    $arr_split = inline_template('<%= split.to_a.flatten.inspect %>')
+    $var_split = $split
+    $arr_split = inline_template('<%= var_split.to_a.flatten.inspect %>')
     $opt_split = "  split => ${arr_split}\n"
   }
 
-  if $merge {
+  if ($merge != '') {
     validate_hash($merge)
     $arr_merge = inline_template('<%= merge.to_a.flatten.inspect %>')
     $opt_merge = "  merge => ${arr_merge}\n"
   }
 
-  if $convert {
+  if ($convert != '') {
     validate_hash($convert)
     $arr_convert = inline_template('<%= convert.to_a.flatten.inspect %>')
     $opt_convert = "  convert => ${arr_convert}\n"
   }
 
-  if $add_field {
+  if ($add_field != '') {
     validate_hash($add_field)
     $arr_add_field = inline_template('<%= add_field.to_a.flatten.inspect %>')
     $opt_add_field = "  add_field => ${arr_add_field}\n"
   }
 
-  if $join {
+  if ($join != '') {
     validate_hash($join)
     $arr_join = inline_template('<%= join.to_a.flatten.inspect %>')
     $opt_join = "  join => ${arr_join}\n"
   }
 
-  if $order {
+  if ($order != '') {
     if ! is_numeric($order) {
       fail("\"${order}\" is not a valid order parameter value")
     }
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }

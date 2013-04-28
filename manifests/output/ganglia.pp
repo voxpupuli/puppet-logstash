@@ -135,19 +135,19 @@ define logstash::output::ganglia (
   $filesdir = "${logstash::configdir}/files/output/ganglia/${name}"
 
   #### Validate parameters
-  if $exclude_tags {
+  if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if $fields {
+  if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
     $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if $tags {
+  if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
@@ -156,7 +156,7 @@ define logstash::output::ganglia (
 
   validate_array($instances)
 
-  if $max_interval {
+  if ($max_interval != '') {
     if ! is_numeric($max_interval) {
       fail("\"${max_interval}\" is not a valid max_interval parameter value")
     } else {
@@ -164,7 +164,7 @@ define logstash::output::ganglia (
     }
   }
 
-  if $port {
+  if ($port != '') {
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
     } else {
@@ -172,7 +172,7 @@ define logstash::output::ganglia (
     }
   }
 
-  if $lifetime {
+  if ($lifetime != '') {
     if ! is_numeric($lifetime) {
       fail("\"${lifetime}\" is not a valid lifetime parameter value")
     } else {
@@ -180,7 +180,7 @@ define logstash::output::ganglia (
     }
   }
 
-  if $metric_type {
+  if ($metric_type != '') {
     if ! ($metric_type in ['string', 'int8', 'uint8', 'int16', 'uint16', 'int32', 'uint32', 'float', 'double']) {
       fail("\"${metric_type}\" is not a valid metric_type parameter value")
     } else {
@@ -188,27 +188,27 @@ define logstash::output::ganglia (
     }
   }
 
-  if $metric {
+  if ($metric != '') {
     validate_string($metric)
     $opt_metric = "  metric => \"${metric}\"\n"
   }
 
-  if $type {
+  if ($type != '') {
     validate_string($type)
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if $units {
+  if ($units != '') {
     validate_string($units)
     $opt_units = "  units => \"${units}\"\n"
   }
 
-  if $value {
+  if ($value != '') {
     validate_string($value)
     $opt_value = "  value => \"${value}\"\n"
   }
 
-  if $host {
+  if ($host != '') {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
   }
