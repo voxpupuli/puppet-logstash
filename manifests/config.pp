@@ -27,4 +27,14 @@ class logstash::config {
   ## Create and manage the config directories for the different instances
   logstash::configdir { $logstash::instances:; }
 
+  $tmp_dir     = "${logstash::installpath}/tmp"
+
+  #### Create the tmp dir
+  exec { "create_tmp_dir_${name}":
+    cwd     => '/',
+    path    => ['/usr/bin', '/bin'],
+    command => "mkdir -p ${tmp_dir}",
+    creates => $tmp_dir;
+  }
+
 }
