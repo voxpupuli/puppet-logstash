@@ -42,7 +42,7 @@ JAVA=/usr/bin/java
 LS_HOME=<%= scope.lookupvar('logstash::installpath') %>
 
 # Additional Java OPTS
-LS_JAVA_OPTS=" -Djava.io.tmpdir=/var/logstash/"
+LS_JAVA_OPTS=" -Djava.io.tmpdir=$LS_HOME/tmp"
 
 # logstash log directory
 LOG_DIR=/var/log/logstash
