@@ -6,6 +6,18 @@ http://www.logstash.net
 
 [![Build Status](https://travis-ci.org/electrical/puppet-logstash.png?branch=master)](https://travis-ci.org/electrical/puppet-logstash)
 
+## Versions
+
+This overview shows you which puppet module and logstash version work together.
+
+  ----------------------------
+  | Puppet module | Logstash |
+  ----------------------------
+  | 0.0.1 - 0.1.0 | 1.1.9    |
+  ----------------------------
+  | 0.2.0         | 1.1.10   |
+  ----------------------------
+
 ## Note
 
 From version 0.0.6 to 0.1.0 the following has been removed/changed:
@@ -111,3 +123,15 @@ If you want a specific java package/version:
 Every plugin in Logstash has its own define file.
 
 For more information check the puppet files in the input, output and filter directories.
+
+### File transfers
+
+From version 0.2.0 its now possible to automatically transfer files to the host for plugins that require a file.
+
+For example lumberjack requires a certificate, so you can do the following:
+
+     logstash::input::lumberjack { 'lumberjack_input':
+       ssl_certificate => 'puppet:///path/to/ssl.cert':
+     }
+
+the file 'ssl.cert' will be placed in a pre-defined place and set in the configuration.

@@ -1,3 +1,11 @@
+0.2.0 ( xxx xx, 2013 )
+  Update defines for logstash 1.1.10
+  New feature for plugins to automatically transfer files ( Issue #24 )
+  Create correct tmp dir ( Issue #35 )
+  Change file modes to be more secure ( Issue #36 )
+  Update defines for better input validation ( Issue #43 )
+  Adding rspec tests for plugin defines
+
 0.1.0 ( Mar 25, 2013 )
   Don't backup the Jar file or the symlink ( Issue #25 by Garth Kidd )
   First implementation of the multi-instance feature. This will break certain functionality.
