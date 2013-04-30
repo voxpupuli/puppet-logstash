@@ -1,4 +1,4 @@
-0.2.0 ( xxx xx, 2013 )
+0.2.0 ( Apr 30, 2013 )
   Update defines for logstash 1.1.10
   New feature for plugins to automatically transfer files ( Issue #24 )
   Create correct tmp dir ( Issue #35 )
