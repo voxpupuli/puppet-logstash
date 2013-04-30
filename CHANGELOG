@@ -5,6 +5,7 @@
   Change file modes to be more secure ( Issue #36 )
   Update defines for better input validation ( Issue #43 )
   Adding rspec tests for plugin defines
+  Fix tmp dir Debian init script ( PR #44 by Dan Carley )
 
 0.1.0 ( Mar 25, 2013 )
   Don't backup the Jar file or the symlink ( Issue #25 by Garth Kidd )
