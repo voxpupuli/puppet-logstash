@@ -208,8 +208,8 @@ define logstash::filter::dns (
   file { $conffiles:
     ensure  => present,
     content => "filter {\n dns {\n${opt_action}${opt_add_field}${opt_add_tag}${opt_exclude_tags}${opt_remove_tag}${opt_resolve}${opt_reverse}${opt_tags}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

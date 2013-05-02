@@ -211,8 +211,8 @@ define logstash::filter::syslog_pri (
   file { $conffiles:
     ensure  => present,
     content => "filter {\n syslog_pri {\n${opt_add_field}${opt_add_tag}${opt_exclude_tags}${opt_facility_labels}${opt_remove_tag}${opt_severity_labels}${opt_syslog_pri_field_name}${opt_tags}${opt_type}${opt_use_labels} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

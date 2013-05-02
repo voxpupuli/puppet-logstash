@@ -147,8 +147,8 @@ define logstash::output::nagios (
 
       file { "${filesdir}/${basefilename_commandfile}":
         source  => $commandfile,
-        owner   => 'root',
-        group   => 'root',
+        owner   => $logstash::logstash_user,
+        group   => $logstash::logstash_group,
         mode    => '0640',
         require => File[$filesdir]
       }
@@ -174,8 +174,8 @@ define logstash::output::nagios (
   #### Manage the files directory
   file { $filesdir:
     ensure  => directory,
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     purge   => true,
     recurse => true,
@@ -188,8 +188,8 @@ define logstash::output::nagios (
   file { $conffiles:
     ensure  => present,
     content => "output {\n nagios {\n${opt_commandfile}${opt_exclude_tags}${opt_fields}${opt_nagios_level}${opt_tags}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

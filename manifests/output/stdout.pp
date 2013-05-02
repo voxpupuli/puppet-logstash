@@ -143,8 +143,8 @@ define logstash::output::stdout (
   file { $conffiles:
     ensure  => present,
     content => "output {\n stdout {\n${opt_debug}${opt_debug_format}${opt_exclude_tags}${opt_fields}${opt_message}${opt_tags}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

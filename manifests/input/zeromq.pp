@@ -289,8 +289,8 @@ define logstash::input::zeromq (
   file { $conffiles:
     ensure  => present,
     content => "input {\n zeromq {\n${opt_add_field}${opt_address}${opt_charset}${opt_debug}${opt_format}${opt_message_format}${opt_mode}${opt_sender}${opt_sockopt}${opt_tags}${opt_topic}${opt_topology}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

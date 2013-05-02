@@ -206,8 +206,8 @@ define logstash::output::irc (
   file { $conffiles:
     ensure  => present,
     content => "output {\n irc {\n${opt_channels}${opt_exclude_tags}${opt_fields}${opt_format}${opt_host}${opt_nick}${opt_password}${opt_port}${opt_real}${opt_tags}${opt_type}${opt_user} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

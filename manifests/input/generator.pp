@@ -254,8 +254,8 @@ define logstash::input::generator (
   file { $conffiles:
     ensure  => present,
     content => "input {\n generator {\n${opt_add_field}${opt_charset}${opt_count}${opt_debug}${opt_format}${opt_lines}${opt_message}${opt_message_format}${opt_tags}${opt_threads}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

@@ -152,8 +152,8 @@ define logstash::output::zabbix (
 
       file { "${filesdir}/${basefilename_zabbix_sender}":
         source  => $zabbix_sender,
-        owner   => 'root',
-        group   => 'root',
+        owner   => $logstash::logstash_user,
+        group   => $logstash::logstash_group,
         mode    => '0640',
         require => File[$filesdir]
       }
@@ -184,8 +184,8 @@ define logstash::output::zabbix (
   #### Manage the files directory
   file { $filesdir:
     ensure  => directory,
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     purge   => true,
     recurse => true,
@@ -198,8 +198,8 @@ define logstash::output::zabbix (
   file { $conffiles:
     ensure  => present,
     content => "output {\n zabbix {\n${opt_exclude_tags}${opt_fields}${opt_host}${opt_port}${opt_tags}${opt_type}${opt_zabbix_sender} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

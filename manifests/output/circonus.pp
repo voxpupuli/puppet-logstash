@@ -149,8 +149,8 @@ define logstash::output::circonus (
   file { $conffiles:
     ensure  => present,
     content => "output {\n circonus {\n${opt_annotation}${opt_api_token}${opt_app_name}${opt_exclude_tags}${opt_fields}${opt_tags}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

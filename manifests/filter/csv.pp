@@ -212,8 +212,8 @@ define logstash::filter::csv (
   file { $conffiles:
     ensure  => present,
     content => "filter {\n csv {\n${opt_add_field}${opt_add_tag}${opt_columns}${opt_exclude_tags}${opt_remove_tag}${opt_separator}${opt_source}${opt_tags}${opt_target}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

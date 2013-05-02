@@ -204,8 +204,8 @@ define logstash::output::loggly (
   file { $conffiles:
     ensure  => present,
     content => "output {\n loggly {\n${opt_exclude_tags}${opt_fields}${opt_host}${opt_key}${opt_proto}${opt_proxy_host}${opt_proxy_password}${opt_proxy_port}${opt_proxy_user}${opt_tags}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

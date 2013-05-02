@@ -151,8 +151,8 @@ define logstash::output::pipe (
   file { $conffiles:
     ensure  => present,
     content => "output {\n pipe {\n${opt_command}${opt_exclude_tags}${opt_fields}${opt_message_format}${opt_tags}${opt_ttl}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

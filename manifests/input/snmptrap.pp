@@ -236,8 +236,8 @@ define logstash::input::snmptrap (
   file { $conffiles:
     ensure  => present,
     content => "input {\n snmptrap {\n${opt_add_field}${opt_charset}${opt_community}${opt_debug}${opt_format}${opt_host}${opt_message_format}${opt_port}${opt_tags}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

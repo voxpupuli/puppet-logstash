@@ -206,8 +206,8 @@ define logstash::filter::grep (
   file { $conffiles:
     ensure  => present,
     content => "filter {\n grep {\n${opt_add_field}${opt_add_tag}${opt_drop}${opt_exclude_tags}${opt_match}${opt_negate}${opt_remove_tag}${opt_tags}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

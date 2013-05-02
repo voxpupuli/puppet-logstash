@@ -323,8 +323,8 @@ define logstash::input::redis (
   file { $conffiles:
     ensure  => present,
     content => "input {\n redis {\n${opt_add_field}${opt_batch_count}${opt_charset}${opt_data_type}${opt_db}${opt_debug}${opt_format}${opt_host}${opt_key}${opt_message_format}${opt_password}${opt_port}${opt_tags}${opt_threads}${opt_timeout}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

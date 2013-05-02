@@ -239,8 +239,8 @@ define logstash::output::graphtastic (
   file { $conffiles:
     ensure  => present,
     content => "output {\n graphtastic {\n${opt_batch_number}${opt_context}${opt_error_file}${opt_exclude_tags}${opt_fields}${opt_host}${opt_integration}${opt_metrics}${opt_port}${opt_retries}${opt_tags}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

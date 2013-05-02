@@ -207,8 +207,8 @@ define logstash::output::mongodb (
   file { $conffiles:
     ensure  => present,
     content => "output {\n mongodb {\n${opt_collection}${opt_database}${opt_exclude_tags}${opt_fields}${opt_host}${opt_isodate}${opt_password}${opt_port}${opt_retry_delay}${opt_tags}${opt_type}${opt_user} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

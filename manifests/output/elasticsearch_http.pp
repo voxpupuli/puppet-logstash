@@ -194,8 +194,8 @@ define logstash::output::elasticsearch_http (
   file { $conffiles:
     ensure  => present,
     content => "output {\n elasticsearch_http {\n${opt_document_id}${opt_exclude_tags}${opt_fields}${opt_flush_size}${opt_host}${opt_index}${opt_index_type}${opt_port}${opt_tags}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

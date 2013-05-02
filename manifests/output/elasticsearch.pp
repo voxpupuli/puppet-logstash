@@ -271,8 +271,8 @@ define logstash::output::elasticsearch (
   file { $conffiles:
     ensure  => present,
     content => "output {\n elasticsearch {\n${opt_bind_host}${opt_cluster}${opt_document_id}${opt_embedded}${opt_embedded_http_port}${opt_exclude_tags}${opt_fields}${opt_host}${opt_index}${opt_index_type}${opt_max_inflight_requests}${opt_node_name}${opt_port}${opt_tags}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

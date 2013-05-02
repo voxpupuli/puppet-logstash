@@ -241,8 +241,8 @@ define logstash::input::lumberjack2 (
 
       file { "${filesdir}/${basefilename_their_public_key}":
         source  => $their_public_key,
-        owner   => 'root',
-        group   => 'root',
+        owner   => $logstash::logstash_user,
+        group   => $logstash::logstash_group,
         mode    => '0640',
         require => File[$filesdir]
       }
@@ -263,8 +263,8 @@ define logstash::input::lumberjack2 (
 
       file { "${filesdir}/${basefilename_my_secret_key}":
         source  => $my_secret_key,
-        owner   => 'root',
-        group   => 'root',
+        owner   => $logstash::logstash_user,
+        group   => $logstash::logstash_group,
         mode    => '0640',
         require => File[$filesdir]
       }
@@ -300,8 +300,8 @@ define logstash::input::lumberjack2 (
   #### Manage the files directory
   file { $filesdir:
     ensure  => directory,
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     purge   => true,
     recurse => true,
@@ -314,8 +314,8 @@ define logstash::input::lumberjack2 (
   file { $conffiles:
     ensure  => present,
     content => "input {\n lumberjack2 {\n${opt_add_field}${opt_charset}${opt_debug}${opt_format}${opt_host}${opt_message_format}${opt_my_secret_key}${opt_port}${opt_tags}${opt_their_public_key}${opt_threads}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

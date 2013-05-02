@@ -249,8 +249,8 @@ define logstash::output::graphite (
   file { $conffiles:
     ensure  => present,
     content => "output {\n graphite {\n${opt_debug}${opt_exclude_metrics}${opt_exclude_tags}${opt_fields}${opt_fields_are_metrics}${opt_host}${opt_include_metrics}${opt_metrics}${opt_metrics_format}${opt_port}${opt_reconnect_interval}${opt_resend_on_failure}${opt_tags}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
