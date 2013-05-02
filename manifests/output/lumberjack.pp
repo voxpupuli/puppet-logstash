@@ -156,8 +156,8 @@ define logstash::output::lumberjack (
 
       file { "${filesdir}/${basefilename_ssl_certificate}":
         source  => $ssl_certificate,
-        owner   => 'root',
-        group   => 'root',
+        owner   => $logstash::logstash_user,
+        group   => $logstash::logstash_group,
         mode    => '0640',
         require => File[$filesdir]
       }
@@ -183,8 +183,8 @@ define logstash::output::lumberjack (
   #### Manage the files directory
   file { $filesdir:
     ensure  => directory,
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     purge   => true,
     recurse => true,
@@ -197,8 +197,8 @@ define logstash::output::lumberjack (
   file { $conffiles:
     ensure  => present,
     content => "output {\n lumberjack {\n${opt_exclude_tags}${opt_fields}${opt_hosts}${opt_port}${opt_ssl_certificate}${opt_tags}${opt_type}${opt_window_size} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

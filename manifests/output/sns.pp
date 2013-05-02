@@ -218,8 +218,8 @@ define logstash::output::sns (
   file { $conffiles:
     ensure  => present,
     content => "output {\n sns {\n${opt_access_key_id}${opt_arn}${opt_aws_credentials_file}${opt_exclude_tags}${opt_fields}${opt_format}${opt_publish_boot_message_arn}${opt_region}${opt_secret_access_key}${opt_tags}${opt_type}${opt_use_ssl} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

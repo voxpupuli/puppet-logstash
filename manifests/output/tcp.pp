@@ -167,8 +167,8 @@ define logstash::output::tcp (
   file { $conffiles:
     ensure  => present,
     content => "output {\n tcp {\n${opt_exclude_tags}${opt_fields}${opt_host}${opt_message_format}${opt_mode}${opt_port}${opt_tags}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

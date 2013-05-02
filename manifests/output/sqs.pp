@@ -200,8 +200,8 @@ define logstash::output::sqs (
   file { $conffiles:
     ensure  => present,
     content => "output {\n sqs {\n${opt_access_key_id}${opt_aws_credentials_file}${opt_exclude_tags}${opt_fields}${opt_queue}${opt_region}${opt_secret_access_key}${opt_tags}${opt_type}${opt_use_ssl} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

@@ -203,8 +203,8 @@ define logstash::output::librato (
   file { $conffiles:
     ensure  => present,
     content => "output {\n librato {\n${opt_account_id}${opt_annotation}${opt_api_token}${opt_batch_size}${opt_counter}${opt_exclude_tags}${opt_fields}${opt_gauge}${opt_tags}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

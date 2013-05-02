@@ -321,8 +321,8 @@ define logstash::output::redis (
   file { $conffiles:
     ensure  => present,
     content => "output {\n redis {\n${opt_batch}${opt_batch_events}${opt_batch_timeout}${opt_congestion_interval}${opt_congestion_threshold}${opt_data_type}${opt_db}${opt_exclude_tags}${opt_fields}${opt_host}${opt_key}${opt_password}${opt_port}${opt_reconnect_interval}${opt_shuffle_hosts}${opt_tags}${opt_timeout}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

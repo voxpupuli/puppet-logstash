@@ -184,8 +184,8 @@ define logstash::output::pagerduty (
   file { $conffiles:
     ensure  => present,
     content => "output {\n pagerduty {\n${opt_description}${opt_details}${opt_event_type}${opt_exclude_tags}${opt_fields}${opt_incident_key}${opt_pdurl}${opt_service_key}${opt_tags}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

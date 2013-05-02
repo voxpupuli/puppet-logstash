@@ -237,8 +237,8 @@ define logstash::input::gelf (
   file { $conffiles:
     ensure  => present,
     content => "input {\n gelf {\n${opt_add_field}${opt_charset}${opt_debug}${opt_format}${opt_host}${opt_message_format}${opt_port}${opt_remap}${opt_tags}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

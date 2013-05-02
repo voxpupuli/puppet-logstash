@@ -198,8 +198,8 @@ define logstash::output::riemann (
   file { $conffiles:
     ensure  => present,
     content => "output {\n riemann {\n${opt_debug}${opt_exclude_tags}${opt_fields}${opt_host}${opt_port}${opt_protocol}${opt_riemann_event}${opt_sender}${opt_tags}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

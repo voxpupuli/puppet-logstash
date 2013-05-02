@@ -25,8 +25,8 @@
 class logstash::package {
 
   File {
-    owner => 'root',
-    group => 'root',
+    owner => $logstash::logstash_user,
+    group => $logstash::logstash_group,
     mode  => '0644'
   }
 

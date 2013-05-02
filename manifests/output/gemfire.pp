@@ -161,8 +161,8 @@ define logstash::output::gemfire (
   file { $conffiles:
     ensure  => present,
     content => "output {\n gemfire {\n${opt_cache_name}${opt_cache_xml_file}${opt_exclude_tags}${opt_fields}${opt_key_format}${opt_region_name}${opt_tags}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

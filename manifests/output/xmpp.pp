@@ -185,8 +185,8 @@ define logstash::output::xmpp (
   file { $conffiles:
     ensure  => present,
     content => "output {\n xmpp {\n${opt_exclude_tags}${opt_fields}${opt_host}${opt_message}${opt_password}${opt_rooms}${opt_tags}${opt_type}${opt_user}${opt_users} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

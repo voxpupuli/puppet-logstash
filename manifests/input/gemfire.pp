@@ -292,8 +292,8 @@ define logstash::input::gemfire (
   file { $conffiles:
     ensure  => present,
     content => "input {\n gemfire {\n${opt_add_field}${opt_cache_name}${opt_cache_xml_file}${opt_charset}${opt_debug}${opt_format}${opt_interest_regexp}${opt_message_format}${opt_query}${opt_region_name}${opt_serialization}${opt_tags}${opt_threads}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

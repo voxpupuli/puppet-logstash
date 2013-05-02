@@ -197,8 +197,8 @@ define logstash::filter::geoip (
 
       file { "${filesdir}/${basefilename_database}":
         source  => $database,
-        owner   => 'root',
-        group   => 'root',
+        owner   => $logstash::logstash_user,
+        group   => $logstash::logstash_group,
         mode    => '0640',
         require => File[$filesdir]
       }
@@ -229,8 +229,8 @@ define logstash::filter::geoip (
   #### Manage the files directory
   file { $filesdir:
     ensure  => directory,
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     purge   => true,
     recurse => true,
@@ -243,8 +243,8 @@ define logstash::filter::geoip (
   file { $conffiles:
     ensure  => present,
     content => "filter {\n geoip {\n${opt_add_field}${opt_add_tag}${opt_database}${opt_exclude_tags}${opt_fields}${opt_remove_tag}${opt_source}${opt_tags}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

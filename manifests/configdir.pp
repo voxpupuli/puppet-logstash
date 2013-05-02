@@ -34,8 +34,8 @@ define logstash::configdir {
     #### Manage the config directory
     file { $config_dir:
       ensure  => directory,
-      owner   => 'root',
-      group   => 'root',
+      owner   => $logstash::logstash_user,
+      group   => $logstash::logstash_group,
       mode    => '0640',
       purge   => true,
       recurse => true,

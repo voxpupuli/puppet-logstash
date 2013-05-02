@@ -251,8 +251,8 @@ define logstash::filter::translate (
 
       file { "${filesdir}/${basefilename_dictionary_path}":
         source  => $dictionary_path,
-        owner   => 'root',
-        group   => 'root',
+        owner   => $logstash::logstash_user,
+        group   => $logstash::logstash_group,
         mode    => '0640',
         require => File[$filesdir]
       }
@@ -293,8 +293,8 @@ define logstash::filter::translate (
   #### Manage the files directory
   file { $filesdir:
     ensure  => directory,
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     purge   => true,
     recurse => true,
@@ -307,8 +307,8 @@ define logstash::filter::translate (
   file { $conffiles:
     ensure  => present,
     content => "filter {\n translate {\n${opt_add_field}${opt_add_tag}${opt_destination}${opt_dictionary}${opt_dictionary_path}${opt_exact}${opt_exclude_tags}${opt_fallback}${opt_field}${opt_override}${opt_regex}${opt_remove_tag}${opt_tags}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

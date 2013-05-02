@@ -263,8 +263,8 @@ define logstash::input::syslog (
   file { $conffiles:
     ensure  => present,
     content => "input {\n syslog {\n${opt_add_field}${opt_charset}${opt_debug}${opt_facility_labels}${opt_format}${opt_host}${opt_message_format}${opt_port}${opt_severity_labels}${opt_tags}${opt_type}${opt_use_labels} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
+    owner   => $logstash::logstash_user,
+    group   => $logstash::logstash_group,
     mode    => '0640',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
