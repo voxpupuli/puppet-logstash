@@ -78,18 +78,20 @@
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
 class logstash(
-  $ensure        = $logstash::params::ensure,
-  $autoupgrade   = $logstash::params::autoupgrade,
-  $status        = $logstash::params::status,
-  $version       = false,
-  $provider      = 'package',
-  $jarfile       = undef,
-  $installpath   = $logstash::params::installpath,
-  $java_install  = false,
-  $java_package  = undef,
-  $instances     = [ 'agent' ],
-  $initfiles     = undef,
-  $defaultsfiles = undef,
+  $ensure         = $logstash::params::ensure,
+  $autoupgrade    = $logstash::params::autoupgrade,
+  $status         = $logstash::params::status,
+  $version        = false,
+  $provider       = 'package',
+  $jarfile        = undef,
+  $installpath    = $logstash::params::installpath,
+  $java_install   = false,
+  $java_package   = undef,
+  $instances      = [ 'agent' ],
+  $initfiles      = undef,
+  $defaultsfiles  = undef,
+  $logstash_user  = $logstash::pramas::logstash_user,
+  $logstash_group = $logstash::params::logstash_group
 ) inherits logstash::params {
 
   #### Validate parameters

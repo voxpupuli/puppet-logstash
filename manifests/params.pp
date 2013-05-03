@@ -50,6 +50,10 @@ class logstash::params {
   # Logging dir
   $logdir = '/var/log/logstash/'
 
+  # File user/group
+  $logstash_user  = 'root'
+  $logstash_group = 'root'
+
   #### Internal module values
 
   # packages

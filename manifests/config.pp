@@ -37,4 +37,11 @@ class logstash::config {
     creates => $tmp_dir;
   }
 
+  file { $tmp_dir:
+    ensure => directory,
+    mode   => '0640',
+    owner  => $logstash::logstash_user,
+    group  => $logstash::logstash_group
+  }
+
 }

@@ -23,6 +23,11 @@ define logstash::configdir {
 
   if $logstash::ensure == 'present' {
 
+    File {
+      owner => $logstash::logstash_user,
+      group => $logstash::logstash_group
+    }
+
     #### Create the config dir directory
     exec { "create_config_dir_${name}":
       cwd     => '/',
@@ -34,13 +39,11 @@ define logstash::configdir {
     #### Manage the config directory
     file { $config_dir:
       ensure  => directory,
-      owner   => 'root',
-      group   => 'root',
-      mode    => '0640',
+      mode    => '0440',
       purge   => true,
       recurse => true,
       require => Exec["create_config_dir_${name}"],
-      notify  => Service["logstash-${name}"]
+      notify  => Service["logstash-${name}"];
     }
 
     #### Create the sincedb directory
@@ -49,6 +52,12 @@ define logstash::configdir {
       path    => ['/usr/bin', '/bin'],
       command => "mkdir -p ${sincedb_dir}",
       creates => $sincedb_dir;
+    }
+
+    file { $sincedb_dir:
+      ensure  => directory,
+      mode    => '0640',
+      require => Exec["create_sincedb_dir_${name}"];
     }
 
   } else {
