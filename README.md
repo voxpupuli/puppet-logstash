@@ -18,13 +18,21 @@ This overview shows you which puppet module and logstash version work together.
     | 0.2.0         | 1.1.10   |
     ----------------------------
 
-## Note
+## Version changes
 
 From version 0.0.6 to 0.1.0 the following has been removed/changed:
 
-initfile (string) => initfiles (hash)
-
+initfile (string)     => initfiles (hash)
 defaultsfile (string) => defaultsfiles (hash)
+
+## Notes
+
+With introduction of the multi-instance feature the default 'logstash' service gets disabled by the module when installed with a package.
+The module will create and manage the services based on the instance names, the old init script will remain on the system but will not be used.
+
+
+Setting up logstash without configuration will cause logstash not to start.
+You will need to define atleast one plugin for Logstash to start.
 
 
 ## Usage
@@ -71,7 +79,6 @@ All plugins can be defined to a certain instance. For example:
      logstash::input::file { 'fileinput2':
        instances => [ 'instance2' ]
      }
-
 
 ### Other options
 
@@ -124,6 +131,7 @@ Every plugin in Logstash has its own define file.
 
 For more information check the puppet files in the input, output and filter directories.
 
+
 ### File transfers
 
 From version 0.2.0 its now possible to automatically transfer files to the host for plugins that require a file.
@@ -135,3 +143,4 @@ For example lumberjack requires a certificate, so you can do the following:
      }
 
 the file 'ssl.cert' will be placed in a pre-defined place and set in the configuration.
+

@@ -74,14 +74,12 @@ class logstash::service {
 
   # Remove the init file and service from the package if we install it via a package
   if $logstash::provider == 'package' {
-    file { '/etc/init.d/logstash':
-      ensure => absent
-    }
 
     service { 'logstash':
       ensure => 'stopped',
       enable => false
     }
+
   }
 
   # Only not managed the init file when we are using an external jar file and use an other service manager
