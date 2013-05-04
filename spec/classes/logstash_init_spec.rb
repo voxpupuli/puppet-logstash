@@ -21,7 +21,7 @@ describe 'logstash', :type => 'class' do
       it { should contain_service('logstash-agent') }
       it { should contain_file('/etc/init.d/logstash-agent') }
       it { should contain_service('logstash').with(:enable => false, :ensure => 'stopped') }
-      it { should contain_file('/etc/init.d/logstash').with(:ensure => 'absent') }
+
     end
 
     context "On Ubuntu OS" do
@@ -41,7 +41,6 @@ describe 'logstash', :type => 'class' do
       it { should contain_service('logstash-agent') }
       it { should contain_file('/etc/init.d/logstash-agent') }
       it { should contain_service('logstash').with(:enable => false, :ensure => 'stopped') }
-      it { should contain_file('/etc/init.d/logstash').with(:ensure => 'absent') }
 
     end
 
@@ -62,7 +61,6 @@ describe 'logstash', :type => 'class' do
       it { should contain_service('logstash-agent') }
       it { should contain_file('/etc/init.d/logstash-agent') }
       it { should contain_service('logstash').with(:enable => false, :ensure => 'stopped') }
-      it { should contain_file('/etc/init.d/logstash').with(:ensure => 'absent') }
 
     end
 
@@ -83,7 +81,6 @@ describe 'logstash', :type => 'class' do
       it { should contain_service('logstash-agent') }
       it { should contain_file('/etc/init.d/logstash-agent') }
       it { should contain_service('logstash').with(:enable => false, :ensure => 'stopped') }
-      it { should contain_file('/etc/init.d/logstash').with(:ensure => 'absent') }
 
     end
 
@@ -104,7 +101,6 @@ describe 'logstash', :type => 'class' do
       it { should contain_service('logstash-agent') }
       it { should contain_file('/etc/init.d/logstash-agent') }
       it { should contain_service('logstash').with(:enable => false, :ensure => 'stopped') }
-      it { should contain_file('/etc/init.d/logstash').with(:ensure => 'absent') }
 
     end
 
@@ -125,7 +121,6 @@ describe 'logstash', :type => 'class' do
       it { should contain_service('logstash-agent') }
       it { should contain_file('/etc/init.d/logstash-agent') }
       it { should contain_service('logstash').with(:enable => false, :ensure => 'stopped') }
-      it { should contain_file('/etc/init.d/logstash').with(:ensure => 'absent') }
 
     end
 
@@ -146,7 +141,6 @@ describe 'logstash', :type => 'class' do
       it { should contain_service('logstash-agent') }
       it { should contain_file('/etc/init.d/logstash-agent') }
       it { should contain_service('logstash').with(:enable => false, :ensure => 'stopped') }
-      it { should contain_file('/etc/init.d/logstash').with(:ensure => 'absent') }
   
     end
 
