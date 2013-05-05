@@ -1,3 +1,8 @@
+0.2.1 ( xxx xx, 2013 )
+  Adding license file
+  Deleted old init file removal to avoid issues. ( Issue #50 ) 
+  Allow file owner/group to be variable ( Issue/PR #47 )
+
 0.2.0 ( Apr 30, 2013 )
   Update defines for logstash 1.1.10
   New feature for plugins to automatically transfer files ( Issue #24 )
