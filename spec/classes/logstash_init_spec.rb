@@ -257,6 +257,7 @@ describe 'logstash', :type => 'class' do
      it { should_not contain_service('logstash-agent') }
 
     end
+
   end
 
   context "multi-instance tests ( agent and indexer )" do
@@ -319,6 +320,23 @@ describe 'logstash', :type => 'class' do
       it { should contain_file('/etc/logstash/indexer/config') }
 
    end
+
+  end
+
+  context "test file owner option set to 'logstash'" do
+
+    let :facts do {
+      :operatingsystem => 'CentOS'
+    } end
+
+    let :params do {
+      :logstash_user  => 'logstash',
+      :logstash_group => 'logstash'
+    } end
+
+    it { should contain_file('/etc/logstash/agent/config').with(:owner => 'logstash', :group => 'logstash') }
+    it { should contain_file('/etc/logstash/agent/sincedb').with(:owner => 'logstash', :group => 'logstash') }
+    it { should contain_file('/usr/share/logstash/tmp').with(:owner => 'logstash', :group => 'logstash') }
 
   end
 
