@@ -90,9 +90,12 @@ class logstash(
   $instances      = [ 'agent' ],
   $initfiles      = undef,
   $defaultsfiles  = undef,
-  $logstash_user  = $logstash::pramas::logstash_user,
+  $logstash_user  = $logstash::params::logstash_user,
   $logstash_group = $logstash::params::logstash_group
 ) inherits logstash::params {
+
+  anchor {'logstash::begin': }
+  anchor {'logstash::end': }
 
   #### Validate parameters
 
@@ -131,23 +134,31 @@ class logstash(
     class { 'logstash::java': }
 
     # ensure we first java java and then manage the service
-    Class['logstash::java'] -> Class['logstash::service']
+    Anchor['logstash::begin']
+    -> Class['logstash::java']
+    -> Class['logstash::service']
   }
 
   #### Manage relationships
 
   if $ensure == 'present' {
     # we need the software before configuring it
-    Class['logstash::package'] -> Class['logstash::config']
+    Anchor['logstash::begin']
+    -> Class['logstash::package']
+    -> Class['logstash::config']
 
     # we need the software and a working configuration before running a service
     Class['logstash::package'] -> Class['logstash::service']
     Class['logstash::config']  -> Class['logstash::service']
 
+    Class['logstash::service'] -> Anchor['logstash::end']
+
   } else {
 
     # make sure all services are getting stopped before software removal
-    Class['logstash::service'] -> Class['logstash::package']
+    Anchor['logstash::begin']
+    -> Class['logstash::service']
+    -> Class['logstash::package']
+    -> Anchor['logstash::end']
   }
-
 }
