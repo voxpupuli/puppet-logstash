@@ -93,7 +93,7 @@ class logstash(
   $logstash_user  = $logstash::params::logstash_user,
   $logstash_group = $logstash::params::logstash_group
 ) inherits logstash::params {
-  
+
   anchor {'logstash::begin': }
   anchor {'logstash::end': }
 
@@ -150,7 +150,7 @@ class logstash(
     # we need the software and a working configuration before running a service
     Class['logstash::package'] -> Class['logstash::service']
     Class['logstash::config']  -> Class['logstash::service']
-    
+
     Class['logstash::service'] -> Anchor['logstash::end']
 
   } else {
