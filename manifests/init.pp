@@ -95,7 +95,8 @@ class logstash(
 ) inherits logstash::params {
   
   anchor {'logstash::begin': }
-  
+  anchor {'logstash::end': }
+
   #### Validate parameters
 
   # ensure
@@ -160,6 +161,4 @@ class logstash(
     -> Class['logstash::package']
     -> Anchor['logstash::end']
   }
-
-  anchor {'logstash::end': }
 }
