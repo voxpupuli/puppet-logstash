@@ -90,7 +90,7 @@ class logstash(
   $instances      = [ 'agent' ],
   $initfiles      = undef,
   $defaultsfiles  = undef,
-  $logstash_user  = $logstash::pramas::logstash_user,
+  $logstash_user  = $logstash::params::logstash_user,
   $logstash_group = $logstash::params::logstash_group
 ) inherits logstash::params {
   
