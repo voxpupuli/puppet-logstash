@@ -47,4 +47,28 @@ describe 'logstash::filter::multiline', :type => 'define' do
 
   end
 
+  context "Set file owner" do
+
+    let(:facts) { {:operatingsystem => 'CentOS' }}
+    let(:pre_condition) { 'class {"logstash": logstash_user => "logstash", logstash_group => "logstash" }'}
+    let(:title) { 'test' }
+
+    let :params do {
+      :add_field => { 'field1' => 'value1' },
+      :add_tag => ['value2'],
+      :exclude_tags => ['value3'],
+      :negate => false,
+      :pattern => 'value5',
+      :patterns_dir => ['value6'],
+      :remove_tag => ['value7'],
+      :stream_identity => 'value8',
+      :tags => ['value9'],
+      :type => 'value10',
+      :what => 'previous',
+    } end
+  
+    it { should contain_file('/etc/logstash/agent/config/filter_10_multiline_test').with(:owner => 'logstash', :group => 'logstash') }
+
+  end
+
 end

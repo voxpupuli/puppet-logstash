@@ -92,26 +92,19 @@
 #   Default value: ""
 #   This variable is optional
 #
-#
 # [*instances*]
 #   Array of instance names to which this define is.
 #   Value type is array
 #   Default value: [ 'array' ]
 #   This variable is optional
 #
-#
-# === Examples
-#
-#
-#
-#
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10
+#  This define is created based on LogStash version 1.1.12
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.10/outputs/librato
+#  http://logstash.net/docs/1.1.12/outputs/librato
 #
-#  Need help? http://logstash.net/docs/1.1.10/learn
+#  Need help? http://logstash.net/docs/1.1.12/learn
 #
 # === Authors
 #
@@ -133,10 +126,25 @@ define logstash::output::librato (
 
   require logstash::params
 
-  $confdirstart = prefix($instances, "${logstash::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/output_librato_${name}")
-  $services = prefix($instances, 'logstash-')
-  $filesdir = "${logstash::configdir}/files/output/librato/${name}"
+  File {
+    owner => $logstash::logstash_user,
+    group => $logstash::logstash_group
+  }
+
+  if $logstash::multi_instance == true {
+
+    $confdirstart = prefix($instances, "${logstash::configdir}/")
+    $conffiles    = suffix($confdirstart, "/config/output_librato_${name}")
+    $services     = prefix($instances, 'logstash-')
+    $filesdir     = "${logstash::configdir}/files/output/librato/${name}"
+
+  } else {
+
+    $conffiles = "${logstash::configdir}/conf.d/output_librato_${name}"
+    $services  = 'logstash'
+    $filesdir  = "${logstash::configdir}/files/output/librato/${name}"
+
+  }
 
   #### Validate parameters
 
@@ -162,19 +170,22 @@ define logstash::output::librato (
 
   if ($counter != '') {
     validate_hash($counter)
-    $arr_counter = inline_template('<%= counter.to_a.flatten.inspect %>')
+    $var_counter = $counter
+    $arr_counter = inline_template('<%= "["+var_counter.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_counter = "  counter => ${arr_counter}\n"
   }
 
   if ($annotation != '') {
     validate_hash($annotation)
-    $arr_annotation = inline_template('<%= annotation.to_a.flatten.inspect %>')
+    $var_annotation = $annotation
+    $arr_annotation = inline_template('<%= "["+var_annotation.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_annotation = "  annotation => ${arr_annotation}\n"
   }
 
   if ($gauge != '') {
     validate_hash($gauge)
-    $arr_gauge = inline_template('<%= gauge.to_a.flatten.inspect %>')
+    $var_gauge = $gauge
+    $arr_gauge = inline_template('<%= "["+var_gauge.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_gauge = "  gauge => ${arr_gauge}\n"
   }
 
@@ -203,9 +214,7 @@ define logstash::output::librato (
   file { $conffiles:
     ensure  => present,
     content => "output {\n librato {\n${opt_account_id}${opt_annotation}${opt_api_token}${opt_batch_size}${opt_counter}${opt_exclude_tags}${opt_fields}${opt_gauge}${opt_tags}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0640',
+    mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

@@ -164,26 +164,19 @@
 #   Default value: "/"
 #   This variable is optional
 #
-#
 # [*instances*]
 #   Array of instance names to which this define is.
 #   Value type is array
 #   Default value: [ 'array' ]
 #   This variable is optional
 #
-#
-# === Examples
-#
-#
-#
-#
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10
+#  This define is created based on LogStash version 1.1.12
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.10/outputs/elasticsearch_river
+#  http://logstash.net/docs/1.1.12/outputs/elasticsearch_river
 #
-#  Need help? http://logstash.net/docs/1.1.10/learn
+#  Need help? http://logstash.net/docs/1.1.12/learn
 #
 # === Authors
 #
@@ -219,10 +212,25 @@ define logstash::output::elasticsearch_river (
 
   require logstash::params
 
-  $confdirstart = prefix($instances, "${logstash::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/output_elasticsearch_river_${name}")
-  $services = prefix($instances, 'logstash-')
-  $filesdir = "${logstash::configdir}/files/output/elasticsearch_river/${name}"
+  File {
+    owner => $logstash::logstash_user,
+    group => $logstash::logstash_group
+  }
+
+  if $logstash::multi_instance == true {
+
+    $confdirstart = prefix($instances, "${logstash::configdir}/")
+    $conffiles    = suffix($confdirstart, "/config/output_elasticsearch_river_${name}")
+    $services     = prefix($instances, 'logstash-')
+    $filesdir     = "${logstash::configdir}/files/output/elasticsearch_river/${name}"
+
+  } else {
+
+    $conffiles = "${logstash::configdir}/conf.d/output_elasticsearch_river_${name}"
+    $services  = 'logstash'
+    $filesdir  = "${logstash::configdir}/files/output/elasticsearch_river/${name}"
+
+  }
 
   #### Validate parameters
 
@@ -371,9 +379,7 @@ define logstash::output::elasticsearch_river (
   file { $conffiles:
     ensure  => present,
     content => "output {\n elasticsearch_river {\n${opt_debug}${opt_document_id}${opt_durable}${opt_es_bulk_size}${opt_es_bulk_timeout_ms}${opt_es_host}${opt_es_ordered}${opt_es_port}${opt_exchange}${opt_exchange_type}${opt_exclude_tags}${opt_fields}${opt_index}${opt_index_type}${opt_key}${opt_password}${opt_persistent}${opt_queue}${opt_rabbitmq_host}${opt_rabbitmq_port}${opt_tags}${opt_type}${opt_user}${opt_vhost} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0640',
+    mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

@@ -49,4 +49,29 @@ describe 'logstash::output::datadog', :type => 'define' do
 
   end
 
+  context "Set file owner" do
+
+    let(:facts) { {:operatingsystem => 'CentOS' }}
+    let(:pre_condition) { 'class {"logstash": logstash_user => "logstash", logstash_group => "logstash" }'}
+    let(:title) { 'test' }
+
+    let :params do {
+      :alert_type => 'info',
+      :api_key => 'value2',
+      :date_happened => 'value3',
+      :dd_tags => ['value4'],
+      :exclude_tags => ['value5'],
+      :fields => ['value6'],
+      :priority => 'normal',
+      :source_type_name => 'nagios',
+      :tags => ['value9'],
+      :text => 'value10',
+      :title => 'value11',
+      :type => 'value12',
+    } end
+  
+    it { should contain_file('/etc/logstash/agent/config/output_datadog_test').with(:owner => 'logstash', :group => 'logstash') }
+
+  end
+
 end

@@ -44,4 +44,25 @@ describe 'logstash::output::lumberjack', :type => 'define' do
 
   end
 
+  context "Set file owner" do
+
+    let(:facts) { {:operatingsystem => 'CentOS' }}
+    let(:pre_condition) { 'class {"logstash": logstash_user => "logstash", logstash_group => "logstash" }'}
+    let(:title) { 'test' }
+
+    let :params do {
+      :exclude_tags => ['value1'],
+      :fields => ['value2'],
+      :hosts => ['value3'],
+      :port => 4,
+      :ssl_certificate => 'puppet:///path/to/file5',
+      :tags => ['value6'],
+      :type => 'value7',
+      :window_size => 8,
+    } end
+  
+    it { should contain_file('/etc/logstash/agent/config/output_lumberjack_test').with(:owner => 'logstash', :group => 'logstash') }
+
+  end
+
 end

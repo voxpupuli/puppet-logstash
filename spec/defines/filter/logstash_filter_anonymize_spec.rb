@@ -43,4 +43,26 @@ describe 'logstash::filter::anonymize', :type => 'define' do
 
   end
 
+  context "Set file owner" do
+
+    let(:facts) { {:operatingsystem => 'CentOS' }}
+    let(:pre_condition) { 'class {"logstash": logstash_user => "logstash", logstash_group => "logstash" }'}
+    let(:title) { 'test' }
+
+    let :params do {
+      :add_field => { 'field1' => 'value1' },
+      :add_tag => ['value2'],
+      :algorithm => 'SHA1',
+      :exclude_tags => ['value4'],
+      :fields => ['value5'],
+      :key => 'value6',
+      :remove_tag => ['value7'],
+      :tags => ['value8'],
+      :type => 'value9',
+    } end
+  
+    it { should contain_file('/etc/logstash/agent/config/filter_10_anonymize_test').with(:owner => 'logstash', :group => 'logstash') }
+
+  end
+
 end

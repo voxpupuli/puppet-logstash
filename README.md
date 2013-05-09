@@ -17,6 +17,8 @@ This overview shows you which puppet module and logstash version work together.
     ----------------------------
     | 0.2.0         | 1.1.10   |
     ----------------------------
+    | 0.3.0         | 1.1.12   |
+    ----------------------------
 
 ## Version changes
 
@@ -80,6 +82,12 @@ All plugins can be defined to a certain instance. For example:
        instances => [ 'instance2' ]
      }
 
+If you rather not use the multi-instance feature you can diable this:
+
+     class { 'logstash':
+       multi_instance => false
+     }
+
 ### Other options
 
 If you rather supply your own init script:
@@ -124,6 +132,15 @@ If you want a specific java package/version:
        java_install => true,
        java_package => 'packagename'
      }
+
+If you want to have the logstash files owned by an other user then 'root':
+
+     class { 'logstash':
+       logstash_user  => 'logstash',
+       logstash_group => 'logstash'
+     }
+
+Please note that this does not set the user in the init file!!
 
 ## Plugins
 

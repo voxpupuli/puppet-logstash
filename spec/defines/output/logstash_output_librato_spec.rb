@@ -45,4 +45,27 @@ describe 'logstash::output::librato', :type => 'define' do
 
   end
 
+  context "Set file owner" do
+
+    let(:facts) { {:operatingsystem => 'CentOS' }}
+    let(:pre_condition) { 'class {"logstash": logstash_user => "logstash", logstash_group => "logstash" }'}
+    let(:title) { 'test' }
+
+    let :params do {
+      :account_id => 'value1',
+      :annotation => { 'field2' => 'value2' },
+      :api_token => 'value3',
+      :batch_size => 'value4',
+      :counter => { 'field5' => 'value5' },
+      :exclude_tags => ['value6'],
+      :fields => ['value7'],
+      :gauge => { 'field8' => 'value8' },
+      :tags => ['value9'],
+      :type => 'value10',
+    } end
+  
+    it { should contain_file('/etc/logstash/agent/config/output_librato_test').with(:owner => 'logstash', :group => 'logstash') }
+
+  end
+
 end

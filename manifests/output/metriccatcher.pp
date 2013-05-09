@@ -113,26 +113,19 @@
 #   Default value: None
 #   This variable is optional
 #
-#
 # [*instances*]
 #   Array of instance names to which this define is.
 #   Value type is array
 #   Default value: [ 'array' ]
 #   This variable is optional
 #
-#
-# === Examples
-#
-#
-#
-#
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10
+#  This define is created based on LogStash version 1.1.12
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.10/outputs/metriccatcher
+#  http://logstash.net/docs/1.1.12/outputs/metriccatcher
 #
-#  Need help? http://logstash.net/docs/1.1.10/learn
+#  Need help? http://logstash.net/docs/1.1.12/learn
 #
 # === Authors
 #
@@ -156,10 +149,25 @@ define logstash::output::metriccatcher (
 
   require logstash::params
 
-  $confdirstart = prefix($instances, "${logstash::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/output_metriccatcher_${name}")
-  $services = prefix($instances, 'logstash-')
-  $filesdir = "${logstash::configdir}/files/output/metriccatcher/${name}"
+  File {
+    owner => $logstash::logstash_user,
+    group => $logstash::logstash_group
+  }
+
+  if $logstash::multi_instance == true {
+
+    $confdirstart = prefix($instances, "${logstash::configdir}/")
+    $conffiles    = suffix($confdirstart, "/config/output_metriccatcher_${name}")
+    $services     = prefix($instances, 'logstash-')
+    $filesdir     = "${logstash::configdir}/files/output/metriccatcher/${name}"
+
+  } else {
+
+    $conffiles = "${logstash::configdir}/conf.d/output_metriccatcher_${name}"
+    $services  = 'logstash'
+    $filesdir  = "${logstash::configdir}/files/output/metriccatcher/${name}"
+
+  }
 
   #### Validate parameters
 
@@ -185,37 +193,43 @@ define logstash::output::metriccatcher (
 
   if ($meter != '') {
     validate_hash($meter)
-    $arr_meter = inline_template('<%= meter.to_a.flatten.inspect %>')
+    $var_meter = $meter
+    $arr_meter = inline_template('<%= "["+var_meter.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_meter = "  meter => ${arr_meter}\n"
   }
 
   if ($biased != '') {
     validate_hash($biased)
-    $arr_biased = inline_template('<%= biased.to_a.flatten.inspect %>')
+    $var_biased = $biased
+    $arr_biased = inline_template('<%= "["+var_biased.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_biased = "  biased => ${arr_biased}\n"
   }
 
   if ($gauge != '') {
     validate_hash($gauge)
-    $arr_gauge = inline_template('<%= gauge.to_a.flatten.inspect %>')
+    $var_gauge = $gauge
+    $arr_gauge = inline_template('<%= "["+var_gauge.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_gauge = "  gauge => ${arr_gauge}\n"
   }
 
   if ($uniform != '') {
     validate_hash($uniform)
-    $arr_uniform = inline_template('<%= uniform.to_a.flatten.inspect %>')
+    $var_uniform = $uniform
+    $arr_uniform = inline_template('<%= "["+var_uniform.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_uniform = "  uniform => ${arr_uniform}\n"
   }
 
   if ($counter != '') {
     validate_hash($counter)
-    $arr_counter = inline_template('<%= counter.to_a.flatten.inspect %>')
+    $var_counter = $counter
+    $arr_counter = inline_template('<%= "["+var_counter.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_counter = "  counter => ${arr_counter}\n"
   }
 
   if ($timer != '') {
     validate_hash($timer)
-    $arr_timer = inline_template('<%= timer.to_a.flatten.inspect %>')
+    $var_timer = $timer
+    $arr_timer = inline_template('<%= "["+var_timer.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_timer = "  timer => ${arr_timer}\n"
   }
 
@@ -242,9 +256,7 @@ define logstash::output::metriccatcher (
   file { $conffiles:
     ensure  => present,
     content => "output {\n metriccatcher {\n${opt_biased}${opt_counter}${opt_exclude_tags}${opt_fields}${opt_gauge}${opt_host}${opt_meter}${opt_port}${opt_tags}${opt_timer}${opt_type}${opt_uniform} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0640',
+    mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

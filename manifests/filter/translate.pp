@@ -50,7 +50,8 @@
 # [*dictionary_path*]
 #   name with full path of external dictionary file.   format of the table
 #   should be a YAML file which will be merged with the @dictionary. make
-#   sure you encase any integer based keys in quotes.
+#   sure you encase any integer based keys in quotes. The YAML file should
+#   look something like this:  100: Continue 101: Switching Protocols
 #   Value type is path
 #   Default value: None
 #   This variable is optional
@@ -134,19 +135,13 @@
 #   Default value: [ 'array' ]
 #   This variable is optional
 #
-#
-# === Examples
-#
-#
-#
-#
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10
+#  This define is created based on LogStash version 1.1.12
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.10/filters/translate
+#  http://logstash.net/docs/1.1.12/filters/translate
 #
-#  Need help? http://logstash.net/docs/1.1.10/learn
+#  Need help? http://logstash.net/docs/1.1.12/learn
 #
 # === Authors
 #
@@ -173,10 +168,25 @@ define logstash::filter::translate (
 
   require logstash::params
 
-  $confdirstart = prefix($instances, "${logstash::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/filter_${order}_translate_${name}")
-  $services = prefix($instances, 'logstash-')
-  $filesdir = "${logstash::configdir}/files/filter/translate/${name}"
+  File {
+    owner => $logstash::logstash_user,
+    group => $logstash::logstash_group
+  }
+
+  if $logstash::multi_instance == true {
+
+    $confdirstart = prefix($instances, "${logstash::configdir}/")
+    $conffiles    = suffix($confdirstart, "/config/filter_${order}_translate_${name}")
+    $services     = prefix($instances, 'logstash-')
+    $filesdir     = "${logstash::configdir}/files/filter/translate/${name}"
+
+  } else {
+
+    $conffiles = "${logstash::configdir}/conf.d/filter_${order}_translate_${name}"
+    $services  = 'logstash'
+    $filesdir  = "${logstash::configdir}/files/filter/translate/${name}"
+
+  }
 
   #### Validate parameters
 
@@ -223,13 +233,15 @@ define logstash::filter::translate (
 
   if ($dictionary != '') {
     validate_hash($dictionary)
-    $arr_dictionary = inline_template('<%= dictionary.to_a.flatten.inspect %>')
+    $var_dictionary = $dictionary
+    $arr_dictionary = inline_template('<%= "["+var_dictionary.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_dictionary = "  dictionary => ${arr_dictionary}\n"
   }
 
   if ($add_field != '') {
     validate_hash($add_field)
-    $arr_add_field = inline_template('<%= add_field.to_a.flatten.inspect %>')
+    $var_add_field = $add_field
+    $arr_add_field = inline_template('<%= "["+var_add_field.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_add_field = "  add_field => ${arr_add_field}\n"
   }
 
@@ -251,9 +263,7 @@ define logstash::filter::translate (
 
       file { "${filesdir}/${basefilename_dictionary_path}":
         source  => $dictionary_path,
-        owner   => 'root',
-        group   => 'root',
-        mode    => '0640',
+        mode    => '0440',
         require => File[$filesdir]
       }
     } else {
@@ -293,8 +303,6 @@ define logstash::filter::translate (
   #### Manage the files directory
   file { $filesdir:
     ensure  => directory,
-    owner   => 'root',
-    group   => 'root',
     mode    => '0640',
     purge   => true,
     recurse => true,
@@ -307,9 +315,7 @@ define logstash::filter::translate (
   file { $conffiles:
     ensure  => present,
     content => "filter {\n translate {\n${opt_add_field}${opt_add_tag}${opt_destination}${opt_dictionary}${opt_dictionary_path}${opt_exact}${opt_exclude_tags}${opt_fallback}${opt_field}${opt_override}${opt_regex}${opt_remove_tag}${opt_tags}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0640',
+    mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

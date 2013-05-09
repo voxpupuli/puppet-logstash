@@ -104,26 +104,19 @@
 #   Default value: ""
 #   This variable is optional
 #
-#
 # [*instances*]
 #   Array of instance names to which this define is.
 #   Value type is array
 #   Default value: [ 'array' ]
 #   This variable is optional
 #
-#
-# === Examples
-#
-#
-#
-#
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10
+#  This define is created based on LogStash version 1.1.12
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.10/outputs/statsd
+#  http://logstash.net/docs/1.1.12/outputs/statsd
 #
-#  Need help? http://logstash.net/docs/1.1.10/learn
+#  Need help? http://logstash.net/docs/1.1.12/learn
 #
 # === Authors
 #
@@ -149,10 +142,25 @@ define logstash::output::statsd (
 
   require logstash::params
 
-  $confdirstart = prefix($instances, "${logstash::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/output_statsd_${name}")
-  $services = prefix($instances, 'logstash-')
-  $filesdir = "${logstash::configdir}/files/output/statsd/${name}"
+  File {
+    owner => $logstash::logstash_user,
+    group => $logstash::logstash_group
+  }
+
+  if $logstash::multi_instance == true {
+
+    $confdirstart = prefix($instances, "${logstash::configdir}/")
+    $conffiles    = suffix($confdirstart, "/config/output_statsd_${name}")
+    $services     = prefix($instances, 'logstash-')
+    $filesdir     = "${logstash::configdir}/files/output/statsd/${name}"
+
+  } else {
+
+    $conffiles = "${logstash::configdir}/conf.d/output_statsd_${name}"
+    $services  = 'logstash'
+    $filesdir  = "${logstash::configdir}/files/output/statsd/${name}"
+
+  }
 
   #### Validate parameters
 
@@ -195,13 +203,15 @@ define logstash::output::statsd (
 
   if ($timing != '') {
     validate_hash($timing)
-    $arr_timing = inline_template('<%= timing.to_a.flatten.inspect %>')
+    $var_timing = $timing
+    $arr_timing = inline_template('<%= "["+var_timing.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_timing = "  timing => ${arr_timing}\n"
   }
 
   if ($count != '') {
     validate_hash($count)
-    $arr_count = inline_template('<%= count.to_a.flatten.inspect %>')
+    $var_count = $count
+    $arr_count = inline_template('<%= "["+var_count.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_count = "  count => ${arr_count}\n"
   }
 
@@ -246,9 +256,7 @@ define logstash::output::statsd (
   file { $conffiles:
     ensure  => present,
     content => "output {\n statsd {\n${opt_count}${opt_debug}${opt_decrement}${opt_exclude_tags}${opt_fields}${opt_host}${opt_increment}${opt_namespace}${opt_port}${opt_sample_rate}${opt_sender}${opt_tags}${opt_timing}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0640',
+    mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

@@ -58,26 +58,19 @@
 #   Default value: ""
 #   This variable is optional
 #
-#
 # [*instances*]
 #   Array of instance names to which this define is.
 #   Value type is array
 #   Default value: [ 'array' ]
 #   This variable is optional
 #
-#
-# === Examples
-#
-#
-#
-#
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10
+#  This define is created based on LogStash version 1.1.12
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.10/outputs/circonus
+#  http://logstash.net/docs/1.1.12/outputs/circonus
 #
-#  Need help? http://logstash.net/docs/1.1.10/learn
+#  Need help? http://logstash.net/docs/1.1.12/learn
 #
 # === Authors
 #
@@ -96,10 +89,25 @@ define logstash::output::circonus (
 
   require logstash::params
 
-  $confdirstart = prefix($instances, "${logstash::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/output_circonus_${name}")
-  $services = prefix($instances, 'logstash-')
-  $filesdir = "${logstash::configdir}/files/output/circonus/${name}"
+  File {
+    owner => $logstash::logstash_user,
+    group => $logstash::logstash_group
+  }
+
+  if $logstash::multi_instance == true {
+
+    $confdirstart = prefix($instances, "${logstash::configdir}/")
+    $conffiles    = suffix($confdirstart, "/config/output_circonus_${name}")
+    $services     = prefix($instances, 'logstash-')
+    $filesdir     = "${logstash::configdir}/files/output/circonus/${name}"
+
+  } else {
+
+    $conffiles = "${logstash::configdir}/conf.d/output_circonus_${name}"
+    $services  = 'logstash'
+    $filesdir  = "${logstash::configdir}/files/output/circonus/${name}"
+
+  }
 
   #### Validate parameters
 
@@ -125,7 +133,8 @@ define logstash::output::circonus (
 
   if ($annotation != '') {
     validate_hash($annotation)
-    $arr_annotation = inline_template('<%= annotation.to_a.flatten.inspect %>')
+    $var_annotation = $annotation
+    $arr_annotation = inline_template('<%= "["+var_annotation.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_annotation = "  annotation => ${arr_annotation}\n"
   }
 
@@ -149,9 +158,7 @@ define logstash::output::circonus (
   file { $conffiles:
     ensure  => present,
     content => "output {\n circonus {\n${opt_annotation}${opt_api_token}${opt_app_name}${opt_exclude_tags}${opt_fields}${opt_tags}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0640',
+    mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

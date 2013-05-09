@@ -41,4 +41,25 @@ describe 'logstash::output::opentsdb', :type => 'define' do
 
   end
 
+  context "Set file owner" do
+
+    let(:facts) { {:operatingsystem => 'CentOS' }}
+    let(:pre_condition) { 'class {"logstash": logstash_user => "logstash", logstash_group => "logstash" }'}
+    let(:title) { 'test' }
+
+    let :params do {
+      :debug => false,
+      :exclude_tags => ['value2'],
+      :fields => ['value3'],
+      :host => 'value4',
+      :metrics => ['value5'],
+      :port => 6,
+      :tags => ['value7'],
+      :type => 'value8',
+    } end
+  
+    it { should contain_file('/etc/logstash/agent/config/output_opentsdb_test').with(:owner => 'logstash', :group => 'logstash') }
+
+  end
+
 end

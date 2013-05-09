@@ -24,7 +24,7 @@
 #   The name of the exchange
 #   Value type is string
 #   Default value: None
-#   This variable is required
+#   This variable is optional
 #
 # [*exchange_type*]
 #   The exchange type (fanout, topic, direct)
@@ -45,21 +45,8 @@
 #   Default value: []
 #   This variable is optional
 #
-# [*fields_headers*]
-#   Array of fields to add to headers in messages' metadata
-#   Value type is array
-#   Default value: {}
-#   This variable is optional
-#
-# [*frame_max*]
-#   Maximum permissible size of a frame (in bytes) to negotiate with
-#   clients
-#   Value type is number
-#   Default value: 131072
-#   This variable is optional
-#
 # [*host*]
-#   Your rabbitmq server address
+#   Your amqp server address
 #   Value type is string
 #   Default value: None
 #   This variable is required
@@ -72,20 +59,20 @@
 #   This variable is optional
 #
 # [*password*]
-#   Your rabbitmq password
+#   Your amqp password
 #   Value type is password
 #   Default value: "guest"
 #   This variable is optional
 #
 # [*persistent*]
-#   Should messages persist to disk on the rabbitmq broker until they are
-#   read by a consumer?
+#   Should messages persist to disk on the AMQP broker until they are read
+#   by a consumer?
 #   Value type is boolean
 #   Default value: true
 #   This variable is optional
 #
 # [*port*]
-#   The rabbitmq port to connect on
+#   The AMQP port to connect on
 #   Value type is number
 #   Default value: 5672
 #   This variable is optional
@@ -112,7 +99,7 @@
 #   This variable is optional
 #
 # [*user*]
-#   Your rabbitmq username
+#   Your amqp username
 #   Value type is string
 #   Default value: "guest"
 #   This variable is optional
@@ -129,70 +116,70 @@
 #   Default value: "/"
 #   This variable is optional
 #
-#
 # [*instances*]
 #   Array of instance names to which this define is.
 #   Value type is array
 #   Default value: [ 'array' ]
 #   This variable is optional
 #
-#
-# === Examples
-#
-#
-#
-#
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10
+#  This define is created based on LogStash version 1.1.12
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.10/outputs/rabbitmq
+#  http://logstash.net/docs/1.1.12/outputs/rabbitmq
 #
-#  Need help? http://logstash.net/docs/1.1.10/learn
+#  Need help? http://logstash.net/docs/1.1.12/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
 define logstash::output::rabbitmq (
-  $exchange,
-  $host,
   $exchange_type,
-  $password       = '',
-  $exclude_tags   = '',
-  $fields         = '',
-  $fields_headers = '',
-  $frame_max      = '',
-  $durable        = '',
-  $key            = '',
-  $debug          = '',
-  $persistent     = '',
-  $port           = '',
-  $ssl            = '',
-  $tags           = '',
-  $type           = '',
-  $user           = '',
-  $verify_ssl     = '',
-  $vhost          = '',
-  $instances      = [ 'agent' ]
+  $host,
+  $password      = '',
+  $debug         = '',
+  $exclude_tags  = '',
+  $fields        = '',
+  $durable       = '',
+  $key           = '',
+  $exchange      = '',
+  $persistent    = '',
+  $port          = '',
+  $ssl           = '',
+  $tags          = '',
+  $type          = '',
+  $user          = '',
+  $verify_ssl    = '',
+  $vhost         = '',
+  $instances     = [ 'agent' ]
 ) {
 
   require logstash::params
 
-  $confdirstart = prefix($instances, "${logstash::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/output_rabbitmq_${name}")
-  $services = prefix($instances, 'logstash-')
-  $filesdir = "${logstash::configdir}/files/output/rabbitmq/${name}"
+  File {
+    owner => $logstash::logstash_user,
+    group => $logstash::logstash_group
+  }
+
+  if $logstash::multi_instance == true {
+
+    $confdirstart = prefix($instances, "${logstash::configdir}/")
+    $conffiles    = suffix($confdirstart, "/config/output_rabbitmq_${name}")
+    $services     = prefix($instances, 'logstash-')
+    $filesdir     = "${logstash::configdir}/files/output/rabbitmq/${name}"
+
+  } else {
+
+    $conffiles = "${logstash::configdir}/conf.d/output_rabbitmq_${name}"
+    $services  = 'logstash'
+    $filesdir  = "${logstash::configdir}/files/output/rabbitmq/${name}"
+
+  }
 
   #### Validate parameters
 
   validate_array($instances)
-
-  if ($fields_headers != '') {
-    validate_array($fields_headers)
-    $arr_fields_headers = join($fields_headers, '\', \'')
-    $opt_fields_headers = "  fields_headers => ['${arr_fields_headers}']\n"
-  }
 
   if ($fields != '') {
     validate_array($fields)
@@ -237,14 +224,6 @@ define logstash::output::rabbitmq (
     $opt_debug = "  debug => ${debug}\n"
   }
 
-  if ($frame_max != '') {
-    if ! is_numeric($frame_max) {
-      fail("\"${frame_max}\" is not a valid frame_max parameter value")
-    } else {
-      $opt_frame_max = "  frame_max => ${frame_max}\n"
-    }
-  }
-
   if ($port != '') {
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
@@ -271,6 +250,11 @@ define logstash::output::rabbitmq (
     $opt_type = "  type => \"${type}\"\n"
   }
 
+  if ($key != '') {
+    validate_string($key)
+    $opt_key = "  key => \"${key}\"\n"
+  }
+
   if ($host != '') {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
@@ -291,19 +275,12 @@ define logstash::output::rabbitmq (
     $opt_vhost = "  vhost => \"${vhost}\"\n"
   }
 
-  if ($key != '') {
-    validate_string($key)
-    $opt_key = "  key => \"${key}\"\n"
-  }
-
   #### Write config file
 
   file { $conffiles:
     ensure  => present,
-    content => "output {\n rabbitmq {\n${opt_debug}${opt_durable}${opt_exchange}${opt_exchange_type}${opt_exclude_tags}${opt_fields}${opt_fields_headers}${opt_frame_max}${opt_host}${opt_key}${opt_password}${opt_persistent}${opt_port}${opt_ssl}${opt_tags}${opt_type}${opt_user}${opt_verify_ssl}${opt_vhost} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0640',
+    content => "output {\n rabbitmq {\n${opt_debug}${opt_durable}${opt_exchange}${opt_exchange_type}${opt_exclude_tags}${opt_fields}${opt_host}${opt_key}${opt_password}${opt_persistent}${opt_port}${opt_ssl}${opt_tags}${opt_type}${opt_user}${opt_verify_ssl}${opt_vhost} }\n}\n",
+    mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

@@ -33,4 +33,21 @@ describe 'logstash::output::null', :type => 'define' do
 
   end
 
+  context "Set file owner" do
+
+    let(:facts) { {:operatingsystem => 'CentOS' }}
+    let(:pre_condition) { 'class {"logstash": logstash_user => "logstash", logstash_group => "logstash" }'}
+    let(:title) { 'test' }
+
+    let :params do {
+      :exclude_tags => ['value1'],
+      :fields => ['value2'],
+      :tags => ['value3'],
+      :type => 'value4',
+    } end
+  
+    it { should contain_file('/etc/logstash/agent/config/output_null_test').with(:owner => 'logstash', :group => 'logstash') }
+
+  end
+
 end

@@ -47,4 +47,28 @@ describe 'logstash::output::loggly', :type => 'define' do
 
   end
 
+  context "Set file owner" do
+
+    let(:facts) { {:operatingsystem => 'CentOS' }}
+    let(:pre_condition) { 'class {"logstash": logstash_user => "logstash", logstash_group => "logstash" }'}
+    let(:title) { 'test' }
+
+    let :params do {
+      :exclude_tags => ['value1'],
+      :fields => ['value2'],
+      :host => 'value3',
+      :key => 'value4',
+      :proto => 'value5',
+      :proxy_host => 'value6',
+      :proxy_password => 'value7',
+      :proxy_port => 8,
+      :proxy_user => 'value9',
+      :tags => ['value10'],
+      :type => 'value11',
+    } end
+  
+    it { should contain_file('/etc/logstash/agent/config/output_loggly_test').with(:owner => 'logstash', :group => 'logstash') }
+
+  end
+
 end

@@ -1,7 +1,11 @@
-0.2.1 ( xxx xx, 2013 )
+0.3.0 ( May 09, 2013 )
+  Update defines for Logstash 1.1.12
   Adding license file
   Deleted old init file removal to avoid issues. ( Issue #50 ) 
   Allow file owner/group to be variable ( Issue/PR #47 )
+  Ensure log directory exists before starting ( PR #53 by Brian Lalor )
+  Provide complete containment of the class ( PR #53 by Brian Lalor )
+  Update rspec tests for new defines
 
 0.2.0 ( Apr 30, 2013 )
   Update defines for logstash 1.1.10

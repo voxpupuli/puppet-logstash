@@ -18,7 +18,7 @@
 #   the event. Any field explicitly set by config options will override
 #   these. ['type', 'subtype', 'creationtime', 'endtime', 'links', 'tags',
 #   'loc']
-#   Value type is bool
+#   Value type is boolean
 #   Default value: false
 #   This variable is optional
 #
@@ -92,26 +92,19 @@
 #   Default value: ""
 #   This variable is optional
 #
-#
 # [*instances*]
 #   Array of instance names to which this define is.
 #   Value type is array
 #   Default value: [ 'array' ]
 #   This variable is optional
 #
-#
-# === Examples
-#
-#
-#
-#
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10
+#  This define is created based on LogStash version 1.1.12
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.10/outputs/boundary
+#  http://logstash.net/docs/1.1.12/outputs/boundary
 #
-#  Need help? http://logstash.net/docs/1.1.10/learn
+#  Need help? http://logstash.net/docs/1.1.12/learn
 #
 # === Authors
 #
@@ -135,10 +128,25 @@ define logstash::output::boundary (
 
   require logstash::params
 
-  $confdirstart = prefix($instances, "${logstash::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/output_boundary_${name}")
-  $services = prefix($instances, 'logstash-')
-  $filesdir = "${logstash::configdir}/files/output/boundary/${name}"
+  File {
+    owner => $logstash::logstash_user,
+    group => $logstash::logstash_group
+  }
+
+  if $logstash::multi_instance == true {
+
+    $confdirstart = prefix($instances, "${logstash::configdir}/")
+    $conffiles    = suffix($confdirstart, "/config/output_boundary_${name}")
+    $services     = prefix($instances, 'logstash-')
+    $filesdir     = "${logstash::configdir}/files/output/boundary/${name}"
+
+  } else {
+
+    $conffiles = "${logstash::configdir}/conf.d/output_boundary_${name}"
+    $services  = 'logstash'
+    $filesdir  = "${logstash::configdir}/files/output/boundary/${name}"
+
+  }
 
   #### Validate parameters
 
@@ -213,9 +221,7 @@ define logstash::output::boundary (
   file { $conffiles:
     ensure  => present,
     content => "output {\n boundary {\n${opt_api_key}${opt_auto}${opt_bsubtype}${opt_btags}${opt_btype}${opt_end_time}${opt_exclude_tags}${opt_fields}${opt_org_id}${opt_start_time}${opt_tags}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0640',
+    mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

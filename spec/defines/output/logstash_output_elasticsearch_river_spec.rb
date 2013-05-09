@@ -73,4 +73,41 @@ describe 'logstash::output::elasticsearch_river', :type => 'define' do
 
   end
 
+  context "Set file owner" do
+
+    let(:facts) { {:operatingsystem => 'CentOS' }}
+    let(:pre_condition) { 'class {"logstash": logstash_user => "logstash", logstash_group => "logstash" }'}
+    let(:title) { 'test' }
+
+    let :params do {
+      :debug => false,
+      :document_id => 'value2',
+      :durable => false,
+      :es_bulk_size => 4,
+      :es_bulk_timeout_ms => 5,
+      :es_host => 'value6',
+      :es_ordered => false,
+      :es_port => 8,
+      :exchange => 'value9',
+      :exchange_type => 'fanout',
+      :exclude_tags => ['value11'],
+      :fields => ['value12'],
+      :index => 'value13',
+      :index_type => 'value14',
+      :key => 'value15',
+      :password => 'value16',
+      :persistent => false,
+      :queue => 'value18',
+      :rabbitmq_host => 'value19',
+      :rabbitmq_port => 20,
+      :tags => ['value21'],
+      :type => 'value22',
+      :user => 'value23',
+      :vhost => 'value24',
+    } end
+  
+    it { should contain_file('/etc/logstash/agent/config/output_elasticsearch_river_test').with(:owner => 'logstash', :group => 'logstash') }
+
+  end
+
 end

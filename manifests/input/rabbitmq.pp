@@ -24,10 +24,8 @@
 #   This variable is optional
 #
 # [*arguments*]
-#   Custom arguments. For example, mirrored queues in RabbitMQ 2.x:  [
-#   "x-ha-policy", "all" ] RabbitMQ 3.x mirrored queues are set by policy.
-#   More information can be found here:
-#   http://www.rabbitmq.com/blog/2012/11/19/breaking-things-with-rabbitmq-3-0/
+#   Your amqp broker's custom arguments. For mirrored queues in RabbitMQ:
+#   [ "x-ha-policy", "all" ]
 #   Value type is array
 #   Default value: []
 #   This variable is optional
@@ -94,7 +92,8 @@
 #   This variable is optional
 #
 # [*exchange*]
-#   The name of the exchange to bind the queue.
+#   The name of the exchange to bind the queue. This is analogous to the
+#   'amqp output' config 'name'
 #   Value type is string
 #   Default value: None
 #   This variable is required
@@ -112,21 +111,8 @@
 #   Default value: None
 #   This variable is optional
 #
-# [*frame_max*]
-#   Maximum permissible size of a frame (in bytes) to negotiate with
-#   clients
-#   Value type is number
-#   Default value: 131072
-#   This variable is optional
-#
-# [*headers_fields*]
-#   Array of headers (in messages' metadata) to add to fields in the event
-#   Value type is array
-#   Default value: {}
-#   This variable is optional
-#
 # [*host*]
-#   Your rabbitmq server address
+#   Your amqp server address
 #   Value type is string
 #   Default value: None
 #   This variable is required
@@ -157,13 +143,13 @@
 #   This variable is optional
 #
 # [*password*]
-#   Your rabbitmq password
+#   Your amqp password
 #   Value type is password
 #   Default value: "guest"
 #   This variable is optional
 #
 # [*port*]
-#   The rabbitmq port to connect on
+#   The AMQP port to connect on
 #   Value type is number
 #   Default value: 5672
 #   This variable is optional
@@ -215,7 +201,7 @@
 #   This variable is required
 #
 # [*user*]
-#   Your rabbitmq username
+#   Your amqp username
 #   Value type is string
 #   Default value: "guest"
 #   This variable is optional
@@ -232,26 +218,19 @@
 #   Default value: "/"
 #   This variable is optional
 #
-#
 # [*instances*]
 #   Array of instance names to which this define is.
 #   Value type is array
 #   Default value: [ 'array' ]
 #   This variable is optional
 #
-#
-# === Examples
-#
-#
-#
-#
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10
+#  This define is created based on LogStash version 1.1.12
 #  Extra information about this input can be found at:
-#  http://logstash.net/docs/1.1.10/inputs/rabbitmq
+#  http://logstash.net/docs/1.1.12/inputs/rabbitmq
 #
-#  Need help? http://logstash.net/docs/1.1.10/learn
+#  Need help? http://logstash.net/docs/1.1.12/learn
 #
 # === Authors
 #
@@ -261,17 +240,15 @@ define logstash::input::rabbitmq (
   $exchange,
   $type,
   $host,
-  $message_format = '',
   $charset        = '',
   $debug          = '',
   $durable        = '',
   $ack            = '',
   $exclusive      = '',
   $format         = '',
-  $frame_max      = '',
-  $headers_fields = '',
   $arguments      = '',
   $key            = '',
+  $message_format = '',
   $auto_delete    = '',
   $passive        = '',
   $password       = '',
@@ -290,10 +267,25 @@ define logstash::input::rabbitmq (
 
   require logstash::params
 
-  $confdirstart = prefix($instances, "${logstash::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/input_rabbitmq_${name}")
-  $services = prefix($instances, 'logstash-')
-  $filesdir = "${logstash::configdir}/files/input/rabbitmq/${name}"
+  File {
+    owner => $logstash::logstash_user,
+    group => $logstash::logstash_group
+  }
+
+  if $logstash::multi_instance == true {
+
+    $confdirstart = prefix($instances, "${logstash::configdir}/")
+    $conffiles    = suffix($confdirstart, "/config/input_rabbitmq_${name}")
+    $services     = prefix($instances, 'logstash-')
+    $filesdir     = "${logstash::configdir}/files/input/rabbitmq/${name}"
+
+  } else {
+
+    $conffiles = "${logstash::configdir}/conf.d/input_rabbitmq_${name}"
+    $services  = 'logstash'
+    $filesdir  = "${logstash::configdir}/files/input/rabbitmq/${name}"
+
+  }
 
   #### Validate parameters
 
@@ -311,20 +303,19 @@ define logstash::input::rabbitmq (
     $opt_arguments = "  arguments => ['${arr_arguments}']\n"
   }
 
-  if ($headers_fields != '') {
-    validate_array($headers_fields)
-    $arr_headers_fields = join($headers_fields, '\', \'')
-    $opt_headers_fields = "  headers_fields => ['${arr_headers_fields}']\n"
-  }
-
-  if ($auto_delete != '') {
-    validate_bool($auto_delete)
-    $opt_auto_delete = "  auto_delete => ${auto_delete}\n"
+  if ($debug != '') {
+    validate_bool($debug)
+    $opt_debug = "  debug => ${debug}\n"
   }
 
   if ($verify_ssl != '') {
     validate_bool($verify_ssl)
     $opt_verify_ssl = "  verify_ssl => ${verify_ssl}\n"
+  }
+
+  if ($auto_delete != '') {
+    validate_bool($auto_delete)
+    $opt_auto_delete = "  auto_delete => ${auto_delete}\n"
   }
 
   if ($durable != '') {
@@ -347,11 +338,6 @@ define logstash::input::rabbitmq (
     $opt_passive = "  passive => ${passive}\n"
   }
 
-  if ($debug != '') {
-    validate_bool($debug)
-    $opt_debug = "  debug => ${debug}\n"
-  }
-
   if ($ack != '') {
     validate_bool($ack)
     $opt_ack = "  ack => ${ack}\n"
@@ -359,7 +345,8 @@ define logstash::input::rabbitmq (
 
   if ($add_field != '') {
     validate_hash($add_field)
-    $arr_add_field = inline_template('<%= add_field.to_a.flatten.inspect %>')
+    $var_add_field = $add_field
+    $arr_add_field = inline_template('<%= "["+var_add_field.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_add_field = "  add_field => ${arr_add_field}\n"
   }
 
@@ -368,14 +355,6 @@ define logstash::input::rabbitmq (
       fail("\"${threads}\" is not a valid threads parameter value")
     } else {
       $opt_threads = "  threads => ${threads}\n"
-    }
-  }
-
-  if ($frame_max != '') {
-    if ! is_numeric($frame_max) {
-      fail("\"${frame_max}\" is not a valid frame_max parameter value")
-    } else {
-      $opt_frame_max = "  frame_max => ${frame_max}\n"
     }
   }
 
@@ -395,19 +374,19 @@ define logstash::input::rabbitmq (
     }
   }
 
-  if ($format != '') {
-    if ! ($format in ['plain', 'json', 'json_event', 'msgpack_event']) {
-      fail("\"${format}\" is not a valid format parameter value")
-    } else {
-      $opt_format = "  format => \"${format}\"\n"
-    }
-  }
-
   if ($charset != '') {
     if ! ($charset in ['ASCII-8BIT', 'UTF-8', 'US-ASCII', 'Big5', 'Big5-HKSCS', 'Big5-UAO', 'CP949', 'Emacs-Mule', 'EUC-JP', 'EUC-KR', 'EUC-TW', 'GB18030', 'GBK', 'ISO-8859-1', 'ISO-8859-2', 'ISO-8859-3', 'ISO-8859-4', 'ISO-8859-5', 'ISO-8859-6', 'ISO-8859-7', 'ISO-8859-8', 'ISO-8859-9', 'ISO-8859-10', 'ISO-8859-11', 'ISO-8859-13', 'ISO-8859-14', 'ISO-8859-15', 'ISO-8859-16', 'KOI8-R', 'KOI8-U', 'Shift_JIS', 'UTF-16BE', 'UTF-16LE', 'UTF-32BE', 'UTF-32LE', 'Windows-1251', 'BINARY', 'IBM437', 'CP437', 'IBM737', 'CP737', 'IBM775', 'CP775', 'CP850', 'IBM850', 'IBM852', 'CP852', 'IBM855', 'CP855', 'IBM857', 'CP857', 'IBM860', 'CP860', 'IBM861', 'CP861', 'IBM862', 'CP862', 'IBM863', 'CP863', 'IBM864', 'CP864', 'IBM865', 'CP865', 'IBM866', 'CP866', 'IBM869', 'CP869', 'Windows-1258', 'CP1258', 'GB1988', 'macCentEuro', 'macCroatian', 'macCyrillic', 'macGreek', 'macIceland', 'macRoman', 'macRomania', 'macThai', 'macTurkish', 'macUkraine', 'CP950', 'Big5-HKSCS:2008', 'CP951', 'stateless-ISO-2022-JP', 'eucJP', 'eucJP-ms', 'euc-jp-ms', 'CP51932', 'eucKR', 'eucTW', 'GB2312', 'EUC-CN', 'eucCN', 'GB12345', 'CP936', 'ISO-2022-JP', 'ISO2022-JP', 'ISO-2022-JP-2', 'ISO2022-JP2', 'CP50220', 'CP50221', 'ISO8859-1', 'Windows-1252', 'CP1252', 'ISO8859-2', 'Windows-1250', 'CP1250', 'ISO8859-3', 'ISO8859-4', 'ISO8859-5', 'ISO8859-6', 'Windows-1256', 'CP1256', 'ISO8859-7', 'Windows-1253', 'CP1253', 'ISO8859-8', 'Windows-1255', 'CP1255', 'ISO8859-9', 'Windows-1254', 'CP1254', 'ISO8859-10', 'ISO8859-11', 'TIS-620', 'Windows-874', 'CP874', 'ISO8859-13', 'Windows-1257', 'CP1257', 'ISO8859-14', 'ISO8859-15', 'ISO8859-16', 'CP878', 'Windows-31J', 'CP932', 'csWindows31J', 'SJIS', 'PCK', 'MacJapanese', 'MacJapan', 'ASCII', 'ANSI_X3.4-1968', '646', 'UTF-7', 'CP65000', 'CP65001', 'UTF8-MAC', 'UTF-8-MAC', 'UTF-8-HFS', 'UTF-16', 'UTF-32', 'UCS-2BE', 'UCS-4BE', 'UCS-4LE', 'CP1251', 'UTF8-DoCoMo', 'SJIS-DoCoMo', 'UTF8-KDDI', 'SJIS-KDDI', 'ISO-2022-JP-KDDI', 'stateless-ISO-2022-JP-KDDI', 'UTF8-SoftBank', 'SJIS-SoftBank', 'locale', 'external', 'filesystem', 'internal']) {
       fail("\"${charset}\" is not a valid charset parameter value")
     } else {
       $opt_charset = "  charset => \"${charset}\"\n"
+    }
+  }
+
+  if ($format != '') {
+    if ! ($format in ['plain', 'json', 'json_event', 'msgpack_event']) {
+      fail("\"${format}\" is not a valid format parameter value")
+    } else {
+      $opt_format = "  format => \"${format}\"\n"
     }
   }
 
@@ -426,6 +405,11 @@ define logstash::input::rabbitmq (
     $opt_queue = "  queue => \"${queue}\"\n"
   }
 
+  if ($key != '') {
+    validate_string($key)
+    $opt_key = "  key => \"${key}\"\n"
+  }
+
   if ($host != '') {
     validate_string($host)
     $opt_host = "  host => \"${host}\"\n"
@@ -441,9 +425,9 @@ define logstash::input::rabbitmq (
     $opt_user = "  user => \"${user}\"\n"
   }
 
-  if ($key != '') {
-    validate_string($key)
-    $opt_key = "  key => \"${key}\"\n"
+  if ($message_format != '') {
+    validate_string($message_format)
+    $opt_message_format = "  message_format => \"${message_format}\"\n"
   }
 
   if ($vhost != '') {
@@ -451,19 +435,12 @@ define logstash::input::rabbitmq (
     $opt_vhost = "  vhost => \"${vhost}\"\n"
   }
 
-  if ($message_format != '') {
-    validate_string($message_format)
-    $opt_message_format = "  message_format => \"${message_format}\"\n"
-  }
-
   #### Write config file
 
   file { $conffiles:
     ensure  => present,
-    content => "input {\n rabbitmq {\n${opt_ack}${opt_add_field}${opt_arguments}${opt_auto_delete}${opt_charset}${opt_debug}${opt_durable}${opt_exchange}${opt_exclusive}${opt_format}${opt_frame_max}${opt_headers_fields}${opt_host}${opt_key}${opt_message_format}${opt_passive}${opt_password}${opt_port}${opt_prefetch_count}${opt_queue}${opt_ssl}${opt_tags}${opt_threads}${opt_type}${opt_user}${opt_verify_ssl}${opt_vhost} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0640',
+    content => "input {\n rabbitmq {\n${opt_ack}${opt_add_field}${opt_arguments}${opt_auto_delete}${opt_charset}${opt_debug}${opt_durable}${opt_exchange}${opt_exclusive}${opt_format}${opt_host}${opt_key}${opt_message_format}${opt_passive}${opt_password}${opt_port}${opt_prefetch_count}${opt_queue}${opt_ssl}${opt_tags}${opt_threads}${opt_type}${opt_user}${opt_verify_ssl}${opt_vhost} }\n}\n",
+    mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

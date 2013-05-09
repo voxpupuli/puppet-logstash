@@ -49,4 +49,29 @@ describe 'logstash::output::http', :type => 'define' do
 
   end
 
+  context "Set file owner" do
+
+    let(:facts) { {:operatingsystem => 'CentOS' }}
+    let(:pre_condition) { 'class {"logstash": logstash_user => "logstash", logstash_group => "logstash" }'}
+    let(:title) { 'test' }
+
+    let :params do {
+      :content_type => 'value1',
+      :exclude_tags => ['value2'],
+      :fields => ['value3'],
+      :format => 'json',
+      :headers => { 'field5' => 'value5' },
+      :http_method => 'put',
+      :mapping => { 'field7' => 'value7' },
+      :message => 'value8',
+      :tags => ['value9'],
+      :type => 'value10',
+      :url => 'value11',
+      :verify_ssl => false,
+    } end
+  
+    it { should contain_file('/etc/logstash/agent/config/output_http_test').with(:owner => 'logstash', :group => 'logstash') }
+
+  end
+
 end

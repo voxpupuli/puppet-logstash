@@ -81,26 +81,19 @@
 #   Default value: ""
 #   This variable is optional
 #
-#
 # [*instances*]
 #   Array of instance names to which this define is.
 #   Value type is array
 #   Default value: [ 'array' ]
 #   This variable is optional
 #
-#
-# === Examples
-#
-#
-#
-#
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10
+#  This define is created based on LogStash version 1.1.12
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.10/outputs/juggernaut
+#  http://logstash.net/docs/1.1.12/outputs/juggernaut
 #
-#  Need help? http://logstash.net/docs/1.1.10/learn
+#  Need help? http://logstash.net/docs/1.1.12/learn
 #
 # === Authors
 #
@@ -123,10 +116,25 @@ define logstash::output::juggernaut (
 
   require logstash::params
 
-  $confdirstart = prefix($instances, "${logstash::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/output_juggernaut_${name}")
-  $services = prefix($instances, 'logstash-')
-  $filesdir = "${logstash::configdir}/files/output/juggernaut/${name}"
+  File {
+    owner => $logstash::logstash_user,
+    group => $logstash::logstash_group
+  }
+
+  if $logstash::multi_instance == true {
+
+    $confdirstart = prefix($instances, "${logstash::configdir}/")
+    $conffiles    = suffix($confdirstart, "/config/output_juggernaut_${name}")
+    $services     = prefix($instances, 'logstash-')
+    $filesdir     = "${logstash::configdir}/files/output/juggernaut/${name}"
+
+  } else {
+
+    $conffiles = "${logstash::configdir}/conf.d/output_juggernaut_${name}"
+    $services  = 'logstash'
+    $filesdir  = "${logstash::configdir}/files/output/juggernaut/${name}"
+
+  }
 
   #### Validate parameters
   if ($channels != '') {
@@ -205,9 +213,7 @@ define logstash::output::juggernaut (
   file { $conffiles:
     ensure  => present,
     content => "output {\n juggernaut {\n${opt_channels}${opt_db}${opt_exclude_tags}${opt_fields}${opt_host}${opt_message_format}${opt_password}${opt_port}${opt_tags}${opt_timeout}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0640',
+    mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

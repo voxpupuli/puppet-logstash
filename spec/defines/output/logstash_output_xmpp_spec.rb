@@ -45,4 +45,27 @@ describe 'logstash::output::xmpp', :type => 'define' do
 
   end
 
+  context "Set file owner" do
+
+    let(:facts) { {:operatingsystem => 'CentOS' }}
+    let(:pre_condition) { 'class {"logstash": logstash_user => "logstash", logstash_group => "logstash" }'}
+    let(:title) { 'test' }
+
+    let :params do {
+      :exclude_tags => ['value1'],
+      :fields => ['value2'],
+      :host => 'value3',
+      :message => 'value4',
+      :password => 'value5',
+      :rooms => ['value6'],
+      :tags => ['value7'],
+      :type => 'value8',
+      :user => 'value9',
+      :users => ['value10'],
+    } end
+  
+    it { should contain_file('/etc/logstash/agent/config/output_xmpp_test').with(:owner => 'logstash', :group => 'logstash') }
+
+  end
+
 end

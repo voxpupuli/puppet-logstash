@@ -67,26 +67,19 @@
 #   Default value: "/usr/local/bin/zabbix_sender"
 #   This variable is optional
 #
-#
 # [*instances*]
 #   Array of instance names to which this define is.
 #   Value type is array
 #   Default value: [ 'array' ]
 #   This variable is optional
 #
-#
-# === Examples
-#
-#
-#
-#
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10
+#  This define is created based on LogStash version 1.1.12
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.10/outputs/zabbix
+#  http://logstash.net/docs/1.1.12/outputs/zabbix
 #
-#  Need help? http://logstash.net/docs/1.1.10/learn
+#  Need help? http://logstash.net/docs/1.1.12/learn
 #
 # === Authors
 #
@@ -105,10 +98,25 @@ define logstash::output::zabbix (
 
   require logstash::params
 
-  $confdirstart = prefix($instances, "${logstash::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/output_zabbix_${name}")
-  $services = prefix($instances, 'logstash-')
-  $filesdir = "${logstash::configdir}/files/output/zabbix/${name}"
+  File {
+    owner => $logstash::logstash_user,
+    group => $logstash::logstash_group
+  }
+
+  if $logstash::multi_instance == true {
+
+    $confdirstart = prefix($instances, "${logstash::configdir}/")
+    $conffiles    = suffix($confdirstart, "/config/output_zabbix_${name}")
+    $services     = prefix($instances, 'logstash-')
+    $filesdir     = "${logstash::configdir}/files/output/zabbix/${name}"
+
+  } else {
+
+    $conffiles = "${logstash::configdir}/conf.d/output_zabbix_${name}"
+    $services  = 'logstash'
+    $filesdir  = "${logstash::configdir}/files/output/zabbix/${name}"
+
+  }
 
   #### Validate parameters
   if ($exclude_tags != '') {
@@ -152,9 +160,7 @@ define logstash::output::zabbix (
 
       file { "${filesdir}/${basefilename_zabbix_sender}":
         source  => $zabbix_sender,
-        owner   => 'root',
-        group   => 'root',
-        mode    => '0640',
+        mode    => '0440',
         require => File[$filesdir]
       }
     } else {
@@ -184,8 +190,6 @@ define logstash::output::zabbix (
   #### Manage the files directory
   file { $filesdir:
     ensure  => directory,
-    owner   => 'root',
-    group   => 'root',
     mode    => '0640',
     purge   => true,
     recurse => true,
@@ -198,9 +202,7 @@ define logstash::output::zabbix (
   file { $conffiles:
     ensure  => present,
     content => "output {\n zabbix {\n${opt_exclude_tags}${opt_fields}${opt_host}${opt_port}${opt_tags}${opt_type}${opt_zabbix_sender} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0640',
+    mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

@@ -3,8 +3,6 @@
 # This class is able to install or remove logstash on a node.
 # It manages the status of the related service.
 #
-# [Add description - What does this module do on a node?] FIXME/TODO
-#
 #
 # === Parameters
 #
@@ -88,6 +86,7 @@ class logstash(
   $java_install   = false,
   $java_package   = undef,
   $instances      = [ 'agent' ],
+  $multi_instance = true,
   $initfiles      = undef,
   $defaultsfiles  = undef,
   $logstash_user  = $logstash::params::logstash_user,

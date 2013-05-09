@@ -38,13 +38,6 @@
 #   Default value: "logstash"
 #   This variable is optional
 #
-# [*notify*]
-#   Whether or not this message should trigger a notification for people
-#   in the room.
-#   Value type is boolean
-#   Default value: false
-#   This variable is optional
-#
 # [*room_id*]
 #   The ID or name of the room.
 #   Value type is string
@@ -64,6 +57,13 @@
 #   Default value: None
 #   This variable is required
 #
+# [*trigger_notify*]
+#   Whether or not this message should trigger a notification for people
+#   in the room.
+#   Value type is boolean
+#   Default value: false
+#   This variable is optional
+#
 # [*type*]
 #   The type to act on. If a type is given, then this output will only act
 #   on messages with the same type. See any input plugin's "type"
@@ -72,26 +72,19 @@
 #   Default value: ""
 #   This variable is optional
 #
-#
 # [*instances*]
 #   Array of instance names to which this define is.
 #   Value type is array
 #   Default value: [ 'array' ]
 #   This variable is optional
 #
-#
-# === Examples
-#
-#
-#
-#
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10
+#  This define is created based on LogStash version 1.1.12
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.10/outputs/hipchat
+#  http://logstash.net/docs/1.1.12/outputs/hipchat
 #
-#  Need help? http://logstash.net/docs/1.1.10/learn
+#  Need help? http://logstash.net/docs/1.1.12/learn
 #
 # === Authors
 #
@@ -100,23 +93,38 @@
 define logstash::output::hipchat (
   $room_id,
   $token,
-  $notify       = '',
-  $format       = '',
-  $from         = '',
-  $fields       = '',
-  $color        = '',
-  $tags         = '',
-  $exclude_tags = '',
-  $type         = '',
-  $instances    = [ 'agent' ]
+  $color          = '',
+  $format         = '',
+  $from           = '',
+  $fields         = '',
+  $tags           = '',
+  $exclude_tags   = '',
+  $trigger_notify = '',
+  $type           = '',
+  $instances      = [ 'agent' ]
 ) {
 
   require logstash::params
 
-  $confdirstart = prefix($instances, "${logstash::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/output_hipchat_${name}")
-  $services = prefix($instances, 'logstash-')
-  $filesdir = "${logstash::configdir}/files/output/hipchat/${name}"
+  File {
+    owner => $logstash::logstash_user,
+    group => $logstash::logstash_group
+  }
+
+  if $logstash::multi_instance == true {
+
+    $confdirstart = prefix($instances, "${logstash::configdir}/")
+    $conffiles    = suffix($confdirstart, "/config/output_hipchat_${name}")
+    $services     = prefix($instances, 'logstash-')
+    $filesdir     = "${logstash::configdir}/files/output/hipchat/${name}"
+
+  } else {
+
+    $conffiles = "${logstash::configdir}/conf.d/output_hipchat_${name}"
+    $services  = 'logstash'
+    $filesdir  = "${logstash::configdir}/files/output/hipchat/${name}"
+
+  }
 
   #### Validate parameters
 
@@ -128,26 +136,21 @@ define logstash::output::hipchat (
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
-  if ($fields != '') {
-    validate_array($fields)
-    $arr_fields = join($fields, '\', \'')
-    $opt_fields = "  fields => ['${arr_fields}']\n"
-  }
-
   if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
     $opt_tags = "  tags => ['${arr_tags}']\n"
   }
 
-  if ($notify != '') {
-    validate_bool($notify)
-    $opt_notify = "  notify => ${notify}\n"
+  if ($fields != '') {
+    validate_array($fields)
+    $arr_fields = join($fields, '\', \'')
+    $opt_fields = "  fields => ['${arr_fields}']\n"
   }
 
-  if ($from != '') {
-    validate_string($from)
-    $opt_from = "  from => \"${from}\"\n"
+  if ($trigger_notify != '') {
+    validate_bool($trigger_notify)
+    $opt_trigger_notify = "  trigger_notify => ${trigger_notify}\n"
   }
 
   if ($room_id != '') {
@@ -155,14 +158,19 @@ define logstash::output::hipchat (
     $opt_room_id = "  room_id => \"${room_id}\"\n"
   }
 
-  if ($format != '') {
-    validate_string($format)
-    $opt_format = "  format => \"${format}\"\n"
+  if ($from != '') {
+    validate_string($from)
+    $opt_from = "  from => \"${from}\"\n"
   }
 
   if ($token != '') {
     validate_string($token)
     $opt_token = "  token => \"${token}\"\n"
+  }
+
+  if ($format != '') {
+    validate_string($format)
+    $opt_format = "  format => \"${format}\"\n"
   }
 
   if ($type != '') {
@@ -179,10 +187,8 @@ define logstash::output::hipchat (
 
   file { $conffiles:
     ensure  => present,
-    content => "output {\n hipchat {\n${opt_color}${opt_exclude_tags}${opt_fields}${opt_format}${opt_from}${opt_notify}${opt_room_id}${opt_tags}${opt_token}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0640',
+    content => "output {\n hipchat {\n${opt_color}${opt_exclude_tags}${opt_fields}${opt_format}${opt_from}${opt_room_id}${opt_tags}${opt_token}${opt_trigger_notify}${opt_type} }\n}\n",
+    mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

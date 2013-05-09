@@ -47,4 +47,28 @@ describe 'logstash::input::drupal_dblog', :type => 'define' do
 
   end
 
+  context "Set file owner" do
+
+    let(:facts) { {:operatingsystem => 'CentOS' }}
+    let(:pre_condition) { 'class {"logstash": logstash_user => "logstash", logstash_group => "logstash" }'}
+    let(:title) { 'test' }
+
+    let :params do {
+      :add_field => { 'field1' => 'value1' },
+      :add_usernames => false,
+      :bulksize => 3,
+      :charset => 'ASCII-8BIT',
+      :databases => { 'field5' => 'value5' },
+      :debug => false,
+      :format => 'plain',
+      :interval => 8,
+      :message_format => 'value9',
+      :tags => ['value10'],
+      :type => 'value11',
+    } end
+  
+    it { should contain_file('/etc/logstash/agent/config/input_drupal_dblog_test').with(:owner => 'logstash', :group => 'logstash') }
+
+  end
+
 end

@@ -53,4 +53,31 @@ describe 'logstash::input::twitter', :type => 'define' do
 
   end
 
+  context "Set file owner" do
+
+    let(:facts) { {:operatingsystem => 'CentOS' }}
+    let(:pre_condition) { 'class {"logstash": logstash_user => "logstash", logstash_group => "logstash" }'}
+    let(:title) { 'test' }
+
+    let :params do {
+      :add_field => { 'field1' => 'value1' },
+      :charset => 'ASCII-8BIT',
+      :debug => false,
+      :format => 'plain',
+      :keywords => ['value5'],
+      :message_format => 'value6',
+      :password => 'value7',
+      :proxy_host => 'value8',
+      :proxy_password => 'value9',
+      :proxy_port => 10,
+      :proxy_user => 'value11',
+      :tags => ['value12'],
+      :type => 'value13',
+      :user => 'value14',
+    } end
+  
+    it { should contain_file('/etc/logstash/agent/config/input_twitter_test').with(:owner => 'logstash', :group => 'logstash') }
+
+  end
+
 end

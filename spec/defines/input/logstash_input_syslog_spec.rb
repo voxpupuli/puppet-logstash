@@ -49,4 +49,29 @@ describe 'logstash::input::syslog', :type => 'define' do
 
   end
 
+  context "Set file owner" do
+
+    let(:facts) { {:operatingsystem => 'CentOS' }}
+    let(:pre_condition) { 'class {"logstash": logstash_user => "logstash", logstash_group => "logstash" }'}
+    let(:title) { 'test' }
+
+    let :params do {
+      :add_field => { 'field1' => 'value1' },
+      :charset => 'ASCII-8BIT',
+      :debug => false,
+      :facility_labels => ['value4'],
+      :format => 'plain',
+      :host => 'value6',
+      :message_format => 'value7',
+      :port => 8,
+      :severity_labels => ['value9'],
+      :tags => ['value10'],
+      :type => 'value11',
+      :use_labels => false,
+    } end
+  
+    it { should contain_file('/etc/logstash/agent/config/input_syslog_test').with(:owner => 'logstash', :group => 'logstash') }
+
+  end
+
 end

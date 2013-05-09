@@ -43,4 +43,26 @@ describe 'logstash::input::websocket', :type => 'define' do
 
   end
 
+  context "Set file owner" do
+
+    let(:facts) { {:operatingsystem => 'CentOS' }}
+    let(:pre_condition) { 'class {"logstash": logstash_user => "logstash", logstash_group => "logstash" }'}
+    let(:title) { 'test' }
+
+    let :params do {
+      :add_field => { 'field1' => 'value1' },
+      :charset => 'ASCII-8BIT',
+      :debug => false,
+      :format => 'plain',
+      :message_format => 'value5',
+      :mode => 'server',
+      :tags => ['value7'],
+      :type => 'value8',
+      :url => 'value9',
+    } end
+  
+    it { should contain_file('/etc/logstash/agent/config/input_websocket_test').with(:owner => 'logstash', :group => 'logstash') }
+
+  end
+
 end

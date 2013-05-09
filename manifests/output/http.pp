@@ -90,26 +90,19 @@
 #   Default value: true
 #   This variable is optional
 #
-#
 # [*instances*]
 #   Array of instance names to which this define is.
 #   Value type is array
 #   Default value: [ 'array' ]
 #   This variable is optional
 #
-#
-# === Examples
-#
-#
-#
-#
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10
+#  This define is created based on LogStash version 1.1.12
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.10/outputs/http
+#  http://logstash.net/docs/1.1.12/outputs/http
 #
-#  Need help? http://logstash.net/docs/1.1.10/learn
+#  Need help? http://logstash.net/docs/1.1.12/learn
 #
 # === Authors
 #
@@ -133,10 +126,25 @@ define logstash::output::http (
 
   require logstash::params
 
-  $confdirstart = prefix($instances, "${logstash::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/output_http_${name}")
-  $services = prefix($instances, 'logstash-')
-  $filesdir = "${logstash::configdir}/files/output/http/${name}"
+  File {
+    owner => $logstash::logstash_user,
+    group => $logstash::logstash_group
+  }
+
+  if $logstash::multi_instance == true {
+
+    $confdirstart = prefix($instances, "${logstash::configdir}/")
+    $conffiles    = suffix($confdirstart, "/config/output_http_${name}")
+    $services     = prefix($instances, 'logstash-')
+    $filesdir     = "${logstash::configdir}/files/output/http/${name}"
+
+  } else {
+
+    $conffiles = "${logstash::configdir}/conf.d/output_http_${name}"
+    $services  = 'logstash'
+    $filesdir  = "${logstash::configdir}/files/output/http/${name}"
+
+  }
 
   #### Validate parameters
 
@@ -167,13 +175,15 @@ define logstash::output::http (
 
   if ($headers != '') {
     validate_hash($headers)
-    $arr_headers = inline_template('<%= headers.to_a.flatten.inspect %>')
+    $var_headers = $headers
+    $arr_headers = inline_template('<%= "["+var_headers.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_headers = "  headers => ${arr_headers}\n"
   }
 
   if ($mapping != '') {
     validate_hash($mapping)
-    $arr_mapping = inline_template('<%= mapping.to_a.flatten.inspect %>')
+    $var_mapping = $mapping
+    $arr_mapping = inline_template('<%= "["+var_mapping.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_mapping = "  mapping => ${arr_mapping}\n"
   }
 
@@ -218,9 +228,7 @@ define logstash::output::http (
   file { $conffiles:
     ensure  => present,
     content => "output {\n http {\n${opt_content_type}${opt_exclude_tags}${opt_fields}${opt_format}${opt_headers}${opt_http_method}${opt_mapping}${opt_message}${opt_tags}${opt_type}${opt_url}${opt_verify_ssl} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0640',
+    mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

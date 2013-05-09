@@ -33,6 +33,13 @@
 #   Default value: "localhost"
 #   This variable is optional
 #
+# [*message_format*]
+#   The format to use when writing events to nagios. This value supports
+#   any string and can include %{name} and other dynamic strings.
+#   Value type is string
+#   Default value: "%{@timestamp} %{@source}: %{@message}"
+#   This variable is optional
+#
 # [*nagios_host*]
 #   The nagios 'host' you want to submit a passive check result to. This
 #   parameter accepts interpolation, e.g. you can use @source_host or
@@ -90,26 +97,19 @@
 #   Default value: ""
 #   This variable is optional
 #
-#
 # [*instances*]
 #   Array of instance names to which this define is.
 #   Value type is array
 #   Default value: [ 'array' ]
 #   This variable is optional
 #
-#
-# === Examples
-#
-#
-#
-#
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10
+#  This define is created based on LogStash version 1.1.12
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.10/outputs/nagios_nsca
+#  http://logstash.net/docs/1.1.12/outputs/nagios_nsca
 #
-#  Need help? http://logstash.net/docs/1.1.10/learn
+#  Need help? http://logstash.net/docs/1.1.12/learn
 #
 # === Authors
 #
@@ -117,12 +117,13 @@
 #
 define logstash::output::nagios_nsca (
   $nagios_status,
-  $port             = '',
+  $exclude_tags     = '',
   $host             = '',
+  $message_format   = '',
   $nagios_host      = '',
   $nagios_service   = '',
-  $exclude_tags     = '',
   $fields           = '',
+  $port             = '',
   $send_nsca_bin    = '',
   $send_nsca_config = '',
   $tags             = '',
@@ -132,10 +133,25 @@ define logstash::output::nagios_nsca (
 
   require logstash::params
 
-  $confdirstart = prefix($instances, "${logstash::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/output_nagios_nsca_${name}")
-  $services = prefix($instances, 'logstash-')
-  $filesdir = "${logstash::configdir}/files/output/nagios_nsca/${name}"
+  File {
+    owner => $logstash::logstash_user,
+    group => $logstash::logstash_group
+  }
+
+  if $logstash::multi_instance == true {
+
+    $confdirstart = prefix($instances, "${logstash::configdir}/")
+    $conffiles    = suffix($confdirstart, "/config/output_nagios_nsca_${name}")
+    $services     = prefix($instances, 'logstash-')
+    $filesdir     = "${logstash::configdir}/files/output/nagios_nsca/${name}"
+
+  } else {
+
+    $conffiles = "${logstash::configdir}/conf.d/output_nagios_nsca_${name}"
+    $services  = 'logstash'
+    $filesdir  = "${logstash::configdir}/files/output/nagios_nsca/${name}"
+
+  }
 
   #### Validate parameters
   if ($exclude_tags != '') {
@@ -167,28 +183,6 @@ define logstash::output::nagios_nsca (
     }
   }
 
-  if ($send_nsca_bin != '') {
-    if $send_nsca_bin =~ /^puppet\:\/\// {
-
-      validate_re($send_nsca_bin, '\Apuppet:\/\/')
-
-      $filenameArray_send_nsca_bin = split($send_nsca_bin, '/')
-      $basefilename_send_nsca_bin = $filenameArray_send_nsca_bin[-1]
-
-      $opt_send_nsca_bin = "  send_nsca_bin => \"${filesdir}/${basefilename_send_nsca_bin}\"\n"
-
-      file { "${filesdir}/${basefilename_send_nsca_bin}":
-        source  => $send_nsca_bin,
-        owner   => 'root',
-        group   => 'root',
-        mode    => '0640',
-        require => File[$filesdir]
-      }
-    } else {
-      $opt_send_nsca_bin = "  send_nsca_bin => \"${send_nsca_bin}\"\n"
-    }
-  }
-
   if ($send_nsca_config != '') {
     if $send_nsca_config =~ /^puppet\:\/\// {
 
@@ -201,13 +195,31 @@ define logstash::output::nagios_nsca (
 
       file { "${filesdir}/${basefilename_send_nsca_config}":
         source  => $send_nsca_config,
-        owner   => 'root',
-        group   => 'root',
-        mode    => '0640',
+        mode    => '0440',
         require => File[$filesdir]
       }
     } else {
       $opt_send_nsca_config = "  send_nsca_config => \"${send_nsca_config}\"\n"
+    }
+  }
+
+  if ($send_nsca_bin != '') {
+    if $send_nsca_bin =~ /^puppet\:\/\// {
+
+      validate_re($send_nsca_bin, '\Apuppet:\/\/')
+
+      $filenameArray_send_nsca_bin = split($send_nsca_bin, '/')
+      $basefilename_send_nsca_bin = $filenameArray_send_nsca_bin[-1]
+
+      $opt_send_nsca_bin = "  send_nsca_bin => \"${filesdir}/${basefilename_send_nsca_bin}\"\n"
+
+      file { "${filesdir}/${basefilename_send_nsca_bin}":
+        source  => $send_nsca_bin,
+        mode    => '0440',
+        require => File[$filesdir]
+      }
+    } else {
+      $opt_send_nsca_bin = "  send_nsca_bin => \"${send_nsca_bin}\"\n"
     }
   }
 
@@ -216,9 +228,14 @@ define logstash::output::nagios_nsca (
     $opt_nagios_host = "  nagios_host => \"${nagios_host}\"\n"
   }
 
-  if ($nagios_status != '') {
-    validate_string($nagios_status)
-    $opt_nagios_status = "  nagios_status => \"${nagios_status}\"\n"
+  if ($message_format != '') {
+    validate_string($message_format)
+    $opt_message_format = "  message_format => \"${message_format}\"\n"
+  }
+
+  if ($nagios_service != '') {
+    validate_string($nagios_service)
+    $opt_nagios_service = "  nagios_service => \"${nagios_service}\"\n"
   }
 
   if ($host != '') {
@@ -231,9 +248,9 @@ define logstash::output::nagios_nsca (
     $opt_type = "  type => \"${type}\"\n"
   }
 
-  if ($nagios_service != '') {
-    validate_string($nagios_service)
-    $opt_nagios_service = "  nagios_service => \"${nagios_service}\"\n"
+  if ($nagios_status != '') {
+    validate_string($nagios_status)
+    $opt_nagios_status = "  nagios_status => \"${nagios_status}\"\n"
   }
 
 
@@ -248,8 +265,6 @@ define logstash::output::nagios_nsca (
   #### Manage the files directory
   file { $filesdir:
     ensure  => directory,
-    owner   => 'root',
-    group   => 'root',
     mode    => '0640',
     purge   => true,
     recurse => true,
@@ -261,10 +276,8 @@ define logstash::output::nagios_nsca (
 
   file { $conffiles:
     ensure  => present,
-    content => "output {\n nagios_nsca {\n${opt_exclude_tags}${opt_fields}${opt_host}${opt_nagios_host}${opt_nagios_service}${opt_nagios_status}${opt_port}${opt_send_nsca_bin}${opt_send_nsca_config}${opt_tags}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0640',
+    content => "output {\n nagios_nsca {\n${opt_exclude_tags}${opt_fields}${opt_host}${opt_message_format}${opt_nagios_host}${opt_nagios_service}${opt_nagios_status}${opt_port}${opt_send_nsca_bin}${opt_send_nsca_config}${opt_tags}${opt_type} }\n}\n",
+    mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

@@ -41,4 +41,25 @@ describe 'logstash::filter::date', :type => 'define' do
 
   end
 
+  context "Set file owner" do
+
+    let(:facts) { {:operatingsystem => 'CentOS' }}
+    let(:pre_condition) { 'class {"logstash": logstash_user => "logstash", logstash_group => "logstash" }'}
+    let(:title) { 'test' }
+
+    let :params do {
+      :add_field => { 'field1' => 'value1' },
+      :add_tag => ['value2'],
+      :exclude_tags => ['value3'],
+      :locale => 'value4',
+      :match => ['value5'],
+      :remove_tag => ['value6'],
+      :tags => ['value7'],
+      :type => 'value8',
+    } end
+  
+    it { should contain_file('/etc/logstash/agent/config/filter_10_date_test').with(:owner => 'logstash', :group => 'logstash') }
+
+  end
+
 end

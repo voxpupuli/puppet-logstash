@@ -43,4 +43,26 @@ describe 'logstash::filter::dns', :type => 'define' do
 
   end
 
+  context "Set file owner" do
+
+    let(:facts) { {:operatingsystem => 'CentOS' }}
+    let(:pre_condition) { 'class {"logstash": logstash_user => "logstash", logstash_group => "logstash" }'}
+    let(:title) { 'test' }
+
+    let :params do {
+      :action => 'append',
+      :add_field => { 'field2' => 'value2' },
+      :add_tag => ['value3'],
+      :exclude_tags => ['value4'],
+      :remove_tag => ['value5'],
+      :resolve => ['value6'],
+      :reverse => ['value7'],
+      :tags => ['value8'],
+      :type => 'value9',
+    } end
+  
+    it { should contain_file('/etc/logstash/agent/config/filter_10_dns_test').with(:owner => 'logstash', :group => 'logstash') }
+
+  end
+
 end

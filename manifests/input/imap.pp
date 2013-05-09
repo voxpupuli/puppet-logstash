@@ -135,26 +135,19 @@
 #   Default value: None
 #   This variable is required
 #
-#
 # [*instances*]
 #   Array of instance names to which this define is.
 #   Value type is array
 #   Default value: [ 'array' ]
 #   This variable is optional
 #
-#
-# === Examples
-#
-#
-#
-#
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10
+#  This define is created based on LogStash version 1.1.12
 #  Extra information about this input can be found at:
-#  http://logstash.net/docs/1.1.10/inputs/imap
+#  http://logstash.net/docs/1.1.12/inputs/imap
 #
-#  Need help? http://logstash.net/docs/1.1.10/learn
+#  Need help? http://logstash.net/docs/1.1.12/learn
 #
 # === Authors
 #
@@ -181,10 +174,25 @@ define logstash::input::imap (
 
   require logstash::params
 
-  $confdirstart = prefix($instances, "${logstash::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/input_imap_${name}")
-  $services = prefix($instances, 'logstash-')
-  $filesdir = "${logstash::configdir}/files/input/imap/${name}"
+  File {
+    owner => $logstash::logstash_user,
+    group => $logstash::logstash_group
+  }
+
+  if $logstash::multi_instance == true {
+
+    $confdirstart = prefix($instances, "${logstash::configdir}/")
+    $conffiles    = suffix($confdirstart, "/config/input_imap_${name}")
+    $services     = prefix($instances, 'logstash-')
+    $filesdir     = "${logstash::configdir}/files/input/imap/${name}"
+
+  } else {
+
+    $conffiles = "${logstash::configdir}/conf.d/input_imap_${name}"
+    $services  = 'logstash'
+    $filesdir  = "${logstash::configdir}/files/input/imap/${name}"
+
+  }
 
   #### Validate parameters
 
@@ -213,7 +221,8 @@ define logstash::input::imap (
 
   if ($add_field != '') {
     validate_hash($add_field)
-    $arr_add_field = inline_template('<%= add_field.to_a.flatten.inspect %>')
+    $var_add_field = $add_field
+    $arr_add_field = inline_template('<%= "["+var_add_field.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_add_field = "  add_field => ${arr_add_field}\n"
   }
 
@@ -287,9 +296,7 @@ define logstash::input::imap (
   file { $conffiles:
     ensure  => present,
     content => "input {\n imap {\n${opt_add_field}${opt_charset}${opt_check_interval}${opt_debug}${opt_fetch_count}${opt_format}${opt_host}${opt_lowercase_headers}${opt_message_format}${opt_password}${opt_port}${opt_secure}${opt_tags}${opt_type}${opt_user} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0640',
+    mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

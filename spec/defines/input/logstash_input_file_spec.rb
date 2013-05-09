@@ -53,4 +53,31 @@ describe 'logstash::input::file', :type => 'define' do
 
   end
 
+  context "Set file owner" do
+
+    let(:facts) { {:operatingsystem => 'CentOS' }}
+    let(:pre_condition) { 'class {"logstash": logstash_user => "logstash", logstash_group => "logstash" }'}
+    let(:title) { 'test' }
+
+    let :params do {
+      :add_field => { 'field1' => 'value1' },
+      :charset => 'ASCII-8BIT',
+      :debug => false,
+      :discover_interval => 4,
+      :exclude => ['value5'],
+      :format => 'plain',
+      :message_format => 'value7',
+      :path => ['value8'],
+      :sincedb_path => 'value9',
+      :sincedb_write_interval => 10,
+      :start_position => 'beginning',
+      :stat_interval => 12,
+      :tags => ['value13'],
+      :type => 'value14',
+    } end
+  
+    it { should contain_file('/etc/logstash/agent/config/input_file_test').with(:owner => 'logstash', :group => 'logstash') }
+
+  end
+
 end

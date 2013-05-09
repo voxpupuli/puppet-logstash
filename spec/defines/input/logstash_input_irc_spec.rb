@@ -55,4 +55,32 @@ describe 'logstash::input::irc', :type => 'define' do
 
   end
 
+  context "Set file owner" do
+
+    let(:facts) { {:operatingsystem => 'CentOS' }}
+    let(:pre_condition) { 'class {"logstash": logstash_user => "logstash", logstash_group => "logstash" }'}
+    let(:title) { 'test' }
+
+    let :params do {
+      :add_field => { 'field1' => 'value1' },
+      :channels => ['value2'],
+      :charset => 'ASCII-8BIT',
+      :debug => false,
+      :format => 'plain',
+      :host => 'value6',
+      :message_format => 'value7',
+      :nick => 'value8',
+      :password => 'value9',
+      :port => 10,
+      :real => 'value11',
+      :secure => false,
+      :tags => ['value13'],
+      :type => 'value14',
+      :user => 'value15',
+    } end
+  
+    it { should contain_file('/etc/logstash/agent/config/input_irc_test').with(:owner => 'logstash', :group => 'logstash') }
+
+  end
+
 end

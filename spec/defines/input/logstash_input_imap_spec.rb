@@ -55,4 +55,32 @@ describe 'logstash::input::imap', :type => 'define' do
 
   end
 
+  context "Set file owner" do
+
+    let(:facts) { {:operatingsystem => 'CentOS' }}
+    let(:pre_condition) { 'class {"logstash": logstash_user => "logstash", logstash_group => "logstash" }'}
+    let(:title) { 'test' }
+
+    let :params do {
+      :add_field => { 'field1' => 'value1' },
+      :charset => 'ASCII-8BIT',
+      :check_interval => 3,
+      :debug => false,
+      :fetch_count => 5,
+      :format => 'plain',
+      :host => 'value7',
+      :lowercase_headers => false,
+      :message_format => 'value9',
+      :password => 'value10',
+      :port => 11,
+      :secure => false,
+      :tags => ['value13'],
+      :type => 'value14',
+      :user => 'value15',
+    } end
+  
+    it { should contain_file('/etc/logstash/agent/config/input_imap_test').with(:owner => 'logstash', :group => 'logstash') }
+
+  end
+
 end

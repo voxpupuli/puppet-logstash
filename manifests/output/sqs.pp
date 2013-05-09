@@ -89,26 +89,19 @@
 #   Default value: true
 #   This variable is optional
 #
-#
 # [*instances*]
 #   Array of instance names to which this define is.
 #   Value type is array
 #   Default value: [ 'array' ]
 #   This variable is optional
 #
-#
-# === Examples
-#
-#
-#
-#
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10
+#  This define is created based on LogStash version 1.1.12
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.10/outputs/sqs
+#  http://logstash.net/docs/1.1.12/outputs/sqs
 #
-#  Need help? http://logstash.net/docs/1.1.10/learn
+#  Need help? http://logstash.net/docs/1.1.12/learn
 #
 # === Authors
 #
@@ -130,10 +123,25 @@ define logstash::output::sqs (
 
   require logstash::params
 
-  $confdirstart = prefix($instances, "${logstash::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/output_sqs_${name}")
-  $services = prefix($instances, 'logstash-')
-  $filesdir = "${logstash::configdir}/files/output/sqs/${name}"
+  File {
+    owner => $logstash::logstash_user,
+    group => $logstash::logstash_group
+  }
+
+  if $logstash::multi_instance == true {
+
+    $confdirstart = prefix($instances, "${logstash::configdir}/")
+    $conffiles    = suffix($confdirstart, "/config/output_sqs_${name}")
+    $services     = prefix($instances, 'logstash-')
+    $filesdir     = "${logstash::configdir}/files/output/sqs/${name}"
+
+  } else {
+
+    $conffiles = "${logstash::configdir}/conf.d/output_sqs_${name}"
+    $services  = 'logstash'
+    $filesdir  = "${logstash::configdir}/files/output/sqs/${name}"
+
+  }
 
   #### Validate parameters
 
@@ -200,9 +208,7 @@ define logstash::output::sqs (
   file { $conffiles:
     ensure  => present,
     content => "output {\n sqs {\n${opt_access_key_id}${opt_aws_credentials_file}${opt_exclude_tags}${opt_fields}${opt_queue}${opt_region}${opt_secret_access_key}${opt_tags}${opt_type}${opt_use_ssl} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0640',
+    mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

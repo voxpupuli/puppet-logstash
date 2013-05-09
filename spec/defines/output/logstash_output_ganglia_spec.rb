@@ -49,4 +49,29 @@ describe 'logstash::output::ganglia', :type => 'define' do
 
   end
 
+  context "Set file owner" do
+
+    let(:facts) { {:operatingsystem => 'CentOS' }}
+    let(:pre_condition) { 'class {"logstash": logstash_user => "logstash", logstash_group => "logstash" }'}
+    let(:title) { 'test' }
+
+    let :params do {
+      :exclude_tags => ['value1'],
+      :fields => ['value2'],
+      :host => 'value3',
+      :lifetime => 4,
+      :max_interval => 5,
+      :metric => 'value6',
+      :metric_type => 'string',
+      :port => 8,
+      :tags => ['value9'],
+      :type => 'value10',
+      :units => 'value11',
+      :value => 'value12',
+    } end
+  
+    it { should contain_file('/etc/logstash/agent/config/output_ganglia_test').with(:owner => 'logstash', :group => 'logstash') }
+
+  end
+
 end

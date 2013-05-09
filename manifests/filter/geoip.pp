@@ -46,9 +46,10 @@
 #   This variable is optional
 #
 # [*fields*]
-#   Array of fields that we want to be included in our event Default it
-#   will include all fields. Possible fields depend on the database type
-#   For the built in GeoLiteCity database: cityname, continentcode,
+#   Array of geoip fields that we want to be included in our event.
+#   Possible fields depend on the database type. By default, all geoip
+#   fields are included in the event.  For the built in GeoLiteCity
+#   database, the following are available: cityname, continentcode,
 #   countrycode2, countrycode3, countryname, dmacode, ip, latitude,
 #   longitude, postalcode, regionname, timezone
 #   Value type is array
@@ -100,19 +101,13 @@
 #   Default value: [ 'array' ]
 #   This variable is optional
 #
-#
-# === Examples
-#
-#
-#
-#
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10
+#  This define is created based on LogStash version 1.1.12
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.10/filters/geoip
+#  http://logstash.net/docs/1.1.12/filters/geoip
 #
-#  Need help? http://logstash.net/docs/1.1.10/learn
+#  Need help? http://logstash.net/docs/1.1.12/learn
 #
 # === Authors
 #
@@ -134,10 +129,25 @@ define logstash::filter::geoip (
 
   require logstash::params
 
-  $confdirstart = prefix($instances, "${logstash::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/filter_${order}_geoip_${name}")
-  $services = prefix($instances, 'logstash-')
-  $filesdir = "${logstash::configdir}/files/filter/geoip/${name}"
+  File {
+    owner => $logstash::logstash_user,
+    group => $logstash::logstash_group
+  }
+
+  if $logstash::multi_instance == true {
+
+    $confdirstart = prefix($instances, "${logstash::configdir}/")
+    $conffiles    = suffix($confdirstart, "/config/filter_${order}_geoip_${name}")
+    $services     = prefix($instances, 'logstash-')
+    $filesdir     = "${logstash::configdir}/files/filter/geoip/${name}"
+
+  } else {
+
+    $conffiles = "${logstash::configdir}/conf.d/filter_${order}_geoip_${name}"
+    $services  = 'logstash'
+    $filesdir  = "${logstash::configdir}/files/filter/geoip/${name}"
+
+  }
 
   #### Validate parameters
 
@@ -175,7 +185,8 @@ define logstash::filter::geoip (
 
   if ($add_field != '') {
     validate_hash($add_field)
-    $arr_add_field = inline_template('<%= add_field.to_a.flatten.inspect %>')
+    $var_add_field = $add_field
+    $arr_add_field = inline_template('<%= "["+var_add_field.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_add_field = "  add_field => ${arr_add_field}\n"
   }
 
@@ -197,9 +208,7 @@ define logstash::filter::geoip (
 
       file { "${filesdir}/${basefilename_database}":
         source  => $database,
-        owner   => 'root',
-        group   => 'root',
-        mode    => '0640',
+        mode    => '0440',
         require => File[$filesdir]
       }
     } else {
@@ -229,8 +238,6 @@ define logstash::filter::geoip (
   #### Manage the files directory
   file { $filesdir:
     ensure  => directory,
-    owner   => 'root',
-    group   => 'root',
     mode    => '0640',
     purge   => true,
     recurse => true,
@@ -243,9 +250,7 @@ define logstash::filter::geoip (
   file { $conffiles:
     ensure  => present,
     content => "filter {\n geoip {\n${opt_add_field}${opt_add_tag}${opt_database}${opt_exclude_tags}${opt_fields}${opt_remove_tag}${opt_source}${opt_tags}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0640',
+    mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

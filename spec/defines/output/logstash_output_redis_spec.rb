@@ -61,4 +61,35 @@ describe 'logstash::output::redis', :type => 'define' do
 
   end
 
+  context "Set file owner" do
+
+    let(:facts) { {:operatingsystem => 'CentOS' }}
+    let(:pre_condition) { 'class {"logstash": logstash_user => "logstash", logstash_group => "logstash" }'}
+    let(:title) { 'test' }
+
+    let :params do {
+      :batch => false,
+      :batch_events => 2,
+      :batch_timeout => 3,
+      :congestion_interval => 4,
+      :congestion_threshold => 5,
+      :data_type => 'list',
+      :db => 7,
+      :exclude_tags => ['value8'],
+      :fields => ['value9'],
+      :host => ['value10'],
+      :key => 'value11',
+      :password => 'value12',
+      :port => 13,
+      :reconnect_interval => 14,
+      :shuffle_hosts => false,
+      :tags => ['value16'],
+      :timeout => 17,
+      :type => 'value18',
+    } end
+  
+    it { should contain_file('/etc/logstash/agent/config/output_redis_test').with(:owner => 'logstash', :group => 'logstash') }
+
+  end
+
 end

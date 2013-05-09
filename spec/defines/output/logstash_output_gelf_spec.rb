@@ -61,4 +61,35 @@ describe 'logstash::output::gelf', :type => 'define' do
 
   end
 
+  context "Set file owner" do
+
+    let(:facts) { {:operatingsystem => 'CentOS' }}
+    let(:pre_condition) { 'class {"logstash": logstash_user => "logstash", logstash_group => "logstash" }'}
+    let(:title) { 'test' }
+
+    let :params do {
+      :chunksize => 1,
+      :custom_fields => { 'field2' => 'value2' },
+      :exclude_tags => ['value3'],
+      :facility => 'value4',
+      :fields => ['value5'],
+      :file => 'value6',
+      :full_message => 'value7',
+      :host => 'value8',
+      :ignore_metadata => ['value9'],
+      :level => ['value10'],
+      :line => 'value11',
+      :port => 12,
+      :sender => 'value13',
+      :ship_metadata => false,
+      :ship_tags => false,
+      :short_message => 'value16',
+      :tags => ['value17'],
+      :type => 'value18',
+    } end
+  
+    it { should contain_file('/etc/logstash/agent/config/output_gelf_test').with(:owner => 'logstash', :group => 'logstash') }
+
+  end
+
 end

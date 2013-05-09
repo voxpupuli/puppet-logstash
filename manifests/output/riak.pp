@@ -104,26 +104,19 @@
 #   Default value: ""
 #   This variable is optional
 #
-#
 # [*instances*]
 #   Array of instance names to which this define is.
 #   Value type is array
 #   Default value: [ 'array' ]
 #   This variable is optional
 #
-#
-# === Examples
-#
-#
-#
-#
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10
+#  This define is created based on LogStash version 1.1.12
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.10/outputs/riak
+#  http://logstash.net/docs/1.1.12/outputs/riak
 #
-#  Need help? http://logstash.net/docs/1.1.10/learn
+#  Need help? http://logstash.net/docs/1.1.12/learn
 #
 # === Authors
 #
@@ -148,10 +141,25 @@ define logstash::output::riak (
 
   require logstash::params
 
-  $confdirstart = prefix($instances, "${logstash::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/output_riak_${name}")
-  $services = prefix($instances, 'logstash-')
-  $filesdir = "${logstash::configdir}/files/output/riak/${name}"
+  File {
+    owner => $logstash::logstash_user,
+    group => $logstash::logstash_group
+  }
+
+  if $logstash::multi_instance == true {
+
+    $confdirstart = prefix($instances, "${logstash::configdir}/")
+    $conffiles    = suffix($confdirstart, "/config/output_riak_${name}")
+    $services     = prefix($instances, 'logstash-')
+    $filesdir     = "${logstash::configdir}/files/output/riak/${name}"
+
+  } else {
+
+    $conffiles = "${logstash::configdir}/conf.d/output_riak_${name}"
+    $services  = 'logstash'
+    $filesdir  = "${logstash::configdir}/files/output/riak/${name}"
+
+  }
 
   #### Validate parameters
   if ($bucket != '') {
@@ -199,19 +207,22 @@ define logstash::output::riak (
 
   if ($nodes != '') {
     validate_hash($nodes)
-    $arr_nodes = inline_template('<%= nodes.to_a.flatten.inspect %>')
+    $var_nodes = $nodes
+    $arr_nodes = inline_template('<%= "["+var_nodes.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_nodes = "  nodes => ${arr_nodes}\n"
   }
 
   if ($bucket_props != '') {
     validate_hash($bucket_props)
-    $arr_bucket_props = inline_template('<%= bucket_props.to_a.flatten.inspect %>')
+    $var_bucket_props = $bucket_props
+    $arr_bucket_props = inline_template('<%= "["+var_bucket_props.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_bucket_props = "  bucket_props => ${arr_bucket_props}\n"
   }
 
   if ($ssl_opts != '') {
     validate_hash($ssl_opts)
-    $arr_ssl_opts = inline_template('<%= ssl_opts.to_a.flatten.inspect %>')
+    $var_ssl_opts = $ssl_opts
+    $arr_ssl_opts = inline_template('<%= "["+var_ssl_opts.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_ssl_opts = "  ssl_opts => ${arr_ssl_opts}\n"
   }
 
@@ -238,9 +249,7 @@ define logstash::output::riak (
   file { $conffiles:
     ensure  => present,
     content => "output {\n riak {\n${opt_bucket}${opt_bucket_props}${opt_enable_search}${opt_enable_ssl}${opt_exclude_tags}${opt_fields}${opt_indices}${opt_key_name}${opt_nodes}${opt_proto}${opt_ssl_opts}${opt_tags}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0640',
+    mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

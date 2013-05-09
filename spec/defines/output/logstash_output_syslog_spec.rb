@@ -55,4 +55,32 @@ describe 'logstash::output::syslog', :type => 'define' do
 
   end
 
+  context "Set file owner" do
+
+    let(:facts) { {:operatingsystem => 'CentOS' }}
+    let(:pre_condition) { 'class {"logstash": logstash_user => "logstash", logstash_group => "logstash" }'}
+    let(:title) { 'test' }
+
+    let :params do {
+      :appname => 'value1',
+      :exclude_tags => ['value2'],
+      :facility => 'kernel',
+      :fields => ['value4'],
+      :host => 'value5',
+      :msgid => 'value6',
+      :port => 7,
+      :procid => 'value8',
+      :protocol => 'tcp',
+      :rfc => 'rfc3164',
+      :severity => 'emergency',
+      :sourcehost => 'value12',
+      :tags => ['value13'],
+      :timestamp => 'value14',
+      :type => 'value15',
+    } end
+  
+    it { should contain_file('/etc/logstash/agent/config/output_syslog_test').with(:owner => 'logstash', :group => 'logstash') }
+
+  end
+
 end

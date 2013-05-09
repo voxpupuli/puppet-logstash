@@ -75,26 +75,19 @@
 #   Default value: None
 #   This variable is optional
 #
-#
 # [*instances*]
 #   Array of instance names to which this define is.
 #   Value type is array
 #   Default value: [ 'array' ]
 #   This variable is optional
 #
-#
-# === Examples
-#
-#
-#
-#
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10
+#  This define is created based on LogStash version 1.1.12
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.10/outputs/xmpp
+#  http://logstash.net/docs/1.1.12/outputs/xmpp
 #
-#  Need help? http://logstash.net/docs/1.1.10/learn
+#  Need help? http://logstash.net/docs/1.1.12/learn
 #
 # === Authors
 #
@@ -116,10 +109,25 @@ define logstash::output::xmpp (
 
   require logstash::params
 
-  $confdirstart = prefix($instances, "${logstash::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/output_xmpp_${name}")
-  $services = prefix($instances, 'logstash-')
-  $filesdir = "${logstash::configdir}/files/output/xmpp/${name}"
+  File {
+    owner => $logstash::logstash_user,
+    group => $logstash::logstash_group
+  }
+
+  if $logstash::multi_instance == true {
+
+    $confdirstart = prefix($instances, "${logstash::configdir}/")
+    $conffiles    = suffix($confdirstart, "/config/output_xmpp_${name}")
+    $services     = prefix($instances, 'logstash-')
+    $filesdir     = "${logstash::configdir}/files/output/xmpp/${name}"
+
+  } else {
+
+    $conffiles = "${logstash::configdir}/conf.d/output_xmpp_${name}"
+    $services  = 'logstash'
+    $filesdir  = "${logstash::configdir}/files/output/xmpp/${name}"
+
+  }
 
   #### Validate parameters
   if ($exclude_tags != '') {
@@ -185,9 +193,7 @@ define logstash::output::xmpp (
   file { $conffiles:
     ensure  => present,
     content => "output {\n xmpp {\n${opt_exclude_tags}${opt_fields}${opt_host}${opt_message}${opt_password}${opt_rooms}${opt_tags}${opt_type}${opt_user}${opt_users} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0640',
+    mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

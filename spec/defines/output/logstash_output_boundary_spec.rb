@@ -49,4 +49,29 @@ describe 'logstash::output::boundary', :type => 'define' do
 
   end
 
+  context "Set file owner" do
+
+    let(:facts) { {:operatingsystem => 'CentOS' }}
+    let(:pre_condition) { 'class {"logstash": logstash_user => "logstash", logstash_group => "logstash" }'}
+    let(:title) { 'test' }
+
+    let :params do {
+      :api_key => 'value1',
+      :auto => false,
+      :bsubtype => 'value3',
+      :btags => ['value4'],
+      :btype => 'value5',
+      :end_time => 'value6',
+      :exclude_tags => ['value7'],
+      :fields => ['value8'],
+      :org_id => 'value9',
+      :start_time => 'value10',
+      :tags => ['value11'],
+      :type => 'value12',
+    } end
+  
+    it { should contain_file('/etc/logstash/agent/config/output_boundary_test').with(:owner => 'logstash', :group => 'logstash') }
+
+  end
+
 end

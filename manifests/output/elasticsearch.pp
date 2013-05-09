@@ -13,6 +13,9 @@
 #   -J-Des.node.foo=) This plugin will join your elasticsearch cluster, so
 #   it will show up in elasticsearch's cluster health status.  You can
 #   learn more about elasticsearch at http://elasticsearch.org
+#   Operational Notes  Your firewalls will need to permit port 9300 in
+#   both directions (from logstash to elasticsearch, and elasticsearch to
+#   logstash)
 #
 #
 # === Parameters
@@ -109,7 +112,7 @@
 #   The port for ElasticSearch transport to use. This is not the
 #   ElasticSearch REST API port (normally 9200).
 #   Value type is number
-#   Default value: 9300
+#   Default value: "9300-9400"
 #   This variable is optional
 #
 # [*tags*]
@@ -127,26 +130,19 @@
 #   Default value: ""
 #   This variable is optional
 #
-#
 # [*instances*]
 #   Array of instance names to which this define is.
 #   Value type is array
 #   Default value: [ 'array' ]
 #   This variable is optional
 #
-#
-# === Examples
-#
-#
-#
-#
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10
+#  This define is created based on LogStash version 1.1.12
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.10/outputs/elasticsearch
+#  http://logstash.net/docs/1.1.12/outputs/elasticsearch
 #
-#  Need help? http://logstash.net/docs/1.1.10/learn
+#  Need help? http://logstash.net/docs/1.1.12/learn
 #
 # === Authors
 #
@@ -173,10 +169,25 @@ define logstash::output::elasticsearch (
 
   require logstash::params
 
-  $confdirstart = prefix($instances, "${logstash::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/output_elasticsearch_${name}")
-  $services = prefix($instances, 'logstash-')
-  $filesdir = "${logstash::configdir}/files/output/elasticsearch/${name}"
+  File {
+    owner => $logstash::logstash_user,
+    group => $logstash::logstash_group
+  }
+
+  if $logstash::multi_instance == true {
+
+    $confdirstart = prefix($instances, "${logstash::configdir}/")
+    $conffiles    = suffix($confdirstart, "/config/output_elasticsearch_${name}")
+    $services     = prefix($instances, 'logstash-')
+    $filesdir     = "${logstash::configdir}/files/output/elasticsearch/${name}"
+
+  } else {
+
+    $conffiles = "${logstash::configdir}/conf.d/output_elasticsearch_${name}"
+    $services  = 'logstash'
+    $filesdir  = "${logstash::configdir}/files/output/elasticsearch/${name}"
+
+  }
 
   #### Validate parameters
 
@@ -271,9 +282,7 @@ define logstash::output::elasticsearch (
   file { $conffiles:
     ensure  => present,
     content => "output {\n elasticsearch {\n${opt_bind_host}${opt_cluster}${opt_document_id}${opt_embedded}${opt_embedded_http_port}${opt_exclude_tags}${opt_fields}${opt_host}${opt_index}${opt_index_type}${opt_max_inflight_requests}${opt_node_name}${opt_port}${opt_tags}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0640',
+    mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

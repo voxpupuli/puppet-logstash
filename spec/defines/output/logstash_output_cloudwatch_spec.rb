@@ -67,4 +67,38 @@ describe 'logstash::output::cloudwatch', :type => 'define' do
 
   end
 
+  context "Set file owner" do
+
+    let(:facts) { {:operatingsystem => 'CentOS' }}
+    let(:pre_condition) { 'class {"logstash": logstash_user => "logstash", logstash_group => "logstash" }'}
+    let(:title) { 'test' }
+
+    let :params do {
+      :access_key_id => 'value1',
+      :aws_credentials_file => 'value2',
+      :dimensions => { 'field3' => 'value3' },
+      :exclude_tags => ['value4'],
+      :field_dimensions => 'value5',
+      :field_metricname => 'value6',
+      :field_namespace => 'value7',
+      :field_unit => 'value8',
+      :field_value => 'value9',
+      :fields => ['value10'],
+      :metricname => 'value11',
+      :namespace => 'value12',
+      :queue_size => 13,
+      :region => 'us-east-1',
+      :secret_access_key => 'value15',
+      :tags => ['value16'],
+      :timeframe => 'value17',
+      :type => 'value18',
+      :unit => 'Seconds',
+      :use_ssl => false,
+      :value => 'value21',
+    } end
+  
+    it { should contain_file('/etc/logstash/agent/config/output_cloudwatch_test').with(:owner => 'logstash', :group => 'logstash') }
+
+  end
+
 end

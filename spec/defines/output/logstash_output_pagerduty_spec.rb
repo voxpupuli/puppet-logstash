@@ -45,4 +45,27 @@ describe 'logstash::output::pagerduty', :type => 'define' do
 
   end
 
+  context "Set file owner" do
+
+    let(:facts) { {:operatingsystem => 'CentOS' }}
+    let(:pre_condition) { 'class {"logstash": logstash_user => "logstash", logstash_group => "logstash" }'}
+    let(:title) { 'test' }
+
+    let :params do {
+      :description => 'value1',
+      :details => { 'field2' => 'value2' },
+      :event_type => 'trigger',
+      :exclude_tags => ['value4'],
+      :fields => ['value5'],
+      :incident_key => 'value6',
+      :pdurl => 'value7',
+      :service_key => 'value8',
+      :tags => ['value9'],
+      :type => 'value10',
+    } end
+  
+    it { should contain_file('/etc/logstash/agent/config/output_pagerduty_test').with(:owner => 'logstash', :group => 'logstash') }
+
+  end
+
 end

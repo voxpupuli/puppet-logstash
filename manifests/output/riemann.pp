@@ -83,26 +83,19 @@
 #   Default value: ""
 #   This variable is optional
 #
-#
 # [*instances*]
 #   Array of instance names to which this define is.
 #   Value type is array
 #   Default value: [ 'array' ]
 #   This variable is optional
 #
-#
-# === Examples
-#
-#
-#
-#
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10
+#  This define is created based on LogStash version 1.1.12
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.10/outputs/riemann
+#  http://logstash.net/docs/1.1.12/outputs/riemann
 #
-#  Need help? http://logstash.net/docs/1.1.10/learn
+#  Need help? http://logstash.net/docs/1.1.12/learn
 #
 # === Authors
 #
@@ -124,10 +117,25 @@ define logstash::output::riemann (
 
   require logstash::params
 
-  $confdirstart = prefix($instances, "${logstash::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/output_riemann_${name}")
-  $services = prefix($instances, 'logstash-')
-  $filesdir = "${logstash::configdir}/files/output/riemann/${name}"
+  File {
+    owner => $logstash::logstash_user,
+    group => $logstash::logstash_group
+  }
+
+  if $logstash::multi_instance == true {
+
+    $confdirstart = prefix($instances, "${logstash::configdir}/")
+    $conffiles    = suffix($confdirstart, "/config/output_riemann_${name}")
+    $services     = prefix($instances, 'logstash-')
+    $filesdir     = "${logstash::configdir}/files/output/riemann/${name}"
+
+  } else {
+
+    $conffiles = "${logstash::configdir}/conf.d/output_riemann_${name}"
+    $services  = 'logstash'
+    $filesdir  = "${logstash::configdir}/files/output/riemann/${name}"
+
+  }
 
   #### Validate parameters
 
@@ -158,7 +166,8 @@ define logstash::output::riemann (
 
   if ($riemann_event != '') {
     validate_hash($riemann_event)
-    $arr_riemann_event = inline_template('<%= riemann_event.to_a.flatten.inspect %>')
+    $var_riemann_event = $riemann_event
+    $arr_riemann_event = inline_template('<%= "["+var_riemann_event.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_riemann_event = "  riemann_event => ${arr_riemann_event}\n"
   }
 
@@ -198,9 +207,7 @@ define logstash::output::riemann (
   file { $conffiles:
     ensure  => present,
     content => "output {\n riemann {\n${opt_debug}${opt_exclude_tags}${opt_fields}${opt_host}${opt_port}${opt_protocol}${opt_riemann_event}${opt_sender}${opt_tags}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0640',
+    mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

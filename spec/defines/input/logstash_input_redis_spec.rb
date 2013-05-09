@@ -57,4 +57,33 @@ describe 'logstash::input::redis', :type => 'define' do
 
   end
 
+  context "Set file owner" do
+
+    let(:facts) { {:operatingsystem => 'CentOS' }}
+    let(:pre_condition) { 'class {"logstash": logstash_user => "logstash", logstash_group => "logstash" }'}
+    let(:title) { 'test' }
+
+    let :params do {
+      :add_field => { 'field1' => 'value1' },
+      :batch_count => 2,
+      :charset => 'ASCII-8BIT',
+      :data_type => 'list',
+      :db => 5,
+      :debug => false,
+      :format => 'plain',
+      :host => 'value8',
+      :key => 'value9',
+      :message_format => 'value10',
+      :password => 'value11',
+      :port => 12,
+      :tags => ['value13'],
+      :threads => 14,
+      :timeout => 15,
+      :type => 'value16',
+    } end
+  
+    it { should contain_file('/etc/logstash/agent/config/input_redis_test').with(:owner => 'logstash', :group => 'logstash') }
+
+  end
+
 end

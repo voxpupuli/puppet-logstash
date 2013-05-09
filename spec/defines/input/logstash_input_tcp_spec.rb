@@ -64,4 +64,34 @@ describe 'logstash::input::tcp', :type => 'define' do
 
   end
 
+  context "Set file owner" do
+
+    let(:facts) { {:operatingsystem => 'CentOS' }}
+    let(:pre_condition) { 'class {"logstash": logstash_user => "logstash", logstash_group => "logstash" }'}
+    let(:title) { 'test' }
+
+    let :params do {
+      :add_field => { 'field1' => 'value1' },
+      :charset => 'ASCII-8BIT',
+      :data_timeout => 3,
+      :debug => false,
+      :format => 'plain',
+      :host => 'value6',
+      :message_format => 'value7',
+      :mode => 'server',
+      :port => 9,
+      :ssl_cacert => 'puppet:///path/to/file10',
+      :ssl_cert => 'puppet:///path/to/file11',
+      :ssl_enable => false,
+      :ssl_key => 'puppet:///path/to/file13',
+      :ssl_key_passphrase => 'value14',
+      :ssl_verify => false,
+      :tags => ['value16'],
+      :type => 'value17',
+    } end
+  
+    it { should contain_file('/etc/logstash/agent/config/input_tcp_test').with(:owner => 'logstash', :group => 'logstash') }
+
+  end
+
 end

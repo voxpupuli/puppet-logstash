@@ -55,4 +55,32 @@ describe 'logstash::output::email', :type => 'define' do
 
   end
 
+  context "Set file owner" do
+
+    let(:facts) { {:operatingsystem => 'CentOS' }}
+    let(:pre_condition) { 'class {"logstash": logstash_user => "logstash", logstash_group => "logstash" }'}
+    let(:title) { 'test' }
+
+    let :params do {
+      :attachments => ['value1'],
+      :body => 'value2',
+      :cc => 'value3',
+      :contenttype => 'value4',
+      :exclude_tags => ['value5'],
+      :fields => ['value6'],
+      :from => 'value7',
+      :htmlbody => 'value8',
+      :match => { 'field9' => 'value9' },
+      :options => { 'field10' => 'value10' },
+      :subject => 'value11',
+      :tags => ['value12'],
+      :to => 'value13',
+      :type => 'value14',
+      :via => 'value15',
+    } end
+  
+    it { should contain_file('/etc/logstash/agent/config/output_email_test').with(:owner => 'logstash', :group => 'logstash') }
+
+  end
+
 end

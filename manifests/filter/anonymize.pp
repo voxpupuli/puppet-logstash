@@ -90,19 +90,13 @@
 #   Default value: [ 'array' ]
 #   This variable is optional
 #
-#
-# === Examples
-#
-#
-#
-#
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10
+#  This define is created based on LogStash version 1.1.12
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.10/filters/anonymize
+#  http://logstash.net/docs/1.1.12/filters/anonymize
 #
-#  Need help? http://logstash.net/docs/1.1.10/learn
+#  Need help? http://logstash.net/docs/1.1.12/learn
 #
 # === Authors
 #
@@ -124,10 +118,25 @@ define logstash::filter::anonymize (
 
   require logstash::params
 
-  $confdirstart = prefix($instances, "${logstash::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/filter_${order}_anonymize_${name}")
-  $services = prefix($instances, 'logstash-')
-  $filesdir = "${logstash::configdir}/files/filter/anonymize/${name}"
+  File {
+    owner => $logstash::logstash_user,
+    group => $logstash::logstash_group
+  }
+
+  if $logstash::multi_instance == true {
+
+    $confdirstart = prefix($instances, "${logstash::configdir}/")
+    $conffiles    = suffix($confdirstart, "/config/filter_${order}_anonymize_${name}")
+    $services     = prefix($instances, 'logstash-')
+    $filesdir     = "${logstash::configdir}/files/filter/anonymize/${name}"
+
+  } else {
+
+    $conffiles = "${logstash::configdir}/conf.d/filter_${order}_anonymize_${name}"
+    $services  = 'logstash'
+    $filesdir  = "${logstash::configdir}/files/filter/anonymize/${name}"
+
+  }
 
   #### Validate parameters
 
@@ -165,7 +174,8 @@ define logstash::filter::anonymize (
 
   if ($add_field != '') {
     validate_hash($add_field)
-    $arr_add_field = inline_template('<%= add_field.to_a.flatten.inspect %>')
+    $var_add_field = $add_field
+    $arr_add_field = inline_template('<%= "["+var_add_field.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_add_field = "  add_field => ${arr_add_field}\n"
   }
 
@@ -198,9 +208,7 @@ define logstash::filter::anonymize (
   file { $conffiles:
     ensure  => present,
     content => "filter {\n anonymize {\n${opt_add_field}${opt_add_tag}${opt_algorithm}${opt_exclude_tags}${opt_fields}${opt_key}${opt_remove_tag}${opt_tags}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0640',
+    mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

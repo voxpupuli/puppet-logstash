@@ -57,7 +57,7 @@
 # [*proxy_password*]
 #   Proxy Password
 #   Value type is password
-#   Default value: None
+#   Default value: ""
 #   This variable is optional
 #
 # [*proxy_port*]
@@ -87,26 +87,19 @@
 #   Default value: ""
 #   This variable is optional
 #
-#
 # [*instances*]
 #   Array of instance names to which this define is.
 #   Value type is array
 #   Default value: [ 'array' ]
 #   This variable is optional
 #
-#
-# === Examples
-#
-#
-#
-#
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10
+#  This define is created based on LogStash version 1.1.12
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.10/outputs/loggly
+#  http://logstash.net/docs/1.1.12/outputs/loggly
 #
-#  Need help? http://logstash.net/docs/1.1.10/learn
+#  Need help? http://logstash.net/docs/1.1.12/learn
 #
 # === Authors
 #
@@ -129,10 +122,25 @@ define logstash::output::loggly (
 
   require logstash::params
 
-  $confdirstart = prefix($instances, "${logstash::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/output_loggly_${name}")
-  $services = prefix($instances, 'logstash-')
-  $filesdir = "${logstash::configdir}/files/output/loggly/${name}"
+  File {
+    owner => $logstash::logstash_user,
+    group => $logstash::logstash_group
+  }
+
+  if $logstash::multi_instance == true {
+
+    $confdirstart = prefix($instances, "${logstash::configdir}/")
+    $conffiles    = suffix($confdirstart, "/config/output_loggly_${name}")
+    $services     = prefix($instances, 'logstash-')
+    $filesdir     = "${logstash::configdir}/files/output/loggly/${name}"
+
+  } else {
+
+    $conffiles = "${logstash::configdir}/conf.d/output_loggly_${name}"
+    $services  = 'logstash'
+    $filesdir  = "${logstash::configdir}/files/output/loggly/${name}"
+
+  }
 
   #### Validate parameters
   if ($exclude_tags != '') {
@@ -204,9 +212,7 @@ define logstash::output::loggly (
   file { $conffiles:
     ensure  => present,
     content => "output {\n loggly {\n${opt_exclude_tags}${opt_fields}${opt_host}${opt_key}${opt_proto}${opt_proxy_host}${opt_proxy_password}${opt_proxy_port}${opt_proxy_user}${opt_tags}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0640',
+    mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

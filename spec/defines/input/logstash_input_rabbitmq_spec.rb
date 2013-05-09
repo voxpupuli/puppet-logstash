@@ -19,26 +19,24 @@ describe 'logstash::input::rabbitmq', :type => 'define' do
       :exchange => 'value8',
       :exclusive => false,
       :format => 'plain',
-      :frame_max => 11,
-      :headers_fields => ['value12'],
-      :host => 'value13',
-      :key => 'value14',
-      :message_format => 'value15',
+      :host => 'value11',
+      :key => 'value12',
+      :message_format => 'value13',
       :passive => false,
-      :password => 'value17',
-      :port => 18,
-      :prefetch_count => 19,
-      :queue => 'value20',
+      :password => 'value15',
+      :port => 16,
+      :prefetch_count => 17,
+      :queue => 'value18',
       :ssl => false,
-      :tags => ['value22'],
-      :threads => 23,
-      :type => 'value24',
-      :user => 'value25',
+      :tags => ['value20'],
+      :threads => 21,
+      :type => 'value22',
+      :user => 'value23',
       :verify_ssl => false,
-      :vhost => 'value27',
+      :vhost => 'value25',
     } end
 
-    it { should contain_file('/etc/logstash/agent/config/input_rabbitmq_test').with(:content => "input {\n rabbitmq {\n  ack => false\n  add_field => [\"field2\", \"value2\"]\n  arguments => ['value3']\n  auto_delete => false\n  charset => \"ASCII-8BIT\"\n  debug => false\n  durable => false\n  exchange => \"value8\"\n  exclusive => false\n  format => \"plain\"\n  frame_max => 11\n  headers_fields => ['value12']\n  host => \"value13\"\n  key => \"value14\"\n  message_format => \"value15\"\n  passive => false\n  password => \"value17\"\n  port => 18\n  prefetch_count => 19\n  queue => \"value20\"\n  ssl => false\n  tags => ['value22']\n  threads => 23\n  type => \"value24\"\n  user => \"value25\"\n  verify_ssl => false\n  vhost => \"value27\"\n }\n}\n") }
+    it { should contain_file('/etc/logstash/agent/config/input_rabbitmq_test').with(:content => "input {\n rabbitmq {\n  ack => false\n  add_field => [\"field2\", \"value2\"]\n  arguments => ['value3']\n  auto_delete => false\n  charset => \"ASCII-8BIT\"\n  debug => false\n  durable => false\n  exchange => \"value8\"\n  exclusive => false\n  format => \"plain\"\n  host => \"value11\"\n  key => \"value12\"\n  message_format => \"value13\"\n  passive => false\n  password => \"value15\"\n  port => 16\n  prefetch_count => 17\n  queue => \"value18\"\n  ssl => false\n  tags => ['value20']\n  threads => 21\n  type => \"value22\"\n  user => \"value23\"\n  verify_ssl => false\n  vhost => \"value25\"\n }\n}\n") }
   end
 
   context "Instance test" do
@@ -54,28 +52,64 @@ describe 'logstash::input::rabbitmq', :type => 'define' do
       :exchange => 'value8',
       :exclusive => false,
       :format => 'plain',
-      :frame_max => 11,
-      :headers_fields => ['value12'],
-      :host => 'value13',
-      :key => 'value14',
-      :message_format => 'value15',
+      :host => 'value11',
+      :key => 'value12',
+      :message_format => 'value13',
       :passive => false,
-      :password => 'value17',
-      :port => 18,
-      :prefetch_count => 19,
-      :queue => 'value20',
+      :password => 'value15',
+      :port => 16,
+      :prefetch_count => 17,
+      :queue => 'value18',
       :ssl => false,
-      :tags => ['value22'],
-      :threads => 23,
-      :type => 'value24',
-      :user => 'value25',
+      :tags => ['value20'],
+      :threads => 21,
+      :type => 'value22',
+      :user => 'value23',
       :verify_ssl => false,
-      :vhost => 'value27',
+      :vhost => 'value25',
       :instances => [ 'agent1', 'agent2' ]
     } end
   
     it { should contain_file('/etc/logstash/agent1/config/input_rabbitmq_test') }
     it { should contain_file('/etc/logstash/agent2/config/input_rabbitmq_test') }
+
+  end
+
+  context "Set file owner" do
+
+    let(:facts) { {:operatingsystem => 'CentOS' }}
+    let(:pre_condition) { 'class {"logstash": logstash_user => "logstash", logstash_group => "logstash" }'}
+    let(:title) { 'test' }
+
+    let :params do {
+      :ack => false,
+      :add_field => { 'field2' => 'value2' },
+      :arguments => ['value3'],
+      :auto_delete => false,
+      :charset => 'ASCII-8BIT',
+      :debug => false,
+      :durable => false,
+      :exchange => 'value8',
+      :exclusive => false,
+      :format => 'plain',
+      :host => 'value11',
+      :key => 'value12',
+      :message_format => 'value13',
+      :passive => false,
+      :password => 'value15',
+      :port => 16,
+      :prefetch_count => 17,
+      :queue => 'value18',
+      :ssl => false,
+      :tags => ['value20'],
+      :threads => 21,
+      :type => 'value22',
+      :user => 'value23',
+      :verify_ssl => false,
+      :vhost => 'value25',
+    } end
+  
+    it { should contain_file('/etc/logstash/agent/config/input_rabbitmq_test').with(:owner => 'logstash', :group => 'logstash') }
 
   end
 

@@ -52,14 +52,14 @@
 # [*include_metrics*]
 #   Include only regex matched metric names
 #   Value type is array
-#   Default value: []
+#   Default value: [".*"]
 #   This variable is optional
 #
 # [*metrics*]
 #   The metric(s) to use. This supports dynamic strings like
 #   %{@source_host} for metric names and also for values. This is a hash
 #   field with key of the metric name, value of the metric value. Example:
-#   [ "%{@source_host}/uptime", %{uptime_1m} " ]   The value will be
+#   [ "%{@source_host}/uptime", "%{uptime_1m}" ]   The value will be
 #   coerced to a floating point value. Values which cannot be coerced will
 #   zero (0)
 #   Value type is hash
@@ -108,26 +108,19 @@
 #   Default value: ""
 #   This variable is optional
 #
-#
 # [*instances*]
 #   Array of instance names to which this define is.
 #   Value type is array
 #   Default value: [ 'array' ]
 #   This variable is optional
 #
-#
-# === Examples
-#
-#
-#
-#
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10
+#  This define is created based on LogStash version 1.1.12
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.10/outputs/graphite
+#  http://logstash.net/docs/1.1.12/outputs/graphite
 #
-#  Need help? http://logstash.net/docs/1.1.10/learn
+#  Need help? http://logstash.net/docs/1.1.12/learn
 #
 # === Authors
 #
@@ -153,10 +146,25 @@ define logstash::output::graphite (
 
   require logstash::params
 
-  $confdirstart = prefix($instances, "${logstash::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/output_graphite_${name}")
-  $services = prefix($instances, 'logstash-')
-  $filesdir = "${logstash::configdir}/files/output/graphite/${name}"
+  File {
+    owner => $logstash::logstash_user,
+    group => $logstash::logstash_group
+  }
+
+  if $logstash::multi_instance == true {
+
+    $confdirstart = prefix($instances, "${logstash::configdir}/")
+    $conffiles    = suffix($confdirstart, "/config/output_graphite_${name}")
+    $services     = prefix($instances, 'logstash-')
+    $filesdir     = "${logstash::configdir}/files/output/graphite/${name}"
+
+  } else {
+
+    $conffiles = "${logstash::configdir}/conf.d/output_graphite_${name}"
+    $services  = 'logstash'
+    $filesdir  = "${logstash::configdir}/files/output/graphite/${name}"
+
+  }
 
   #### Validate parameters
 
@@ -209,7 +217,8 @@ define logstash::output::graphite (
 
   if ($metrics != '') {
     validate_hash($metrics)
-    $arr_metrics = inline_template('<%= metrics.to_a.flatten.inspect %>')
+    $var_metrics = $metrics
+    $arr_metrics = inline_template('<%= "["+var_metrics.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_metrics = "  metrics => ${arr_metrics}\n"
   }
 
@@ -249,9 +258,7 @@ define logstash::output::graphite (
   file { $conffiles:
     ensure  => present,
     content => "output {\n graphite {\n${opt_debug}${opt_exclude_metrics}${opt_exclude_tags}${opt_fields}${opt_fields_are_metrics}${opt_host}${opt_include_metrics}${opt_metrics}${opt_metrics_format}${opt_port}${opt_reconnect_interval}${opt_resend_on_failure}${opt_tags}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0640',
+    mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

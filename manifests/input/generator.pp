@@ -55,7 +55,7 @@
 # [*count*]
 #   Set how many messages should be generated.  The default, 0, means
 #   generate an unlimited number of events.
-#   Value type is integer
+#   Value type is number
 #   Default value: 0
 #   This variable is optional
 #
@@ -128,26 +128,19 @@
 #   Default value: None
 #   This variable is required
 #
-#
 # [*instances*]
 #   Array of instance names to which this define is.
 #   Value type is array
 #   Default value: [ 'array' ]
 #   This variable is optional
 #
-#
-# === Examples
-#
-#
-#
-#
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10
+#  This define is created based on LogStash version 1.1.12
 #  Extra information about this input can be found at:
-#  http://logstash.net/docs/1.1.10/inputs/generator
+#  http://logstash.net/docs/1.1.12/inputs/generator
 #
-#  Need help? http://logstash.net/docs/1.1.10/learn
+#  Need help? http://logstash.net/docs/1.1.12/learn
 #
 # === Authors
 #
@@ -170,10 +163,25 @@ define logstash::input::generator (
 
   require logstash::params
 
-  $confdirstart = prefix($instances, "${logstash::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/input_generator_${name}")
-  $services = prefix($instances, 'logstash-')
-  $filesdir = "${logstash::configdir}/files/input/generator/${name}"
+  File {
+    owner => $logstash::logstash_user,
+    group => $logstash::logstash_group
+  }
+
+  if $logstash::multi_instance == true {
+
+    $confdirstart = prefix($instances, "${logstash::configdir}/")
+    $conffiles    = suffix($confdirstart, "/config/input_generator_${name}")
+    $services     = prefix($instances, 'logstash-')
+    $filesdir     = "${logstash::configdir}/files/input/generator/${name}"
+
+  } else {
+
+    $conffiles = "${logstash::configdir}/conf.d/input_generator_${name}"
+    $services  = 'logstash'
+    $filesdir  = "${logstash::configdir}/files/input/generator/${name}"
+
+  }
 
   #### Validate parameters
 
@@ -198,16 +206,9 @@ define logstash::input::generator (
 
   if ($add_field != '') {
     validate_hash($add_field)
-    $arr_add_field = inline_template('<%= add_field.to_a.flatten.inspect %>')
+    $var_add_field = $add_field
+    $arr_add_field = inline_template('<%= "["+var_add_field.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_add_field = "  add_field => ${arr_add_field}\n"
-  }
-
-  if ($count != '') {
-    if ! is_numeric($count) {
-      fail("\"${count}\" is not a valid count parameter value")
-    } else {
-      $opt_count = "  count => ${count}\n"
-    }
   }
 
   if ($threads != '') {
@@ -215,6 +216,14 @@ define logstash::input::generator (
       fail("\"${threads}\" is not a valid threads parameter value")
     } else {
       $opt_threads = "  threads => ${threads}\n"
+    }
+  }
+
+  if ($count != '') {
+    if ! is_numeric($count) {
+      fail("\"${count}\" is not a valid count parameter value")
+    } else {
+      $opt_count = "  count => ${count}\n"
     }
   }
 
@@ -254,9 +263,7 @@ define logstash::input::generator (
   file { $conffiles:
     ensure  => present,
     content => "input {\n generator {\n${opt_add_field}${opt_charset}${opt_count}${opt_debug}${opt_format}${opt_lines}${opt_message}${opt_message_format}${opt_tags}${opt_threads}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0640',
+    mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

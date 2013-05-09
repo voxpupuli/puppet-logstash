@@ -51,4 +51,30 @@ describe 'logstash::input::zeromq', :type => 'define' do
 
   end
 
+  context "Set file owner" do
+
+    let(:facts) { {:operatingsystem => 'CentOS' }}
+    let(:pre_condition) { 'class {"logstash": logstash_user => "logstash", logstash_group => "logstash" }'}
+    let(:title) { 'test' }
+
+    let :params do {
+      :add_field => { 'field1' => 'value1' },
+      :address => ['value2'],
+      :charset => 'ASCII-8BIT',
+      :debug => false,
+      :format => 'plain',
+      :message_format => 'value6',
+      :mode => 'server',
+      :sender => 'value8',
+      :sockopt => { 'field9' => 'value9' },
+      :tags => ['value10'],
+      :topic => ['value11'],
+      :topology => 'pushpull',
+      :type => 'value13',
+    } end
+  
+    it { should contain_file('/etc/logstash/agent/config/input_zeromq_test').with(:owner => 'logstash', :group => 'logstash') }
+
+  end
+
 end

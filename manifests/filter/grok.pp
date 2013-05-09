@@ -7,7 +7,7 @@
 #   format that is generally written for humans and not computer
 #   consumption.  Logstash ships with about 120 patterns by default. You
 #   can find them here:
-#   https://github.com/logstash/logstash/tree/v1.1.10/patterns. You can
+#   https://github.com/logstash/logstash/tree/v1.1.12/patterns. You can
 #   add your own trivially. (See the patterns_dir setting)  If you need
 #   help building patterns to match your logs, you will find the
 #   http://grokdebug.herokuapp.com too quite useful!  Grok Basics  Grok
@@ -168,8 +168,8 @@
 # [*tag_on_failure*]
 #   If true, ensure the '_grokparsefailure' tag is present when there has
 #   been no successful match
-#   Value type is boolean
-#   Default value: true
+#   Value type is array
+#   Default value: ["_grokparsefailure"]
 #   This variable is optional
 #
 # [*tags*]
@@ -199,19 +199,13 @@
 #   Default value: [ 'array' ]
 #   This variable is optional
 #
-#
-# === Examples
-#
-#
-#
-#
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10
+#  This define is created based on LogStash version 1.1.12
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.10/filters/grok
+#  http://logstash.net/docs/1.1.12/filters/grok
 #
-#  Need help? http://logstash.net/docs/1.1.10/learn
+#  Need help? http://logstash.net/docs/1.1.12/learn
 #
 # === Authors
 #
@@ -239,10 +233,25 @@ define logstash::filter::grok (
 
   require logstash::params
 
-  $confdirstart = prefix($instances, "${logstash::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/filter_${order}_grok_${name}")
-  $services = prefix($instances, 'logstash-')
-  $filesdir = "${logstash::configdir}/files/filter/grok/${name}"
+  File {
+    owner => $logstash::logstash_user,
+    group => $logstash::logstash_group
+  }
+
+  if $logstash::multi_instance == true {
+
+    $confdirstart = prefix($instances, "${logstash::configdir}/")
+    $conffiles    = suffix($confdirstart, "/config/filter_${order}_grok_${name}")
+    $services     = prefix($instances, 'logstash-')
+    $filesdir     = "${logstash::configdir}/files/filter/grok/${name}"
+
+  } else {
+
+    $conffiles = "${logstash::configdir}/conf.d/filter_${order}_grok_${name}"
+    $services  = 'logstash'
+    $filesdir  = "${logstash::configdir}/files/filter/grok/${name}"
+
+  }
 
   #### Validate parameters
 
@@ -260,16 +269,16 @@ define logstash::filter::grok (
     $opt_add_tag = "  add_tag => ['${arr_add_tag}']\n"
   }
 
+  if ($tag_on_failure != '') {
+    validate_array($tag_on_failure)
+    $arr_tag_on_failure = join($tag_on_failure, '\', \'')
+    $opt_tag_on_failure = "  tag_on_failure => ['${arr_tag_on_failure}']\n"
+  }
+
   if ($remove_tag != '') {
     validate_array($remove_tag)
     $arr_remove_tag = join($remove_tag, '\', \'')
     $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
-  }
-
-  if ($patterns_dir != '') {
-    validate_array($patterns_dir)
-    $arr_patterns_dir = join($patterns_dir, '\', \'')
-    $opt_patterns_dir = "  patterns_dir => ['${arr_patterns_dir}']\n"
   }
 
   if ($exclude_tags != '') {
@@ -278,20 +287,26 @@ define logstash::filter::grok (
     $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
+  if ($patterns_dir != '') {
+    validate_array($patterns_dir)
+    $arr_patterns_dir = join($patterns_dir, '\', \'')
+    $opt_patterns_dir = "  patterns_dir => ['${arr_patterns_dir}']\n"
+  }
+
   if ($pattern != '') {
     validate_array($pattern)
     $arr_pattern = join($pattern, '\', \'')
     $opt_pattern = "  pattern => ['${arr_pattern}']\n"
   }
 
-  if ($singles != '') {
-    validate_bool($singles)
-    $opt_singles = "  singles => ${singles}\n"
-  }
-
   if ($named_captures_only != '') {
     validate_bool($named_captures_only)
     $opt_named_captures_only = "  named_captures_only => ${named_captures_only}\n"
+  }
+
+  if ($singles != '') {
+    validate_bool($singles)
+    $opt_singles = "  singles => ${singles}\n"
   }
 
   if ($keep_empty_captures != '') {
@@ -309,20 +324,17 @@ define logstash::filter::grok (
     $opt_break_on_match = "  break_on_match => ${break_on_match}\n"
   }
 
-  if ($tag_on_failure != '') {
-    validate_bool($tag_on_failure)
-    $opt_tag_on_failure = "  tag_on_failure => ${tag_on_failure}\n"
-  }
-
   if ($match != '') {
     validate_hash($match)
-    $arr_match = inline_template('<%= match.to_a.flatten.inspect %>')
+    $var_match = $match
+    $arr_match = inline_template('<%= "["+var_match.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_match = "  match => ${arr_match}\n"
   }
 
   if ($add_field != '') {
     validate_hash($add_field)
-    $arr_add_field = inline_template('<%= add_field.to_a.flatten.inspect %>')
+    $var_add_field = $add_field
+    $arr_add_field = inline_template('<%= "["+var_add_field.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_add_field = "  add_field => ${arr_add_field}\n"
   }
 
@@ -342,9 +354,7 @@ define logstash::filter::grok (
   file { $conffiles:
     ensure  => present,
     content => "filter {\n grok {\n${opt_add_field}${opt_add_tag}${opt_break_on_match}${opt_drop_if_match}${opt_exclude_tags}${opt_keep_empty_captures}${opt_match}${opt_named_captures_only}${opt_pattern}${opt_patterns_dir}${opt_remove_tag}${opt_singles}${opt_tag_on_failure}${opt_tags}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0640',
+    mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

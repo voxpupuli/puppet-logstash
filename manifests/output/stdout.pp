@@ -50,26 +50,19 @@
 #   Default value: ""
 #   This variable is optional
 #
-#
 # [*instances*]
 #   Array of instance names to which this define is.
 #   Value type is array
 #   Default value: [ 'array' ]
 #   This variable is optional
 #
-#
-# === Examples
-#
-#
-#
-#
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10
+#  This define is created based on LogStash version 1.1.12
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.10/outputs/stdout
+#  http://logstash.net/docs/1.1.12/outputs/stdout
 #
-#  Need help? http://logstash.net/docs/1.1.10/learn
+#  Need help? http://logstash.net/docs/1.1.12/learn
 #
 # === Authors
 #
@@ -88,10 +81,25 @@ define logstash::output::stdout (
 
   require logstash::params
 
-  $confdirstart = prefix($instances, "${logstash::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/output_stdout_${name}")
-  $services = prefix($instances, 'logstash-')
-  $filesdir = "${logstash::configdir}/files/output/stdout/${name}"
+  File {
+    owner => $logstash::logstash_user,
+    group => $logstash::logstash_group
+  }
+
+  if $logstash::multi_instance == true {
+
+    $confdirstart = prefix($instances, "${logstash::configdir}/")
+    $conffiles    = suffix($confdirstart, "/config/output_stdout_${name}")
+    $services     = prefix($instances, 'logstash-')
+    $filesdir     = "${logstash::configdir}/files/output/stdout/${name}"
+
+  } else {
+
+    $conffiles = "${logstash::configdir}/conf.d/output_stdout_${name}"
+    $services  = 'logstash'
+    $filesdir  = "${logstash::configdir}/files/output/stdout/${name}"
+
+  }
 
   #### Validate parameters
 
@@ -143,9 +151,7 @@ define logstash::output::stdout (
   file { $conffiles:
     ensure  => present,
     content => "output {\n stdout {\n${opt_debug}${opt_debug_format}${opt_exclude_tags}${opt_fields}${opt_message}${opt_tags}${opt_type} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0640',
+    mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

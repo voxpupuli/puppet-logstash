@@ -132,26 +132,19 @@
 #   Default value: "smtp"
 #   This variable is optional
 #
-#
 # [*instances*]
 #   Array of instance names to which this define is.
 #   Value type is array
 #   Default value: [ 'array' ]
 #   This variable is optional
 #
-#
-# === Examples
-#
-#
-#
-#
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10
+#  This define is created based on LogStash version 1.1.12
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.10/outputs/email
+#  http://logstash.net/docs/1.1.12/outputs/email
 #
-#  Need help? http://logstash.net/docs/1.1.10/learn
+#  Need help? http://logstash.net/docs/1.1.12/learn
 #
 # === Authors
 #
@@ -178,10 +171,25 @@ define logstash::output::email (
 
   require logstash::params
 
-  $confdirstart = prefix($instances, "${logstash::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/output_email_${name}")
-  $services = prefix($instances, 'logstash-')
-  $filesdir = "${logstash::configdir}/files/output/email/${name}"
+  File {
+    owner => $logstash::logstash_user,
+    group => $logstash::logstash_group
+  }
+
+  if $logstash::multi_instance == true {
+
+    $confdirstart = prefix($instances, "${logstash::configdir}/")
+    $conffiles    = suffix($confdirstart, "/config/output_email_${name}")
+    $services     = prefix($instances, 'logstash-')
+    $filesdir     = "${logstash::configdir}/files/output/email/${name}"
+
+  } else {
+
+    $conffiles = "${logstash::configdir}/conf.d/output_email_${name}"
+    $services  = 'logstash'
+    $filesdir  = "${logstash::configdir}/files/output/email/${name}"
+
+  }
 
   #### Validate parameters
   if ($attachments != '') {
@@ -213,13 +221,15 @@ define logstash::output::email (
 
   if ($match != '') {
     validate_hash($match)
-    $arr_match = inline_template('<%= match.to_a.flatten.inspect %>')
+    $var_match = $match
+    $arr_match = inline_template('<%= "["+var_match.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_match = "  match => ${arr_match}\n"
   }
 
   if ($options != '') {
     validate_hash($options)
-    $arr_options = inline_template('<%= options.to_a.flatten.inspect %>')
+    $var_options = $options
+    $arr_options = inline_template('<%= "["+var_options.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_options = "  options => ${arr_options}\n"
   }
 
@@ -273,9 +283,7 @@ define logstash::output::email (
   file { $conffiles:
     ensure  => present,
     content => "output {\n email {\n${opt_attachments}${opt_body}${opt_cc}${opt_contenttype}${opt_exclude_tags}${opt_fields}${opt_from}${opt_htmlbody}${opt_match}${opt_options}${opt_subject}${opt_tags}${opt_to}${opt_type}${opt_via} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0640',
+    mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

@@ -99,19 +99,13 @@
 #   Default value: [ 'array' ]
 #   This variable is optional
 #
-#
-# === Examples
-#
-#
-#
-#
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.10
+#  This define is created based on LogStash version 1.1.12
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.10/filters/syslog_pri
+#  http://logstash.net/docs/1.1.12/filters/syslog_pri
 #
-#  Need help? http://logstash.net/docs/1.1.10/learn
+#  Need help? http://logstash.net/docs/1.1.12/learn
 #
 # === Authors
 #
@@ -134,10 +128,25 @@ define logstash::filter::syslog_pri (
 
   require logstash::params
 
-  $confdirstart = prefix($instances, "${logstash::configdir}/")
-  $conffiles = suffix($confdirstart, "/config/filter_${order}_syslog_pri_${name}")
-  $services = prefix($instances, 'logstash-')
-  $filesdir = "${logstash::configdir}/files/filter/syslog_pri/${name}"
+  File {
+    owner => $logstash::logstash_user,
+    group => $logstash::logstash_group
+  }
+
+  if $logstash::multi_instance == true {
+
+    $confdirstart = prefix($instances, "${logstash::configdir}/")
+    $conffiles    = suffix($confdirstart, "/config/filter_${order}_syslog_pri_${name}")
+    $services     = prefix($instances, 'logstash-')
+    $filesdir     = "${logstash::configdir}/files/filter/syslog_pri/${name}"
+
+  } else {
+
+    $conffiles = "${logstash::configdir}/conf.d/filter_${order}_syslog_pri_${name}"
+    $services  = 'logstash'
+    $filesdir  = "${logstash::configdir}/files/filter/syslog_pri/${name}"
+
+  }
 
   #### Validate parameters
 
@@ -186,7 +195,8 @@ define logstash::filter::syslog_pri (
 
   if ($add_field != '') {
     validate_hash($add_field)
-    $arr_add_field = inline_template('<%= add_field.to_a.flatten.inspect %>')
+    $var_add_field = $add_field
+    $arr_add_field = inline_template('<%= "["+var_add_field.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_add_field = "  add_field => ${arr_add_field}\n"
   }
 
@@ -211,9 +221,7 @@ define logstash::filter::syslog_pri (
   file { $conffiles:
     ensure  => present,
     content => "filter {\n syslog_pri {\n${opt_add_field}${opt_add_tag}${opt_exclude_tags}${opt_facility_labels}${opt_remove_tag}${opt_severity_labels}${opt_syslog_pri_field_name}${opt_tags}${opt_type}${opt_use_labels} }\n}\n",
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0640',
+    mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }

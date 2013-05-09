@@ -49,4 +49,29 @@ describe 'logstash::input::stomp', :type => 'define' do
 
   end
 
+  context "Set file owner" do
+
+    let(:facts) { {:operatingsystem => 'CentOS' }}
+    let(:pre_condition) { 'class {"logstash": logstash_user => "logstash", logstash_group => "logstash" }'}
+    let(:title) { 'test' }
+
+    let :params do {
+      :add_field => { 'field1' => 'value1' },
+      :charset => 'ASCII-8BIT',
+      :debug => false,
+      :destination => 'value4',
+      :format => 'plain',
+      :host => 'value6',
+      :message_format => 'value7',
+      :password => 'value8',
+      :port => 9,
+      :tags => ['value10'],
+      :type => 'value11',
+      :user => 'value12',
+    } end
+  
+    it { should contain_file('/etc/logstash/agent/config/input_stomp_test').with(:owner => 'logstash', :group => 'logstash') }
+
+  end
+
 end

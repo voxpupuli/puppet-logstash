@@ -40,4 +40,23 @@ describe 'logstash::output::nagios', :type => 'define' do
 
   end
 
+  context "Set file owner" do
+
+    let(:facts) { {:operatingsystem => 'CentOS' }}
+    let(:pre_condition) { 'class {"logstash": logstash_user => "logstash", logstash_group => "logstash" }'}
+    let(:title) { 'test' }
+
+    let :params do {
+      :commandfile => 'puppet:///path/to/file1',
+      :exclude_tags => ['value2'],
+      :fields => ['value3'],
+      :nagios_level => '0',
+      :tags => ['value5'],
+      :type => 'value6',
+    } end
+  
+    it { should contain_file('/etc/logstash/agent/config/output_nagios_test').with(:owner => 'logstash', :group => 'logstash') }
+
+  end
+
 end
