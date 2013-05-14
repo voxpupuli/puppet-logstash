@@ -111,10 +111,20 @@ class logstash(
     fail("\"${status}\" is not a valid status parameter value")
   }
 
-  validate_array($instances)
-
   if $initfiles {
-    validate_hash($initfiles)
+    if $multi_instance == true {
+      validate_hash($initfiles)
+    } else {
+      validate_string($initfiles)
+    }
+  }
+
+  if $defaultsfiles {
+    if $multi_instance == true {
+      validate_hash($defaultsfiles)
+    } else {
+      validate_string($defaultsfiles)
+    }
   }
 
   #### Manage actions

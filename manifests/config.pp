@@ -24,10 +24,29 @@
 #
 class logstash::config {
 
-  ## Create and manage the config directories for the different instances
-  logstash::configdir { $logstash::instances:; }
+  File {
+    owner => $logstash::logstash_user,
+    group => $logstash::logstash_group
+  }
 
-  $tmp_dir     = "${logstash::installpath}/tmp"
+  if $logstash::multi_instance == true {
+
+    # Setup and manage config dirs for the instances
+    logstash::configdir { $logstash::instances:; }
+
+  } else {
+
+    # Manage the single config dir
+    file { "${logstash::configdir}/conf.d":
+      ensure  => directory,
+      mode    => '0640',
+      purge   => true,
+      recurse => true,
+      notify  => Service['logstash']
+    }
+  }
+
+  $tmp_dir = "${logstash::installpath}/tmp"
 
   #### Create the tmp dir
   exec { "create_tmp_dir_${name}":
@@ -40,8 +59,6 @@ class logstash::config {
   file { $tmp_dir:
     ensure => directory,
     mode   => '0640',
-    owner  => $logstash::logstash_user,
-    group  => $logstash::logstash_group
   }
 
 }

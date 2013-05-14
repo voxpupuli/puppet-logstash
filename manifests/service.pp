@@ -72,12 +72,46 @@ class logstash::service {
 
   }
 
-  # Remove the init file and service from the package if we install it via a package
-  if $logstash::provider == 'package' {
+  if $logstash::multi_instance == true {
 
-    service { 'logstash':
-      ensure => 'stopped',
-      enable => false
+    if $logstash::provider == 'package' {
+
+      service { 'logstash':
+        ensure => 'stopped',
+        enable => false
+      }
+
+    }
+
+  } else {
+
+    if $logstash::defaultsfiles {
+
+      # Write defaults file if we have one
+      file { "${logstash::params::defaults_location}/logstash":
+        ensure => present,
+        source => $logstash::defaultsfiles,
+        owner  => 'root',
+        group  => 'root',
+        mode   => '0644',
+        before => Service[ 'logstash' ],
+        notify => Service[ 'logstash' ],
+      }
+
+    }
+
+    if $logstash::initfiles {
+
+      # Write service file
+      file { '/etc/init.d/logstash':
+        ensure => present,
+        source => $logstash::initfiles,
+        owner  => 'root',
+        group  => 'root',
+        mode   => '0755',
+        before => Service[ 'logstash' ]
+      }
+
     }
 
   }
@@ -87,9 +121,23 @@ class logstash::service {
   if ($logstash::jarfile != undef and $logstash::status == 'unmanaged') {
     # Don't manage the service
   } else {
-    logstash::servicefile { $logstash::instances:
-      service_enable => $service_enable,
-      service_ensure => $service_ensure
+
+    if $logstash::multi_instance == true {
+
+      # Setup and manage instances
+      logstash::servicefile { $logstash::instances:
+        service_enable => $service_enable,
+        service_ensure => $service_ensure
+      }
+
+    } else {
+
+      # Use the single instance
+      service { 'logstash':
+        ensure => $service_ensure,
+        enable => $service_enable
+      }
+
     }
   }
 

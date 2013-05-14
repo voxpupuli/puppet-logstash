@@ -18,8 +18,8 @@ define logstash::configdir {
 
   require logstash::params
 
-  $config_dir  = "${logstash::params::configdir}/${name}/config"
-  $sincedb_dir = "${logstash::params::configdir}/${name}/sincedb"
+  $config_dir  = "${logstash::configdir}/${name}/config"
+  $sincedb_dir = "${logstash::configdir}/${name}/sincedb"
 
   if $logstash::ensure == 'present' {
 

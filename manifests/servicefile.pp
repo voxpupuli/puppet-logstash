@@ -46,7 +46,7 @@ define logstash::servicefile (
         $def_file = $def[$name]
       }
 
-      $configdir = "${logstash::params::configdir}/${name}/config"
+      $configdir = "${logstash::configdir}/${name}/config"
 
       # Do we get a custom init script?
       if $initfile != undef {
