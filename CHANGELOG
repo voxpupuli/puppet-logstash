@@ -1,3 +1,7 @@
+0.3.1 ( May 15, 2013 )
+  Missed changes for enabling/disabling multi-instance feature
+  Adding a few spec tests for the multi-instance feature
+
 0.3.0 ( May 09, 2013 )
   Update defines for Logstash 1.1.12
   Adding license file
