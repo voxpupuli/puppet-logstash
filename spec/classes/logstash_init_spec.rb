@@ -20,6 +20,7 @@ describe 'logstash', :type => 'class' do
       # service.pp
       it { should contain_service('logstash-agent') }
       it { should contain_file('/etc/init.d/logstash-agent') }
+      it { should contain_file('/etc/logstash/agent/config') }
       it { should contain_service('logstash').with(:enable => false, :ensure => 'stopped') }
 
     end
@@ -40,6 +41,7 @@ describe 'logstash', :type => 'class' do
       # service.pp
       it { should contain_service('logstash-agent') }
       it { should contain_file('/etc/init.d/logstash-agent') }
+      it { should contain_file('/etc/logstash/agent/config') }
       it { should contain_service('logstash').with(:enable => false, :ensure => 'stopped') }
 
     end
@@ -60,6 +62,7 @@ describe 'logstash', :type => 'class' do
       # service.pp
       it { should contain_service('logstash-agent') }
       it { should contain_file('/etc/init.d/logstash-agent') }
+      it { should contain_file('/etc/logstash/agent/config') }
       it { should contain_service('logstash').with(:enable => false, :ensure => 'stopped') }
 
     end
@@ -80,6 +83,7 @@ describe 'logstash', :type => 'class' do
       # service.pp
       it { should contain_service('logstash-agent') }
       it { should contain_file('/etc/init.d/logstash-agent') }
+      it { should contain_file('/etc/logstash/agent/config') }
       it { should contain_service('logstash').with(:enable => false, :ensure => 'stopped') }
 
     end
@@ -100,6 +104,7 @@ describe 'logstash', :type => 'class' do
       # service.pp
       it { should contain_service('logstash-agent') }
       it { should contain_file('/etc/init.d/logstash-agent') }
+      it { should contain_file('/etc/logstash/agent/config') }
       it { should contain_service('logstash').with(:enable => false, :ensure => 'stopped') }
 
     end
@@ -120,6 +125,7 @@ describe 'logstash', :type => 'class' do
       # service.pp
       it { should contain_service('logstash-agent') }
       it { should contain_file('/etc/init.d/logstash-agent') }
+      it { should contain_file('/etc/logstash/agent/config') }
       it { should contain_service('logstash').with(:enable => false, :ensure => 'stopped') }
 
     end
@@ -140,6 +146,7 @@ describe 'logstash', :type => 'class' do
       # service.pp
       it { should contain_service('logstash-agent') }
       it { should contain_file('/etc/init.d/logstash-agent') }
+      it { should contain_file('/etc/logstash/agent/config') }
       it { should contain_service('logstash').with(:enable => false, :ensure => 'stopped') }
   
     end
@@ -337,6 +344,23 @@ describe 'logstash', :type => 'class' do
     it { should contain_file('/etc/logstash/agent/config').with(:owner => 'logstash', :group => 'logstash') }
     it { should contain_file('/etc/logstash/agent/sincedb').with(:owner => 'logstash', :group => 'logstash') }
     it { should contain_file('/usr/share/logstash/tmp').with(:owner => 'logstash', :group => 'logstash') }
+
+  end
+
+  context "test with multi-instance disabled" do
+
+    let :facts do {
+      :operatingsystem => 'CentOS'
+    } end
+
+    let :params do {
+      :multi_instance => false
+    } end
+
+    it { should contain_service('logstash') }
+    it { should contain_file('/etc/logstash/conf.d') }
+    it { should_not contain_service('logstash-agent') }
+    it { should_not contain_file('/etc/logstash/agent/config') }
 
   end
 
