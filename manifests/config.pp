@@ -49,7 +49,7 @@ class logstash::config {
   $tmp_dir = "${logstash::installpath}/tmp"
 
   #### Create the tmp dir
-  exec { "create_tmp_dir_${name}":
+  exec { 'create_tmp_dir':
     cwd     => '/',
     path    => ['/usr/bin', '/bin'],
     command => "mkdir -p ${tmp_dir}",
@@ -57,8 +57,9 @@ class logstash::config {
   }
 
   file { $tmp_dir:
-    ensure => directory,
-    mode   => '0640',
+    ensure  => directory,
+    mode    => '0640',
+    require => Exec[ 'create_tmp_dir' ]
   }
 
 }
