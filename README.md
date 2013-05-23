@@ -17,7 +17,7 @@ This overview shows you which puppet module and logstash version work together.
     ----------------------------
     | 0.2.0         | 1.1.10   |
     ----------------------------
-    | 0.3.0         | 1.1.12   |
+    | 0.3.0 - 0.3.2 | 1.1.12   |
     ----------------------------
 
 ## Version changes
