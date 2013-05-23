@@ -116,6 +116,8 @@ class logstash::service {
 
       if $logstash::provider == 'custom' {
 
+        $configdir = "${logstash::configdir}/conf.d"
+
         case $::operatingsystem {
           'RedHat', 'CentOS', 'Fedora', 'Scientific', 'Amazon': {
             $initscript = template("${module_name}/etc/init.d/logstash.init.RedHat.erb")
@@ -129,8 +131,6 @@ class logstash::service {
           }
 
         }
-
-        $configdir = "${logstash::configdir}/conf.d"
 
         # Place built in init file
         file { '/etc/init.d/logstash':
