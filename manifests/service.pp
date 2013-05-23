@@ -137,7 +137,7 @@ class logstash::service {
           group   => 'root',
           mode    => '0755',
           content => $initscript,
-          before  => Service[ 'logstash ']
+          before  => Service[ 'logstash' ]
         }
       }
 
