@@ -112,6 +112,35 @@ class logstash::service {
         before => Service[ 'logstash' ]
       }
 
+    } else {
+
+      if $logstash::provider == 'custom' {
+
+        case $::operatingsystem {
+          'RedHat', 'CentOS', 'Fedora', 'Scientific', 'Amazon': {
+            $initscript = template("${module_name}/etc/init.d/logstash.init.RedHat.erb")
+          }
+          'Debian', 'Ubuntu': {
+            $initscript = template("${module_name}/etc/init.d/logstash.init.Debian.erb")
+          }
+          default: {
+            fail("\"${module_name}\" provides no default init file
+                  for \"${::operatingsystem}\"")
+          }
+
+        }
+
+        # Place built in init file
+        file { '/etc/init.d/logstash':
+          ensure  => present,
+          owner   => 'root',
+          group   => 'root',
+          mode    => '0755',
+          content => $initscript,
+          before  => Service[ 'logstash ']
+        }
+      }
+
     }
 
   }
