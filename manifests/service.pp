@@ -130,6 +130,8 @@ class logstash::service {
 
         }
 
+        $configdir = "${logstash::configdir}/conf.d"
+
         # Place built in init file
         file { '/etc/init.d/logstash':
           ensure  => present,
