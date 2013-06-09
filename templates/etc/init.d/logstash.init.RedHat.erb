@@ -1,6 +1,6 @@
 #! /bin/sh
 #
-#       /etc/rc.d/init.d/logstash-<%=name%>
+#       /etc/rc.d/init.d/logstash-<%=@name%>
 #
 #       Starts Logstash as a daemon
 #
@@ -8,7 +8,7 @@
 # description: Starts Logstash as a daemon
 
 ### BEGIN INIT INFO
-# Provides: logstash-<%=name%>
+# Provides: logstash-<%=@name%>
 # Required-Start: $local_fs $remote_fs
 # Required-Stop: $local_fs $remote_fs
 # Default-Start: 2 3 4 5
@@ -44,7 +44,7 @@ LS_JAVA_OPTS="-Xmx256m -Djava.io.tmpdir=$LS_HOME/tmp"
 LOG_DIR=/var/log/logstash
 
 # logstash configuration directory
-CONF_DIR=<%= configdir %>
+CONF_DIR=<%= @configdir %>
 
 # logstash log file
 LOG_FILE=$LOG_DIR/$NAME.log
