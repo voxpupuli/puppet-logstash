@@ -3,7 +3,7 @@
 # /etc/init.d/logstash -- startup script for LogStash.
 #
 ### BEGIN INIT INFO
-# Provides:          logstash-<%=name%>
+# Provides:          logstash-<%=@name%>
 # Required-Start:    $all
 # Required-Stop:     $all
 # Default-Start:     2 3 4 5
@@ -15,8 +15,8 @@
 set -e
 
 PATH=/bin:/usr/bin:/sbin:/usr/sbin
-NAME=logstash-<%=name%>
-DESC="Logstash Daemon <%=name%>"
+NAME=logstash-<%=@name%>
+DESC="Logstash Daemon <%=@name%>"
 DEFAULT=/etc/default/$NAME
 
 if [ `id -u` -ne 0 ]; then
