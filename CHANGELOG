@@ -1,3 +1,8 @@
+0.3.3 ( Jun 15, 2013 )
+  Enable puppet 3.2.x testing
+  Fix issue that the config dir was missing in the init files
+  Fix variable access deprecation warning ( PR #56 by Richard Peng )
+
 0.3.2 ( May 23, 2013 )
   Fixing issue when using jar file without multi-instance feature
   Added rspec tests to cover this issue
