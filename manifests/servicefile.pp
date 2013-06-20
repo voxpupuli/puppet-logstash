@@ -83,7 +83,7 @@ define logstash::servicefile (
 
       # Write service file
       file { "/etc/init.d/logstash-${name}":
-        ensure  => present,
+        ensure  => $logstash::ensure,
         content => $initscript,
         source  => $initfile,
         owner   => 'root',
@@ -95,7 +95,7 @@ define logstash::servicefile (
       if $defaults_file {
         # Write defaults file if we have one
         file { "${logstash::params::defaults_location}/logstash-${name}":
-          ensure => present,
+          ensure  => $logstash::ensure,
           source => $defaults_file,
           owner  => 'root',
           group  => 'root',
