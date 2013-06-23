@@ -47,6 +47,12 @@
 #   Default value: []
 #   This variable is optional
 #
+# [*gauge*]
+#   A gauge metric. metric_name =&gt; gauge as hash
+#   Value type is hash
+#   Default value: {}
+#   This variable is optional
+#
 # [*host*]
 #   The address of the Statsd server.
 #   Value type is string
@@ -125,6 +131,7 @@
 define logstash::output::statsd (
   $count        = '',
   $debug        = '',
+  $gauge        = '',
   $decrement    = '',
   $exclude_tags = '',
   $fields       = '',
@@ -215,6 +222,13 @@ define logstash::output::statsd (
     $opt_count = "  count => ${arr_count}\n"
   }
 
+  if ($gauge != '') {
+    validate_hash($gauge)
+    $var_gauge = $gauge
+    $arr_gauge = inline_template('<%= "["+var_gauge.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $opt_gauge = "  gauge => ${arr_gauge}\n"
+  }
+
   if ($sample_rate != '') {
     if ! is_numeric($sample_rate) {
       fail("\"${sample_rate}\" is not a valid sample_rate parameter value")
@@ -255,7 +269,7 @@ define logstash::output::statsd (
 
   file { $conffiles:
     ensure  => present,
-    content => "output {\n statsd {\n${opt_count}${opt_debug}${opt_decrement}${opt_exclude_tags}${opt_fields}${opt_host}${opt_increment}${opt_namespace}${opt_port}${opt_sample_rate}${opt_sender}${opt_tags}${opt_timing}${opt_type} }\n}\n",
+    content => "output {\n statsd {\n${opt_count}\n${opt_gauge${opt_debug}${opt_decrement}${opt_exclude_tags}${opt_fields}${opt_host}${opt_increment}${opt_namespace}${opt_port}${opt_sample_rate}${opt_sender}${opt_tags}${opt_timing}${opt_type} }\n}\n",
     mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
