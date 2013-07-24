@@ -65,10 +65,12 @@ define logstash::configdir {
         file { $config_dir :
             ensure  => 'absent',
             recurse => 'true',
+            force   => 'true',
         }
         file { $sincedb_dir :
             ensure  => 'absent',
             recurse => 'true',
+            force   => 'true',
         }
 
   }
