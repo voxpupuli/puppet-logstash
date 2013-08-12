@@ -90,7 +90,8 @@ class logstash(
   $initfiles      = undef,
   $defaultsfiles  = undef,
   $logstash_user  = $logstash::params::logstash_user,
-  $logstash_group = $logstash::params::logstash_group
+  $logstash_group = $logstash::params::logstash_group,
+  $configdir      = $logstash::params::configdir,
 ) inherits logstash::params {
 
   anchor {'logstash::begin': }
