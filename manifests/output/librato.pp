@@ -171,21 +171,21 @@ define logstash::output::librato (
   if ($counter != '') {
     validate_hash($counter)
     $var_counter = $counter
-    $arr_counter = inline_template('<%= "["+var_counter.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_counter = inline_template('<%= "["+@var_counter.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_counter = "  counter => ${arr_counter}\n"
   }
 
   if ($annotation != '') {
     validate_hash($annotation)
     $var_annotation = $annotation
-    $arr_annotation = inline_template('<%= "["+var_annotation.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_annotation = inline_template('<%= "["+@var_annotation.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_annotation = "  annotation => ${arr_annotation}\n"
   }
 
   if ($gauge != '') {
     validate_hash($gauge)
     $var_gauge = $gauge
-    $arr_gauge = inline_template('<%= "["+var_gauge.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_gauge = inline_template('<%= "["+@var_gauge.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_gauge = "  gauge => ${arr_gauge}\n"
   }
 
