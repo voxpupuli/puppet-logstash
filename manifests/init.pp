@@ -143,7 +143,7 @@ class logstash(
     # Install java
     class { 'logstash::java': }
 
-    # ensure we first java java and then manage the service
+    # ensure we first install java and then manage the service
     Anchor['logstash::begin']
     -> Class['logstash::java']
     -> Class['logstash::service']
