@@ -305,7 +305,7 @@ define logstash::output::cloudwatch (
   if ($dimensions != '') {
     validate_hash($dimensions)
     $var_dimensions = $dimensions
-    $arr_dimensions = inline_template('<%= "["+var_dimensions.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_dimensions = inline_template('<%= "["+@var_dimensions.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_dimensions = "  dimensions => ${arr_dimensions}\n"
   }
 
