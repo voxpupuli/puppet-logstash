@@ -93,18 +93,34 @@ class logstash::package {
       $filenameArray = split($logstash::jarfile, '/')
       $basefilename = $filenameArray[-1]
 
-      file { "${logstash::installpath}/${basefilename}":
-        ensure  => present,
-        source  => $logstash::jarfile,
-        require => Exec['create_install_dir'],
-        backup  => false
+      $sourceArray = split($logstash::jarfile, ':')
+      $schemeType = $filenameArray[0]
+
+      if ( $schemeType == 'puppet' ) {
+        file { "${logstash::installpath}/${basefilename}":
+          ensure  => present,
+          source  => $logstash::jarfile,
+          require => Exec['create_install_dir'],
+          before  => File["${logstash::installpath}/logstash.jar"],
+          backup  => false
+        }
+      # Catch everything here so that https, ftp, and anything else
+      # supported by wget will work
+      } else {
+        exec { 'download-logstash':
+          command => "wget -O ${logstash::installpath}/${basefilename}
+                      ${logstash::jarfile} 2> /dev/null",
+          path    => ['/usr/bin', '/bin'],
+          creates => "${logstash::installpath}/${basefilename}",
+          before  => File["${logstash::installpath}/logstash.jar"],
+          require => Exec['create_install_dir'],
+        }
       }
 
       # Create symlink
       file { "${logstash::installpath}/logstash.jar":
         ensure  => 'link',
         target  => "${logstash::installpath}/${basefilename}",
-        require => File["${logstash::installpath}/${basefilename}"],
         backup  => false
       }
 
