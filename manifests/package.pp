@@ -94,26 +94,27 @@ class logstash::package {
       $basefilename = $filenameArray[-1]
 
       $sourceArray = split($logstash::jarfile, ':')
-      $schemeType = $filenameArray[0]
+      $protocol_type = $sourceArray[0]
 
-      if ( $schemeType == 'puppet' ) {
-        file { "${logstash::installpath}/${basefilename}":
-          ensure  => present,
-          source  => $logstash::jarfile,
-          require => Exec['create_install_dir'],
-          before  => File["${logstash::installpath}/logstash.jar"],
-          backup  => false
+      case $protocol_type {
+        puppet: {
+          file { "${logstash::installpath}/${basefilename}":
+            ensure  => present,
+            source  => $logstash::jarfile,
+            require => Exec['create_install_dir'],
+            backup  => false,
+          }
         }
-      # Catch everything here so that https, ftp, and anything else
-      # supported by wget will work
-      } else {
-        exec { 'download-logstash':
-          command => "wget -O ${logstash::installpath}/${basefilename}
-                      ${logstash::jarfile} 2> /dev/null",
-          path    => ['/usr/bin', '/bin'],
-          creates => "${logstash::installpath}/${basefilename}",
-          before  => File["${logstash::installpath}/logstash.jar"],
-          require => Exec['create_install_dir'],
+        ftp, https, http: {
+          exec { 'download-logstash':
+            command => "wget -O ${logstash::installpath}/${basefilename} ${logstash::jarfile} 2> /dev/null",
+            path    => ['/usr/bin', '/bin'],
+            creates => "${logstash::installpath}/${basefilename}",
+            require => Exec['create_install_dir'],
+          }
+        }
+        default: { 
+          fail("Protocol must be puppet, http, https, or ftp.")
         }
       }
 
