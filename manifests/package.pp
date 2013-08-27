@@ -104,6 +104,7 @@ class logstash::package {
             require => Exec['create_install_dir'],
             backup  => false,
           }
+          File["${logstash::installpath}/${basefilename}"] -> File["${logstash::installpath}/logstash.jar"]
         }
         ftp, https, http: {
           exec { 'download-logstash':
@@ -112,6 +113,7 @@ class logstash::package {
             creates => "${logstash::installpath}/${basefilename}",
             require => Exec['create_install_dir'],
           }
+          Exec['download-logstash'] -> File["${logstash::installpath}/logstash.jar"]
         }
         default: { 
           fail("Protocol must be puppet, http, https, or ftp.")
