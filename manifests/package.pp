@@ -98,25 +98,31 @@ class logstash::package {
 
       case $protocol_type {
         puppet: {
+
           file { "${logstash::installpath}/${basefilename}":
             ensure  => present,
             source  => $logstash::jarfile,
             require => Exec['create_install_dir'],
             backup  => false,
           }
+
           File["${logstash::installpath}/${basefilename}"] -> File["${logstash::installpath}/logstash.jar"]
+
         }
         ftp, https, http: {
+
           exec { 'download-logstash':
             command => "wget -O ${logstash::installpath}/${basefilename} ${logstash::jarfile} 2> /dev/null",
             path    => ['/usr/bin', '/bin'],
             creates => "${logstash::installpath}/${basefilename}",
             require => Exec['create_install_dir'],
           }
+
           Exec['download-logstash'] -> File["${logstash::installpath}/logstash.jar"]
+
         }
-        default: { 
-          fail("Protocol must be puppet, http, https, or ftp.")
+        default: {
+          fail('Protocol must be puppet, http, https, or ftp.')
         }
       }
 

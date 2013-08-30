@@ -95,7 +95,7 @@ define logstash::servicefile (
       if $defaults_file {
         # Write defaults file if we have one
         file { "${logstash::params::defaults_location}/logstash-${name}":
-          ensure  => $logstash::ensure,
+          ensure => $logstash::ensure,
           source => $defaults_file,
           owner  => 'root',
           group  => 'root',
