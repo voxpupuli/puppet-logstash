@@ -89,6 +89,13 @@ class logstash::package {
         creates => $logstash::params::logdir;
       }
 
+      file { $logstash::params::logdir:
+        ensure  => 'directory',
+        owner   => $logstash::logstash_user,
+        group   => $logstash::logstash_group,
+        require => Exec['create_log_dir'],
+      }
+
       # Place the jar file
       $filenameArray = split($logstash::jarfile, '/')
       $basefilename = $filenameArray[-1]
