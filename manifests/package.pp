@@ -81,6 +81,13 @@ class logstash::package {
         creates => $logstash::installpath;
       }
 
+      # Purge old jar files
+      file { ${logstash::installpath}:
+        purge   => true,
+        force   => true,
+        require => Exec['create_install_dir'],
+      }
+
       # Create log directory
       exec { 'create_log_dir':
         cwd     => '/',
