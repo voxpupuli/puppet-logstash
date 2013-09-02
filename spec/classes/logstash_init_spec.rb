@@ -4,171 +4,11 @@ describe 'logstash', :type => 'class' do
 
   context "With a package" do
 
-    context "On Debian OS" do
-      let :facts do {
-        :operatingsystem => 'Debian'
-      } end
-   
-      # init.pp
-      it { should contain_class('logstash::package') }
-      it { should contain_class('logstash::config') }
-      it { should contain_class('logstash::service') }
+    ['Debian', 'Ubuntu', 'CentOS', 'Redhat', 'Fedora', 'Scientific', 'Amazon'].each do |distro|
+      context "On #{distro} OS" do
 
-      # package.pp
-      it { should contain_package('logstash') }
-
-      # service.pp
-      it { should contain_service('logstash-agent') }
-      it { should contain_file('/etc/init.d/logstash-agent') }
-      it { should contain_file('/etc/logstash/agent/config') }
-      it { should contain_service('logstash').with(:enable => false, :ensure => 'stopped') }
-
-    end
-
-    context "On Ubuntu OS" do
-      let :facts do {
-        :operatingsystem => 'Ubuntu'
-      } end
-
-      # init.pp
-      it { should contain_class('logstash::package') }
-      it { should contain_class('logstash::config') }
-      it { should contain_class('logstash::service') }
-
-      # package.pp
-      it { should contain_package('logstash') }
-
-      # service.pp
-      it { should contain_service('logstash-agent') }
-      it { should contain_file('/etc/init.d/logstash-agent') }
-      it { should contain_file('/etc/logstash/agent/config') }
-      it { should contain_service('logstash').with(:enable => false, :ensure => 'stopped') }
-
-    end
-
-    context "On CentOS OS " do
-      let :facts do {
-        :operatingsystem => 'CentOS'
-      } end
-
-      # init.pp
-      it { should contain_class('logstash::package') }
-      it { should contain_class('logstash::config') }
-      it { should contain_class('logstash::service') }
-
-      # package.pp
-      it { should contain_package('logstash') }
-
-      # service.pp
-      it { should contain_service('logstash-agent') }
-      it { should contain_file('/etc/init.d/logstash-agent') }
-      it { should contain_file('/etc/logstash/agent/config') }
-      it { should contain_service('logstash').with(:enable => false, :ensure => 'stopped') }
-
-    end
-
-    context "On RedHat OS " do
-      let :facts do {
-        :operatingsystem => 'Redhat'
-      } end
-
-      # init.pp
-      it { should contain_class('logstash::package') }
-      it { should contain_class('logstash::config') }
-      it { should contain_class('logstash::service') }
-
-      # package.pp
-      it { should contain_package('logstash') }
-
-      # service.pp
-      it { should contain_service('logstash-agent') }
-      it { should contain_file('/etc/init.d/logstash-agent') }
-      it { should contain_file('/etc/logstash/agent/config') }
-      it { should contain_service('logstash').with(:enable => false, :ensure => 'stopped') }
-
-    end
-
-    context "On Fedora OS " do
-      let :facts do {
-        :operatingsystem => 'Fedora'
-      } end
-
-      # init.pp
-      it { should contain_class('logstash::package') }
-      it { should contain_class('logstash::config') }
-      it { should contain_class('logstash::service') }
-
-      # package.pp
-      it { should contain_package('logstash') }
-
-      # service.pp
-      it { should contain_service('logstash-agent') }
-      it { should contain_file('/etc/init.d/logstash-agent') }
-      it { should contain_file('/etc/logstash/agent/config') }
-      it { should contain_service('logstash').with(:enable => false, :ensure => 'stopped') }
-
-    end
-
-    context "On Scientific OS " do
-      let :facts do {
-        :operatingsystem => 'Scientific'
-      } end
-
-      # init.pp
-      it { should contain_class('logstash::package') }
-      it { should contain_class('logstash::config') }
-      it { should contain_class('logstash::service') }
-
-      # package.pp
-      it { should contain_package('logstash') }
-
-      # service.pp
-      it { should contain_service('logstash-agent') }
-      it { should contain_file('/etc/init.d/logstash-agent') }
-      it { should contain_file('/etc/logstash/agent/config') }
-      it { should contain_service('logstash').with(:enable => false, :ensure => 'stopped') }
-
-    end
-
-    context "On Amazon OS " do
-      let :facts do {
-        :operatingsystem => 'Amazon'
-      } end
-
-      # init.pp
-      it { should contain_class('logstash::package') }
-      it { should contain_class('logstash::config') }
-      it { should contain_class('logstash::service') }
-
-      # package.pp
-      it { should contain_package('logstash') }
-
-      # service.pp
-      it { should contain_service('logstash-agent') }
-      it { should contain_file('/etc/init.d/logstash-agent') }
-      it { should contain_file('/etc/logstash/agent/config') }
-      it { should contain_service('logstash').with(:enable => false, :ensure => 'stopped') }
-  
-    end
-
-    context "On an unknown OS" do
-      let :facts do {
-        :operatingsystem => 'Darwin'
-      } end
- 
-      it { expect { should raise_error(Puppet::Error) } }
-    end
-
-    context "With a custom init script" do
-
-      let :facts do {
-        :operatingsystem => 'CentOS'
-      } end
-
-      context "with multi-instance enabled" do
-
-        let :params do {
-          :initfiles => { 'agent' => 'puppet:///path/to/init' }
+        let :facts do {
+          :operatingsystem => distro
         } end
 
         # init.pp
@@ -178,6 +18,44 @@ describe 'logstash', :type => 'class' do
 
         # package.pp
         it { should contain_package('logstash') }
+
+        # service.pp
+        it { should contain_service('logstash-agent') }
+        it { should contain_file('/etc/init.d/logstash-agent') }
+        it { should contain_file('/etc/logstash/agent/config') }
+        it { should contain_service('logstash').with(:enable => false, :ensure => 'stopped') }
+
+      end
+
+    end
+
+    context "On an unknown OS" do
+      let :facts do {
+        :operatingsystem => 'Darwin'
+      } end
+
+      it { expect { should raise_error(Puppet::Error) } }
+    end
+
+    context "With a custom init script" do
+
+      let :facts do {
+        :operatingsystem => 'CentOS'
+      } end
+
+      # init.pp
+      it { should contain_class('logstash::package') }
+      it { should contain_class('logstash::config') }
+      it { should contain_class('logstash::service') }
+
+      # package.pp
+      it { should contain_package('logstash') }
+
+      context "with multi-instance enabled" do
+
+        let :params do {
+          :initfiles => { 'agent' => 'puppet:///path/to/init' }
+        } end
 
         # service.pp
         it { should contain_service('logstash-agent') }
@@ -193,14 +71,6 @@ describe 'logstash', :type => 'class' do
           :initfiles      => 'puppet:///path/to/init',
           :multi_instance => false
         } end
-
-        # init.pp
-        it { should contain_class('logstash::package') }
-        it { should contain_class('logstash::config') }
-        it { should contain_class('logstash::service') }
-
-        # package.pp
-        it { should contain_package('logstash') }
 
         # service.pp
         it { should contain_service('logstash') }
@@ -224,7 +94,7 @@ describe 'logstash', :type => 'class' do
         let :facts do {
           :operatingsystem => 'CentOS'
         } end
- 
+
         let :params do {
           :provider => 'custom',
           :jarfile => "puppet:///path/to/logstash-1.1.9.jar",
@@ -267,7 +137,7 @@ describe 'logstash', :type => 'class' do
         let :facts do {
           :operatingsystem => 'CentOS'
         } end
- 
+
         let :params do {
           :provider => 'custom',
           :jarfile => "puppet:///path/to/logstash-1.1.9.jar",
@@ -324,7 +194,7 @@ describe 'logstash', :type => 'class' do
    end
 
    context "with a jar file" do
-   
+
      let :facts do {
        :operatingsystem => 'CentOS'
      } end
@@ -370,7 +240,7 @@ describe 'logstash', :type => 'class' do
     end
 
     context "with separate defaults files" do
-    
+
       let :params do {
         :instances => [ 'agent', 'indexer' ],
         :defaultsfiles => { 'agent' => 'puppet:///path/to/agent-defaults', 'indexer' => 'puppet:///path/to/indexer-defaults' }
@@ -401,7 +271,7 @@ describe 'logstash', :type => 'class' do
 
       it { should contain_file('/etc/init.d/logstash-agent').with(:source => 'puppet:///path/to/agent-init') }
       it { should contain_file('/etc/init.d/logstash-indexer').with(:source => 'puppet:///path/to/indexer-init') }
- 
+
       it { should contain_file('/etc/logstash/agent/config') }
       it { should contain_file('/etc/logstash/indexer/config') }
 
@@ -445,78 +315,34 @@ describe 'logstash', :type => 'class' do
 
   context "install java" do
 
-    let :params do {
-      :java_install => true
-    } end
+    ['Debian', 'Ubuntu'].each do |distro|
+      context "On #{distro} OS" do
+        let :params do {
+          :java_install => true
+        } end
 
-    context "On a Debian OS" do
+        let :facts do {
+          :operatingsystem => distro
+        } end
 
-      let :facts do {
-        :operatingsystem => 'Debian'
-      } end
+        it { should contain_package('openjdk-6-jre-headless') }
 
-      it { should contain_package('openjdk-6-jre-headless') }
-
+      end
     end
 
-    context "On an Ubuntu OS" do
+    ['CentOS', 'Redhat', 'Fedora', 'Scientific', 'Amazon'].each do |distro|
+      context "On #{distro} OS" do
+        let :params do {
+          :java_install => true
+        } end
 
-      let :facts do {
-        :operatingsystem => 'Ubuntu'
-      } end
+        let :facts do {
+          :operatingsystem => distro
+        } end
 
-      it { should contain_package('openjdk-6-jre-headless') }
+        it { should contain_package('java-1.6.0-openjdk') }
 
-    end
-
-    context "On a CentOS OS " do
-
-      let :facts do {
-        :operatingsystem => 'CentOS'
-      } end
-
-      it { should contain_package('java-1.6.0-openjdk') }
-
-    end
-
-    context "On a RedHat OS " do
-
-      let :facts do {
-        :operatingsystem => 'Redhat'
-      } end
-
-      it { should contain_package('java-1.6.0-openjdk') }
-
-    end
-
-    context "On a Fedora OS " do
-
-      let :facts do {
-        :operatingsystem => 'Fedora'
-      } end
-
-      it { should contain_package('java-1.6.0-openjdk') }
-
-    end
-
-    context "On a Scientific OS " do
-
-      let :facts do {
-        :operatingsystem => 'Scientific'
-      } end
-
-      it { should contain_package('java-1.6.0-openjdk') }
-
-    end
-
-    context "On a Amazon OS " do
-
-      let :facts do {
-        :operatingsystem => 'Amazon'
-      } end
-
-      it { should contain_package('java-1.6.0-openjdk') }
-
+      end
     end
 
     context "On an unknown OS" do
