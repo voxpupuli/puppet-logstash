@@ -43,19 +43,19 @@ describe 'logstash', :type => 'class' do
         :operatingsystem => 'CentOS'
       } end
 
+      # init.pp
+      it { should contain_class('logstash::package') }
+      it { should contain_class('logstash::config') }
+      it { should contain_class('logstash::service') }
+
+      # package.pp
+      it { should contain_package('logstash') }
+
       context "with multi-instance enabled" do
 
         let :params do {
           :initfiles => { 'agent' => 'puppet:///path/to/init' }
         } end
-
-        # init.pp
-        it { should contain_class('logstash::package') }
-        it { should contain_class('logstash::config') }
-        it { should contain_class('logstash::service') }
-
-        # package.pp
-        it { should contain_package('logstash') }
 
         # service.pp
         it { should contain_service('logstash-agent') }
@@ -71,14 +71,6 @@ describe 'logstash', :type => 'class' do
           :initfiles      => 'puppet:///path/to/init',
           :multi_instance => false
         } end
-
-        # init.pp
-        it { should contain_class('logstash::package') }
-        it { should contain_class('logstash::config') }
-        it { should contain_class('logstash::service') }
-
-        # package.pp
-        it { should contain_package('logstash') }
 
         # service.pp
         it { should contain_service('logstash') }
