@@ -82,7 +82,7 @@ class logstash::package {
       }
 
       # Purge old jar files
-      file { ${logstash::installpath}:
+      file { $logstash::installpath:
         purge   => true,
         force   => true,
         require => Exec['create_install_dir'],
