@@ -44,7 +44,6 @@ class logstash::package {
       }
 
     } else {
-
       # install specific version
       $package_ensure = $logstash::version
 
@@ -73,6 +72,8 @@ class logstash::package {
         fail('logstash need installpath argument when using custom provider')
       }
 
+      $jardir = "${logstash::installpath}/jars"
+
       # Create directory to place the jar file
       exec { 'create_install_dir':
         cwd     => '/',
@@ -82,9 +83,10 @@ class logstash::package {
       }
 
       # Purge old jar files
-      file { $logstash::installpath:
-        purge   => true,
-        force   => true,
+      file { $jardir:
+        ensure  => 'directory',
+        purge   => $logstash::purge_jars,
+        force   => $logstash::purge_jars,
         require => Exec['create_install_dir'],
       }
 
@@ -106,20 +108,20 @@ class logstash::package {
       case $protocol_type {
         puppet: {
 
-          file { "${logstash::installpath}/${basefilename}":
+          file { "${jardir}/${basefilename}":
             ensure  => present,
             source  => $logstash::jarfile,
-            require => Exec['create_install_dir'],
+            require => File[$jardir],
             backup  => false,
           }
 
-          File["${logstash::installpath}/${basefilename}"] -> File["${logstash::installpath}/logstash.jar"]
+          File["${jardir}/${basefilename}"] -> File["${logstash::installpath}/logstash.jar"]
 
         }
         ftp, https, http: {
 
           exec { 'download-logstash':
-            command => "wget -O ${logstash::installpath}/${basefilename} ${logstash::jarfile} 2> /dev/null",
+            command => "wget -O ${jardir}/${basefilename} ${logstash::jarfile} 2> /dev/null",
             path    => ['/usr/bin', '/bin'],
             creates => "${logstash::installpath}/${basefilename}",
             require => Exec['create_install_dir'],
@@ -136,7 +138,7 @@ class logstash::package {
       # Create symlink
       file { "${logstash::installpath}/logstash.jar":
         ensure  => 'link',
-        target  => "${logstash::installpath}/${basefilename}",
+        target  => "${jardir}/${basefilename}",
         backup  => false
       }
 
