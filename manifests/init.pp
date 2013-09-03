@@ -82,6 +82,7 @@ class logstash(
   $version        = false,
   $provider       = 'package',
   $jarfile        = undef,
+  $purge_jars     = true,
   $installpath    = $logstash::params::installpath,
   $java_install   = false,
   $java_package   = undef,
@@ -105,7 +106,7 @@ class logstash(
   }
 
   # autoupgrade
-  validate_bool($autoupgrade)
+  validate_bool($autoupgrade, $purge_jars)
 
   # service status
   if ! ($status in [ 'enabled', 'disabled', 'running', 'unmanaged' ]) {
