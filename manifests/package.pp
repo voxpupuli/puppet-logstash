@@ -141,7 +141,14 @@ class logstash::package {
       }
 
     } else {
-      ## Do we need to do anything when removing ?
+
+      # If not present, remove installpath, leave logfiles
+      file { $logstash::installpath:
+        ensure  => 'absent',
+        force   => true,
+        recurse => true,
+        purge   => true,
+      }
     }
 
   }
