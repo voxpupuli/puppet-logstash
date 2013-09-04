@@ -54,6 +54,14 @@
 #   Default value: "UTF-8"
 #   This variable is optional
 #
+# [*codec*]
+#   The codec used for input data
+#   Value type is string
+#   Value can be any of: "dots", "json", "json_spooler", "line", "msgpack",
+#   "multiline", "noop", "oldlogstashjson", "plain", "rubydebug", "spool"
+#   Default value: None
+#   This variable is optional
+#
 # [*debug*]
 #   Set this to true to enable debugging on an input.
 #   Value type is boolean
@@ -71,12 +79,6 @@
 #   valid here, too. For example, if you have  path =&gt; "/var/log/*"
 #   you might want to exclude gzipped files:  exclude =&gt; "*.gz"
 #   Value type is array
-#   Default value: None
-#   This variable is optional
-#
-# [*format*]
-#   The format of input data (plain, json, json_event)
-#   Value can be any of: "plain", "json", "json_event", "msgpack_event"
 #   Default value: None
 #   This variable is optional
 #
@@ -174,9 +176,9 @@ define logstash::input::file (
   $path,
   $type,
   $add_field              = '',
+  $codec                  = '',
   $discover_interval      = '',
   $exclude                = '',
-  $format                 = '',
   $message_format         = '',
   $debug                  = '',
   $sincedb_path           = '',
@@ -268,11 +270,11 @@ define logstash::input::file (
     }
   }
 
-  if ($format != '') {
-    if ! ($format in ['plain', 'json', 'json_event', 'msgpack_event']) {
-      fail("\"${format}\" is not a valid format parameter value")
+  if ($codec != '') {
+    if ! ($codec in ['dots', 'json', 'json_spooler', 'line', 'msgpack', 'multiline', 'noop', 'oldlogstashjson', 'plain', 'rubydebug', 'spool']) {
+      fail("\"${codec}\" is not a valid codec parameter value")
     } else {
-      $opt_format = "  format => \"${format}\"\n"
+      $opt_codec = "  codec => \"${codec}\"\n"
     }
   }
 
@@ -311,7 +313,7 @@ define logstash::input::file (
 
   file { $conffiles:
     ensure  => present,
-    content => "input {\n file {\n${opt_add_field}${opt_charset}${opt_debug}${opt_discover_interval}${opt_exclude}${opt_format}${opt_message_format}${opt_path}${opt_sincedb_path}${opt_sincedb_write_interval}${opt_start_position}${opt_stat_interval}${opt_tags}${opt_type} }\n}\n",
+    content => "input {\n file {\n${opt_add_field}${opt_charset}${opt_debug}${opt_discover_interval}${opt_exclude}${opt_codec}${opt_message_format}${opt_path}${opt_sincedb_path}${opt_sincedb_write_interval}${opt_start_position}${opt_stat_interval}${opt_tags}${opt_type} }\n}\n",
     mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
