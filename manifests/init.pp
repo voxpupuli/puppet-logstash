@@ -82,6 +82,7 @@ class logstash(
   $version        = false,
   $provider       = 'package',
   $jarfile        = undef,
+  $purge_jars     = true,
   $installpath    = $logstash::params::installpath,
   $java_install   = false,
   $java_package   = undef,
@@ -90,7 +91,8 @@ class logstash(
   $initfiles      = undef,
   $defaultsfiles  = undef,
   $logstash_user  = $logstash::params::logstash_user,
-  $logstash_group = $logstash::params::logstash_group
+  $logstash_group = $logstash::params::logstash_group,
+  $configdir      = $logstash::params::configdir,
 ) inherits logstash::params {
 
   anchor {'logstash::begin': }
@@ -104,7 +106,7 @@ class logstash(
   }
 
   # autoupgrade
-  validate_bool($autoupgrade)
+  validate_bool($autoupgrade, $purge_jars)
 
   # service status
   if ! ($status in [ 'enabled', 'disabled', 'running', 'unmanaged' ]) {
@@ -142,7 +144,7 @@ class logstash(
     # Install java
     class { 'logstash::java': }
 
-    # ensure we first java java and then manage the service
+    # ensure we first install java and then manage the service
     Anchor['logstash::begin']
     -> Class['logstash::java']
     -> Class['logstash::service']

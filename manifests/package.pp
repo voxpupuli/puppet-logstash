@@ -44,7 +44,6 @@ class logstash::package {
       }
 
     } else {
-
       # install specific version
       $package_ensure = $logstash::version
 
@@ -73,12 +72,22 @@ class logstash::package {
         fail('logstash need installpath argument when using custom provider')
       }
 
+      $jardir = "${logstash::installpath}/jars"
+
       # Create directory to place the jar file
       exec { 'create_install_dir':
         cwd     => '/',
         path    => ['/usr/bin', '/bin'],
         command => "mkdir -p ${logstash::installpath}",
         creates => $logstash::installpath;
+      }
+
+      # Purge old jar files
+      file { $jardir:
+        ensure  => 'directory',
+        purge   => $logstash::purge_jars,
+        force   => $logstash::purge_jars,
+        require => Exec['create_install_dir'],
       }
 
       # Create log directory
@@ -89,27 +98,66 @@ class logstash::package {
         creates => $logstash::params::logdir;
       }
 
+      file { $logstash::params::logdir:
+        ensure  => 'directory',
+        owner   => $logstash::logstash_user,
+        group   => $logstash::logstash_group,
+        require => Exec['create_log_dir'],
+      }
+
       # Place the jar file
       $filenameArray = split($logstash::jarfile, '/')
       $basefilename = $filenameArray[-1]
 
-      file { "${logstash::installpath}/${basefilename}":
-        ensure  => present,
-        source  => $logstash::jarfile,
-        require => Exec['create_install_dir'],
-        backup  => false
+      $sourceArray = split($logstash::jarfile, ':')
+      $protocol_type = $sourceArray[0]
+
+      case $protocol_type {
+        puppet: {
+
+          file { "${jardir}/${basefilename}":
+            ensure  => present,
+            source  => $logstash::jarfile,
+            require => File[$jardir],
+            backup  => false,
+          }
+
+          File["${jardir}/${basefilename}"] -> File["${logstash::installpath}/logstash.jar"]
+
+        }
+        ftp, https, http: {
+
+          exec { 'download-logstash':
+            command => "wget -O ${jardir}/${basefilename} ${logstash::jarfile} 2> /dev/null",
+            path    => ['/usr/bin', '/bin'],
+            creates => "${logstash::installpath}/${basefilename}",
+            require => Exec['create_install_dir'],
+          }
+
+          Exec['download-logstash'] -> File["${logstash::installpath}/logstash.jar"]
+
+        }
+        default: {
+          fail('Protocol must be puppet, http, https, or ftp.')
+        }
       }
 
       # Create symlink
       file { "${logstash::installpath}/logstash.jar":
         ensure  => 'link',
-        target  => "${logstash::installpath}/${basefilename}",
-        require => File["${logstash::installpath}/${basefilename}"],
+        target  => "${jardir}/${basefilename}",
         backup  => false
       }
 
     } else {
-      ## Do we need to do anything when removing ?
+
+      # If not present, remove installpath, leave logfiles
+      file { $logstash::installpath:
+        ensure  => 'absent',
+        force   => true,
+        recurse => true,
+        purge   => true,
+      }
     }
 
   }

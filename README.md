@@ -4,7 +4,7 @@ A puppet module for managing and configuring Logstash
 
 http://www.logstash.net
 
-[![Build Status](https://travis-ci.org/electrical/puppet-logstash.png?branch=master)](https://travis-ci.org/electrical/puppet-logstash)
+[![Build Status](https://travis-ci.org/logstash/puppet-logstash.png?branch=master)](https://travis-ci.org/logstash/puppet-logstash)
 
 ## Versions
 
@@ -35,6 +35,9 @@ The module will create and manage the services based on the instance names, the 
 
 Setting up logstash without configuration will cause logstash not to start.
 You will need to define atleast one plugin for Logstash to start.
+
+
+For OS packages of logstash, see http://build.logstash.net/job/logstash-1.1.x/
 
 
 ## Usage
