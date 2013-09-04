@@ -24,6 +24,8 @@
 #
 class logstash::package {
 
+  include logstash::params
+
   File {
     owner => 'root',
     group => 'root',
