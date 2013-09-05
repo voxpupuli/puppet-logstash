@@ -130,7 +130,7 @@ class logstash::package {
           exec { 'download-logstash':
             command => "wget -O ${jardir}/${basefilename} ${logstash::jarfile} 2> /dev/null",
             path    => ['/usr/bin', '/bin'],
-            creates => "${logstash::installpath}/${basefilename}",
+            creates => "${jardir}/${basefilename}",
             require => Exec['create_install_dir'],
           }
 
