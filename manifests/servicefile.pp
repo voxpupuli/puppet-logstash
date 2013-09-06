@@ -31,6 +31,25 @@ define logstash::servicefile (
     fail("${name} is not a valid instances value.")
   }
 
+    case $::osfamily {
+    'Linux': {
+      $init_script_path = "/etc/init.d/logstash-${name}"
+      $init_name = "logstash-${name}"
+      $init_owner = 'root'
+      $init_group = 'root'
+      $init_mode = '0755'
+    }
+    'Darwin': {
+      $init_script_path = "/Library/LaunchDaemons/org.logstash.${name}.plist"
+      $init_name = "org.logstash.${name}"
+      $init_owner = 'root'
+      $init_group = 'admin'
+      $init_mode = '0744'
+    }
+  }
+
+
+
   if $logstash::ensure == 'present' {
 
     # If we are managing the init script
@@ -66,6 +85,9 @@ define logstash::servicefile (
           'Debian', 'Ubuntu': {
             $initscript = template("${module_name}/etc/init.d/logstash.init.Debian.erb")
           }
+          'Darwin': {
+            $initscript = template("${module_name}/Library/LaunchDaemons/org.logstash.plist.erb")
+          }
           default: {
             fail("\"${module_name}\" provides no default init file
                   for \"${::operatingsystem}\"")
@@ -77,31 +99,45 @@ define logstash::servicefile (
       # If no custom defaults file is provided, lets use our default one
       if $def_file {
         $defaults_file = $def_file
+        if $::operatingsystem == 'Darwin' {
+          fail('A custom settings file is not supported on OSX')
+        }
       } else {
         $defaults_file = "puppet:///modules/${module_name}/etc/sysconfig/logstash.defaults"
       }
 
       # Write service file
-      file { "/etc/init.d/logstash-${name}":
+      file { $init_script_path:
         ensure  => $logstash::ensure,
         content => $initscript,
         source  => $initfile,
-        owner   => 'root',
-        group   => 'root',
-        mode    => '0755',
-        before  => Service[ "logstash-${name}" ]
+        owner   => $init_owner,
+        group   => $init_group,
+        mode    => $init_mode,
+        before  => Service[ $init_name ]
       }
 
-      if $defaults_file {
-        # Write defaults file if we have one
-        file { "${logstash::params::defaults_location}/logstash-${name}":
-          ensure => $logstash::ensure,
-          source => $defaults_file,
-          owner  => 'root',
-          group  => 'root',
-          mode   => '0644',
-          before => Service[ "logstash-${name}" ],
-          notify => Service[ "logstash-${name}" ],
+      if $::operatingsystem == 'Darwin' {
+        exec { "/bin/launchctl load -w ${init_script_path}":
+          subscribe => File[$init_script_path],
+          refreshonly => true
+        }
+      }
+
+      case $::osfamily {
+        'Linux': {
+          if $defaults_file {
+            # Write defaults file if we have one
+            file { "${logstash::params::defaults_location}/logstash-${name}":
+              ensure => $logstash::ensure,
+              source => $defaults_file,
+              owner  => 'root',
+              group  => 'root',
+              mode   => '0644',
+              before => Service[ $init_name ],
+              notify => Service[ $init_name ],
+            }
+          }
         }
       }
     }
@@ -109,13 +145,13 @@ define logstash::servicefile (
 
   if $logstash::status != 'unmanaged' {
 
-    service { "logstash-${name}":
+    service { $init_name:
       ensure     => $service_ensure,
       enable     => $service_enable,
-      name       => "logstash-${name}",
+      name       => $init_name,
       hasstatus  => $logstash::params::service_hasstatus,
       hasrestart => $logstash::params::service_hasrestart,
-      pattern    => "logstash-${name}"
+      pattern    => $init_name
     }
 
   }
