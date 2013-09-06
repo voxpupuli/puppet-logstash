@@ -68,6 +68,9 @@ class logstash::params {
       $package     = [ 'logstash' ]
       $installpath = '/var/lib/logstash'
     }
+    'Darwin': {
+      $installpath = '/Library/Logstash'
+    }
     default: {
       fail("\"${module_name}\" provides no package default value
             for \"${::operatingsystem}\"")
@@ -89,6 +92,13 @@ class logstash::params {
       $service_hasstatus  = true
       $service_pattern    = $service_name
       $defaults_location  = '/etc/default'
+    }
+    'Darwin': {
+      $service_name       = 'org.logstash.agent'
+      $service_hasrestart = true
+      $service_hasstatus  = true
+      $service_pattern    = $service_name
+      $defaults_location  = '/Library/Application Support/Logstash'
     }
     default: {
       fail("\"${module_name}\" provides no service parameters
