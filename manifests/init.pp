@@ -81,7 +81,7 @@ class logstash(
   $status         = $logstash::params::status,
   $version        = false,
   $provider       = $logstash::params::provider,
-  $jarfile        = undef,
+  $jarfile        = $logstash::params::jarfile,
   $purge_jars     = true,
   $installpath    = $logstash::params::installpath,
   $java_install   = false,

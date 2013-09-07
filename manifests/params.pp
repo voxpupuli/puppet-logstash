@@ -41,8 +41,20 @@ class logstash::params {
   # service status
   $status = 'enabled'
 
-  # provider
+  # jarfile
+  $jarfile_master = 'https://logstash.objects.dreamhost.com/release/logstash-1.2.0-flatjar.jar'
 
+  case $::osfamily {
+    'Darwin': {
+      $jarfile = $jarfile_master
+    }
+    default: {
+      $jarfile = undef
+    }
+  }
+
+
+  # provider
   case $::osfamily {
     'Darwin': {
       $provider = 'custom'
