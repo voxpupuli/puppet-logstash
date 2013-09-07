@@ -30,6 +30,30 @@ describe 'logstash', :type => 'class' do
 
     end
 
+    context "On Darwin OS" do
+      let :facts do {
+        :operatingsystem => "Darwin",
+        :osfamily => "Darwin"
+      } end
+
+      let :params do {
+        :provider => 'custom',
+        :jarfile  => 'http://example.com/jarfile'
+      } end
+
+      # init.pp
+      it { should contain_class('logstash::package') }
+      it { should contain_class('logstash::config') }
+      it { should contain_class('logstash::service') }
+
+
+      # Service
+      it { should contain_service('org.logstash.agent') }
+      it { should contain_file('/Library/LaunchDaemons/org.logstash.agent.plist') }
+      it { should contain_file('/etc/logstash/agent/config') }
+
+    end
+
     context "On an unknown OS" do
       let :facts do {
         :operatingsystem => 'Windows'
