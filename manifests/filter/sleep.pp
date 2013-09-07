@@ -142,7 +142,7 @@ define logstash::filter::sleep (
 
     $confdirstart = prefix($instances, "${logstash::configdir}/")
     $conffiles    = suffix($confdirstart, "/config/filter_${order}_sleep_${name}")
-    $services     = prefix($instances, 'logstash-')
+    $services     = prefix($instances, $logstash::params::service_base_name)
     $filesdir     = "${logstash::configdir}/files/filter/sleep/${name}"
 
   } else {

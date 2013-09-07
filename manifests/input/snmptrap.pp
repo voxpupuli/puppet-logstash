@@ -163,7 +163,7 @@ define logstash::input::snmptrap (
 
     $confdirstart = prefix($instances, "${logstash::configdir}/")
     $conffiles    = suffix($confdirstart, "/config/input_snmptrap_${name}")
-    $services     = prefix($instances, 'logstash-')
+    $services     = prefix($instances, $logstash::params::service_base_name)
     $filesdir     = "${logstash::configdir}/files/input/snmptrap/${name}"
 
   } else {

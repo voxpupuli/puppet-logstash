@@ -55,7 +55,7 @@
 #   When an ARN for an SNS topic is specified here, the message "Logstash
 #   successfully booted" will be sent to it when this plugin is
 #   registered.  Example:
-#   arn:aws:sns:us-east-1:770975001275:logstash-testing
+#   arn:aws:sns:us-east-1:770975001275$logstash::params::service_base_nameesting
 #   Value type is string
 #   Default value: None
 #   This variable is optional
@@ -137,7 +137,7 @@ define logstash::output::sns (
 
     $confdirstart = prefix($instances, "${logstash::configdir}/")
     $conffiles    = suffix($confdirstart, "/config/output_sns_${name}")
-    $services     = prefix($instances, 'logstash-')
+    $services     = prefix($instances, $logstash::params::service_base_name)
     $filesdir     = "${logstash::configdir}/files/output/sns/${name}"
 
   } else {

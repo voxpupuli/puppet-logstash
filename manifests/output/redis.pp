@@ -87,7 +87,7 @@
 #
 # [*key*]
 #   The name of a redis list or channel. Dynamic names are valid here, for
-#   example "logstash-%{@type}". TODO set required true
+#   example $logstash::params::service_base_name{@type}". TODO set required true
 #   Value type is string
 #   Default value: None
 #   This variable is optional
@@ -188,7 +188,7 @@ define logstash::output::redis (
 
     $confdirstart = prefix($instances, "${logstash::configdir}/")
     $conffiles    = suffix($confdirstart, "/config/output_redis_${name}")
-    $services     = prefix($instances, 'logstash-')
+    $services     = prefix($instances, $logstash::params::service_base_name)
     $filesdir     = "${logstash::configdir}/files/output/redis/${name}"
 
   } else {

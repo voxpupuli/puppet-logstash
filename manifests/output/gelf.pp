@@ -34,7 +34,7 @@
 #   is useful if you need to use a value from the event as the facility
 #   name.
 #   Value type is string
-#   Default value: "logstash-gelf"
+#   Default value: $logstash::params::service_base_nameelf"
 #   This variable is optional
 #
 # [*fields*]
@@ -194,7 +194,7 @@ define logstash::output::gelf (
 
     $confdirstart = prefix($instances, "${logstash::configdir}/")
     $conffiles    = suffix($confdirstart, "/config/output_gelf_${name}")
-    $services     = prefix($instances, 'logstash-')
+    $services     = prefix($instances, $logstash::params::service_base_name)
     $filesdir     = "${logstash::configdir}/files/output/gelf/${name}"
 
   } else {

@@ -173,7 +173,7 @@ define logstash::input::drupal_dblog (
 
     $confdirstart = prefix($instances, "${logstash::configdir}/")
     $conffiles    = suffix($confdirstart, "/config/input_drupal_dblog_${name}")
-    $services     = prefix($instances, 'logstash-')
+    $services     = prefix($instances, $logstash::params::service_base_name)
     $filesdir     = "${logstash::configdir}/files/input/drupal_dblog/${name}"
 
   } else {

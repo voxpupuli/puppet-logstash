@@ -12,7 +12,7 @@
 #
 # [*channels*]
 #   List of channels to which to publish. Dynamic names are valid here,
-#   for example "logstash-%{@type}".
+#   for example $logstash::params::service_base_name{@type}".
 #   Value type is array
 #   Default value: None
 #   This variable is required
@@ -125,7 +125,7 @@ define logstash::output::juggernaut (
 
     $confdirstart = prefix($instances, "${logstash::configdir}/")
     $conffiles    = suffix($confdirstart, "/config/output_juggernaut_${name}")
-    $services     = prefix($instances, 'logstash-')
+    $services     = prefix($instances, $logstash::params::service_base_name)
     $filesdir     = "${logstash::configdir}/files/output/juggernaut/${name}"
 
   } else {

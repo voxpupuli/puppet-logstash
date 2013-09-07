@@ -83,7 +83,7 @@
 #   syntax. The default value will partition your indices by day so you
 #   can more easily delete old data or only search specific date ranges.
 #   Value type is string
-#   Default value: "logstash-%{+YYYY.MM.dd}"
+#   Default value: $logstash::params::service_base_name{+YYYY.MM.dd}"
 #   This variable is optional
 #
 # [*index_type*]
@@ -178,7 +178,7 @@ define logstash::output::elasticsearch (
 
     $confdirstart = prefix($instances, "${logstash::configdir}/")
     $conffiles    = suffix($confdirstart, "/config/output_elasticsearch_${name}")
-    $services     = prefix($instances, 'logstash-')
+    $services     = prefix($instances, $logstash::params::service_base_name)
     $filesdir     = "${logstash::configdir}/files/output/elasticsearch/${name}"
 
   } else {
