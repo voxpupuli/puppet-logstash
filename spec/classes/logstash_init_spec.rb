@@ -356,6 +356,21 @@ describe 'logstash', :type => 'class' do
       end
     end
 
+    context "On Darwin" do
+      let :params do {
+        :java_install => true
+      } end
+
+      let :facts do {
+        :operatingsystem => "Darwin",
+        :osfamily => "Darwin"
+      } end
+
+      it { should contain_exec('download-apple-java') }
+      it { should contain_package('apple-java') }
+
+    end
+
     context "On an unknown OS" do
 
       let :facts do {
