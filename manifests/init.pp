@@ -80,7 +80,7 @@ class logstash(
   $autoupgrade    = $logstash::params::autoupgrade,
   $status         = $logstash::params::status,
   $version        = false,
-  $provider       = 'package',
+  $provider       = $logstash::params::provider,
   $jarfile        = undef,
   $purge_jars     = true,
   $installpath    = $logstash::params::installpath,

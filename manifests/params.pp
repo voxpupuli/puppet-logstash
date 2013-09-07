@@ -41,6 +41,16 @@ class logstash::params {
   # service status
   $status = 'enabled'
 
+  # provider
+
+  case $::osfamily {
+    'Darwin': {
+      $provider = 'custom'
+    }
+    default: {
+      $provider = 'package'
+    }
+  }
 
   #### Defaults for other files
 
