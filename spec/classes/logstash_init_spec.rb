@@ -32,7 +32,7 @@ describe 'logstash', :type => 'class' do
 
     context "On an unknown OS" do
       let :facts do {
-        :operatingsystem => 'Darwin'
+        :operatingsystem => 'Windows'
       } end
 
       it { expect { should raise_error(Puppet::Error) } }
