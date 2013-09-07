@@ -383,5 +383,5 @@ describe 'logstash', :type => 'class' do
     end
 
   end
-
+  end
 end
