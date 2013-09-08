@@ -67,11 +67,27 @@ class logstash::params {
   #### Defaults for other files
 
   # Config directory
-  $configdir = '/etc/logstash'
+
+  case $::osfamily {
+    'Linux': {
+      $configdir = '/etc/logstash'
+    }
+    'Darwin': {
+      $configdir = '/Library/Application Support/Logstash'
+    }
+  }
 
   # Logging dir
-  $logdir = '/var/log/logstash/'
 
+  $logdir = '/var/log/logstash/'
+  case $::osfamily {
+    'Linux': {
+      $logdir = '/var/log/logstash/'
+    }
+    'Darwin': {
+      $logdir = '/Library/Logs/logstash'
+    }
+  }
   # File user/group
   $logstash_user  = 'root'
   case $::osfamily {
