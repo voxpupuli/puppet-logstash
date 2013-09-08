@@ -127,7 +127,7 @@ class logstash::params {
       $defaults_location  = '/etc/default'
     }
     'Darwin': {
-      $service_name       = 'org.logstash'
+      $service_name       = 'net.logstash'
       $service_base_name  = "${service_name}."
       $service_hasrestart = true
       $service_hasstatus  = true
