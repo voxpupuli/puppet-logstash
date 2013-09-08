@@ -79,7 +79,6 @@ class logstash::params {
 
   # Logging dir
 
-  $logdir = '/var/log/logstash/'
   case $::osfamily {
     'Linux': {
       $logdir = '/var/log/logstash/'
