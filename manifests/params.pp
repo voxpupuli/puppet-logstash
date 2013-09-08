@@ -42,7 +42,7 @@ class logstash::params {
   $status = 'enabled'
 
   # jarfile
-  $jarfile_master = 'https://logstash.objects.dreamhost.com/release/logstash-1.2.0-flatjar.jar'
+  $jarfile_master = 'https://logstash.objects.dreamhost.com/release/logstash-1.2.1-flatjar.jar'
 
   case $::osfamily {
     'Darwin': {
