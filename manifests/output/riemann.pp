@@ -126,7 +126,7 @@ define logstash::output::riemann (
 
     $confdirstart = prefix($instances, "${logstash::configdir}/")
     $conffiles    = suffix($confdirstart, "/config/output_riemann_${name}")
-    $services     = prefix($instances, $logstash::params::service_base_name)
+    $services     = prefix($instances, 'logstash-')
     $filesdir     = "${logstash::configdir}/files/output/riemann/${name}"
 
   } else {

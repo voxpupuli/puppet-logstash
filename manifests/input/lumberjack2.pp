@@ -173,7 +173,7 @@ define logstash::input::lumberjack2 (
 
     $confdirstart = prefix($instances, "${logstash::configdir}/")
     $conffiles    = suffix($confdirstart, "/config/input_lumberjack2_${name}")
-    $services     = prefix($instances, $logstash::params::service_base_name)
+    $services     = prefix($instances, 'logstash-')
     $filesdir     = "${logstash::configdir}/files/input/lumberjack2/${name}"
 
   } else {

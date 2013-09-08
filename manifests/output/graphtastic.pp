@@ -151,7 +151,7 @@ define logstash::output::graphtastic (
 
     $confdirstart = prefix($instances, "${logstash::configdir}/")
     $conffiles    = suffix($confdirstart, "/config/output_graphtastic_${name}")
-    $services     = prefix($instances, $logstash::params::service_base_name)
+    $services     = prefix($instances, 'logstash-')
     $filesdir     = "${logstash::configdir}/files/output/graphtastic/${name}"
 
   } else {

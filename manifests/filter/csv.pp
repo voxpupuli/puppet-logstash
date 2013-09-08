@@ -139,7 +139,7 @@ define logstash::filter::csv (
 
     $confdirstart = prefix($instances, "${logstash::configdir}/")
     $conffiles    = suffix($confdirstart, "/config/filter_${order}_csv_${name}")
-    $services     = prefix($instances, $logstash::params::service_base_name)
+    $services     = prefix($instances, 'logstash-')
     $filesdir     = "${logstash::configdir}/files/filter/csv/${name}"
 
   } else {

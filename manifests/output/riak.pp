@@ -12,7 +12,7 @@
 #   specified here but any bucket-specific settings defined apply to ALL
 #   the buckets.
 #   Value type is array
-#   Default value: [$logstash::params::service_base_name{+YYYY.MM.dd}"]
+#   Default value: ["logstash-%{+YYYY.MM.dd}"]
 #   This variable is optional
 #
 # [*bucket_props*]
@@ -150,7 +150,7 @@ define logstash::output::riak (
 
     $confdirstart = prefix($instances, "${logstash::configdir}/")
     $conffiles    = suffix($confdirstart, "/config/output_riak_${name}")
-    $services     = prefix($instances, $logstash::params::service_base_name)
+    $services     = prefix($instances, 'logstash-')
     $filesdir     = "${logstash::configdir}/files/output/riak/${name}"
 
   } else {
