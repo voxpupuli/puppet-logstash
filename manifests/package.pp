@@ -105,6 +105,12 @@ class logstash::package {
         require => Exec['create_log_dir'],
       }
 
+      file { '/etc/logrotate.d/logstash':
+        ensure  => present,
+        content => template("${module_name}/etc/logrotate.d/logstash.erb"),
+        require => File[$logstash::params::logdir],
+      }
+
       # Place the jar file
       $filenameArray = split($logstash::jarfile, '/')
       $basefilename = $filenameArray[-1]
