@@ -96,4 +96,18 @@ class logstash::params {
     }
   }
 
+  case $::kernel {
+    'Linux': {
+      $rotate_conf = '/etc/logrotate.d/logstash'
+      $rotate_file = template("${module_name}/etc/logrotate.d/logstash.erb")
+      $rotate_pkg  = 'logrotate'
+      package { $rotate_pkg:
+        ensure => present
+      }
+    }
+    default: {
+      fail("\"${module_name}\" provides no rotation service
+            for \"${::kernel}\"")
+    }
+  }
 }
