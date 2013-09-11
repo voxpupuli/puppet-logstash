@@ -2,7 +2,8 @@ require 'spec_helper'
 
 describe 'logstash::input::twitter', :type => 'define' do
 
-  let(:facts) { {:operatingsystem => 'CentOS' }}
+  let(:facts) { {:operatingsystem => 'CentOS',
+                 :osfamily        => 'Linux'} }
   let(:pre_condition) { 'class {"logstash": }'}
   let(:title) { 'test' }
 
@@ -55,7 +56,8 @@ describe 'logstash::input::twitter', :type => 'define' do
 
   context "Set file owner" do
 
-    let(:facts) { {:operatingsystem => 'CentOS' }}
+      let(:facts) { {:operatingsystem => 'CentOS',
+                     :osfamily        => 'Linux'} }
     let(:pre_condition) { 'class {"logstash": logstash_user => "logstash", logstash_group => "logstash" }'}
     let(:title) { 'test' }
 
