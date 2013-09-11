@@ -48,9 +48,9 @@ describe 'logstash', :type => 'class' do
 
 
       # Service
-      it { should contain_service('org.logstash.agent') }
-      it { should contain_file('/Library/LaunchDaemons/org.logstash.agent.plist') }
-      it { should contain_file('/etc/logstash/agent/config') }
+      it { should contain_service('net.logstash.agent') }
+      it { should contain_file('/Library/LaunchDaemons/net.logstash.agent.plist') }
+      it { should contain_file('/Library/Application Support/Logstash/agent/config') }
 
     end
 

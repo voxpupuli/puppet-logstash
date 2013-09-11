@@ -40,8 +40,8 @@ define logstash::servicefile (
       $init_mode = '0755'
     }
     'Darwin': {
-      $init_script_path = "/Library/LaunchDaemons/org.logstash.${name}.plist"
-      $init_name = "org.logstash.${name}"
+      $init_script_path = "/Library/LaunchDaemons/net.logstash.${name}.plist"
+      $init_name = "net.logstash.${name}"
       $init_owner = 'root'
       $init_group = 'admin'
       $init_mode = '0744'
@@ -86,7 +86,7 @@ define logstash::servicefile (
             $initscript = template("${module_name}/etc/init.d/logstash.init.Debian.erb")
           }
           'Darwin': {
-            $initscript = template("${module_name}/Library/LaunchDaemons/org.logstash.plist.erb")
+            $initscript = template("${module_name}/Library/LaunchDaemons/net.logstash.plist.erb")
           }
           default: {
             fail("\"${module_name}\" provides no default init file
