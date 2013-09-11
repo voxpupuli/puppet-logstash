@@ -15,18 +15,17 @@ describe 'logstash::output::irc', :type => 'define' do
       :fields => ['value3'],
       :format => 'value4',
       :host => 'value5',
-      :messages_per_second => 6,
-      :nick => 'value7',
-      :password => 'value8',
-      :port => 9,
-      :real => 'value10',
+      :nick => 'value6',
+      :password => 'value7',
+      :port => 8,
+      :real => 'value9',
       :secure => false,
-      :tags => ['value12'],
-      :type => 'value13',
-      :user => 'value14',
+      :tags => ['value11'],
+      :type => 'value12',
+      :user => 'value13',
     } end
 
-    it { should contain_file('/etc/logstash/agent/config/output_irc_test').with(:content => "output {\n irc {\n  channels => ['value1']\n  exclude_tags => ['value2']\n  fields => ['value3']\n  format => \"value4\"\n  host => \"value5\"\n  messages_per_second => 6\n  nick => \"value7\"\n  password => \"value8\"\n  port => 9\n  real => \"value10\"\n  secure => false\n  tags => ['value12']\n  type => \"value13\"\n  user => \"value14\"\n }\n}\n") }
+    it { should contain_file('/etc/logstash/agent/config/output_irc_test').with(:content => "output {\n irc {\n  channels => ['value1']\n  exclude_tags => ['value2']\n  fields => ['value3']\n  format => \"value4\"\n  host => \"value5\"\n  nick => \"value6\"\n  password => \"value7\"\n  port => 8\n  real => \"value9\"\n  secure => false\n  tags => ['value11']\n  type => \"value12\"\n  user => \"value13\"\n }\n}\n") }
   end
 
   context "Instance test" do
@@ -37,15 +36,14 @@ describe 'logstash::output::irc', :type => 'define' do
       :fields => ['value3'],
       :format => 'value4',
       :host => 'value5',
-      :messages_per_second => 6,
-      :nick => 'value7',
-      :password => 'value8',
-      :port => 9,
-      :real => 'value10',
+      :nick => 'value6',
+      :password => 'value7',
+      :port => 8,
+      :real => 'value9',
       :secure => false,
-      :tags => ['value12'],
-      :type => 'value13',
-      :user => 'value14',
+      :tags => ['value11'],
+      :type => 'value12',
+      :user => 'value13',
       :instances => [ 'agent1', 'agent2' ]
     } end
   
@@ -67,15 +65,14 @@ describe 'logstash::output::irc', :type => 'define' do
       :fields => ['value3'],
       :format => 'value4',
       :host => 'value5',
-      :messages_per_second => 6,
-      :nick => 'value7',
-      :password => 'value8',
-      :port => 9,
-      :real => 'value10',
+      :nick => 'value6',
+      :password => 'value7',
+      :port => 8,
+      :real => 'value9',
       :secure => false,
-      :tags => ['value12'],
-      :type => 'value13',
-      :user => 'value14',
+      :tags => ['value11'],
+      :type => 'value12',
+      :user => 'value13',
     } end
   
     it { should contain_file('/etc/logstash/agent/config/output_irc_test').with(:owner => 'logstash', :group => 'logstash') }
