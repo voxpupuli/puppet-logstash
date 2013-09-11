@@ -123,13 +123,13 @@ define logstash::output::elasticsearch_http (
 
     $confdirstart = prefix($instances, "${logstash::configdir}/")
     $conffiles    = suffix($confdirstart, "/config/output_elasticsearch_http_${name}")
-    $services     = prefix($instances, 'logstash-')
+    $services     = prefix($instances, $logstash::params::service_base_name)
     $filesdir     = "${logstash::configdir}/files/output/elasticsearch_http/${name}"
 
   } else {
 
     $conffiles = "${logstash::configdir}/conf.d/output_elasticsearch_http_${name}"
-    $services  = 'logstash'
+    $services  = $logstash::params::service_name
     $filesdir  = "${logstash::configdir}/files/output/elasticsearch_http/${name}"
 
   }

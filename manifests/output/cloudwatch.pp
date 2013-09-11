@@ -264,13 +264,13 @@ define logstash::output::cloudwatch (
 
     $confdirstart = prefix($instances, "${logstash::configdir}/")
     $conffiles    = suffix($confdirstart, "/config/output_cloudwatch_${name}")
-    $services     = prefix($instances, 'logstash-')
+    $services     = prefix($instances, $logstash::params::service_base_name)
     $filesdir     = "${logstash::configdir}/files/output/cloudwatch/${name}"
 
   } else {
 
     $conffiles = "${logstash::configdir}/conf.d/output_cloudwatch_${name}"
-    $services  = 'logstash'
+    $services  = $logstash::params::service_name
     $filesdir  = "${logstash::configdir}/files/output/cloudwatch/${name}"
 
   }
@@ -305,7 +305,7 @@ define logstash::output::cloudwatch (
   if ($dimensions != '') {
     validate_hash($dimensions)
     $var_dimensions = $dimensions
-    $arr_dimensions = inline_template('<%= "["+var_dimensions.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_dimensions = inline_template('<%= "["+@var_dimensions.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_dimensions = "  dimensions => ${arr_dimensions}\n"
   }
 

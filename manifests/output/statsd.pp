@@ -151,13 +151,13 @@ define logstash::output::statsd (
 
     $confdirstart = prefix($instances, "${logstash::configdir}/")
     $conffiles    = suffix($confdirstart, "/config/output_statsd_${name}")
-    $services     = prefix($instances, 'logstash-')
+    $services     = prefix($instances, $logstash::params::service_base_name)
     $filesdir     = "${logstash::configdir}/files/output/statsd/${name}"
 
   } else {
 
     $conffiles = "${logstash::configdir}/conf.d/output_statsd_${name}"
-    $services  = 'logstash'
+    $services  = $logstash::params::service_name
     $filesdir  = "${logstash::configdir}/files/output/statsd/${name}"
 
   }
@@ -204,14 +204,14 @@ define logstash::output::statsd (
   if ($timing != '') {
     validate_hash($timing)
     $var_timing = $timing
-    $arr_timing = inline_template('<%= "["+var_timing.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_timing = inline_template('<%= "["+@var_timing.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_timing = "  timing => ${arr_timing}\n"
   }
 
   if ($count != '') {
     validate_hash($count)
     $var_count = $count
-    $arr_count = inline_template('<%= "["+var_count.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_count = inline_template('<%= "["+@var_count.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_count = "  count => ${arr_count}\n"
   }
 

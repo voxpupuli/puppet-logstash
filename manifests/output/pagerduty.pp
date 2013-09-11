@@ -115,13 +115,13 @@ define logstash::output::pagerduty (
 
     $confdirstart = prefix($instances, "${logstash::configdir}/")
     $conffiles    = suffix($confdirstart, "/config/output_pagerduty_${name}")
-    $services     = prefix($instances, 'logstash-')
+    $services     = prefix($instances, $logstash::params::service_base_name)
     $filesdir     = "${logstash::configdir}/files/output/pagerduty/${name}"
 
   } else {
 
     $conffiles = "${logstash::configdir}/conf.d/output_pagerduty_${name}"
-    $services  = 'logstash'
+    $services  = $logstash::params::service_name
     $filesdir  = "${logstash::configdir}/files/output/pagerduty/${name}"
 
   }
@@ -151,7 +151,7 @@ define logstash::output::pagerduty (
   if ($details != '') {
     validate_hash($details)
     $var_details = $details
-    $arr_details = inline_template('<%= "["+var_details.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_details = inline_template('<%= "["+@var_details.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_details = "  details => ${arr_details}\n"
   }
 

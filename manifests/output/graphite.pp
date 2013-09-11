@@ -155,13 +155,13 @@ define logstash::output::graphite (
 
     $confdirstart = prefix($instances, "${logstash::configdir}/")
     $conffiles    = suffix($confdirstart, "/config/output_graphite_${name}")
-    $services     = prefix($instances, 'logstash-')
+    $services     = prefix($instances, $logstash::params::service_base_name)
     $filesdir     = "${logstash::configdir}/files/output/graphite/${name}"
 
   } else {
 
     $conffiles = "${logstash::configdir}/conf.d/output_graphite_${name}"
-    $services  = 'logstash'
+    $services  = $logstash::params::service_name
     $filesdir  = "${logstash::configdir}/files/output/graphite/${name}"
 
   }
@@ -218,7 +218,7 @@ define logstash::output::graphite (
   if ($metrics != '') {
     validate_hash($metrics)
     $var_metrics = $metrics
-    $arr_metrics = inline_template('<%= "["+var_metrics.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_metrics = inline_template('<%= "["+@var_metrics.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_metrics = "  metrics => ${arr_metrics}\n"
   }
 

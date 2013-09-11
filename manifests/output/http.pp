@@ -135,13 +135,13 @@ define logstash::output::http (
 
     $confdirstart = prefix($instances, "${logstash::configdir}/")
     $conffiles    = suffix($confdirstart, "/config/output_http_${name}")
-    $services     = prefix($instances, 'logstash-')
+    $services     = prefix($instances, $logstash::params::service_base_name)
     $filesdir     = "${logstash::configdir}/files/output/http/${name}"
 
   } else {
 
     $conffiles = "${logstash::configdir}/conf.d/output_http_${name}"
-    $services  = 'logstash'
+    $services  = $logstash::params::service_name
     $filesdir  = "${logstash::configdir}/files/output/http/${name}"
 
   }
@@ -176,14 +176,14 @@ define logstash::output::http (
   if ($headers != '') {
     validate_hash($headers)
     $var_headers = $headers
-    $arr_headers = inline_template('<%= "["+var_headers.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_headers = inline_template('<%= "["+@var_headers.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_headers = "  headers => ${arr_headers}\n"
   }
 
   if ($mapping != '') {
     validate_hash($mapping)
     $var_mapping = $mapping
-    $arr_mapping = inline_template('<%= "["+var_mapping.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_mapping = inline_template('<%= "["+@var_mapping.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_mapping = "  mapping => ${arr_mapping}\n"
   }
 
