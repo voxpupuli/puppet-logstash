@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe 'logstash::input::stdin', :type => 'define' do
 
-  let(:facts) { {:operatingsystem => 'CentOS' }}
+  let(:facts) { {:operatingsystem => 'CentOS', :kernel => 'Linux' }}
   let(:pre_condition) { 'class {"logstash": }'}
   let(:title) { 'test' }
 
@@ -41,7 +41,7 @@ describe 'logstash::input::stdin', :type => 'define' do
 
   context "Set file owner" do
 
-    let(:facts) { {:operatingsystem => 'CentOS' }}
+    let(:facts) { {:operatingsystem => 'CentOS', :kernel => 'Linux' }}
     let(:pre_condition) { 'class {"logstash": logstash_user => "logstash", logstash_group => "logstash" }'}
     let(:title) { 'test' }
 
