@@ -137,13 +137,13 @@ define logstash::output::boundary (
 
     $confdirstart = prefix($instances, "${logstash::configdir}/")
     $conffiles    = suffix($confdirstart, "/config/output_boundary_${name}")
-    $services     = prefix($instances, 'logstash-')
+    $services     = prefix($instances, $logstash::params::service_base_name)
     $filesdir     = "${logstash::configdir}/files/output/boundary/${name}"
 
   } else {
 
     $conffiles = "${logstash::configdir}/conf.d/output_boundary_${name}"
-    $services  = 'logstash'
+    $services  = $logstash::params::service_name
     $filesdir  = "${logstash::configdir}/files/output/boundary/${name}"
 
   }

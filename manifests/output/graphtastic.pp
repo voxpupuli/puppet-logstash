@@ -151,13 +151,13 @@ define logstash::output::graphtastic (
 
     $confdirstart = prefix($instances, "${logstash::configdir}/")
     $conffiles    = suffix($confdirstart, "/config/output_graphtastic_${name}")
-    $services     = prefix($instances, 'logstash-')
+    $services     = prefix($instances, $logstash::params::service_base_name)
     $filesdir     = "${logstash::configdir}/files/output/graphtastic/${name}"
 
   } else {
 
     $conffiles = "${logstash::configdir}/conf.d/output_graphtastic_${name}"
-    $services  = 'logstash'
+    $services  = $logstash::params::service_name
     $filesdir  = "${logstash::configdir}/files/output/graphtastic/${name}"
 
   }
@@ -187,7 +187,7 @@ define logstash::output::graphtastic (
   if ($metrics != '') {
     validate_hash($metrics)
     $var_metrics = $metrics
-    $arr_metrics = inline_template('<%= "["+var_metrics.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_metrics = inline_template('<%= "["+@var_metrics.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_metrics = "  metrics => ${arr_metrics}\n"
   }
 

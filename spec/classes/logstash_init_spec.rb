@@ -8,7 +8,8 @@ describe 'logstash', :type => 'class' do
       context "On #{distro} OS" do
 
         let :facts do {
-          :operatingsystem => distro
+          :operatingsystem => distro,
+          :osfamily => 'Linux'
         } end
 
         # init.pp
@@ -29,9 +30,33 @@ describe 'logstash', :type => 'class' do
 
     end
 
+    context "On Darwin OS" do
+      let :facts do {
+        :operatingsystem => "Darwin",
+        :osfamily => "Darwin"
+      } end
+
+      let :params do {
+        :provider => 'custom',
+        :jarfile  => 'http://example.com/jarfile'
+      } end
+
+      # init.pp
+      it { should contain_class('logstash::package') }
+      it { should contain_class('logstash::config') }
+      it { should contain_class('logstash::service') }
+
+
+      # Service
+      it { should contain_service('net.logstash.agent') }
+      it { should contain_file('/Library/LaunchDaemons/net.logstash.agent.plist') }
+      it { should contain_file('/Library/Application Support/Logstash/agent/config') }
+
+    end
+
     context "On an unknown OS" do
       let :facts do {
-        :operatingsystem => 'Darwin'
+        :operatingsystem => 'Windows'
       } end
 
       it { expect { should raise_error(Puppet::Error) } }
@@ -40,7 +65,8 @@ describe 'logstash', :type => 'class' do
     context "With a custom init script" do
 
       let :facts do {
-        :operatingsystem => 'CentOS'
+        :operatingsystem => 'CentOS',
+        :osfamily => 'Linux'
       } end
 
       # init.pp
@@ -92,7 +118,8 @@ describe 'logstash', :type => 'class' do
       context "and built in init script" do
 
         let :facts do {
-          :operatingsystem => 'CentOS'
+          :operatingsystem => 'CentOS',
+          :osfamily => 'Linux'
         } end
 
         let :params do {
@@ -110,7 +137,8 @@ describe 'logstash', :type => 'class' do
       context "and custom init script" do
 
         let :facts do {
-          :operatingsystem => 'CentOS'
+          :operatingsystem => 'CentOS',
+          :osfamily => 'Linux'
         } end
 
         let :params do {
@@ -135,7 +163,8 @@ describe 'logstash', :type => 'class' do
       context "and built in init script" do
 
         let :facts do {
-          :operatingsystem => 'CentOS'
+          :operatingsystem => 'CentOS',
+          :osfamily => 'Linux'
         } end
 
         let :params do {
@@ -154,7 +183,8 @@ describe 'logstash', :type => 'class' do
       context "and custom init script" do
 
         let :facts do {
-          :operatingsystem => 'CentOS'
+          :operatingsystem => 'CentOS',
+          :osfamily => 'Linux'
         } end
 
         let :params do {
@@ -219,7 +249,8 @@ describe 'logstash', :type => 'class' do
   context "multi-instance tests ( agent and indexer )" do
 
     let :facts do {
-      :operatingsystem => 'CentOS'
+      :operatingsystem => 'CentOS',
+      :osfamily => 'Linux'
     } end
 
     context "Nothing extra" do
@@ -282,7 +313,8 @@ describe 'logstash', :type => 'class' do
   context "test file owner option set to 'logstash'" do
 
     let :facts do {
-      :operatingsystem => 'CentOS'
+      :operatingsystem => 'CentOS',
+      :osfamily => 'Linux'
     } end
 
     let :params do {
@@ -299,12 +331,13 @@ describe 'logstash', :type => 'class' do
   context "test with multi-instance disabled" do
 
     let :facts do {
-      :operatingsystem => 'CentOS'
+      :operatingsystem => 'CentOS',
+      :osfamily => 'Linux'
     } end
 
     let :params do {
       :multi_instance => false
-    } end
+    }
 
     it { should contain_service('logstash') }
     it { should contain_file('/etc/logstash/conf.d') }
@@ -322,7 +355,8 @@ describe 'logstash', :type => 'class' do
         } end
 
         let :facts do {
-          :operatingsystem => distro
+          :operatingsystem => distro,
+          :osfamily => 'Linux'
         } end
 
         it { should contain_package('openjdk-6-jre-headless') }
@@ -337,7 +371,8 @@ describe 'logstash', :type => 'class' do
         } end
 
         let :facts do {
-          :operatingsystem => distro
+          :operatingsystem => distro,
+          :osfamily => 'Linux'
         } end
 
         it { should contain_package('java-1.6.0-openjdk') }
@@ -345,10 +380,25 @@ describe 'logstash', :type => 'class' do
       end
     end
 
+    context "On Darwin" do
+      let :params do {
+        :java_install => true
+      } end
+
+      let :facts do {
+        :operatingsystem => "Darwin",
+        :osfamily => "Darwin"
+      } end
+
+      it { should contain_exec('download-apple-java') }
+      it { should contain_package('apple-java') }
+
+    end
+
     context "On an unknown OS" do
 
       let :facts do {
-        :operatingsystem => 'Darwin'
+        :operatingsystem => 'Windows'
       } end
 
       it { expect { should raise_error(Puppet::Error) } }
@@ -358,7 +408,8 @@ describe 'logstash', :type => 'class' do
     context "Custom java package" do
 
       let :facts do {
-        :operatingsystem => 'CentOS'
+        :operatingsystem => 'CentOS',
+        :osfamily => 'Linux'
       } end
 
       let :params do {
@@ -371,5 +422,5 @@ describe 'logstash', :type => 'class' do
     end
 
   end
-
+  end
 end

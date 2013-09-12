@@ -43,7 +43,7 @@ define logstash::configdir {
       purge   => true,
       recurse => true,
       require => Exec["create_config_dir_${name}"],
-      notify  => Service["logstash-${name}"];
+      notify  => Service["${logstash::params::service_base_name}${name}"];
     }
 
     #### Create the sincedb directory

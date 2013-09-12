@@ -41,18 +41,62 @@ class logstash::params {
   # service status
   $status = 'enabled'
 
+  # jarfile
+  $jarfile_master = 'https://logstash.objects.dreamhost.com/release/logstash-1.2.1-flatjar.jar'
+
+  case $::osfamily {
+    'Darwin': {
+      $jarfile = $jarfile_master
+    }
+    default: {
+      $jarfile = undef
+    }
+  }
+
+
+  # provider
+  case $::osfamily {
+    'Darwin': {
+      $provider = 'custom'
+    }
+    default: {
+      $provider = 'package'
+    }
+  }
 
   #### Defaults for other files
 
   # Config directory
-  $configdir = '/etc/logstash'
+
+  case $::osfamily {
+    'Linux': {
+      $configdir = '/etc/logstash'
+    }
+    'Darwin': {
+      $configdir = '/Library/Application Support/Logstash'
+    }
+  }
 
   # Logging dir
-  $logdir = '/var/log/logstash/'
 
+  case $::osfamily {
+    'Linux': {
+      $logdir = '/var/log/logstash/'
+    }
+    'Darwin': {
+      $logdir = '/Library/Logs/logstash'
+    }
+  }
   # File user/group
   $logstash_user  = 'root'
-  $logstash_group = 'root'
+  case $::osfamily {
+    'Linux': {
+      $logstash_group = 'root'
+    }
+    'Darwin': {
+      $logstash_group = 'wheel'
+    }
+  }
 
   #### Internal module values
 
@@ -68,16 +112,22 @@ class logstash::params {
       $package     = [ 'logstash' ]
       $installpath = '/var/lib/logstash'
     }
+    'Darwin': {
+      $installpath = '/Library/Logstash'
+    }
     default: {
       fail("\"${module_name}\" provides no package default value
             for \"${::operatingsystem}\"")
     }
   }
 
+
+
   # service parameters
   case $::operatingsystem {
     'RedHat', 'CentOS', 'Fedora', 'Scientific', 'Amazon': {
       $service_name       = 'logstash'
+      $service_base_name  = "${service_name}-"
       $service_hasrestart = true
       $service_hasstatus  = true
       $service_pattern    = $service_name
@@ -85,14 +135,34 @@ class logstash::params {
     }
     'Debian', 'Ubuntu': {
       $service_name       = 'logstash'
+      $service_base_name  = "${service_name}-"
       $service_hasrestart = true
       $service_hasstatus  = true
       $service_pattern    = $service_name
       $defaults_location  = '/etc/default'
     }
+    'Darwin': {
+      $service_name       = 'net.logstash'
+      $service_base_name  = "${service_name}."
+      $service_hasrestart = true
+      $service_hasstatus  = true
+      $service_pattern    = $service_name
+      $defaults_location  = '/Library/Application Support/Logstash'
+    }
     default: {
       fail("\"${module_name}\" provides no service parameters
             for \"${::operatingsystem}\"")
+    }
+  }
+
+  # Download tool
+
+  case $::osfamily {
+    'Linux': {
+      $download_tool = 'wget'
+    }
+    'Darwin': {
+      $download_tool = 'curl'
     }
   }
 

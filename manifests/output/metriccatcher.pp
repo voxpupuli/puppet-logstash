@@ -158,13 +158,13 @@ define logstash::output::metriccatcher (
 
     $confdirstart = prefix($instances, "${logstash::configdir}/")
     $conffiles    = suffix($confdirstart, "/config/output_metriccatcher_${name}")
-    $services     = prefix($instances, 'logstash-')
+    $services     = prefix($instances, $logstash::params::service_base_name)
     $filesdir     = "${logstash::configdir}/files/output/metriccatcher/${name}"
 
   } else {
 
     $conffiles = "${logstash::configdir}/conf.d/output_metriccatcher_${name}"
-    $services  = 'logstash'
+    $services  = $logstash::params::service_name
     $filesdir  = "${logstash::configdir}/files/output/metriccatcher/${name}"
 
   }
@@ -194,42 +194,42 @@ define logstash::output::metriccatcher (
   if ($meter != '') {
     validate_hash($meter)
     $var_meter = $meter
-    $arr_meter = inline_template('<%= "["+var_meter.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_meter = inline_template('<%= "["+@var_meter.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_meter = "  meter => ${arr_meter}\n"
   }
 
   if ($biased != '') {
     validate_hash($biased)
     $var_biased = $biased
-    $arr_biased = inline_template('<%= "["+var_biased.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_biased = inline_template('<%= "["+@var_biased.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_biased = "  biased => ${arr_biased}\n"
   }
 
   if ($gauge != '') {
     validate_hash($gauge)
     $var_gauge = $gauge
-    $arr_gauge = inline_template('<%= "["+var_gauge.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_gauge = inline_template('<%= "["+@var_gauge.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_gauge = "  gauge => ${arr_gauge}\n"
   }
 
   if ($uniform != '') {
     validate_hash($uniform)
     $var_uniform = $uniform
-    $arr_uniform = inline_template('<%= "["+var_uniform.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_uniform = inline_template('<%= "["+@var_uniform.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_uniform = "  uniform => ${arr_uniform}\n"
   }
 
   if ($counter != '') {
     validate_hash($counter)
     $var_counter = $counter
-    $arr_counter = inline_template('<%= "["+var_counter.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_counter = inline_template('<%= "["+@var_counter.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_counter = "  counter => ${arr_counter}\n"
   }
 
   if ($timer != '') {
     validate_hash($timer)
     $var_timer = $timer
-    $arr_timer = inline_template('<%= "["+var_timer.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_timer = inline_template('<%= "["+@var_timer.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_timer = "  timer => ${arr_timer}\n"
   }
 

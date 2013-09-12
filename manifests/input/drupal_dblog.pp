@@ -173,13 +173,13 @@ define logstash::input::drupal_dblog (
 
     $confdirstart = prefix($instances, "${logstash::configdir}/")
     $conffiles    = suffix($confdirstart, "/config/input_drupal_dblog_${name}")
-    $services     = prefix($instances, 'logstash-')
+    $services     = prefix($instances, $logstash::params::service_base_name)
     $filesdir     = "${logstash::configdir}/files/input/drupal_dblog/${name}"
 
   } else {
 
     $conffiles = "${logstash::configdir}/conf.d/input_drupal_dblog_${name}"
-    $services  = 'logstash'
+    $services  = $logstash::params::service_name
     $filesdir  = "${logstash::configdir}/files/input/drupal_dblog/${name}"
 
   }
@@ -207,14 +207,14 @@ define logstash::input::drupal_dblog (
   if ($databases != '') {
     validate_hash($databases)
     $var_databases = $databases
-    $arr_databases = inline_template('<%= "["+var_databases.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_databases = inline_template('<%= "["+@var_databases.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_databases = "  databases => ${arr_databases}\n"
   }
 
   if ($add_field != '') {
     validate_hash($add_field)
     $var_add_field = $add_field
-    $arr_add_field = inline_template('<%= "["+var_add_field.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_add_field = inline_template('<%= "["+@var_add_field.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_add_field = "  add_field => ${arr_add_field}\n"
   }
 

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>Label</key>
+	<string>net.logstash.<%=@name%></string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/usr/bin/java</string>
+    <string>-jar</string>
+    <string><%= scope.lookupvar('logstash::installpath') %>/logstash.jar</string>
+    <string>agent</string>
+    <string>-f</string>
+    <string><%= @configdir %></string>
+    <string>--log</string>
+    <string>/Library/Logs/logstash-<%=@name%></string>
+	</array>
+	<key>StandardErrorPath</key>
+	<string>/Library/Logs/logstash-<%=@name%>-stderr.log</string>
+	<key>UserName</key>
+	<string><%= scope.lookupvar('logstash::logstash_user') %></string>
+	<key>GroupName</key>
+	<string><%= scope.lookupvar('logstash::logstash_group') %></string>
+	<key>KeepAlive</key>
+	<true/>
+</dict>
+</plist>

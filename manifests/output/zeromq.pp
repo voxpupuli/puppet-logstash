@@ -122,13 +122,13 @@ define logstash::output::zeromq (
 
     $confdirstart = prefix($instances, "${logstash::configdir}/")
     $conffiles    = suffix($confdirstart, "/config/output_zeromq_${name}")
-    $services     = prefix($instances, 'logstash-')
+    $services     = prefix($instances, $logstash::params::service_base_name)
     $filesdir     = "${logstash::configdir}/files/output/zeromq/${name}"
 
   } else {
 
     $conffiles = "${logstash::configdir}/conf.d/output_zeromq_${name}"
-    $services  = 'logstash'
+    $services  = $logstash::params::service_name
     $filesdir  = "${logstash::configdir}/files/output/zeromq/${name}"
 
   }
@@ -164,7 +164,7 @@ define logstash::output::zeromq (
   if ($sockopt != '') {
     validate_hash($sockopt)
     $var_sockopt = $sockopt
-    $arr_sockopt = inline_template('<%= "["+var_sockopt.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_sockopt = inline_template('<%= "["+@var_sockopt.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_sockopt = "  sockopt => ${arr_sockopt}\n"
   }
 

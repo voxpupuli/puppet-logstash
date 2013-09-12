@@ -98,13 +98,13 @@ define logstash::output::circonus (
 
     $confdirstart = prefix($instances, "${logstash::configdir}/")
     $conffiles    = suffix($confdirstart, "/config/output_circonus_${name}")
-    $services     = prefix($instances, 'logstash-')
+    $services     = prefix($instances, $logstash::params::service_base_name)
     $filesdir     = "${logstash::configdir}/files/output/circonus/${name}"
 
   } else {
 
     $conffiles = "${logstash::configdir}/conf.d/output_circonus_${name}"
-    $services  = 'logstash'
+    $services  = $logstash::params::service_name
     $filesdir  = "${logstash::configdir}/files/output/circonus/${name}"
 
   }
@@ -134,7 +134,7 @@ define logstash::output::circonus (
   if ($annotation != '') {
     validate_hash($annotation)
     $var_annotation = $annotation
-    $arr_annotation = inline_template('<%= "["+var_annotation.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_annotation = inline_template('<%= "["+@var_annotation.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_annotation = "  annotation => ${arr_annotation}\n"
   }
 

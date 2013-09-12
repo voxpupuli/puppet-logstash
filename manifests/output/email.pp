@@ -180,13 +180,13 @@ define logstash::output::email (
 
     $confdirstart = prefix($instances, "${logstash::configdir}/")
     $conffiles    = suffix($confdirstart, "/config/output_email_${name}")
-    $services     = prefix($instances, 'logstash-')
+    $services     = prefix($instances, $logstash::params::service_base_name)
     $filesdir     = "${logstash::configdir}/files/output/email/${name}"
 
   } else {
 
     $conffiles = "${logstash::configdir}/conf.d/output_email_${name}"
-    $services  = 'logstash'
+    $services  = $logstash::params::service_name
     $filesdir  = "${logstash::configdir}/files/output/email/${name}"
 
   }
@@ -222,14 +222,14 @@ define logstash::output::email (
   if ($match != '') {
     validate_hash($match)
     $var_match = $match
-    $arr_match = inline_template('<%= "["+var_match.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_match = inline_template('<%= "["+@var_match.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_match = "  match => ${arr_match}\n"
   }
 
   if ($options != '') {
     validate_hash($options)
     $var_options = $options
-    $arr_options = inline_template('<%= "["+var_options.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_options = inline_template('<%= "["+@var_options.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_options = "  options => ${arr_options}\n"
   }
 

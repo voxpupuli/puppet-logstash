@@ -194,13 +194,13 @@ define logstash::output::gelf (
 
     $confdirstart = prefix($instances, "${logstash::configdir}/")
     $conffiles    = suffix($confdirstart, "/config/output_gelf_${name}")
-    $services     = prefix($instances, 'logstash-')
+    $services     = prefix($instances, $logstash::params::service_base_name)
     $filesdir     = "${logstash::configdir}/files/output/gelf/${name}"
 
   } else {
 
     $conffiles = "${logstash::configdir}/conf.d/output_gelf_${name}"
-    $services  = 'logstash'
+    $services  = $logstash::params::service_name
     $filesdir  = "${logstash::configdir}/files/output/gelf/${name}"
 
   }
@@ -252,7 +252,7 @@ define logstash::output::gelf (
   if ($custom_fields != '') {
     validate_hash($custom_fields)
     $var_custom_fields = $custom_fields
-    $arr_custom_fields = inline_template('<%= "["+var_custom_fields.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_custom_fields = inline_template('<%= "["+@var_custom_fields.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_custom_fields = "  custom_fields => ${arr_custom_fields}\n"
   }
 

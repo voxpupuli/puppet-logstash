@@ -25,8 +25,8 @@
 class logstash::package {
 
   File {
-    owner => 'root',
-    group => 'root',
+    owner => $logstash::params::logstash_user,
+    group => $logstash::params::logstash_group,
     mode  => '0644'
   }
 
@@ -126,12 +126,23 @@ class logstash::package {
 
         }
         ftp, https, http: {
-
-          exec { 'download-logstash':
-            command => "wget -O ${jardir}/${basefilename} ${logstash::jarfile} 2> /dev/null",
-            path    => ['/usr/bin', '/bin'],
-            creates => "${jardir}/${basefilename}",
-            require => Exec['create_install_dir'],
+          case $logstash::params::download_tool {
+            'wget': {
+              exec { 'download-logstash':
+                command => "wget -O ${jardir}/${basefilename} ${logstash::jarfile} 2> /dev/null",
+                path    => ['/usr/bin', '/bin'],
+                creates => "${jardir}/${basefilename}",
+                require => Exec['create_install_dir'],
+              }
+            }
+            'curl': {
+              exec { 'download-logstash':
+                command => "curl -o ${jardir}/${basefilename} ${logstash::jarfile} 2> /dev/null",
+                path    => ['/usr/bin', '/bin'],
+                creates => "${jardir}/${basefilename}",
+                require => Exec['create_install_dir'],
+              }
+            }
           }
 
           Exec['download-logstash'] -> File["${logstash::installpath}/logstash.jar"]

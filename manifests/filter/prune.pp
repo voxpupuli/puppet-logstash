@@ -161,13 +161,13 @@ define logstash::filter::prune (
 
     $confdirstart = prefix($instances, "${logstash::configdir}/")
     $conffiles    = suffix($confdirstart, "/config/filter_${order}_prune_${name}")
-    $services     = prefix($instances, 'logstash-')
+    $services     = prefix($instances, $logstash::params::service_base_name)
     $filesdir     = "${logstash::configdir}/files/filter/prune/${name}"
 
   } else {
 
     $conffiles = "${logstash::configdir}/conf.d/filter_${order}_prune_${name}"
-    $services  = 'logstash'
+    $services  = $logstash::params::service_name
     $filesdir  = "${logstash::configdir}/files/filter/prune/${name}"
 
   }
@@ -220,21 +220,21 @@ define logstash::filter::prune (
   if ($whitelist_values != '') {
     validate_hash($whitelist_values)
     $var_whitelist_values = $whitelist_values
-    $arr_whitelist_values = inline_template('<%= "["+var_whitelist_values.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_whitelist_values = inline_template('<%= "["+@var_whitelist_values.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_whitelist_values = "  whitelist_values => ${arr_whitelist_values}\n"
   }
 
   if ($blacklist_values != '') {
     validate_hash($blacklist_values)
     $var_blacklist_values = $blacklist_values
-    $arr_blacklist_values = inline_template('<%= "["+var_blacklist_values.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_blacklist_values = inline_template('<%= "["+@var_blacklist_values.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_blacklist_values = "  blacklist_values => ${arr_blacklist_values}\n"
   }
 
   if ($add_field != '') {
     validate_hash($add_field)
     $var_add_field = $add_field
-    $arr_add_field = inline_template('<%= "["+var_add_field.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_add_field = inline_template('<%= "["+@var_add_field.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_add_field = "  add_field => ${arr_add_field}\n"
   }
 

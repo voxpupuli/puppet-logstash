@@ -242,13 +242,13 @@ define logstash::filter::grok (
 
     $confdirstart = prefix($instances, "${logstash::configdir}/")
     $conffiles    = suffix($confdirstart, "/config/filter_${order}_grok_${name}")
-    $services     = prefix($instances, 'logstash-')
+    $services     = prefix($instances, $logstash::params::service_base_name)
     $filesdir     = "${logstash::configdir}/files/filter/grok/${name}"
 
   } else {
 
     $conffiles = "${logstash::configdir}/conf.d/filter_${order}_grok_${name}"
-    $services  = 'logstash'
+    $services  = $logstash::params::service_name
     $filesdir  = "${logstash::configdir}/files/filter/grok/${name}"
 
   }
@@ -327,14 +327,14 @@ define logstash::filter::grok (
   if ($match != '') {
     validate_hash($match)
     $var_match = $match
-    $arr_match = inline_template('<%= "["+var_match.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_match = inline_template('<%= "["+@var_match.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_match = "  match => ${arr_match}\n"
   }
 
   if ($add_field != '') {
     validate_hash($add_field)
     $var_add_field = $add_field
-    $arr_add_field = inline_template('<%= "["+var_add_field.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_add_field = inline_template('<%= "["+@var_add_field.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_add_field = "  add_field => ${arr_add_field}\n"
   }
 
