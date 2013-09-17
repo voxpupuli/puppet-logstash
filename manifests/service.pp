@@ -98,6 +98,22 @@ class logstash::service {
         notify => Service[ 'logstash' ],
       }
 
+    } else {
+
+      if $logstash::provider == 'custom' {
+
+        file { "${logstash::params::defaults_location}/logstash":
+          ensure => present,
+          source => "puppet:///modules/${module_name}/etc/sysconfig/logstash.defaults"
+          owner  => 'root',
+          group  => 'root',
+          mode   => '0644',
+          before => Service[ 'logstash' ],
+          notify => Service[ 'logstash' ]
+        }
+
+      }
+
     }
 
     if $logstash::initfiles {
