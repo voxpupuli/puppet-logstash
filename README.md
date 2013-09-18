@@ -153,6 +153,18 @@ Every plugin in Logstash has its own define file.
 
 For more information check the puppet files in the input, output and filter directories.
 
+Simple examples:
+
+ logstash::input::syslog { 'logstash-syslog':
+    type => 'syslog',
+    port => '5544',
+  }
+
+  logstash::output::redis { 'logstash-redis':
+    host      => [$::fqdn],
+    data_type => 'list',
+  }
+
 
 ### File transfers
 
