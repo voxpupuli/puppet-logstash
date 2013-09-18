@@ -155,16 +155,15 @@ For more information check the puppet files in the input, output and filter dire
 
 Simple examples:
 
- logstash::input::syslog { 'logstash-syslog':
-    type => 'syslog',
-    port => '5544',
-  }
+     logstash::input::syslog { 'logstash-syslog':
+       type => 'syslog',
+       port => '5544',
+     }
 
-  logstash::output::redis { 'logstash-redis':
-    host      => [$::fqdn],
-    data_type => 'list',
-  }
-
+     logstash::output::redis { 'logstash-redis':
+       host      => [$::fqdn],
+       data_type => 'list',
+     }
 
 ### File transfers
 
