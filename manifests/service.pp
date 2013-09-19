@@ -104,7 +104,7 @@ class logstash::service {
 
         file { "${logstash::params::defaults_location}/logstash":
           ensure => present,
-          source => "puppet:///modules/${module_name}/etc/sysconfig/logstash.defaults"
+          source => "puppet:///modules/${module_name}/etc/sysconfig/logstash.defaults",
           owner  => 'root',
           group  => 'root',
           mode   => '0644',
@@ -132,7 +132,7 @@ class logstash::service {
 
       if $logstash::provider == 'custom' {
 
-        $name = ''
+        $instance_name = ''
         $configdir = "${logstash::configdir}/conf.d"
 
         case $::operatingsystem {

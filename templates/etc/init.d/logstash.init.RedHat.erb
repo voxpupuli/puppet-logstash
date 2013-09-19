@@ -1,15 +1,15 @@
 <%-
-if @name != ""
-  @instance_name = 'logstash-'+@name
+if @instance_name != ""
+  @proc_name = 'logstash-'+@instance_name
   @desc_name = @name
 else
-  @instance_name = 'logstash'
+  @proc_name = 'logstash'
   @desc_name = ''
 end
 -%>
 #! /bin/sh
 #
-#       /etc/rc.d/init.d/<%=@instance_name%>
+#       /etc/rc.d/init.d/<%=@proc_name%>
 #
 #       Starts Logstash as a daemon
 #
@@ -17,7 +17,7 @@ end
 # description: Starts Logstash as a daemon
 
 ### BEGIN INIT INFO
-# Provides: <%=@instance_name%>
+# Provides: <%=@proc_name%>
 # Required-Start: $local_fs $remote_fs
 # Required-Stop: $local_fs $remote_fs
 # Default-Start: 2 3 4 5
@@ -30,7 +30,7 @@ end
 . /etc/rc.d/init.d/functions
 
 PATH=/bin:/usr/bin:/sbin:/usr/sbin
-NAME=<%=@instance_name%>
+NAME=<%=@proc_name%>
 DESC="Logstash Daemon <%=@desc_name%>"
 DEFAULT=/etc/sysconfig/$NAME
 

@@ -58,6 +58,7 @@ define logstash::servicefile (
       # If we are using a custom provider, thus not using the package and not supplying a custom init script use our own init script
       if $initfile == undef {
 
+        $instance_name = $name
         ## Get the init file we provide
         case $::operatingsystem {
           'RedHat', 'CentOS', 'Fedora', 'Scientific', 'Amazon': {
