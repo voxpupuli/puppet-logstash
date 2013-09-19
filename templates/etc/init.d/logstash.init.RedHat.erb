@@ -1,6 +1,15 @@
+<%-
+if @name != ""
+  @instance_name = 'logstash-'+@name
+  @desc_name = @name
+else
+  @instance_name = 'logstash'
+  @desc_name = ''
+end
+-%>
 #! /bin/sh
 #
-#       /etc/rc.d/init.d/logstash-<%=@name%>
+#       /etc/rc.d/init.d/<%=@instance_name%>
 #
 #       Starts Logstash as a daemon
 #
@@ -8,7 +17,7 @@
 # description: Starts Logstash as a daemon
 
 ### BEGIN INIT INFO
-# Provides: logstash-<%=@name%>
+# Provides: <%=@instance_name%>
 # Required-Start: $local_fs $remote_fs
 # Required-Stop: $local_fs $remote_fs
 # Default-Start: 2 3 4 5
@@ -21,8 +30,8 @@
 . /etc/rc.d/init.d/functions
 
 PATH=/bin:/usr/bin:/sbin:/usr/sbin
-NAME=logstash-<%= name %>
-DESC="Logstash Daemon <%= name %>"
+NAME=<%=@instance_name%>
+DESC="Logstash Daemon <%=@desc_name%>"
 DEFAULT=/etc/sysconfig/$NAME
 
 if [ `id -u` -ne 0 ]; then
@@ -58,9 +67,6 @@ NICE=19
 # Filter threads
 FILTER_THREADS=1
 
-# Path to sincedb files
-SINCEDB_PATH=/etc/logstash/<%= name %>/sincedb/
-
 # End of variables that can be overwritten in $DEFAULT
 
 if [ -f "$DEFAULT" ]; then
@@ -73,8 +79,6 @@ PID_FILE=/var/run/$NAME.pid
 JAVA=`which java`
 JAR="${LS_HOME}/logstash.jar"
 ARGS="${LS_JAVA_OPTS} -jar ${JAR} agent --config ${CONF_DIR} --log ${LOG_FILE} -w ${FILTER_THREADS}"
-
-export SINCEDB_PATH=$SINCEDB_PATH
 
 is_true() {
     if [ "x$1" = "xtrue" -o "x$1" = "xyes" -o "x$1" = "x1" ] ; then

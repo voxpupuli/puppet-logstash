@@ -132,6 +132,7 @@ class logstash::service {
 
       if $logstash::provider == 'custom' {
 
+        $name = ''
         $configdir = "${logstash::configdir}/conf.d"
 
         case $::operatingsystem {
