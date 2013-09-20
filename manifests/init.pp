@@ -93,6 +93,7 @@ class logstash(
   $logstash_user  = $logstash::params::logstash_user,
   $logstash_group = $logstash::params::logstash_group,
   $configdir      = $logstash::params::configdir,
+  $conffile       = undef,
 ) inherits logstash::params {
 
   anchor {'logstash::begin': }
