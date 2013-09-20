@@ -60,6 +60,14 @@ define logstash::configdir {
       require => Exec["create_sincedb_dir_${name}"];
     }
 
+    if is_hash($logstash::conffile) and has_key($logstash::conffile, $name ) {
+      file { "${config_dir}/logstash.config":
+        ensure  => file,
+        mode    => '0440',
+        source  => $logstash::conffile[$name],
+      }
+    }
+
   } else {
     #### If logstash::ensure != present, purge config and sincedb directory
     file { $config_dir :

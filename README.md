@@ -138,6 +138,16 @@ If you want a specific java package/version:
        java_package => 'packagename'
      }
 
+If you want to define your own logstash config (multi-instance):
+     class { 'logstash':
+       conffile => { 'agent' => 'puppet:///data/logstash/agent.config' }
+     }
+
+If you want to define your own logstash config (single-instance):
+     class { 'logstash':
+       conffile => 'puppet:///data/logstash/agent.config'
+     }
+
 If you want to have the logstash files owned by an other user then 'root':
 
      class { 'logstash':
