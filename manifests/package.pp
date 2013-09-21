@@ -131,7 +131,7 @@ class logstash::package {
             command => "wget -O ${jardir}/${basefilename} ${logstash::jarfile} 2> /dev/null",
             path    => ['/usr/bin', '/bin'],
             creates => "${jardir}/${basefilename}",
-            require => Exec['create_install_dir'],
+            require => File[$jardir],
           }
 
           Exec['download-logstash'] -> File["${logstash::installpath}/logstash.jar"]
