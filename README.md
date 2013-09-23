@@ -19,6 +19,8 @@ This overview shows you which puppet module and logstash version work together.
     ------------------------------------
     | 0.3.0 - 0.3.3 | 1.1.12 - 1.1.13  |
     ------------------------------------
+    | in progress   | 1.2.x            |
+    ------------------------------------
 
 ## Version changes
 
@@ -136,6 +138,16 @@ If you want a specific java package/version:
        java_package => 'packagename'
      }
 
+If you want to define your own logstash config (multi-instance):
+     class { 'logstash':
+       conffile => { 'agent' => 'puppet:///data/logstash/agent.config' }
+     }
+
+If you want to define your own logstash config (single-instance):
+     class { 'logstash':
+       conffile => 'puppet:///data/logstash/agent.config'
+     }
+
 If you want to have the logstash files owned by an other user then 'root':
 
      class { 'logstash':
@@ -151,6 +163,17 @@ Every plugin in Logstash has its own define file.
 
 For more information check the puppet files in the input, output and filter directories.
 
+Simple examples:
+
+     logstash::input::syslog { 'logstash-syslog':
+       type => 'syslog',
+       port => '5544',
+     }
+
+     logstash::output::redis { 'logstash-redis':
+       host      => [$::fqdn],
+       data_type => 'list',
+     }
 
 ### File transfers
 
