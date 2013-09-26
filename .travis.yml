@@ -22,4 +22,4 @@ matrix:
 gemfile: .gemfile
 notifications:
   email:
-    - richard@ispavailability.com
+    - tomasz@napierala.org
