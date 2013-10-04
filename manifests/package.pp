@@ -109,11 +109,29 @@ class logstash::package {
       $filenameArray = split($logstash::jarfile, '/')
       $basefilename = $filenameArray[-1]
 
-      $sourceArray = split($logstash::jarfile, ':')
-      $protocol_type = $sourceArray[0]
+      # Determine protocol type
+
+      # Spliting on empty string returns array of chars
+      $characters = split($logstash::jarfile, '') 
+
+      # assign the first character
+      $first_character = $characters[0]
+
+      # If first character is '/' assume we are doing a copy from the
+      # local filesystem
+      if $first_character == '/' {
+        $protocol_type = 'localcopy'
+      } else {
+
+        # Set protocol type by inspecting the URI
+
+        $sourceArray = split($logstash::jarfile, ':')
+        $protocol_type = $sourceArray[0]
+
+      }
 
       case $protocol_type {
-        puppet: {
+        puppet, localcopy: {
 
           file { "${jardir}/${basefilename}":
             ensure  => present,
