@@ -86,6 +86,7 @@ class logstash(
   $installpath    = $logstash::params::installpath,
   $java_install   = false,
   $java_package   = undef,
+  $java_bin_dir   = '',
   $instances      = [ 'agent' ],
   $multi_instance = true,
   $initfiles      = undef,
