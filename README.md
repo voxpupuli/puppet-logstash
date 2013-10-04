@@ -36,7 +36,7 @@ The module will create and manage the services based on the instance names, the 
 
 
 Setting up logstash without configuration will cause logstash not to start.
-You will need to define atleast one plugin for Logstash to start.
+You will need to define at least one plugin for Logstash to start.
 
 
 For OS packages of logstash, see http://build.logstash.net/job/logstash-1.1.x/
@@ -87,7 +87,7 @@ All plugins can be defined to a certain instance. For example:
        instances => [ 'instance2' ]
      }
 
-If you rather not use the multi-instance feature you can diable this:
+If you rather not use the multi-instance feature you can disable this:
 
      class { 'logstash':
        multi_instance => false
@@ -185,5 +185,5 @@ For example lumberjack requires a certificate, so you can do the following:
        ssl_certificate => 'puppet:///path/to/ssl.cert':
      }
 
-the file 'ssl.cert' will be placed in a pre-defined place and set in the configuration.
+The file 'ssl.cert' will be placed in a pre-defined place and set in the configuration.
 
