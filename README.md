@@ -87,7 +87,7 @@ All plugins can be defined to a certain instance. For example:
        instances => [ 'instance2' ]
      }
 
-If you rather not use the multi-instance feature you can disable this:
+If you would rather not use the multi-instance feature you can disable this:
 
      class { 'logstash':
        multi_instance => false
