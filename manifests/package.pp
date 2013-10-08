@@ -112,7 +112,7 @@ class logstash::package {
       # Determine protocol type
 
       # Spliting on empty string returns array of chars
-      $characters = split($logstash::jarfile, '') 
+      $characters = split($logstash::jarfile, '')
 
       # assign the first character
       $first_character = $characters[0]
