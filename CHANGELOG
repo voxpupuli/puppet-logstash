@@ -1,3 +1,19 @@
+0.3.4 ( Oct 14, 2013 )
+  Fixing purging of created directories ( PR #61, #64 by Kayla Green and Jason Koppe )
+  Documentation fixes ( PR #65, #67 by Kristian Glass and Andreas Paul )
+  Making config dir configurable ( PR #70 by Justin Lambert )
+  Permit HTTP(s) for downloading logstash ( PR #71 by Phil Fenstermacher )
+  Ensure user/group is passed in the debian init file
+  Spec cleanup ( PR #75 by Justin Lambert )
+  set logstash logdir perms when using custom jar provider ( PR #74 by Justin Lambert )
+  clean up installpath when updating jars ( PR #72 by Justin Lambert )
+  fix wrong creates path at jar custom provider ( PR #83 by Daniel Werdermann )
+  added 'in progress' for logstash version 1.2.x ( PR #87 by rtoma )
+  Add small input/output examples ( PR #89 by Andreas Paul )
+  Solving defaults file not being installed in some cases
+  http download of jar should require $jardir ( PR #90 by Max Griffiths )
+  add ability to install a logstash config file ( PR #93 by Justin Lambert )
+
 0.3.3 ( Jun 15, 2013 )
   Enable puppet 3.2.x testing
   Fix issue that the config dir was missing in the init files

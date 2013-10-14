@@ -17,7 +17,7 @@ This overview shows you which puppet module and logstash version work together.
     ------------------------------------
     | 0.2.0         | 1.1.10           |
     ------------------------------------
-    | 0.3.0 - 0.3.3 | 1.1.12 - 1.1.13  |
+    | 0.3.0 - 0.3.4 | 1.1.12 - 1.1.13  |
     ------------------------------------
     | in progress   | 1.2.x            |
     ------------------------------------
@@ -27,6 +27,7 @@ This overview shows you which puppet module and logstash version work together.
 From version 0.0.6 to 0.1.0 the following has been removed/changed:
 
 initfile (string)     => initfiles (hash)
+
 defaultsfile (string) => defaultsfiles (hash)
 
 ## Notes
