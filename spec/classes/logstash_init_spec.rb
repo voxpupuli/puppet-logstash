@@ -313,6 +313,37 @@ describe 'logstash', :type => 'class' do
 
   end
 
+  context "use a config file instead of defines" do
+  
+    let :facts do {
+      :operatingsystem => 'CentOS'
+    } end
+
+    context "single instance" do
+
+      let :params do {
+        :multi_instance => false,
+        :conffile => 'puppet:///path/to/config'
+      } end
+
+      it { should contain_file('/etc/logstash/conf.d/logstash.config').with(:source => 'puppet:///path/to/config') }
+
+    end
+
+    context "multi instance" do
+
+      let :params do {
+        :instances => [ 'agent', 'indexer' ],
+        :conffile =>  { 'agent' => 'puppet:///path/to/config/agent', 'indexer' => 'puppet:///path/to/config/indexer' }
+      } end
+
+      it { should contain_file('/etc/logstash/agent/config/logstash.config').with(:source => 'puppet:///path/to/config/agent') }
+      it { should contain_file('/etc/logstash/indexer/config/logstash.config').with(:source => 'puppet:///path/to/config/indexer') }
+
+    end
+
+  end
+
   context "install java" do
 
     ['Debian', 'Ubuntu'].each do |distro|
