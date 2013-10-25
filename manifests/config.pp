@@ -29,6 +29,12 @@ class logstash::config {
     group => $logstash::logstash_group
   }
 
+  # make sure he config dir exists
+  file { $logstash::configdir:
+    ensure => directory,
+    mode   => '0644'
+  }
+
   if $logstash::multi_instance == true {
 
     # Setup and manage config dirs for the instances
@@ -42,7 +48,8 @@ class logstash::config {
       mode    => '0640',
       purge   => true,
       recurse => true,
-      notify  => Service['logstash']
+      notify  => Service['logstash'],
+      require => File[$logstash::configdir]
     }
 
     if $logstash::conffile {
