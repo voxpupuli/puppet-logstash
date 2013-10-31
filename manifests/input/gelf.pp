@@ -119,7 +119,7 @@
 #   even when sent to another LogStash server.
 #   Value type is string
 #   Default value: None
-#   This variable is required
+#   This variable is optional
 #
 # [*instances*]
 #   Array of instance names to which this define is.
@@ -140,7 +140,7 @@
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
 define logstash::input::gelf (
-  $type,
+  $type='',
   $message_format = '',
   $debug          = '',
   $format         = '',
