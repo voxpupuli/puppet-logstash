@@ -50,6 +50,17 @@
 #   String to set the specific version you want to install.
 #   Defaults to <tt>false</tt>.
 #
+# [*jarfile*]
+#   This is the URI where to get logstash from. Valid protocols include:
+#   [ puppet | ftp | http | https]
+#   Example:  "https://download.elasticsearch.org/logstash/logstash/logstash-1.2.1-flatjar.jar"
+#   Defaults to <tt>undef</tt>.
+#
+# [*jar_timeout*]
+#   The timeout to use when fetching the logstash jarfile via ftp, https or http.
+#   Example:  "600", to 10 minute timeout, useful when on a slow connection.
+#   Defaults to <tt>undef</tt>, and puppet will use the Exec task default (300)
+#
 # The default values for the parameters are set in logstash::params. Have
 # a look at the corresponding <tt>params.pp</tt> manifest file if you need more
 # technical information about them.
@@ -82,6 +93,7 @@ class logstash(
   $version        = false,
   $provider       = 'package',
   $jarfile        = undef,
+  $jar_timeout    = undef,
   $purge_jars     = true,
   $installpath    = $logstash::params::installpath,
   $java_install   = false,
