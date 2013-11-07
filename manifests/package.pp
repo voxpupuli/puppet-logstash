@@ -128,10 +128,14 @@ class logstash::package {
         ftp, https, http: {
 
           exec { 'download-logstash':
-            command => "wget -O ${jardir}/${basefilename} ${logstash::jarfile} 2> /dev/null",
-            path    => ['/usr/bin', '/bin'],
-            creates => "${jardir}/${basefilename}",
-            require => File[$jardir],
+            command     => "wget -O ${jardir}/${basefilename} ${logstash::jarfile} 2> /dev/null",
+            path        => ['/usr/bin', '/bin'],
+            creates     => "${jardir}/${basefilename}",
+            require     => File[$jardir],
+            timeout     => "${logstash::jar_timeout}" ? {
+                ""      => undef,
+                default => "${logstash::jar_timeout}"
+            };
           }
 
           Exec['download-logstash'] -> File["${logstash::installpath}/logstash.jar"]

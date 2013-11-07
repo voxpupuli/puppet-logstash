@@ -87,13 +87,38 @@ describe 'logstash', :type => 'class' do
 
   context "With custom jar file" do
 
+    let :facts do {
+      :operatingsystem => 'CentOS'
+    } end
+
+    context "with https" do
+
+    let :params do {
+      :provider  => 'custom',
+      :jarfile   => 'https://example.com/logstash-1.1.9.jar',
+      :installpath => '/opt/logstash'
+    } end
+
+    it { should contain_exec('download-logstash')\
+      .with_command(/\/opt\/logstash\/jars\/logstash-1.1.9.jar/)}
+
+    context "with jar timeout" do
+
+      let :params do {
+        :provider  => 'custom',
+        :jarfile   => 'https://example.com/logstash-1.1.9.jar',
+        :jar_timeout => '900',
+        :installpath => '/opt/logstash'
+      } end
+
+      it { should contain_exec('download-logstash').with(:timeout => '900') }
+    end
+
+    end
+
     context "with multi-instance" do
 
       context "and built in init script" do
-
-        let :facts do {
-          :operatingsystem => 'CentOS'
-        } end
 
         let :params do {
           :provider => 'custom',
@@ -108,10 +133,6 @@ describe 'logstash', :type => 'class' do
       end
 
       context "and custom init script" do
-
-        let :facts do {
-          :operatingsystem => 'CentOS'
-        } end
 
         let :params do {
           :provider => 'custom',
@@ -134,10 +155,6 @@ describe 'logstash', :type => 'class' do
 
       context "and built in init script" do
 
-        let :facts do {
-          :operatingsystem => 'CentOS'
-        } end
-
         let :params do {
           :provider => 'custom',
           :jarfile => "puppet:///path/to/logstash-1.1.9.jar",
@@ -152,10 +169,6 @@ describe 'logstash', :type => 'class' do
       end
 
       context "and custom init script" do
-
-        let :facts do {
-          :operatingsystem => 'CentOS'
-        } end
 
         let :params do {
           :provider => 'custom',
@@ -314,7 +327,7 @@ describe 'logstash', :type => 'class' do
   end
 
   context "use a config file instead of defines" do
-  
+
     let :facts do {
       :operatingsystem => 'CentOS'
     } end
