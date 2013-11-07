@@ -137,8 +137,22 @@ class logstash::package {
           Exec['download-logstash'] -> File["${logstash::installpath}/logstash.jar"]
 
         }
+        # Manage local jar file => file:/my/local/path/to/logstash.jar
+        file: {
+
+          $source_path = $sourceArray[1]
+          file { "${jardir}/${basefilename}":
+            ensure  => present,
+            source  => $source_path,
+            require => File[$jardir],
+            backup  => false,
+          }
+
+          File["${jardir}/${basefilename}"] -> File["${logstash::installpath}/logstash.jar"]
+
+        }
         default: {
-          fail('Protocol must be puppet, http, https, or ftp.')
+          fail('Protocol must be file, puppet, http, https, or ftp.')
         }
       }
 
