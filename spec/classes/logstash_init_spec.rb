@@ -87,6 +87,25 @@ describe 'logstash', :type => 'class' do
 
   context "With custom jar file" do
 
+    context "with file" do
+
+      let :facts do {
+        :operatingsystem => 'CentOS'
+      } end
+  
+      let :params do {
+        :provider  => 'custom',
+        :jarfile   => 'file:/path/to/logstash-1.1.9.jar',
+        :installpath => '/opt/logstash'
+      } end
+  
+      it { should contain_file('/opt/logstash/jars/logstash-1.1.9.jar').with(
+          :source => '/path/to/logstash-1.1.9.jar',
+          :content => nil
+      ) }
+
+    end
+    
     context "with multi-instance" do
 
       context "and built in init script" do
