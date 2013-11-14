@@ -50,6 +50,13 @@
 #   String to set the specific version you want to install.
 #   Defaults to <tt>false</tt>.
 #
+# [*jarfile*]
+#   This is the URI where to get logstash from. Valid protocols include:
+#   [ file | puppet | ftp | http | https ]
+#   Example:  "https://download.elasticsearch.org/logstash/logstash/logstash-1.2.1-flatjar.jar"
+#             "file:/my/local/path/to/logstash-1.2.1-flatjar.jar"
+#   Defaults to <tt>undef</tt>.
+#
 # The default values for the parameters are set in logstash::params. Have
 # a look at the corresponding <tt>params.pp</tt> manifest file if you need more
 # technical information about them.
