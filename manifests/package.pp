@@ -105,6 +105,14 @@ class logstash::package {
         require => Exec['create_log_dir'],
       }
 
+      file { $logstash::params::rotate_conf:
+        ensure  => present,
+        content => $logstash::params::rotate_file,
+        require => File[$logstash::params::logdir],
+      }
+
+      Package[$logstash::params::rotate_pkg] -> File[$logstash::params::rotate_conf]
+
       # Place the jar file
       $filenameArray = split($logstash::jarfile, '/')
       $basefilename = $filenameArray[-1]

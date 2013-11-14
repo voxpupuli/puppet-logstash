@@ -1,0 +1,8 @@
+<%= File.join(scope.lookupvar('logstash::params::logdir'),'*.log') %> {
+  copytruncate
+  daily
+  rotate 7
+  compress
+  missingok
+  create 640 <%= scope.lookupvar('logstash::params::logstash_user') %> <%= scope.lookupvar('logstash::params::logstash_group') %>
+}
