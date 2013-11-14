@@ -20,6 +20,7 @@ define logstash::configdir {
 
   $config_dir  = "${logstash::configdir}/${name}/config"
   $sincedb_dir = "${logstash::configdir}/${name}/sincedb"
+  $pattern_dir = "${logstash::configdir}/${name}/pattern"
 
   if $logstash::ensure == 'present' {
 
@@ -59,6 +60,20 @@ define logstash::configdir {
       mode    => '0640',
       require => Exec["create_sincedb_dir_${name}"];
     }
+
+    #### Create the pattern directory
+    exec { "create_pattern_dir_${name}":
+      cwd     => '/',
+      path    => ['/usr/bin', '/bin'],
+      command => "mkdir -p ${pattern_dir}",
+      creates => $pattern_dir;
+    }
+
+    file { $pattern_dir:
+      ensure  => directory,
+      mode    => '0640',
+      require => Exec["create_pattern_dir_${name}"];
+    }    
 
     if is_hash($logstash::conffile) and has_key($logstash::conffile, $name ) {
       file { "${config_dir}/logstash.config":

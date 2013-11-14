@@ -52,6 +52,14 @@ class logstash::config {
       require => File[$logstash::configdir]
     }
 
+    file { "${logstash::configdir}/conf.d/pattern":
+      ensure  => directory,
+      mode    => '0640',
+      purge   => true,
+      recurse => true,
+      notify  => Service['logstash']
+    }
+
     if $logstash::conffile {
       file { "${logstash::configdir}/conf.d/logstash.config":
         ensure  => file,
