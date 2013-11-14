@@ -180,6 +180,15 @@ class logstash::service {
 
     } else {
 
+      file { "${logstash::defaults_location}/logstash":
+        ensure  => 'file',
+        owner   => 'root',
+        group   => 'root',
+        mode    => '0644',
+        source  => "puppet://modules/${module_name}/etc/sysconfig/logstash.defaults",
+        notify  => Service['logstash']
+      }
+
       # Use the single instance
       service { 'logstash':
         ensure => $service_ensure,
