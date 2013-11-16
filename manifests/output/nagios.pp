@@ -22,6 +22,23 @@
 #
 # === Parameters
 #
+# [*codec*]
+#   A codec value.  It is recommended that you use the logstash_codec function
+#   to derive this variable. Example: logstash_codec('graphite', {'charset' => 'UTF-8'})
+#   but you could just pass a string, Example: "graphite{ charset => 'UTF-8' }"
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
+# [*conditional*]
+#   Surrounds the rule with a conditional.  It is recommended that you use the
+#   logstash_conditional function, Example: logstash_conditional('[type] == "apache"')
+#   or, Example: logstash_conditional(['[loglevel] == "ERROR"','[deployment] == "production"'], 'or')
+#   but you could just pass a string, Example: '[loglevel] == "ERROR" or [deployment] == "production"'
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
 # [*commandfile*]
 #   The path to your nagios command file
 #   Value type is path
@@ -71,15 +88,19 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.12
+#  This define is created based on LogStash version 1.2.2
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.12/outputs/nagios
+#  http://logstash.net/docs/1.2.2/outputs/nagios
 #
-#  Need help? http://logstash.net/docs/1.1.12/learn
+#  Need help? http://logstash.net/docs/1.2.2/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
+#
+# === Contributors
+#
+# * Luke Chavers <mailto:vmadman@gmail.com> - Added Initial Logstash 1.2.x Support
 #
 define logstash::output::nagios (
   $commandfile  = '',
@@ -88,6 +109,8 @@ define logstash::output::nagios (
   $nagios_level = '',
   $tags         = '',
   $type         = '',
+  $codec        = '',
+  $conditional  = '',
   $instances    = [ 'agent' ]
 ) {
 
@@ -115,31 +138,48 @@ define logstash::output::nagios (
 
   #### Validate parameters
 
+  if ($conditional != '') {
+    validate_string($conditional)
+    $opt_indent = "   "
+    $opt_cond_start = " ${conditional}\n "
+    $opt_cond_end = "  }\n "
+  } else {
+    $opt_indent = "  "
+    $opt_cond_end = " "
+  }
+
+  if ($codec != '') {
+    validate_string($codec)
+    $opt_codec = "${opt_indent}codec => ${codec}\n"
+  }
+
+
+
   validate_array($instances)
 
   if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
-    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
+    $opt_exclude_tags = "${opt_indent}exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
-    $opt_fields = "  fields => ['${arr_fields}']\n"
+    $opt_fields = "${opt_indent}fields => ['${arr_fields}']\n"
   }
 
   if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
-    $opt_tags = "  tags => ['${arr_tags}']\n"
+    $opt_tags = "${opt_indent}tags => ['${arr_tags}']\n"
   }
 
   if ($nagios_level != '') {
     if ! ($nagios_level in ['0', '1', '2', '3']) {
       fail("\"${nagios_level}\" is not a valid nagios_level parameter value")
     } else {
-      $opt_nagios_level = "  nagios_level => \"${nagios_level}\"\n"
+      $opt_nagios_level = "${opt_indent}nagios_level => \"${nagios_level}\"\n"
     }
   }
 
@@ -151,7 +191,7 @@ define logstash::output::nagios (
       $filenameArray_commandfile = split($commandfile, '/')
       $basefilename_commandfile = $filenameArray_commandfile[-1]
 
-      $opt_commandfile = "  commandfile => \"${filesdir}/${basefilename_commandfile}\"\n"
+      $opt_commandfile = "${opt_indent}commandfile => \"${filesdir}/${basefilename_commandfile}\"\n"
 
       file { "${filesdir}/${basefilename_commandfile}":
         source  => $commandfile,
@@ -159,13 +199,13 @@ define logstash::output::nagios (
         require => File[$filesdir]
       }
     } else {
-      $opt_commandfile = "  commandfile => \"${commandfile}\"\n"
+      $opt_commandfile = "${opt_indent}commandfile => \"${commandfile}\"\n"
     }
   }
 
   if ($type != '') {
     validate_string($type)
-    $opt_type = "  type => \"${type}\"\n"
+    $opt_type = "${opt_indent}type => \"${type}\"\n"
   }
 
 
@@ -191,7 +231,7 @@ define logstash::output::nagios (
 
   file { $conffiles:
     ensure  => present,
-    content => "output {\n nagios {\n${opt_commandfile}${opt_exclude_tags}${opt_fields}${opt_nagios_level}${opt_tags}${opt_type} }\n}\n",
+    content => "output {\n${opt_cond_start} nagios {\n${opt_commandfile}${opt_exclude_tags}${opt_fields}${opt_codec}${opt_nagios_level}${opt_tags}${opt_type}${opt_cond_end}}\n}\n",
     mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

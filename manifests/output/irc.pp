@@ -5,6 +5,23 @@
 #
 # === Parameters
 #
+# [*codec*]
+#   A codec value.  It is recommended that you use the logstash_codec function
+#   to derive this variable. Example: logstash_codec('graphite', {'charset' => 'UTF-8'})
+#   but you could just pass a string, Example: "graphite{ charset => 'UTF-8' }"
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
+# [*conditional*]
+#   Surrounds the rule with a conditional.  It is recommended that you use the
+#   logstash_conditional function, Example: logstash_conditional('[type] == "apache"')
+#   or, Example: logstash_conditional(['[loglevel] == "ERROR"','[deployment] == "production"'], 'or')
+#   but you could just pass a string, Example: '[loglevel] == "ERROR" or [deployment] == "production"'
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
 # [*channels*]
 #   Channels to broadcast to.  These should be full channel names
 #   including the '#' symbol, such as "#logstash".
@@ -96,15 +113,19 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.12
+#  This define is created based on LogStash version 1.2.2
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.12/outputs/irc
+#  http://logstash.net/docs/1.2.2/outputs/irc
 #
-#  Need help? http://logstash.net/docs/1.1.12/learn
+#  Need help? http://logstash.net/docs/1.2.2/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
+#
+# === Contributors
+#
+# * Luke Chavers <mailto:vmadman@gmail.com> - Added Initial Logstash 1.2.x Support
 #
 define logstash::output::irc (
   $channels,
@@ -120,6 +141,8 @@ define logstash::output::irc (
   $tags         = '',
   $type         = '',
   $user         = '',
+  $codec        = '',
+  $conditional  = '',
   $instances    = [ 'agent' ]
 ) {
 
@@ -146,28 +169,45 @@ define logstash::output::irc (
   }
 
   #### Validate parameters
+
+  if ($conditional != '') {
+    validate_string($conditional)
+    $opt_indent = "   "
+    $opt_cond_start = " ${conditional}\n "
+    $opt_cond_end = "  }\n "
+  } else {
+    $opt_indent = "  "
+    $opt_cond_end = " "
+  }
+
+  if ($codec != '') {
+    validate_string($codec)
+    $opt_codec = "${opt_indent}codec => ${codec}\n"
+  }
+
+
   if ($channels != '') {
     validate_array($channels)
     $arr_channels = join($channels, '\', \'')
-    $opt_channels = "  channels => ['${arr_channels}']\n"
+    $opt_channels = "${opt_indent}channels => ['${arr_channels}']\n"
   }
 
   if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
-    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
+    $opt_exclude_tags = "${opt_indent}exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
-    $opt_fields = "  fields => ['${arr_fields}']\n"
+    $opt_fields = "${opt_indent}fields => ['${arr_fields}']\n"
   }
 
   if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
-    $opt_tags = "  tags => ['${arr_tags}']\n"
+    $opt_tags = "${opt_indent}tags => ['${arr_tags}']\n"
   }
 
 
@@ -175,57 +215,57 @@ define logstash::output::irc (
 
   if ($secure != '') {
     validate_bool($secure)
-    $opt_secure = "  secure => ${secure}\n"
+    $opt_secure = "${opt_indent}secure => ${secure}\n"
   }
 
   if ($port != '') {
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
     } else {
-      $opt_port = "  port => ${port}\n"
+      $opt_port = "${opt_indent}port => ${port}\n"
     }
   }
 
   if ($password != '') {
     validate_string($password)
-    $opt_password = "  password => \"${password}\"\n"
+    $opt_password = "${opt_indent}password => \"${password}\"\n"
   }
 
   if ($format != '') {
     validate_string($format)
-    $opt_format = "  format => \"${format}\"\n"
+    $opt_format = "${opt_indent}format => \"${format}\"\n"
   }
 
   if ($host != '') {
     validate_string($host)
-    $opt_host = "  host => \"${host}\"\n"
+    $opt_host = "${opt_indent}host => \"${host}\"\n"
   }
 
   if ($real != '') {
     validate_string($real)
-    $opt_real = "  real => \"${real}\"\n"
+    $opt_real = "${opt_indent}real => \"${real}\"\n"
   }
 
   if ($type != '') {
     validate_string($type)
-    $opt_type = "  type => \"${type}\"\n"
+    $opt_type = "${opt_indent}type => \"${type}\"\n"
   }
 
   if ($user != '') {
     validate_string($user)
-    $opt_user = "  user => \"${user}\"\n"
+    $opt_user = "${opt_indent}user => \"${user}\"\n"
   }
 
   if ($nick != '') {
     validate_string($nick)
-    $opt_nick = "  nick => \"${nick}\"\n"
+    $opt_nick = "${opt_indent}nick => \"${nick}\"\n"
   }
 
   #### Write config file
 
   file { $conffiles:
     ensure  => present,
-    content => "output {\n irc {\n${opt_channels}${opt_exclude_tags}${opt_fields}${opt_format}${opt_host}${opt_nick}${opt_password}${opt_port}${opt_real}${opt_secure}${opt_tags}${opt_type}${opt_user} }\n}\n",
+    content => "output {\n${opt_cond_start} irc {\n${opt_channels}${opt_exclude_tags}${opt_fields}${opt_codec}${opt_format}${opt_host}${opt_nick}${opt_password}${opt_port}${opt_real}${opt_secure}${opt_tags}${opt_type}${opt_user}${opt_cond_end}}\n}\n",
     mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

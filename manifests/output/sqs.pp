@@ -27,6 +27,23 @@
 #
 # === Parameters
 #
+# [*codec*]
+#   A codec value.  It is recommended that you use the logstash_codec function
+#   to derive this variable. Example: logstash_codec('graphite', {'charset' => 'UTF-8'})
+#   but you could just pass a string, Example: "graphite{ charset => 'UTF-8' }"
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
+# [*conditional*]
+#   Surrounds the rule with a conditional.  It is recommended that you use the
+#   logstash_conditional function, Example: logstash_conditional('[type] == "apache"')
+#   or, Example: logstash_conditional(['[loglevel] == "ERROR"','[deployment] == "production"'], 'or')
+#   but you could just pass a string, Example: '[loglevel] == "ERROR" or [deployment] == "production"'
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
 # [*access_key_id*]
 #   Value type is string
 #   Default value: None
@@ -97,15 +114,19 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.12
+#  This define is created based on LogStash version 1.2.2
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.12/outputs/sqs
+#  http://logstash.net/docs/1.2.2/outputs/sqs
 #
-#  Need help? http://logstash.net/docs/1.1.12/learn
+#  Need help? http://logstash.net/docs/1.2.2/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
+#
+# === Contributors
+#
+# * Luke Chavers <mailto:vmadman@gmail.com> - Added Initial Logstash 1.2.x Support
 #
 define logstash::output::sqs (
   $queue,
@@ -118,6 +139,8 @@ define logstash::output::sqs (
   $tags                 = '',
   $type                 = '',
   $use_ssl              = '',
+  $codec                = '',
+  $conditional          = '',
   $instances            = [ 'agent' ]
 ) {
 
@@ -145,69 +168,86 @@ define logstash::output::sqs (
 
   #### Validate parameters
 
+  if ($conditional != '') {
+    validate_string($conditional)
+    $opt_indent = "   "
+    $opt_cond_start = " ${conditional}\n "
+    $opt_cond_end = "  }\n "
+  } else {
+    $opt_indent = "  "
+    $opt_cond_end = " "
+  }
+
+  if ($codec != '') {
+    validate_string($codec)
+    $opt_codec = "${opt_indent}codec => ${codec}\n"
+  }
+
+
+
   validate_array($instances)
 
   if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
-    $opt_fields = "  fields => ['${arr_fields}']\n"
+    $opt_fields = "${opt_indent}fields => ['${arr_fields}']\n"
   }
 
   if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
-    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
+    $opt_exclude_tags = "${opt_indent}exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
-    $opt_tags = "  tags => ['${arr_tags}']\n"
+    $opt_tags = "${opt_indent}tags => ['${arr_tags}']\n"
   }
 
   if ($use_ssl != '') {
     validate_bool($use_ssl)
-    $opt_use_ssl = "  use_ssl => ${use_ssl}\n"
+    $opt_use_ssl = "${opt_indent}use_ssl => ${use_ssl}\n"
   }
 
   if ($region != '') {
     if ! ($region in ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1', 'us-gov-west-1']) {
       fail("\"${region}\" is not a valid region parameter value")
     } else {
-      $opt_region = "  region => \"${region}\"\n"
+      $opt_region = "${opt_indent}region => \"${region}\"\n"
     }
   }
 
   if ($queue != '') {
     validate_string($queue)
-    $opt_queue = "  queue => \"${queue}\"\n"
+    $opt_queue = "${opt_indent}queue => \"${queue}\"\n"
   }
 
   if ($secret_access_key != '') {
     validate_string($secret_access_key)
-    $opt_secret_access_key = "  secret_access_key => \"${secret_access_key}\"\n"
+    $opt_secret_access_key = "${opt_indent}secret_access_key => \"${secret_access_key}\"\n"
   }
 
   if ($aws_credentials_file != '') {
     validate_string($aws_credentials_file)
-    $opt_aws_credentials_file = "  aws_credentials_file => \"${aws_credentials_file}\"\n"
+    $opt_aws_credentials_file = "${opt_indent}aws_credentials_file => \"${aws_credentials_file}\"\n"
   }
 
   if ($type != '') {
     validate_string($type)
-    $opt_type = "  type => \"${type}\"\n"
+    $opt_type = "${opt_indent}type => \"${type}\"\n"
   }
 
   if ($access_key_id != '') {
     validate_string($access_key_id)
-    $opt_access_key_id = "  access_key_id => \"${access_key_id}\"\n"
+    $opt_access_key_id = "${opt_indent}access_key_id => \"${access_key_id}\"\n"
   }
 
   #### Write config file
 
   file { $conffiles:
     ensure  => present,
-    content => "output {\n sqs {\n${opt_access_key_id}${opt_aws_credentials_file}${opt_exclude_tags}${opt_fields}${opt_queue}${opt_region}${opt_secret_access_key}${opt_tags}${opt_type}${opt_use_ssl} }\n}\n",
+    content => "output {\n${opt_cond_start} sqs {\n${opt_access_key_id}${opt_aws_credentials_file}${opt_exclude_tags}${opt_fields}${opt_codec}${opt_queue}${opt_region}${opt_secret_access_key}${opt_tags}${opt_type}${opt_use_ssl}${opt_cond_end}}\n}\n",
     mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

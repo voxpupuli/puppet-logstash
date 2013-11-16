@@ -12,6 +12,23 @@
 #
 # === Parameters
 #
+# [*codec*]
+#   A codec value.  It is recommended that you use the logstash_codec function
+#   to derive this variable. Example: logstash_codec('graphite', {'charset' => 'UTF-8'})
+#   but you could just pass a string, Example: "graphite{ charset => 'UTF-8' }"
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
+# [*conditional*]
+#   Surrounds the rule with a conditional.  It is recommended that you use the
+#   logstash_conditional function, Example: logstash_conditional('[type] == "apache"')
+#   or, Example: logstash_conditional(['[loglevel] == "ERROR"','[deployment] == "production"'], 'or')
+#   but you could just pass a string, Example: '[loglevel] == "ERROR" or [deployment] == "production"'
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
 # [*debug*]
 #   Value type is boolean
 #   Default value: false
@@ -172,15 +189,19 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.12
+#  This define is created based on LogStash version 1.2.2
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.12/outputs/elasticsearch_river
+#  http://logstash.net/docs/1.2.2/outputs/elasticsearch_river
 #
-#  Need help? http://logstash.net/docs/1.1.12/learn
+#  Need help? http://logstash.net/docs/1.2.2/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
+#
+# === Contributors
+#
+# * Luke Chavers <mailto:vmadman@gmail.com> - Added Initial Logstash 1.2.x Support
 #
 define logstash::output::elasticsearch_river (
   $es_host,
@@ -207,6 +228,8 @@ define logstash::output::elasticsearch_river (
   $type               = '',
   $user               = '',
   $vhost              = '',
+  $codec              = '',
+  $conditional        = '',
   $instances          = [ 'agent' ]
 ) {
 
@@ -234,51 +257,68 @@ define logstash::output::elasticsearch_river (
 
   #### Validate parameters
 
+  if ($conditional != '') {
+    validate_string($conditional)
+    $opt_indent = "   "
+    $opt_cond_start = " ${conditional}\n "
+    $opt_cond_end = "  }\n "
+  } else {
+    $opt_indent = "  "
+    $opt_cond_end = " "
+  }
+
+  if ($codec != '') {
+    validate_string($codec)
+    $opt_codec = "${opt_indent}codec => ${codec}\n"
+  }
+
+
+
   validate_array($instances)
 
   if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
-    $opt_tags = "  tags => ['${arr_tags}']\n"
+    $opt_tags = "${opt_indent}tags => ['${arr_tags}']\n"
   }
 
   if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
-    $opt_fields = "  fields => ['${arr_fields}']\n"
+    $opt_fields = "${opt_indent}fields => ['${arr_fields}']\n"
   }
 
   if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
-    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
+    $opt_exclude_tags = "${opt_indent}exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if ($persistent != '') {
     validate_bool($persistent)
-    $opt_persistent = "  persistent => ${persistent}\n"
+    $opt_persistent = "${opt_indent}persistent => ${persistent}\n"
   }
 
   if ($durable != '') {
     validate_bool($durable)
-    $opt_durable = "  durable => ${durable}\n"
+    $opt_durable = "${opt_indent}durable => ${durable}\n"
   }
 
   if ($es_ordered != '') {
     validate_bool($es_ordered)
-    $opt_es_ordered = "  es_ordered => ${es_ordered}\n"
+    $opt_es_ordered = "${opt_indent}es_ordered => ${es_ordered}\n"
   }
 
   if ($debug != '') {
     validate_bool($debug)
-    $opt_debug = "  debug => ${debug}\n"
+    $opt_debug = "${opt_indent}debug => ${debug}\n"
   }
 
   if ($es_bulk_size != '') {
     if ! is_numeric($es_bulk_size) {
       fail("\"${es_bulk_size}\" is not a valid es_bulk_size parameter value")
     } else {
-      $opt_es_bulk_size = "  es_bulk_size => ${es_bulk_size}\n"
+      $opt_es_bulk_size = "${opt_indent}es_bulk_size => ${es_bulk_size}\n"
     }
   }
 
@@ -286,7 +326,7 @@ define logstash::output::elasticsearch_river (
     if ! is_numeric($es_bulk_timeout_ms) {
       fail("\"${es_bulk_timeout_ms}\" is not a valid es_bulk_timeout_ms parameter value")
     } else {
-      $opt_es_bulk_timeout_ms = "  es_bulk_timeout_ms => ${es_bulk_timeout_ms}\n"
+      $opt_es_bulk_timeout_ms = "${opt_indent}es_bulk_timeout_ms => ${es_bulk_timeout_ms}\n"
     }
   }
 
@@ -294,7 +334,7 @@ define logstash::output::elasticsearch_river (
     if ! is_numeric($rabbitmq_port) {
       fail("\"${rabbitmq_port}\" is not a valid rabbitmq_port parameter value")
     } else {
-      $opt_rabbitmq_port = "  rabbitmq_port => ${rabbitmq_port}\n"
+      $opt_rabbitmq_port = "${opt_indent}rabbitmq_port => ${rabbitmq_port}\n"
     }
   }
 
@@ -302,7 +342,7 @@ define logstash::output::elasticsearch_river (
     if ! is_numeric($es_port) {
       fail("\"${es_port}\" is not a valid es_port parameter value")
     } else {
-      $opt_es_port = "  es_port => ${es_port}\n"
+      $opt_es_port = "${opt_indent}es_port => ${es_port}\n"
     }
   }
 
@@ -310,75 +350,75 @@ define logstash::output::elasticsearch_river (
     if ! ($exchange_type in ['fanout', 'direct', 'topic']) {
       fail("\"${exchange_type}\" is not a valid exchange_type parameter value")
     } else {
-      $opt_exchange_type = "  exchange_type => \"${exchange_type}\"\n"
+      $opt_exchange_type = "${opt_indent}exchange_type => \"${exchange_type}\"\n"
     }
   }
 
   if ($exchange != '') {
     validate_string($exchange)
-    $opt_exchange = "  exchange => \"${exchange}\"\n"
+    $opt_exchange = "${opt_indent}exchange => \"${exchange}\"\n"
   }
 
   if ($key != '') {
     validate_string($key)
-    $opt_key = "  key => \"${key}\"\n"
+    $opt_key = "${opt_indent}key => \"${key}\"\n"
   }
 
   if ($password != '') {
     validate_string($password)
-    $opt_password = "  password => \"${password}\"\n"
+    $opt_password = "${opt_indent}password => \"${password}\"\n"
   }
 
   if ($index_type != '') {
     validate_string($index_type)
-    $opt_index_type = "  index_type => \"${index_type}\"\n"
+    $opt_index_type = "${opt_indent}index_type => \"${index_type}\"\n"
   }
 
   if ($queue != '') {
     validate_string($queue)
-    $opt_queue = "  queue => \"${queue}\"\n"
+    $opt_queue = "${opt_indent}queue => \"${queue}\"\n"
   }
 
   if ($rabbitmq_host != '') {
     validate_string($rabbitmq_host)
-    $opt_rabbitmq_host = "  rabbitmq_host => \"${rabbitmq_host}\"\n"
+    $opt_rabbitmq_host = "${opt_indent}rabbitmq_host => \"${rabbitmq_host}\"\n"
   }
 
   if ($es_host != '') {
     validate_string($es_host)
-    $opt_es_host = "  es_host => \"${es_host}\"\n"
+    $opt_es_host = "${opt_indent}es_host => \"${es_host}\"\n"
   }
 
   if ($document_id != '') {
     validate_string($document_id)
-    $opt_document_id = "  document_id => \"${document_id}\"\n"
+    $opt_document_id = "${opt_indent}document_id => \"${document_id}\"\n"
   }
 
   if ($type != '') {
     validate_string($type)
-    $opt_type = "  type => \"${type}\"\n"
+    $opt_type = "${opt_indent}type => \"${type}\"\n"
   }
 
   if ($user != '') {
     validate_string($user)
-    $opt_user = "  user => \"${user}\"\n"
+    $opt_user = "${opt_indent}user => \"${user}\"\n"
   }
 
   if ($vhost != '') {
     validate_string($vhost)
-    $opt_vhost = "  vhost => \"${vhost}\"\n"
+    $opt_vhost = "${opt_indent}vhost => \"${vhost}\"\n"
   }
 
   if ($index != '') {
     validate_string($index)
-    $opt_index = "  index => \"${index}\"\n"
+    $opt_index = "${opt_indent}index => \"${index}\"\n"
   }
 
   #### Write config file
 
   file { $conffiles:
     ensure  => present,
-    content => "output {\n elasticsearch_river {\n${opt_debug}${opt_document_id}${opt_durable}${opt_es_bulk_size}${opt_es_bulk_timeout_ms}${opt_es_host}${opt_es_ordered}${opt_es_port}${opt_exchange}${opt_exchange_type}${opt_exclude_tags}${opt_fields}${opt_index}${opt_index_type}${opt_key}${opt_password}${opt_persistent}${opt_queue}${opt_rabbitmq_host}${opt_rabbitmq_port}${opt_tags}${opt_type}${opt_user}${opt_vhost} }\n}\n",
+    content => "output {\n${opt_cond_start} elasticsearch_river {\n${opt_debug}${opt_document_id}${opt_durable}${opt_es_bulk_size}${opt_es_bulk_timeout_ms}${opt_es_host}${opt_es_ordered}${opt_es_port}${opt_exchange}${opt_exchange_type}${opt_exclude_tags}${opt_fields}${opt_codec}${opt_index}${opt_index_type}${opt_key}${opt_password}${opt_persistent}${opt_queue}${opt_rabbitmq_host}${opt_rabbitmq_port}${opt_tags}${opt_type}${opt_user}${opt_vhost}${opt_cond_end}}\n}\n",
     mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

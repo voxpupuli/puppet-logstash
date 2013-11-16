@@ -6,6 +6,23 @@
 #
 # === Parameters
 #
+# [*codec*]
+#   A codec value.  It is recommended that you use the logstash_codec function
+#   to derive this variable. Example: logstash_codec('graphite', {'charset' => 'UTF-8'})
+#   but you could just pass a string, Example: "graphite{ charset => 'UTF-8' }"
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
+# [*conditional*]
+#   Surrounds the rule with a conditional.  It is recommended that you use the
+#   logstash_conditional function, Example: logstash_conditional('[type] == "apache"')
+#   or, Example: logstash_conditional(['[loglevel] == "ERROR"','[deployment] == "production"'], 'or')
+#   but you could just pass a string, Example: '[loglevel] == "ERROR" or [deployment] == "production"'
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
 # [*batch*]
 #   Set to true if you want redis to batch up values and send 1 RPUSH
 #   command instead of one command per value to push on the list.  Note
@@ -145,15 +162,19 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.12
+#  This define is created based on LogStash version 1.2.2
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.12/outputs/redis
+#  http://logstash.net/docs/1.2.2/outputs/redis
 #
-#  Need help? http://logstash.net/docs/1.1.12/learn
+#  Need help? http://logstash.net/docs/1.2.2/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
+#
+# === Contributors
+#
+# * Luke Chavers <mailto:vmadman@gmail.com> - Added Initial Logstash 1.2.x Support
 #
 define logstash::output::redis (
   $batch                = '',
@@ -174,6 +195,8 @@ define logstash::output::redis (
   $tags                 = '',
   $timeout              = '',
   $type                 = '',
+  $codec                = '',
+  $conditional          = '',
   $instances            = [ 'agent' ]
 ) {
 
@@ -201,47 +224,64 @@ define logstash::output::redis (
 
   #### Validate parameters
 
+  if ($conditional != '') {
+    validate_string($conditional)
+    $opt_indent = "   "
+    $opt_cond_start = " ${conditional}\n "
+    $opt_cond_end = "  }\n "
+  } else {
+    $opt_indent = "  "
+    $opt_cond_end = " "
+  }
+
+  if ($codec != '') {
+    validate_string($codec)
+    $opt_codec = "${opt_indent}codec => ${codec}\n"
+  }
+
+
+
   validate_array($instances)
 
   if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
-    $opt_tags = "  tags => ['${arr_tags}']\n"
+    $opt_tags = "${opt_indent}tags => ['${arr_tags}']\n"
   }
 
   if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
-    $opt_fields = "  fields => ['${arr_fields}']\n"
+    $opt_fields = "${opt_indent}fields => ['${arr_fields}']\n"
   }
 
   if ($host != '') {
     validate_array($host)
     $arr_host = join($host, '\', \'')
-    $opt_host = "  host => ['${arr_host}']\n"
+    $opt_host = "${opt_indent}host => ['${arr_host}']\n"
   }
 
   if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
-    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
+    $opt_exclude_tags = "${opt_indent}exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if ($shuffle_hosts != '') {
     validate_bool($shuffle_hosts)
-    $opt_shuffle_hosts = "  shuffle_hosts => ${shuffle_hosts}\n"
+    $opt_shuffle_hosts = "${opt_indent}shuffle_hosts => ${shuffle_hosts}\n"
   }
 
   if ($batch != '') {
     validate_bool($batch)
-    $opt_batch = "  batch => ${batch}\n"
+    $opt_batch = "${opt_indent}batch => ${batch}\n"
   }
 
   if ($db != '') {
     if ! is_numeric($db) {
       fail("\"${db}\" is not a valid db parameter value")
     } else {
-      $opt_db = "  db => ${db}\n"
+      $opt_db = "${opt_indent}db => ${db}\n"
     }
   }
 
@@ -249,7 +289,7 @@ define logstash::output::redis (
     if ! is_numeric($reconnect_interval) {
       fail("\"${reconnect_interval}\" is not a valid reconnect_interval parameter value")
     } else {
-      $opt_reconnect_interval = "  reconnect_interval => ${reconnect_interval}\n"
+      $opt_reconnect_interval = "${opt_indent}reconnect_interval => ${reconnect_interval}\n"
     }
   }
 
@@ -257,7 +297,7 @@ define logstash::output::redis (
     if ! is_numeric($congestion_threshold) {
       fail("\"${congestion_threshold}\" is not a valid congestion_threshold parameter value")
     } else {
-      $opt_congestion_threshold = "  congestion_threshold => ${congestion_threshold}\n"
+      $opt_congestion_threshold = "${opt_indent}congestion_threshold => ${congestion_threshold}\n"
     }
   }
 
@@ -265,7 +305,7 @@ define logstash::output::redis (
     if ! is_numeric($congestion_interval) {
       fail("\"${congestion_interval}\" is not a valid congestion_interval parameter value")
     } else {
-      $opt_congestion_interval = "  congestion_interval => ${congestion_interval}\n"
+      $opt_congestion_interval = "${opt_indent}congestion_interval => ${congestion_interval}\n"
     }
   }
 
@@ -273,7 +313,7 @@ define logstash::output::redis (
     if ! is_numeric($timeout) {
       fail("\"${timeout}\" is not a valid timeout parameter value")
     } else {
-      $opt_timeout = "  timeout => ${timeout}\n"
+      $opt_timeout = "${opt_indent}timeout => ${timeout}\n"
     }
   }
 
@@ -281,7 +321,7 @@ define logstash::output::redis (
     if ! is_numeric($batch_events) {
       fail("\"${batch_events}\" is not a valid batch_events parameter value")
     } else {
-      $opt_batch_events = "  batch_events => ${batch_events}\n"
+      $opt_batch_events = "${opt_indent}batch_events => ${batch_events}\n"
     }
   }
 
@@ -289,7 +329,7 @@ define logstash::output::redis (
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
     } else {
-      $opt_port = "  port => ${port}\n"
+      $opt_port = "${opt_indent}port => ${port}\n"
     }
   }
 
@@ -297,7 +337,7 @@ define logstash::output::redis (
     if ! is_numeric($batch_timeout) {
       fail("\"${batch_timeout}\" is not a valid batch_timeout parameter value")
     } else {
-      $opt_batch_timeout = "  batch_timeout => ${batch_timeout}\n"
+      $opt_batch_timeout = "${opt_indent}batch_timeout => ${batch_timeout}\n"
     }
   }
 
@@ -305,30 +345,30 @@ define logstash::output::redis (
     if ! ($data_type in ['list', 'channel']) {
       fail("\"${data_type}\" is not a valid data_type parameter value")
     } else {
-      $opt_data_type = "  data_type => \"${data_type}\"\n"
+      $opt_data_type = "${opt_indent}data_type => \"${data_type}\"\n"
     }
   }
 
   if ($password != '') {
     validate_string($password)
-    $opt_password = "  password => \"${password}\"\n"
+    $opt_password = "${opt_indent}password => \"${password}\"\n"
   }
 
   if ($type != '') {
     validate_string($type)
-    $opt_type = "  type => \"${type}\"\n"
+    $opt_type = "${opt_indent}type => \"${type}\"\n"
   }
 
   if ($key != '') {
     validate_string($key)
-    $opt_key = "  key => \"${key}\"\n"
+    $opt_key = "${opt_indent}key => \"${key}\"\n"
   }
 
   #### Write config file
 
   file { $conffiles:
     ensure  => present,
-    content => "output {\n redis {\n${opt_batch}${opt_batch_events}${opt_batch_timeout}${opt_congestion_interval}${opt_congestion_threshold}${opt_data_type}${opt_db}${opt_exclude_tags}${opt_fields}${opt_host}${opt_key}${opt_password}${opt_port}${opt_reconnect_interval}${opt_shuffle_hosts}${opt_tags}${opt_timeout}${opt_type} }\n}\n",
+    content => "output {\n${opt_cond_start} redis {\n${opt_batch}${opt_batch_events}${opt_batch_timeout}${opt_congestion_interval}${opt_congestion_threshold}${opt_data_type}${opt_db}${opt_exclude_tags}${opt_fields}${opt_codec}${opt_host}${opt_key}${opt_password}${opt_port}${opt_reconnect_interval}${opt_shuffle_hosts}${opt_tags}${opt_timeout}${opt_type}${opt_cond_end}}\n}\n",
     mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

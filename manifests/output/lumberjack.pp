@@ -4,6 +4,23 @@
 #
 # === Parameters
 #
+# [*codec*]
+#   A codec value.  It is recommended that you use the logstash_codec function
+#   to derive this variable. Example: logstash_codec('graphite', {'charset' => 'UTF-8'})
+#   but you could just pass a string, Example: "graphite{ charset => 'UTF-8' }"
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
+# [*conditional*]
+#   Surrounds the rule with a conditional.  It is recommended that you use the
+#   logstash_conditional function, Example: logstash_conditional('[type] == "apache"')
+#   or, Example: logstash_conditional(['[loglevel] == "ERROR"','[deployment] == "production"'], 'or')
+#   but you could just pass a string, Example: '[loglevel] == "ERROR" or [deployment] == "production"'
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
 # [*exclude_tags*]
 #   Only handle events without any of these tags. Note this check is
 #   additional to type and tags.
@@ -64,15 +81,19 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.12
+#  This define is created based on LogStash version 1.2.2
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.12/outputs/lumberjack
+#  http://logstash.net/docs/1.2.2/outputs/lumberjack
 #
-#  Need help? http://logstash.net/docs/1.1.12/learn
+#  Need help? http://logstash.net/docs/1.2.2/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
+#
+# === Contributors
+#
+# * Luke Chavers <mailto:vmadman@gmail.com> - Added Initial Logstash 1.2.x Support
 #
 define logstash::output::lumberjack (
   $ssl_certificate,
@@ -83,6 +104,8 @@ define logstash::output::lumberjack (
   $tags            = '',
   $type            = '',
   $window_size     = '',
+  $codec           = '',
+  $conditional     = '',
   $instances       = [ 'agent' ]
 ) {
 
@@ -109,28 +132,45 @@ define logstash::output::lumberjack (
   }
 
   #### Validate parameters
+
+  if ($conditional != '') {
+    validate_string($conditional)
+    $opt_indent = "   "
+    $opt_cond_start = " ${conditional}\n "
+    $opt_cond_end = "  }\n "
+  } else {
+    $opt_indent = "  "
+    $opt_cond_end = " "
+  }
+
+  if ($codec != '') {
+    validate_string($codec)
+    $opt_codec = "${opt_indent}codec => ${codec}\n"
+  }
+
+
   if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
-    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
+    $opt_exclude_tags = "${opt_indent}exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
-    $opt_fields = "  fields => ['${arr_fields}']\n"
+    $opt_fields = "${opt_indent}fields => ['${arr_fields}']\n"
   }
 
   if ($hosts != '') {
     validate_array($hosts)
     $arr_hosts = join($hosts, '\', \'')
-    $opt_hosts = "  hosts => ['${arr_hosts}']\n"
+    $opt_hosts = "${opt_indent}hosts => ['${arr_hosts}']\n"
   }
 
   if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
-    $opt_tags = "  tags => ['${arr_tags}']\n"
+    $opt_tags = "${opt_indent}tags => ['${arr_tags}']\n"
   }
 
 
@@ -140,7 +180,7 @@ define logstash::output::lumberjack (
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
     } else {
-      $opt_port = "  port => ${port}\n"
+      $opt_port = "${opt_indent}port => ${port}\n"
     }
   }
 
@@ -148,7 +188,7 @@ define logstash::output::lumberjack (
     if ! is_numeric($window_size) {
       fail("\"${window_size}\" is not a valid window_size parameter value")
     } else {
-      $opt_window_size = "  window_size => ${window_size}\n"
+      $opt_window_size = "${opt_indent}window_size => ${window_size}\n"
     }
   }
 
@@ -160,7 +200,7 @@ define logstash::output::lumberjack (
       $filenameArray_ssl_certificate = split($ssl_certificate, '/')
       $basefilename_ssl_certificate = $filenameArray_ssl_certificate[-1]
 
-      $opt_ssl_certificate = "  ssl_certificate => \"${filesdir}/${basefilename_ssl_certificate}\"\n"
+      $opt_ssl_certificate = "${opt_indent}ssl_certificate => \"${filesdir}/${basefilename_ssl_certificate}\"\n"
 
       file { "${filesdir}/${basefilename_ssl_certificate}":
         source  => $ssl_certificate,
@@ -168,13 +208,13 @@ define logstash::output::lumberjack (
         require => File[$filesdir]
       }
     } else {
-      $opt_ssl_certificate = "  ssl_certificate => \"${ssl_certificate}\"\n"
+      $opt_ssl_certificate = "${opt_indent}ssl_certificate => \"${ssl_certificate}\"\n"
     }
   }
 
   if ($type != '') {
     validate_string($type)
-    $opt_type = "  type => \"${type}\"\n"
+    $opt_type = "${opt_indent}type => \"${type}\"\n"
   }
 
 
@@ -200,7 +240,7 @@ define logstash::output::lumberjack (
 
   file { $conffiles:
     ensure  => present,
-    content => "output {\n lumberjack {\n${opt_exclude_tags}${opt_fields}${opt_hosts}${opt_port}${opt_ssl_certificate}${opt_tags}${opt_type}${opt_window_size} }\n}\n",
+    content => "output {\n${opt_cond_start} lumberjack {\n${opt_exclude_tags}${opt_fields}${opt_codec}${opt_hosts}${opt_port}${opt_ssl_certificate}${opt_tags}${opt_type}${opt_window_size}${opt_cond_end}}\n}\n",
     mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

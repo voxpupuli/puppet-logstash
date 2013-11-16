@@ -6,6 +6,23 @@
 #
 # === Parameters
 #
+# [*codec*]
+#   A codec value.  It is recommended that you use the logstash_codec function
+#   to derive this variable. Example: logstash_codec('graphite', {'charset' => 'UTF-8'})
+#   but you could just pass a string, Example: "graphite{ charset => 'UTF-8' }"
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
+# [*conditional*]
+#   Surrounds the rule with a conditional.  It is recommended that you use the
+#   logstash_conditional function, Example: logstash_conditional('[type] == "apache"')
+#   or, Example: logstash_conditional(['[loglevel] == "ERROR"','[deployment] == "production"'], 'or')
+#   but you could just pass a string, Example: '[loglevel] == "ERROR" or [deployment] == "production"'
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
 # [*bucket*]
 #   The bucket name to write events to Expansion is supported here as
 #   values are passed through event.sprintf Multiple buckets can be
@@ -112,15 +129,19 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.12
+#  This define is created based on LogStash version 1.2.2
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.12/outputs/riak
+#  http://logstash.net/docs/1.2.2/outputs/riak
 #
-#  Need help? http://logstash.net/docs/1.1.12/learn
+#  Need help? http://logstash.net/docs/1.2.2/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
+#
+# === Contributors
+#
+# * Luke Chavers <mailto:vmadman@gmail.com> - Added Initial Logstash 1.2.x Support
 #
 define logstash::output::riak (
   $bucket        = '',
@@ -136,6 +157,8 @@ define logstash::output::riak (
   $ssl_opts      = '',
   $tags          = '',
   $type          = '',
+  $codec         = '',
+  $conditional   = '',
   $instances     = [ 'agent' ]
 ) {
 
@@ -162,34 +185,51 @@ define logstash::output::riak (
   }
 
   #### Validate parameters
+
+  if ($conditional != '') {
+    validate_string($conditional)
+    $opt_indent = "   "
+    $opt_cond_start = " ${conditional}\n "
+    $opt_cond_end = "  }\n "
+  } else {
+    $opt_indent = "  "
+    $opt_cond_end = " "
+  }
+
+  if ($codec != '') {
+    validate_string($codec)
+    $opt_codec = "${opt_indent}codec => ${codec}\n"
+  }
+
+
   if ($bucket != '') {
     validate_array($bucket)
     $arr_bucket = join($bucket, '\', \'')
-    $opt_bucket = "  bucket => ['${arr_bucket}']\n"
+    $opt_bucket = "${opt_indent}bucket => ['${arr_bucket}']\n"
   }
 
   if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
-    $opt_tags = "  tags => ['${arr_tags}']\n"
+    $opt_tags = "${opt_indent}tags => ['${arr_tags}']\n"
   }
 
   if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
-    $opt_fields = "  fields => ['${arr_fields}']\n"
+    $opt_fields = "${opt_indent}fields => ['${arr_fields}']\n"
   }
 
   if ($indices != '') {
     validate_array($indices)
     $arr_indices = join($indices, '\', \'')
-    $opt_indices = "  indices => ['${arr_indices}']\n"
+    $opt_indices = "${opt_indent}indices => ['${arr_indices}']\n"
   }
 
   if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
-    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
+    $opt_exclude_tags = "${opt_indent}exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
 
@@ -197,58 +237,58 @@ define logstash::output::riak (
 
   if ($enable_ssl != '') {
     validate_bool($enable_ssl)
-    $opt_enable_ssl = "  enable_ssl => ${enable_ssl}\n"
+    $opt_enable_ssl = "${opt_indent}enable_ssl => ${enable_ssl}\n"
   }
 
   if ($enable_search != '') {
     validate_bool($enable_search)
-    $opt_enable_search = "  enable_search => ${enable_search}\n"
+    $opt_enable_search = "${opt_indent}enable_search => ${enable_search}\n"
   }
 
   if ($nodes != '') {
     validate_hash($nodes)
     $var_nodes = $nodes
     $arr_nodes = inline_template('<%= "["+var_nodes.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
-    $opt_nodes = "  nodes => ${arr_nodes}\n"
+    $opt_nodes = "${opt_indent}nodes => ${arr_nodes}\n"
   }
 
   if ($bucket_props != '') {
     validate_hash($bucket_props)
     $var_bucket_props = $bucket_props
     $arr_bucket_props = inline_template('<%= "["+var_bucket_props.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
-    $opt_bucket_props = "  bucket_props => ${arr_bucket_props}\n"
+    $opt_bucket_props = "${opt_indent}bucket_props => ${arr_bucket_props}\n"
   }
 
   if ($ssl_opts != '') {
     validate_hash($ssl_opts)
     $var_ssl_opts = $ssl_opts
     $arr_ssl_opts = inline_template('<%= "["+var_ssl_opts.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
-    $opt_ssl_opts = "  ssl_opts => ${arr_ssl_opts}\n"
+    $opt_ssl_opts = "${opt_indent}ssl_opts => ${arr_ssl_opts}\n"
   }
 
   if ($proto != '') {
     if ! ($proto in ['http', 'pb']) {
       fail("\"${proto}\" is not a valid proto parameter value")
     } else {
-      $opt_proto = "  proto => \"${proto}\"\n"
+      $opt_proto = "${opt_indent}proto => \"${proto}\"\n"
     }
   }
 
   if ($type != '') {
     validate_string($type)
-    $opt_type = "  type => \"${type}\"\n"
+    $opt_type = "${opt_indent}type => \"${type}\"\n"
   }
 
   if ($key_name != '') {
     validate_string($key_name)
-    $opt_key_name = "  key_name => \"${key_name}\"\n"
+    $opt_key_name = "${opt_indent}key_name => \"${key_name}\"\n"
   }
 
   #### Write config file
 
   file { $conffiles:
     ensure  => present,
-    content => "output {\n riak {\n${opt_bucket}${opt_bucket_props}${opt_enable_search}${opt_enable_ssl}${opt_exclude_tags}${opt_fields}${opt_indices}${opt_key_name}${opt_nodes}${opt_proto}${opt_ssl_opts}${opt_tags}${opt_type} }\n}\n",
+    content => "output {\n${opt_cond_start} riak {\n${opt_bucket}${opt_bucket_props}${opt_enable_search}${opt_enable_ssl}${opt_exclude_tags}${opt_fields}${opt_codec}${opt_indices}${opt_key_name}${opt_nodes}${opt_proto}${opt_ssl_opts}${opt_tags}${opt_type}${opt_cond_end}}\n}\n",
     mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

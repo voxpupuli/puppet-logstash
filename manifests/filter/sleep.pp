@@ -6,6 +6,15 @@
 #
 # === Parameters
 #
+# [*conditional*]
+#   Surrounds the rule with a conditional.  It is recommended that you use the
+#   logstash_conditional function, Example: logstash_conditional('[type] == "apache"')
+#   or, Example: logstash_conditional(['[loglevel] == "ERROR"','[deployment] == "production"'], 'or')
+#   but you could just pass a string, Example: '[loglevel] == "ERROR" or [deployment] == "production"'
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
 # [*add_field*]
 #   If this filter is successful, add any arbitrary fields to this event.
 #   Example:  filter {   sleep {     add_field =&gt; [ "sample", "Hello
@@ -107,15 +116,19 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.12
+#  This define is created based on LogStash version 1.2.2
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.12/filters/sleep
+#  http://logstash.net/docs/1.2.2/filters/sleep
 #
-#  Need help? http://logstash.net/docs/1.1.12/learn
+#  Need help? http://logstash.net/docs/1.2.2/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
+#
+# === Contributors
+#
+# * Luke Chavers <mailto:vmadman@gmail.com> - Added Initial Logstash 1.2.x Support
 #
 define logstash::filter::sleep (
   $add_field    = '',
@@ -128,6 +141,7 @@ define logstash::filter::sleep (
   $time         = '',
   $type         = '',
   $order        = 10,
+  $conditional  = '',
   $instances    = [ 'agent' ]
 ) {
 
@@ -155,42 +169,53 @@ define logstash::filter::sleep (
 
   #### Validate parameters
 
+  if ($conditional != '') {
+    validate_string($conditional)
+    $opt_indent = "   "
+    $opt_cond_start = " ${conditional}\n "
+    $opt_cond_end = "  }\n "
+  } else {
+    $opt_indent = "  "
+    $opt_cond_end = " "
+  }
+
+
   validate_array($instances)
 
   if ($add_tag != '') {
     validate_array($add_tag)
     $arr_add_tag = join($add_tag, '\', \'')
-    $opt_add_tag = "  add_tag => ['${arr_add_tag}']\n"
+    $opt_add_tag = "${opt_indent}add_tag => ['${arr_add_tag}']\n"
   }
 
   if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
-    $opt_tags = "  tags => ['${arr_tags}']\n"
+    $opt_tags = "${opt_indent}tags => ['${arr_tags}']\n"
   }
 
   if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
-    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
+    $opt_exclude_tags = "${opt_indent}exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if ($remove_tag != '') {
     validate_array($remove_tag)
     $arr_remove_tag = join($remove_tag, '\', \'')
-    $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
+    $opt_remove_tag = "${opt_indent}remove_tag => ['${arr_remove_tag}']\n"
   }
 
   if ($replay != '') {
     validate_bool($replay)
-    $opt_replay = "  replay => ${replay}\n"
+    $opt_replay = "${opt_indent}replay => ${replay}\n"
   }
 
   if ($add_field != '') {
     validate_hash($add_field)
     $var_add_field = $add_field
     $arr_add_field = inline_template('<%= "["+var_add_field.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
-    $opt_add_field = "  add_field => ${arr_add_field}\n"
+    $opt_add_field = "${opt_indent}add_field => ${arr_add_field}\n"
   }
 
   if ($order != '') {
@@ -201,24 +226,24 @@ define logstash::filter::sleep (
 
   if ($type != '') {
     validate_string($type)
-    $opt_type = "  type => \"${type}\"\n"
+    $opt_type = "${opt_indent}type => \"${type}\"\n"
   }
 
   if ($time != '') {
     validate_string($time)
-    $opt_time = "  time => \"${time}\"\n"
+    $opt_time = "${opt_indent}time => \"${time}\"\n"
   }
 
   if ($every != '') {
     validate_string($every)
-    $opt_every = "  every => \"${every}\"\n"
+    $opt_every = "${opt_indent}every => \"${every}\"\n"
   }
 
   #### Write config file
 
   file { $conffiles:
     ensure  => present,
-    content => "filter {\n sleep {\n${opt_add_field}${opt_add_tag}${opt_every}${opt_exclude_tags}${opt_remove_tag}${opt_replay}${opt_tags}${opt_time}${opt_type} }\n}\n",
+    content => "filter {\n${opt_cond_start} sleep {\n${opt_add_field}${opt_add_tag}${opt_every}${opt_exclude_tags}${opt_remove_tag}${opt_replay}${opt_tags}${opt_time}${opt_type}${opt_cond_end}}\n}\n",
     mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

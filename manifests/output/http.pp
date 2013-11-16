@@ -4,6 +4,23 @@
 #
 # === Parameters
 #
+# [*codec*]
+#   A codec value.  It is recommended that you use the logstash_codec function
+#   to derive this variable. Example: logstash_codec('graphite', {'charset' => 'UTF-8'})
+#   but you could just pass a string, Example: "graphite{ charset => 'UTF-8' }"
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
+# [*conditional*]
+#   Surrounds the rule with a conditional.  It is recommended that you use the
+#   logstash_conditional function, Example: logstash_conditional('[type] == "apache"')
+#   or, Example: logstash_conditional(['[loglevel] == "ERROR"','[deployment] == "production"'], 'or')
+#   but you could just pass a string, Example: '[loglevel] == "ERROR" or [deployment] == "production"'
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
 # [*content_type*]
 #   Content type  If not specified, this defaults to the following:  if
 #   format is "json", "application/json" if format is "form",
@@ -98,15 +115,19 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.12
+#  This define is created based on LogStash version 1.2.2
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.12/outputs/http
+#  http://logstash.net/docs/1.2.2/outputs/http
 #
-#  Need help? http://logstash.net/docs/1.1.12/learn
+#  Need help? http://logstash.net/docs/1.2.2/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
+#
+# === Contributors
+#
+# * Luke Chavers <mailto:vmadman@gmail.com> - Added Initial Logstash 1.2.x Support
 #
 define logstash::output::http (
   $http_method,
@@ -121,6 +142,8 @@ define logstash::output::http (
   $type         = '',
   $exclude_tags = '',
   $verify_ssl   = '',
+  $codec        = '',
+  $conditional  = '',
   $instances    = [ 'agent' ]
 ) {
 
@@ -148,50 +171,67 @@ define logstash::output::http (
 
   #### Validate parameters
 
+  if ($conditional != '') {
+    validate_string($conditional)
+    $opt_indent = "   "
+    $opt_cond_start = " ${conditional}\n "
+    $opt_cond_end = "  }\n "
+  } else {
+    $opt_indent = "  "
+    $opt_cond_end = " "
+  }
+
+  if ($codec != '') {
+    validate_string($codec)
+    $opt_codec = "${opt_indent}codec => ${codec}\n"
+  }
+
+
+
   validate_array($instances)
 
   if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
-    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
+    $opt_exclude_tags = "${opt_indent}exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
-    $opt_fields = "  fields => ['${arr_fields}']\n"
+    $opt_fields = "${opt_indent}fields => ['${arr_fields}']\n"
   }
 
   if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
-    $opt_tags = "  tags => ['${arr_tags}']\n"
+    $opt_tags = "${opt_indent}tags => ['${arr_tags}']\n"
   }
 
   if ($verify_ssl != '') {
     validate_bool($verify_ssl)
-    $opt_verify_ssl = "  verify_ssl => ${verify_ssl}\n"
+    $opt_verify_ssl = "${opt_indent}verify_ssl => ${verify_ssl}\n"
   }
 
   if ($headers != '') {
     validate_hash($headers)
     $var_headers = $headers
     $arr_headers = inline_template('<%= "["+var_headers.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
-    $opt_headers = "  headers => ${arr_headers}\n"
+    $opt_headers = "${opt_indent}headers => ${arr_headers}\n"
   }
 
   if ($mapping != '') {
     validate_hash($mapping)
     $var_mapping = $mapping
     $arr_mapping = inline_template('<%= "["+var_mapping.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
-    $opt_mapping = "  mapping => ${arr_mapping}\n"
+    $opt_mapping = "${opt_indent}mapping => ${arr_mapping}\n"
   }
 
   if ($http_method != '') {
     if ! ($http_method in ['put', 'post']) {
       fail("\"${http_method}\" is not a valid http_method parameter value")
     } else {
-      $opt_http_method = "  http_method => \"${http_method}\"\n"
+      $opt_http_method = "${opt_indent}http_method => \"${http_method}\"\n"
     }
   }
 
@@ -199,35 +239,35 @@ define logstash::output::http (
     if ! ($format in ['json', 'form', 'message']) {
       fail("\"${format}\" is not a valid format parameter value")
     } else {
-      $opt_format = "  format => \"${format}\"\n"
+      $opt_format = "${opt_indent}format => \"${format}\"\n"
     }
   }
 
   if ($url != '') {
     validate_string($url)
-    $opt_url = "  url => \"${url}\"\n"
+    $opt_url = "${opt_indent}url => \"${url}\"\n"
   }
 
   if ($type != '') {
     validate_string($type)
-    $opt_type = "  type => \"${type}\"\n"
+    $opt_type = "${opt_indent}type => \"${type}\"\n"
   }
 
   if ($message != '') {
     validate_string($message)
-    $opt_message = "  message => \"${message}\"\n"
+    $opt_message = "${opt_indent}message => \"${message}\"\n"
   }
 
   if ($content_type != '') {
     validate_string($content_type)
-    $opt_content_type = "  content_type => \"${content_type}\"\n"
+    $opt_content_type = "${opt_indent}content_type => \"${content_type}\"\n"
   }
 
   #### Write config file
 
   file { $conffiles:
     ensure  => present,
-    content => "output {\n http {\n${opt_content_type}${opt_exclude_tags}${opt_fields}${opt_format}${opt_headers}${opt_http_method}${opt_mapping}${opt_message}${opt_tags}${opt_type}${opt_url}${opt_verify_ssl} }\n}\n",
+    content => "output {\n${opt_cond_start} http {\n${opt_content_type}${opt_exclude_tags}${opt_fields}${opt_codec}${opt_format}${opt_headers}${opt_http_method}${opt_mapping}${opt_message}${opt_tags}${opt_type}${opt_url}${opt_verify_ssl}${opt_cond_end}}\n}\n",
     mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

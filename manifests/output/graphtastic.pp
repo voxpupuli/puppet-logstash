@@ -13,6 +13,23 @@
 #
 # === Parameters
 #
+# [*codec*]
+#   A codec value.  It is recommended that you use the logstash_codec function
+#   to derive this variable. Example: logstash_codec('graphite', {'charset' => 'UTF-8'})
+#   but you could just pass a string, Example: "graphite{ charset => 'UTF-8' }"
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
+# [*conditional*]
+#   Surrounds the rule with a conditional.  It is recommended that you use the
+#   logstash_conditional function, Example: logstash_conditional('[type] == "apache"')
+#   or, Example: logstash_conditional(['[loglevel] == "ERROR"','[deployment] == "production"'], 'or')
+#   but you could just pass a string, Example: '[loglevel] == "ERROR" or [deployment] == "production"'
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
 # [*batch_number*]
 #   the number of metrics to send to GraphTastic at one time. 60 seems to
 #   be the perfect amount for UDP, with default packet size.
@@ -114,15 +131,19 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.12
+#  This define is created based on LogStash version 1.2.2
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.12/outputs/graphtastic
+#  http://logstash.net/docs/1.2.2/outputs/graphtastic
 #
-#  Need help? http://logstash.net/docs/1.1.12/learn
+#  Need help? http://logstash.net/docs/1.2.2/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
+#
+# === Contributors
+#
+# * Luke Chavers <mailto:vmadman@gmail.com> - Added Initial Logstash 1.2.x Support
 #
 define logstash::output::graphtastic (
   $batch_number = '',
@@ -137,6 +158,8 @@ define logstash::output::graphtastic (
   $retries      = '',
   $tags         = '',
   $type         = '',
+  $codec        = '',
+  $conditional  = '',
   $instances    = [ 'agent' ]
 ) {
 
@@ -164,38 +187,55 @@ define logstash::output::graphtastic (
 
   #### Validate parameters
 
+  if ($conditional != '') {
+    validate_string($conditional)
+    $opt_indent = "   "
+    $opt_cond_start = " ${conditional}\n "
+    $opt_cond_end = "  }\n "
+  } else {
+    $opt_indent = "  "
+    $opt_cond_end = " "
+  }
+
+  if ($codec != '') {
+    validate_string($codec)
+    $opt_codec = "${opt_indent}codec => ${codec}\n"
+  }
+
+
+
   validate_array($instances)
 
   if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
-    $opt_tags = "  tags => ['${arr_tags}']\n"
+    $opt_tags = "${opt_indent}tags => ['${arr_tags}']\n"
   }
 
   if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
-    $opt_fields = "  fields => ['${arr_fields}']\n"
+    $opt_fields = "${opt_indent}fields => ['${arr_fields}']\n"
   }
 
   if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
-    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
+    $opt_exclude_tags = "${opt_indent}exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if ($metrics != '') {
     validate_hash($metrics)
     $var_metrics = $metrics
     $arr_metrics = inline_template('<%= "["+var_metrics.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
-    $opt_metrics = "  metrics => ${arr_metrics}\n"
+    $opt_metrics = "${opt_indent}metrics => ${arr_metrics}\n"
   }
 
   if ($port != '') {
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
     } else {
-      $opt_port = "  port => ${port}\n"
+      $opt_port = "${opt_indent}port => ${port}\n"
     }
   }
 
@@ -203,7 +243,7 @@ define logstash::output::graphtastic (
     if ! is_numeric($retries) {
       fail("\"${retries}\" is not a valid retries parameter value")
     } else {
-      $opt_retries = "  retries => ${retries}\n"
+      $opt_retries = "${opt_indent}retries => ${retries}\n"
     }
   }
 
@@ -211,7 +251,7 @@ define logstash::output::graphtastic (
     if ! is_numeric($batch_number) {
       fail("\"${batch_number}\" is not a valid batch_number parameter value")
     } else {
-      $opt_batch_number = "  batch_number => ${batch_number}\n"
+      $opt_batch_number = "${opt_indent}batch_number => ${batch_number}\n"
     }
   }
 
@@ -219,35 +259,35 @@ define logstash::output::graphtastic (
     if ! ($integration in ['udp', 'tcp', 'rmi', 'rest']) {
       fail("\"${integration}\" is not a valid integration parameter value")
     } else {
-      $opt_integration = "  integration => \"${integration}\"\n"
+      $opt_integration = "${opt_indent}integration => \"${integration}\"\n"
     }
   }
 
   if ($context != '') {
     validate_string($context)
-    $opt_context = "  context => \"${context}\"\n"
+    $opt_context = "${opt_indent}context => \"${context}\"\n"
   }
 
   if ($error_file != '') {
     validate_string($error_file)
-    $opt_error_file = "  error_file => \"${error_file}\"\n"
+    $opt_error_file = "${opt_indent}error_file => \"${error_file}\"\n"
   }
 
   if ($type != '') {
     validate_string($type)
-    $opt_type = "  type => \"${type}\"\n"
+    $opt_type = "${opt_indent}type => \"${type}\"\n"
   }
 
   if ($host != '') {
     validate_string($host)
-    $opt_host = "  host => \"${host}\"\n"
+    $opt_host = "${opt_indent}host => \"${host}\"\n"
   }
 
   #### Write config file
 
   file { $conffiles:
     ensure  => present,
-    content => "output {\n graphtastic {\n${opt_batch_number}${opt_context}${opt_error_file}${opt_exclude_tags}${opt_fields}${opt_host}${opt_integration}${opt_metrics}${opt_port}${opt_retries}${opt_tags}${opt_type} }\n}\n",
+    content => "output {\n${opt_cond_start} graphtastic {\n${opt_batch_number}${opt_context}${opt_error_file}${opt_exclude_tags}${opt_fields}${opt_codec}${opt_host}${opt_integration}${opt_metrics}${opt_port}${opt_retries}${opt_tags}${opt_type}${opt_cond_end}}\n}\n",
     mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

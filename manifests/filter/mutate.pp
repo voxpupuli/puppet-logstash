@@ -7,6 +7,15 @@
 #
 # === Parameters
 #
+# [*conditional*]
+#   Surrounds the rule with a conditional.  It is recommended that you use the
+#   logstash_conditional function, Example: logstash_conditional('[type] == "apache"')
+#   or, Example: logstash_conditional(['[loglevel] == "ERROR"','[deployment] == "production"'], 'or')
+#   but you could just pass a string, Example: '[loglevel] == "ERROR" or [deployment] == "production"'
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
 # [*add_field*]
 #   If this filter is successful, add any arbitrary fields to this event.
 #   Example:  filter {   mutate {     add_field =&gt; [ "sample", "Hello
@@ -176,15 +185,19 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.12
+#  This define is created based on LogStash version 1.2.2
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.12/filters/mutate
+#  http://logstash.net/docs/1.2.2/filters/mutate
 #
-#  Need help? http://logstash.net/docs/1.1.12/learn
+#  Need help? http://logstash.net/docs/1.2.2/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
+#
+# === Contributors
+#
+# * Luke Chavers <mailto:vmadman@gmail.com> - Added Initial Logstash 1.2.x Support
 #
 define logstash::filter::mutate (
   $add_field    = '',
@@ -206,6 +219,7 @@ define logstash::filter::mutate (
   $update       = '',
   $uppercase    = '',
   $order        = 10,
+  $conditional  = '',
   $instances    = [ 'agent' ]
 ) {
 
@@ -233,116 +247,127 @@ define logstash::filter::mutate (
 
   #### Validate parameters
 
+  if ($conditional != '') {
+    validate_string($conditional)
+    $opt_indent = "   "
+    $opt_cond_start = " ${conditional}\n "
+    $opt_cond_end = "  }\n "
+  } else {
+    $opt_indent = "  "
+    $opt_cond_end = " "
+  }
+
+
   validate_array($instances)
 
   if ($add_tag != '') {
     validate_array($add_tag)
     $arr_add_tag = join($add_tag, '\', \'')
-    $opt_add_tag = "  add_tag => ['${arr_add_tag}']\n"
+    $opt_add_tag = "${opt_indent}add_tag => ['${arr_add_tag}']\n"
   }
 
   if ($uppercase != '') {
     validate_array($uppercase)
     $arr_uppercase = join($uppercase, '\', \'')
-    $opt_uppercase = "  uppercase => ['${arr_uppercase}']\n"
+    $opt_uppercase = "${opt_indent}uppercase => ['${arr_uppercase}']\n"
   }
 
   if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
-    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
+    $opt_exclude_tags = "${opt_indent}exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if ($gsub != '') {
     validate_array($gsub)
     $arr_gsub = join($gsub, '\', \'')
-    $opt_gsub = "  gsub => ['${arr_gsub}']\n"
+    $opt_gsub = "${opt_indent}gsub => ['${arr_gsub}']\n"
   }
 
   if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
-    $opt_tags = "  tags => ['${arr_tags}']\n"
+    $opt_tags = "${opt_indent}tags => ['${arr_tags}']\n"
   }
 
   if ($lowercase != '') {
     validate_array($lowercase)
     $arr_lowercase = join($lowercase, '\', \'')
-    $opt_lowercase = "  lowercase => ['${arr_lowercase}']\n"
+    $opt_lowercase = "${opt_indent}lowercase => ['${arr_lowercase}']\n"
   }
 
   if ($strip != '') {
     validate_array($strip)
     $arr_strip = join($strip, '\', \'')
-    $opt_strip = "  strip => ['${arr_strip}']\n"
+    $opt_strip = "${opt_indent}strip => ['${arr_strip}']\n"
   }
 
   if ($remove != '') {
     validate_array($remove)
     $arr_remove = join($remove, '\', \'')
-    $opt_remove = "  remove => ['${arr_remove}']\n"
+    $opt_remove = "${opt_indent}remove => ['${arr_remove}']\n"
   }
 
   if ($remove_tag != '') {
     validate_array($remove_tag)
     $arr_remove_tag = join($remove_tag, '\', \'')
-    $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
+    $opt_remove_tag = "${opt_indent}remove_tag => ['${arr_remove_tag}']\n"
   }
 
   if ($rename != '') {
     validate_hash($rename)
     $var_rename = $rename
     $arr_rename = inline_template('<%= "["+var_rename.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
-    $opt_rename = "  rename => ${arr_rename}\n"
+    $opt_rename = "${opt_indent}rename => ${arr_rename}\n"
   }
 
   if ($replace != '') {
     validate_hash($replace)
     $var_replace = $replace
     $arr_replace = inline_template('<%= "["+var_replace.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
-    $opt_replace = "  replace => ${arr_replace}\n"
+    $opt_replace = "${opt_indent}replace => ${arr_replace}\n"
   }
 
   if ($split != '') {
     validate_hash($split)
     $var_split = $split
     $arr_split = inline_template('<%= "["+var_split.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
-    $opt_split = "  split => ${arr_split}\n"
+    $opt_split = "${opt_indent}split => ${arr_split}\n"
   }
 
   if ($merge != '') {
     validate_hash($merge)
     $var_merge = $merge
     $arr_merge = inline_template('<%= "["+var_merge.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
-    $opt_merge = "  merge => ${arr_merge}\n"
+    $opt_merge = "${opt_indent}merge => ${arr_merge}\n"
   }
 
   if ($join != '') {
     validate_hash($join)
     $var_join = $join
     $arr_join = inline_template('<%= "["+var_join.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
-    $opt_join = "  join => ${arr_join}\n"
+    $opt_join = "${opt_indent}join => ${arr_join}\n"
   }
 
   if ($convert != '') {
     validate_hash($convert)
     $var_convert = $convert
     $arr_convert = inline_template('<%= "["+var_convert.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
-    $opt_convert = "  convert => ${arr_convert}\n"
+    $opt_convert = "${opt_indent}convert => ${arr_convert}\n"
   }
 
   if ($update != '') {
     validate_hash($update)
     $var_update = $update
     $arr_update = inline_template('<%= "["+var_update.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
-    $opt_update = "  update => ${arr_update}\n"
+    $opt_update = "${opt_indent}update => ${arr_update}\n"
   }
 
   if ($add_field != '') {
     validate_hash($add_field)
     $var_add_field = $add_field
     $arr_add_field = inline_template('<%= "["+var_add_field.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
-    $opt_add_field = "  add_field => ${arr_add_field}\n"
+    $opt_add_field = "${opt_indent}add_field => ${arr_add_field}\n"
   }
 
   if ($order != '') {
@@ -353,14 +378,14 @@ define logstash::filter::mutate (
 
   if ($type != '') {
     validate_string($type)
-    $opt_type = "  type => \"${type}\"\n"
+    $opt_type = "${opt_indent}type => \"${type}\"\n"
   }
 
   #### Write config file
 
   file { $conffiles:
     ensure  => present,
-    content => "filter {\n mutate {\n${opt_add_field}${opt_add_tag}${opt_convert}${opt_exclude_tags}${opt_gsub}${opt_join}${opt_lowercase}${opt_merge}${opt_remove}${opt_remove_tag}${opt_rename}${opt_replace}${opt_split}${opt_strip}${opt_tags}${opt_type}${opt_update}${opt_uppercase} }\n}\n",
+    content => "filter {\n${opt_cond_start} mutate {\n${opt_add_field}${opt_add_tag}${opt_convert}${opt_exclude_tags}${opt_gsub}${opt_join}${opt_lowercase}${opt_merge}${opt_remove}${opt_remove_tag}${opt_rename}${opt_replace}${opt_split}${opt_strip}${opt_tags}${opt_type}${opt_update}${opt_uppercase}${opt_cond_end}}\n}\n",
     mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
