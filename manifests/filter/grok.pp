@@ -72,7 +72,7 @@
 #   Surrounds the rule with a conditional.  It is recommended that you use the
 #   logstash_conditional function, Example: logstash_conditional('[type] == "apache"')
 #   or, Example: logstash_conditional(['[loglevel] == "ERROR"','[deployment] == "production"'], 'or')
-#   but you could just pass a string, Example: '[loglevel] == "ERROR" or [deployment] == "production"'
+#   but you could just pass a string, Example: 'if [loglevel] == "ERROR" or [deployment] == "production" {'
 #   Value type is string
 #   Default value: None
 #   This variable is optional
