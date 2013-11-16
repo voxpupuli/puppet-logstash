@@ -59,7 +59,7 @@ CONF_DIR=<%= @configdir %>
 LOG_FILE=$LOG_DIR/$NAME.log
 
 # Open File limit
-OPEN_FILES=2048
+OPEN_FILES=<%= scope.lookupvar('logstash::open_files') %>
 
 # Nice level
 NICE=19
