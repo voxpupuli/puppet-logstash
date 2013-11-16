@@ -54,6 +54,9 @@ class logstash::params {
   $logstash_user  = 'root'
   $logstash_group = 'root'
 
+  # Number of open files set in init script
+  $open_files = 2048
+
   #### Internal module values
 
   # packages
