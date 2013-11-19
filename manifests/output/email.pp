@@ -222,14 +222,14 @@ define logstash::output::email (
   if ($match != '') {
     validate_hash($match)
     $var_match = $match
-    $arr_match = inline_template('<%= "["+var_match.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_match = inline_template('<%= "["+@var_match.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_match = "  match => ${arr_match}\n"
   }
 
   if ($options != '') {
     validate_hash($options)
     $var_options = $options
-    $arr_options = inline_template('<%= "["+var_options.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_options = inline_template('<%= "["+@var_options.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_options = "  options => ${arr_options}\n"
   }
 

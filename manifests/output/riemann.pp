@@ -167,7 +167,7 @@ define logstash::output::riemann (
   if ($riemann_event != '') {
     validate_hash($riemann_event)
     $var_riemann_event = $riemann_event
-    $arr_riemann_event = inline_template('<%= "["+var_riemann_event.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_riemann_event = inline_template('<%= "["+@var_riemann_event.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_riemann_event = "  riemann_event => ${arr_riemann_event}\n"
   }
 

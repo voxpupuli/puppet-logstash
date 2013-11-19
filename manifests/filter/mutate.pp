@@ -292,56 +292,56 @@ define logstash::filter::mutate (
   if ($rename != '') {
     validate_hash($rename)
     $var_rename = $rename
-    $arr_rename = inline_template('<%= "["+var_rename.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_rename = inline_template('<%= "["+@var_rename.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_rename = "  rename => ${arr_rename}\n"
   }
 
   if ($replace != '') {
     validate_hash($replace)
     $var_replace = $replace
-    $arr_replace = inline_template('<%= "["+var_replace.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_replace = inline_template('<%= "["+@var_replace.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_replace = "  replace => ${arr_replace}\n"
   }
 
   if ($split != '') {
     validate_hash($split)
     $var_split = $split
-    $arr_split = inline_template('<%= "["+var_split.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_split = inline_template('<%= "["+@var_split.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_split = "  split => ${arr_split}\n"
   }
 
   if ($merge != '') {
     validate_hash($merge)
     $var_merge = $merge
-    $arr_merge = inline_template('<%= "["+var_merge.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_merge = inline_template('<%= "["+@var_merge.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_merge = "  merge => ${arr_merge}\n"
   }
 
   if ($join != '') {
     validate_hash($join)
     $var_join = $join
-    $arr_join = inline_template('<%= "["+var_join.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_join = inline_template('<%= "["+@var_join.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_join = "  join => ${arr_join}\n"
   }
 
   if ($convert != '') {
     validate_hash($convert)
     $var_convert = $convert
-    $arr_convert = inline_template('<%= "["+var_convert.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_convert = inline_template('<%= "["+@var_convert.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_convert = "  convert => ${arr_convert}\n"
   }
 
   if ($update != '') {
     validate_hash($update)
     $var_update = $update
-    $arr_update = inline_template('<%= "["+var_update.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_update = inline_template('<%= "["+@var_update.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_update = "  update => ${arr_update}\n"
   }
 
   if ($add_field != '') {
     validate_hash($add_field)
     $var_add_field = $add_field
-    $arr_add_field = inline_template('<%= "["+var_add_field.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_add_field = inline_template('<%= "["+@var_add_field.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_add_field = "  add_field => ${arr_add_field}\n"
   }
 
