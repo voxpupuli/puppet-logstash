@@ -151,7 +151,7 @@ define logstash::output::pagerduty (
   if ($details != '') {
     validate_hash($details)
     $var_details = $details
-    $arr_details = inline_template('<%= "["+var_details.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
+    $arr_details = inline_template('<%= "["+@var_details.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
     $opt_details = "  details => ${arr_details}\n"
   }
 
