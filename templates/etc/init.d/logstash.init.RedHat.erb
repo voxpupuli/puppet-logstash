@@ -126,7 +126,7 @@ do_start()
   RETVAL=$?
   # sleeping otherwise there is not enough time to show up
   sleep 2
-  local PID=`pgrep -f "${JAVA} ${ARGS}"`
+  local PID=$(ps e | grep "${JAVA} ${ARGS}" | grep -v grep | awk '{print $1}')
   echo $PID > $PID_FILE
   success
 }
