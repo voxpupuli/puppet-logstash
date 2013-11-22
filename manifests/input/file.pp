@@ -55,7 +55,7 @@
 #   This variable is optional
 #
 # [*codec*]
-#   
+#   The codec used for input data
 #   Value can be any of: "dots", "graphite", "json", "json_lines", "json_spooler", "line",
 #                        "msgpack", "multiline", "netflow", "noop", "oldlogstashjson", "plain",
 #                        "rubydebug", "spool"
