@@ -10,6 +10,23 @@
 #
 # === Parameters
 #
+# [*codec*]
+#   A codec value.  It is recommended that you use the logstash_codec function
+#   to derive this variable. Example: logstash_codec('graphite', {'charset' => 'UTF-8'})
+#   but you could just pass a string, Example: "graphite{ charset => 'UTF-8' }"
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
+# [*conditional*]
+#   Surrounds the rule with a conditional.  It is recommended that you use the
+#   logstash_conditional function, Example: logstash_conditional('[type] == "apache"')
+#   or, Example: logstash_conditional(['[loglevel] == "ERROR"','[deployment] == "production"'], 'or')
+#   but you could just pass a string, Example: 'if [loglevel] == "ERROR" or [deployment] == "production" {'
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
 # [*channels*]
 #   List of channels to which to publish. Dynamic names are valid here,
 #   for example "logstash-%{@type}".
@@ -89,15 +106,19 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.12
+#  This define is created based on LogStash version 1.2.2
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.12/outputs/juggernaut
+#  http://logstash.net/docs/1.2.2/outputs/juggernaut
 #
-#  Need help? http://logstash.net/docs/1.1.12/learn
+#  Need help? http://logstash.net/docs/1.2.2/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
+#
+# === Contributors
+#
+# * Luke Chavers <mailto:vmadman@gmail.com> - Added Initial Logstash 1.2.x Support
 #
 define logstash::output::juggernaut (
   $channels,
@@ -111,6 +132,8 @@ define logstash::output::juggernaut (
   $tags           = '',
   $timeout        = '',
   $type           = '',
+  $codec          = '',
+  $conditional    = '',
   $instances      = [ 'agent' ]
 ) {
 
@@ -137,28 +160,45 @@ define logstash::output::juggernaut (
   }
 
   #### Validate parameters
+
+  if ($conditional != '') {
+    validate_string($conditional)
+    $opt_indent = "   "
+    $opt_cond_start = " ${conditional}\n "
+    $opt_cond_end = "  }\n "
+  } else {
+    $opt_indent = "  "
+    $opt_cond_end = " "
+  }
+
+  if ($codec != '') {
+    validate_string($codec)
+    $opt_codec = "${opt_indent}codec => ${codec}\n"
+  }
+
+
   if ($channels != '') {
     validate_array($channels)
     $arr_channels = join($channels, '\', \'')
-    $opt_channels = "  channels => ['${arr_channels}']\n"
+    $opt_channels = "${opt_indent}channels => ['${arr_channels}']\n"
   }
 
   if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
-    $opt_tags = "  tags => ['${arr_tags}']\n"
+    $opt_tags = "${opt_indent}tags => ['${arr_tags}']\n"
   }
 
   if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
-    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
+    $opt_exclude_tags = "${opt_indent}exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
-    $opt_fields = "  fields => ['${arr_fields}']\n"
+    $opt_fields = "${opt_indent}fields => ['${arr_fields}']\n"
   }
 
 
@@ -168,7 +208,7 @@ define logstash::output::juggernaut (
     if ! is_numeric($db) {
       fail("\"${db}\" is not a valid db parameter value")
     } else {
-      $opt_db = "  db => ${db}\n"
+      $opt_db = "${opt_indent}db => ${db}\n"
     }
   }
 
@@ -176,7 +216,7 @@ define logstash::output::juggernaut (
     if ! is_numeric($timeout) {
       fail("\"${timeout}\" is not a valid timeout parameter value")
     } else {
-      $opt_timeout = "  timeout => ${timeout}\n"
+      $opt_timeout = "${opt_indent}timeout => ${timeout}\n"
     }
   }
 
@@ -184,35 +224,30 @@ define logstash::output::juggernaut (
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
     } else {
-      $opt_port = "  port => ${port}\n"
+      $opt_port = "${opt_indent}port => ${port}\n"
     }
   }
 
   if ($password != '') {
     validate_string($password)
-    $opt_password = "  password => \"${password}\"\n"
+    $opt_password = "${opt_indent}password => \"${password}\"\n"
   }
 
   if ($host != '') {
     validate_string($host)
-    $opt_host = "  host => \"${host}\"\n"
+    $opt_host = "${opt_indent}host => \"${host}\"\n"
   }
 
   if ($type != '') {
     validate_string($type)
-    $opt_type = "  type => \"${type}\"\n"
-  }
-
-  if ($message_format != '') {
-    validate_string($message_format)
-    $opt_message_format = "  message_format => \"${message_format}\"\n"
+    $opt_type = "${opt_indent}type => \"${type}\"\n"
   }
 
   #### Write config file
 
   file { $conffiles:
     ensure  => present,
-    content => "output {\n juggernaut {\n${opt_channels}${opt_db}${opt_exclude_tags}${opt_fields}${opt_host}${opt_message_format}${opt_password}${opt_port}${opt_tags}${opt_timeout}${opt_type} }\n}\n",
+    content => "output {\n${opt_cond_start} juggernaut {\n${opt_channels}${opt_db}${opt_exclude_tags}${opt_fields}${opt_codec}${opt_host}${opt_message_format}${opt_password}${opt_port}${opt_tags}${opt_timeout}${opt_type}${opt_cond_end}}\n}\n",
     mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

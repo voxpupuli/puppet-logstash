@@ -20,6 +20,10 @@
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
+# === Contributors
+#
+# * Luke Chavers <mailto:vmadman@gmail.com> - Added Initial Logstash 1.2.x Support
+#
 define logstash::servicefile (
   $service_enable,
   $service_ensure = undef

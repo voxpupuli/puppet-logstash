@@ -7,6 +7,23 @@
 #
 # === Parameters
 #
+# [*codec*]
+#   A codec value.  It is recommended that you use the logstash_codec function
+#   to derive this variable. Example: logstash_codec('graphite', {'charset' => 'UTF-8'})
+#   but you could just pass a string, Example: "graphite{ charset => 'UTF-8' }"
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
+# [*conditional*]
+#   Surrounds the rule with a conditional.  It is recommended that you use the
+#   logstash_conditional function, Example: logstash_conditional('[type] == "apache"')
+#   or, Example: logstash_conditional(['[loglevel] == "ERROR"','[deployment] == "production"'], 'or')
+#   but you could just pass a string, Example: 'if [loglevel] == "ERROR" or [deployment] == "production" {'
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
 # [*chunksize*]
 #   The GELF chunksize. You usually don't need to change this.
 #   Value type is number
@@ -151,15 +168,19 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.12
+#  This define is created based on LogStash version 1.2.2
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.12/outputs/gelf
+#  http://logstash.net/docs/1.2.2/outputs/gelf
 #
-#  Need help? http://logstash.net/docs/1.1.12/learn
+#  Need help? http://logstash.net/docs/1.2.2/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
+#
+# === Contributors
+#
+# * Luke Chavers <mailto:vmadman@gmail.com> - Added Initial Logstash 1.2.x Support
 #
 define logstash::output::gelf (
   $host,
@@ -180,6 +201,8 @@ define logstash::output::gelf (
   $short_message   = '',
   $tags            = '',
   $type            = '',
+  $codec           = '',
+  $conditional     = '',
   $instances       = [ 'agent' ]
 ) {
 
@@ -207,60 +230,77 @@ define logstash::output::gelf (
 
   #### Validate parameters
 
+  if ($conditional != '') {
+    validate_string($conditional)
+    $opt_indent = "   "
+    $opt_cond_start = " ${conditional}\n "
+    $opt_cond_end = "  }\n "
+  } else {
+    $opt_indent = "  "
+    $opt_cond_end = " "
+  }
+
+  if ($codec != '') {
+    validate_string($codec)
+    $opt_codec = "${opt_indent}codec => ${codec}\n"
+  }
+
+
+
   validate_array($instances)
 
   if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
-    $opt_tags = "  tags => ['${arr_tags}']\n"
+    $opt_tags = "${opt_indent}tags => ['${arr_tags}']\n"
   }
 
   if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
-    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
+    $opt_exclude_tags = "${opt_indent}exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if ($ignore_metadata != '') {
     validate_array($ignore_metadata)
     $arr_ignore_metadata = join($ignore_metadata, '\', \'')
-    $opt_ignore_metadata = "  ignore_metadata => ['${arr_ignore_metadata}']\n"
+    $opt_ignore_metadata = "${opt_indent}ignore_metadata => ['${arr_ignore_metadata}']\n"
   }
 
   if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
-    $opt_fields = "  fields => ['${arr_fields}']\n"
+    $opt_fields = "${opt_indent}fields => ['${arr_fields}']\n"
   }
 
   if ($level != '') {
     validate_array($level)
     $arr_level = join($level, '\', \'')
-    $opt_level = "  level => ['${arr_level}']\n"
+    $opt_level = "${opt_indent}level => ['${arr_level}']\n"
   }
 
   if ($ship_tags != '') {
     validate_bool($ship_tags)
-    $opt_ship_tags = "  ship_tags => ${ship_tags}\n"
+    $opt_ship_tags = "${opt_indent}ship_tags => ${ship_tags}\n"
   }
 
   if ($ship_metadata != '') {
     validate_bool($ship_metadata)
-    $opt_ship_metadata = "  ship_metadata => ${ship_metadata}\n"
+    $opt_ship_metadata = "${opt_indent}ship_metadata => ${ship_metadata}\n"
   }
 
   if ($custom_fields != '') {
     validate_hash($custom_fields)
     $var_custom_fields = $custom_fields
     $arr_custom_fields = inline_template('<%= "["+var_custom_fields.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
-    $opt_custom_fields = "  custom_fields => ${arr_custom_fields}\n"
+    $opt_custom_fields = "${opt_indent}custom_fields => ${arr_custom_fields}\n"
   }
 
   if ($chunksize != '') {
     if ! is_numeric($chunksize) {
       fail("\"${chunksize}\" is not a valid chunksize parameter value")
     } else {
-      $opt_chunksize = "  chunksize => ${chunksize}\n"
+      $opt_chunksize = "${opt_indent}chunksize => ${chunksize}\n"
     }
   }
 
@@ -268,55 +308,55 @@ define logstash::output::gelf (
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
     } else {
-      $opt_port = "  port => ${port}\n"
+      $opt_port = "${opt_indent}port => ${port}\n"
     }
   }
 
   if ($sender != '') {
     validate_string($sender)
-    $opt_sender = "  sender => \"${sender}\"\n"
+    $opt_sender = "${opt_indent}sender => \"${sender}\"\n"
   }
 
   if ($line != '') {
     validate_string($line)
-    $opt_line = "  line => \"${line}\"\n"
+    $opt_line = "${opt_indent}line => \"${line}\"\n"
   }
 
   if ($facility != '') {
     validate_string($facility)
-    $opt_facility = "  facility => \"${facility}\"\n"
+    $opt_facility = "${opt_indent}facility => \"${facility}\"\n"
   }
 
   if ($file != '') {
     validate_string($file)
-    $opt_file = "  file => \"${file}\"\n"
+    $opt_file = "${opt_indent}file => \"${file}\"\n"
   }
 
   if ($short_message != '') {
     validate_string($short_message)
-    $opt_short_message = "  short_message => \"${short_message}\"\n"
+    $opt_short_message = "${opt_indent}short_message => \"${short_message}\"\n"
   }
 
   if ($host != '') {
     validate_string($host)
-    $opt_host = "  host => \"${host}\"\n"
+    $opt_host = "${opt_indent}host => \"${host}\"\n"
   }
 
   if ($type != '') {
     validate_string($type)
-    $opt_type = "  type => \"${type}\"\n"
+    $opt_type = "${opt_indent}type => \"${type}\"\n"
   }
 
   if ($full_message != '') {
     validate_string($full_message)
-    $opt_full_message = "  full_message => \"${full_message}\"\n"
+    $opt_full_message = "${opt_indent}full_message => \"${full_message}\"\n"
   }
 
   #### Write config file
 
   file { $conffiles:
     ensure  => present,
-    content => "output {\n gelf {\n${opt_chunksize}${opt_custom_fields}${opt_exclude_tags}${opt_facility}${opt_fields}${opt_file}${opt_full_message}${opt_host}${opt_ignore_metadata}${opt_level}${opt_line}${opt_port}${opt_sender}${opt_ship_metadata}${opt_ship_tags}${opt_short_message}${opt_tags}${opt_type} }\n}\n",
+    content => "output {\n${opt_cond_start} gelf {\n${opt_chunksize}${opt_custom_fields}${opt_exclude_tags}${opt_facility}${opt_fields}${opt_codec}${opt_file}${opt_full_message}${opt_host}${opt_ignore_metadata}${opt_level}${opt_line}${opt_port}${opt_sender}${opt_ship_metadata}${opt_ship_tags}${opt_short_message}${opt_tags}${opt_type}${opt_cond_end}}\n}\n",
     mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

@@ -27,6 +27,10 @@
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
+# === Contributors
+#
+# * Luke Chavers <mailto:vmadman@gmail.com> - Added Initial Logstash 1.2.x Support
+#
 class logstash::params {
 
   #### Default values for the parameters of the main module class, init.pp

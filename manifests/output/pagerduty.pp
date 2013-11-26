@@ -5,6 +5,23 @@
 #
 # === Parameters
 #
+# [*codec*]
+#   A codec value.  It is recommended that you use the logstash_codec function
+#   to derive this variable. Example: logstash_codec('graphite', {'charset' => 'UTF-8'})
+#   but you could just pass a string, Example: "graphite{ charset => 'UTF-8' }"
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
+# [*conditional*]
+#   Surrounds the rule with a conditional.  It is recommended that you use the
+#   logstash_conditional function, Example: logstash_conditional('[type] == "apache"')
+#   or, Example: logstash_conditional(['[loglevel] == "ERROR"','[deployment] == "production"'], 'or')
+#   but you could just pass a string, Example: 'if [loglevel] == "ERROR" or [deployment] == "production" {'
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
 # [*description*]
 #   Custom description
 #   Value type is string
@@ -80,15 +97,19 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.12
+#  This define is created based on LogStash version 1.2.2
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.12/outputs/pagerduty
+#  http://logstash.net/docs/1.2.2/outputs/pagerduty
 #
-#  Need help? http://logstash.net/docs/1.1.12/learn
+#  Need help? http://logstash.net/docs/1.2.2/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
+#
+# === Contributors
+#
+# * Luke Chavers <mailto:vmadman@gmail.com> - Added Initial Logstash 1.2.x Support
 #
 define logstash::output::pagerduty (
   $service_key,
@@ -101,6 +122,8 @@ define logstash::output::pagerduty (
   $description  = '',
   $tags         = '',
   $type         = '',
+  $codec        = '',
+  $conditional  = '',
   $instances    = [ 'agent' ]
 ) {
 
@@ -128,73 +151,91 @@ define logstash::output::pagerduty (
 
   #### Validate parameters
 
+  if ($conditional != '') {
+    validate_string($conditional)
+    $opt_indent = "   "
+    $opt_cond_start = " ${conditional}\n "
+    $opt_cond_end = "  }\n "
+  } else {
+    $opt_indent = "  "
+    $opt_cond_end = " "
+  }
+
+  if ($codec != '') {
+    validate_string($codec)
+    $opt_codec = "${opt_indent}codec => ${codec}\n"
+  }
+
+
+
   validate_array($instances)
 
   if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
-    $opt_tags = "  tags => ['${arr_tags}']\n"
+    $opt_tags = "${opt_indent}tags => ['${arr_tags}']\n"
   }
 
   if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
-    $opt_fields = "  fields => ['${arr_fields}']\n"
+    $opt_fields = "${opt_indent}fields => ['${arr_fields}']\n"
   }
 
   if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
-    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
+    $opt_exclude_tags = "${opt_indent}exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if ($details != '') {
     validate_hash($details)
     $var_details = $details
     $arr_details = inline_template('<%= "["+var_details.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
-    $opt_details = "  details => ${arr_details}\n"
+    $opt_details = "${opt_indent}details => ${arr_details}\n"
   }
 
   if ($event_type != '') {
     if ! ($event_type in ['trigger', 'acknowledge', 'resolve']) {
       fail("\"${event_type}\" is not a valid event_type parameter value")
     } else {
-      $opt_event_type = "  event_type => \"${event_type}\"\n"
+      $opt_event_type = "${opt_indent}event_type => \"${event_type}\"\n"
     }
   }
 
   if ($incident_key != '') {
     validate_string($incident_key)
-    $opt_incident_key = "  incident_key => \"${incident_key}\"\n"
+    $opt_incident_key = "${opt_indent}incident_key => \"${incident_key}\"\n"
   }
 
   if ($service_key != '') {
     validate_string($service_key)
-    $opt_service_key = "  service_key => \"${service_key}\"\n"
+    $opt_service_key = "${opt_indent}service_key => \"${service_key}\"\n"
   }
 
   if ($pdurl != '') {
     validate_string($pdurl)
-    $opt_pdurl = "  pdurl => \"${pdurl}\"\n"
+    $opt_pdurl = "${opt_indent}pdurl => \"${pdurl}\"\n"
   }
 
   if ($type != '') {
     validate_string($type)
-    $opt_type = "  type => \"${type}\"\n"
+    $opt_type = "${opt_indent}type => \"${type}\"\n"
   }
 
   if ($description != '') {
     validate_string($description)
-    $opt_description = "  description => \"${description}\"\n"
+    $opt_description = "${opt_indent}description => \"${description}\"\n"
   }
 
   #### Write config file
 
   file { $conffiles:
     ensure  => present,
-    content => "output {\n pagerduty {\n${opt_description}${opt_details}${opt_event_type}${opt_exclude_tags}${opt_fields}${opt_incident_key}${opt_pdurl}${opt_service_key}${opt_tags}${opt_type} }\n}\n",
+    content => "output {\n${opt_cond_start} pagerduty {\n${opt_description}${opt_details}${opt_event_type}${opt_exclude_tags}${opt_fields}${opt_codec}${opt_incident_key}${opt_pdurl}${opt_service_key}${opt_tags}${opt_type}${opt_cond_end}}\n}\n",
     mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
   }
+
 }

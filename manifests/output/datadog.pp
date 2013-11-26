@@ -4,6 +4,23 @@
 #
 # === Parameters
 #
+# [*codec*]
+#   A codec value.  It is recommended that you use the logstash_codec function
+#   to derive this variable. Example: logstash_codec('graphite', {'charset' => 'UTF-8'})
+#   but you could just pass a string, Example: "graphite{ charset => 'UTF-8' }"
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
+# [*conditional*]
+#   Surrounds the rule with a conditional.  It is recommended that you use the
+#   logstash_conditional function, Example: logstash_conditional('[type] == "apache"')
+#   or, Example: logstash_conditional(['[loglevel] == "ERROR"','[deployment] == "production"'], 'or')
+#   but you could just pass a string, Example: 'if [loglevel] == "ERROR" or [deployment] == "production" {'
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
 # [*alert_type*]
 #   Alert type
 #   Value can be any of: "info", "error", "warning", "success"
@@ -92,15 +109,19 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.12
+#  This define is created based on LogStash version 1.2.2
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.12/outputs/datadog
+#  http://logstash.net/docs/1.2.2/outputs/datadog
 #
-#  Need help? http://logstash.net/docs/1.1.12/learn
+#  Need help? http://logstash.net/docs/1.2.2/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
+#
+# === Contributors
+#
+# * Luke Chavers <mailto:vmadman@gmail.com> - Added Initial Logstash 1.2.x Support
 #
 define logstash::output::datadog (
   $api_key,
@@ -115,6 +136,8 @@ define logstash::output::datadog (
   $text             = '',
   $title            = '',
   $type             = '',
+  $codec            = '',
+  $conditional      = '',
   $instances        = [ 'agent' ]
 ) {
 
@@ -142,37 +165,54 @@ define logstash::output::datadog (
 
   #### Validate parameters
 
+  if ($conditional != '') {
+    validate_string($conditional)
+    $opt_indent = "   "
+    $opt_cond_start = " ${conditional}\n "
+    $opt_cond_end = "  }\n "
+  } else {
+    $opt_indent = "  "
+    $opt_cond_end = " "
+  }
+
+  if ($codec != '') {
+    validate_string($codec)
+    $opt_codec = "${opt_indent}codec => ${codec}\n"
+  }
+
+
+
   validate_array($instances)
 
   if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
-    $opt_tags = "  tags => ['${arr_tags}']\n"
+    $opt_tags = "${opt_indent}tags => ['${arr_tags}']\n"
   }
 
   if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
-    $opt_fields = "  fields => ['${arr_fields}']\n"
+    $opt_fields = "${opt_indent}fields => ['${arr_fields}']\n"
   }
 
   if ($dd_tags != '') {
     validate_array($dd_tags)
     $arr_dd_tags = join($dd_tags, '\', \'')
-    $opt_dd_tags = "  dd_tags => ['${arr_dd_tags}']\n"
+    $opt_dd_tags = "${opt_indent}dd_tags => ['${arr_dd_tags}']\n"
   }
 
   if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
-    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
+    $opt_exclude_tags = "${opt_indent}exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if ($priority != '') {
     if ! ($priority in ['normal', 'low']) {
       fail("\"${priority}\" is not a valid priority parameter value")
     } else {
-      $opt_priority = "  priority => \"${priority}\"\n"
+      $opt_priority = "${opt_indent}priority => \"${priority}\"\n"
     }
   }
 
@@ -180,7 +220,7 @@ define logstash::output::datadog (
     if ! ($alert_type in ['info', 'error', 'warning', 'success']) {
       fail("\"${alert_type}\" is not a valid alert_type parameter value")
     } else {
-      $opt_alert_type = "  alert_type => \"${alert_type}\"\n"
+      $opt_alert_type = "${opt_indent}alert_type => \"${alert_type}\"\n"
     }
   }
 
@@ -188,40 +228,40 @@ define logstash::output::datadog (
     if ! ($source_type_name in ['nagios', 'hudson', 'jenkins', 'user', 'my apps', 'feed', 'chef', 'puppet', 'git', 'bitbucket']) {
       fail("\"${source_type_name}\" is not a valid source_type_name parameter value")
     } else {
-      $opt_source_type_name = "  source_type_name => \"${source_type_name}\"\n"
+      $opt_source_type_name = "${opt_indent}source_type_name => \"${source_type_name}\"\n"
     }
   }
 
   if ($text != '') {
     validate_string($text)
-    $opt_text = "  text => \"${text}\"\n"
+    $opt_text = "${opt_indent}text => \"${text}\"\n"
   }
 
   if ($api_key != '') {
     validate_string($api_key)
-    $opt_api_key = "  api_key => \"${api_key}\"\n"
+    $opt_api_key = "${opt_indent}api_key => \"${api_key}\"\n"
   }
 
   if ($title != '') {
     validate_string($title)
-    $opt_title = "  title => \"${title}\"\n"
+    $opt_title = "${opt_indent}title => \"${title}\"\n"
   }
 
   if ($type != '') {
     validate_string($type)
-    $opt_type = "  type => \"${type}\"\n"
+    $opt_type = "${opt_indent}type => \"${type}\"\n"
   }
 
   if ($date_happened != '') {
     validate_string($date_happened)
-    $opt_date_happened = "  date_happened => \"${date_happened}\"\n"
+    $opt_date_happened = "${opt_indent}date_happened => \"${date_happened}\"\n"
   }
 
   #### Write config file
 
   file { $conffiles:
     ensure  => present,
-    content => "output {\n datadog {\n${opt_alert_type}${opt_api_key}${opt_date_happened}${opt_dd_tags}${opt_exclude_tags}${opt_fields}${opt_priority}${opt_source_type_name}${opt_tags}${opt_text}${opt_title}${opt_type} }\n}\n",
+    content => "output {\n${opt_cond_start} datadog {\n${opt_alert_type}${opt_api_key}${opt_date_happened}${opt_dd_tags}${opt_exclude_tags}${opt_fields}${opt_codec}${opt_priority}${opt_source_type_name}${opt_tags}${opt_text}${opt_title}${opt_type}${opt_cond_end}}\n}\n",
     mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

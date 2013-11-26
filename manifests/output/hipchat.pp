@@ -5,6 +5,23 @@
 #
 # === Parameters
 #
+# [*codec*]
+#   A codec value.  It is recommended that you use the logstash_codec function
+#   to derive this variable. Example: logstash_codec('graphite', {'charset' => 'UTF-8'})
+#   but you could just pass a string, Example: "graphite{ charset => 'UTF-8' }"
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
+# [*conditional*]
+#   Surrounds the rule with a conditional.  It is recommended that you use the
+#   logstash_conditional function, Example: logstash_conditional('[type] == "apache"')
+#   or, Example: logstash_conditional(['[loglevel] == "ERROR"','[deployment] == "production"'], 'or')
+#   but you could just pass a string, Example: 'if [loglevel] == "ERROR" or [deployment] == "production" {'
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
 # [*color*]
 #   Background color for message. HipChat currently supports one of
 #   "yellow", "red", "green", "purple", "gray", or "random". (default:
@@ -80,15 +97,19 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.12
+#  This define is created based on LogStash version 1.2.2
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.12/outputs/hipchat
+#  http://logstash.net/docs/1.2.2/outputs/hipchat
 #
-#  Need help? http://logstash.net/docs/1.1.12/learn
+#  Need help? http://logstash.net/docs/1.2.2/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
+#
+# === Contributors
+#
+# * Luke Chavers <mailto:vmadman@gmail.com> - Added Initial Logstash 1.2.x Support
 #
 define logstash::output::hipchat (
   $room_id,
@@ -101,6 +122,8 @@ define logstash::output::hipchat (
   $exclude_tags   = '',
   $trigger_notify = '',
   $type           = '',
+  $codec          = '',
+  $conditional    = '',
   $instances      = [ 'agent' ]
 ) {
 
@@ -128,66 +151,83 @@ define logstash::output::hipchat (
 
   #### Validate parameters
 
+  if ($conditional != '') {
+    validate_string($conditional)
+    $opt_indent = "   "
+    $opt_cond_start = " ${conditional}\n "
+    $opt_cond_end = "  }\n "
+  } else {
+    $opt_indent = "  "
+    $opt_cond_end = " "
+  }
+
+  if ($codec != '') {
+    validate_string($codec)
+    $opt_codec = "${opt_indent}codec => ${codec}\n"
+  }
+
+
+
   validate_array($instances)
 
   if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
-    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
+    $opt_exclude_tags = "${opt_indent}exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
-    $opt_tags = "  tags => ['${arr_tags}']\n"
+    $opt_tags = "${opt_indent}tags => ['${arr_tags}']\n"
   }
 
   if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
-    $opt_fields = "  fields => ['${arr_fields}']\n"
+    $opt_fields = "${opt_indent}fields => ['${arr_fields}']\n"
   }
 
   if ($trigger_notify != '') {
     validate_bool($trigger_notify)
-    $opt_trigger_notify = "  trigger_notify => ${trigger_notify}\n"
+    $opt_trigger_notify = "${opt_indent}trigger_notify => ${trigger_notify}\n"
   }
 
   if ($room_id != '') {
     validate_string($room_id)
-    $opt_room_id = "  room_id => \"${room_id}\"\n"
+    $opt_room_id = "${opt_indent}room_id => \"${room_id}\"\n"
   }
 
   if ($from != '') {
     validate_string($from)
-    $opt_from = "  from => \"${from}\"\n"
+    $opt_from = "${opt_indent}from => \"${from}\"\n"
   }
 
   if ($token != '') {
     validate_string($token)
-    $opt_token = "  token => \"${token}\"\n"
+    $opt_token = "${opt_indent}token => \"${token}\"\n"
   }
 
   if ($format != '') {
     validate_string($format)
-    $opt_format = "  format => \"${format}\"\n"
+    $opt_format = "${opt_indent}format => \"${format}\"\n"
   }
 
   if ($type != '') {
     validate_string($type)
-    $opt_type = "  type => \"${type}\"\n"
+    $opt_type = "${opt_indent}type => \"${type}\"\n"
   }
 
   if ($color != '') {
     validate_string($color)
-    $opt_color = "  color => \"${color}\"\n"
+    $opt_color = "${opt_indent}color => \"${color}\"\n"
   }
 
   #### Write config file
 
   file { $conffiles:
     ensure  => present,
-    content => "output {\n hipchat {\n${opt_color}${opt_exclude_tags}${opt_fields}${opt_format}${opt_from}${opt_room_id}${opt_tags}${opt_token}${opt_trigger_notify}${opt_type} }\n}\n",
+    content => "output {\n${opt_cond_start} hipchat {\n${opt_color}${opt_exclude_tags}${opt_fields}${opt_codec}${opt_format}${opt_from}${opt_room_id}${opt_tags}${opt_token}${opt_trigger_notify}${opt_type}${opt_cond_end}}\n}\n",
     mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

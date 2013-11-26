@@ -4,6 +4,23 @@
 #
 # === Parameters
 #
+# [*codec*]
+#   A codec value.  It is recommended that you use the logstash_codec function
+#   to derive this variable. Example: logstash_codec('graphite', {'charset' => 'UTF-8'})
+#   but you could just pass a string, Example: "graphite{ charset => 'UTF-8' }"
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
+# [*conditional*]
+#   Surrounds the rule with a conditional.  It is recommended that you use the
+#   logstash_conditional function, Example: logstash_conditional('[type] == "apache"')
+#   or, Example: logstash_conditional(['[loglevel] == "ERROR"','[deployment] == "production"'], 'or')
+#   but you could just pass a string, Example: 'if [loglevel] == "ERROR" or [deployment] == "production" {'
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
 # [*collection*]
 #   The collection to use. This value can use %{foo} values to dynamically
 #   select a collection based on data in the event.
@@ -89,15 +106,19 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.12
+#  This define is created based on LogStash version 1.2.2
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.12/outputs/mongodb
+#  http://logstash.net/docs/1.2.2/outputs/mongodb
 #
-#  Need help? http://logstash.net/docs/1.1.12/learn
+#  Need help? http://logstash.net/docs/1.2.2/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
+#
+# === Contributors
+#
+# * Luke Chavers <mailto:vmadman@gmail.com> - Added Initial Logstash 1.2.x Support
 #
 define logstash::output::mongodb (
   $collection,
@@ -112,6 +133,8 @@ define logstash::output::mongodb (
   $tags         = '',
   $type         = '',
   $user         = '',
+  $codec        = '',
+  $conditional  = '',
   $instances    = [ 'agent' ]
 ) {
 
@@ -139,36 +162,53 @@ define logstash::output::mongodb (
 
   #### Validate parameters
 
+  if ($conditional != '') {
+    validate_string($conditional)
+    $opt_indent = "   "
+    $opt_cond_start = " ${conditional}\n "
+    $opt_cond_end = "  }\n "
+  } else {
+    $opt_indent = "  "
+    $opt_cond_end = " "
+  }
+
+  if ($codec != '') {
+    validate_string($codec)
+    $opt_codec = "${opt_indent}codec => ${codec}\n"
+  }
+
+
+
   validate_array($instances)
 
   if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
-    $opt_tags = "  tags => ['${arr_tags}']\n"
+    $opt_tags = "${opt_indent}tags => ['${arr_tags}']\n"
   }
 
   if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
-    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
+    $opt_exclude_tags = "${opt_indent}exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
-    $opt_fields = "  fields => ['${arr_fields}']\n"
+    $opt_fields = "${opt_indent}fields => ['${arr_fields}']\n"
   }
 
   if ($isodate != '') {
     validate_bool($isodate)
-    $opt_isodate = "  isodate => ${isodate}\n"
+    $opt_isodate = "${opt_indent}isodate => ${isodate}\n"
   }
 
   if ($retry_delay != '') {
     if ! is_numeric($retry_delay) {
       fail("\"${retry_delay}\" is not a valid retry_delay parameter value")
     } else {
-      $opt_retry_delay = "  retry_delay => ${retry_delay}\n"
+      $opt_retry_delay = "${opt_indent}retry_delay => ${retry_delay}\n"
     }
   }
 
@@ -176,45 +216,45 @@ define logstash::output::mongodb (
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
     } else {
-      $opt_port = "  port => ${port}\n"
+      $opt_port = "${opt_indent}port => ${port}\n"
     }
   }
 
   if ($password != '') {
     validate_string($password)
-    $opt_password = "  password => \"${password}\"\n"
+    $opt_password = "${opt_indent}password => \"${password}\"\n"
   }
 
   if ($host != '') {
     validate_string($host)
-    $opt_host = "  host => \"${host}\"\n"
+    $opt_host = "${opt_indent}host => \"${host}\"\n"
   }
 
   if ($database != '') {
     validate_string($database)
-    $opt_database = "  database => \"${database}\"\n"
+    $opt_database = "${opt_indent}database => \"${database}\"\n"
   }
 
   if ($type != '') {
     validate_string($type)
-    $opt_type = "  type => \"${type}\"\n"
+    $opt_type = "${opt_indent}type => \"${type}\"\n"
   }
 
   if ($user != '') {
     validate_string($user)
-    $opt_user = "  user => \"${user}\"\n"
+    $opt_user = "${opt_indent}user => \"${user}\"\n"
   }
 
   if ($collection != '') {
     validate_string($collection)
-    $opt_collection = "  collection => \"${collection}\"\n"
+    $opt_collection = "${opt_indent}collection => \"${collection}\"\n"
   }
 
   #### Write config file
 
   file { $conffiles:
     ensure  => present,
-    content => "output {\n mongodb {\n${opt_collection}${opt_database}${opt_exclude_tags}${opt_fields}${opt_host}${opt_isodate}${opt_password}${opt_port}${opt_retry_delay}${opt_tags}${opt_type}${opt_user} }\n}\n",
+    content => "output {\n${opt_cond_start} mongodb {\n${opt_collection}${opt_database}${opt_exclude_tags}${opt_fields}${opt_codec}${opt_host}${opt_isodate}${opt_password}${opt_port}${opt_retry_delay}${opt_tags}${opt_type}${opt_user}${opt_cond_end}}\n}\n",
     mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

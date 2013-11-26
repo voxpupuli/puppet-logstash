@@ -8,6 +8,23 @@
 #
 # === Parameters
 #
+# [*codec*]
+#   A codec value.  It is recommended that you use the logstash_codec function
+#   to derive this variable. Example: logstash_codec('graphite', {'charset' => 'UTF-8'})
+#   but you could just pass a string, Example: "graphite{ charset => 'UTF-8' }"
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
+# [*conditional*]
+#   Surrounds the rule with a conditional.  It is recommended that you use the
+#   logstash_conditional function, Example: logstash_conditional('[type] == "apache"')
+#   or, Example: logstash_conditional(['[loglevel] == "ERROR"','[deployment] == "production"'], 'or')
+#   but you could just pass a string, Example: 'if [loglevel] == "ERROR" or [deployment] == "production" {'
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
 # [*address*]
 #   0mq socket address to connect or bind. Please note that inproc:// will
 #   not work with logstashi. For each we use a context per thread. By
@@ -88,15 +105,19 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.12
+#  This define is created based on LogStash version 1.2.2
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.12/outputs/zeromq
+#  http://logstash.net/docs/1.2.2/outputs/zeromq
 #
-#  Need help? http://logstash.net/docs/1.1.12/learn
+#  Need help? http://logstash.net/docs/1.2.2/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
+#
+# === Contributors
+#
+# * Luke Chavers <mailto:vmadman@gmail.com> - Added Initial Logstash 1.2.x Support
 #
 define logstash::output::zeromq (
   $topology,
@@ -108,6 +129,8 @@ define logstash::output::zeromq (
   $topic        = '',
   $address      = '',
   $type         = '',
+  $codec        = '',
+  $conditional  = '',
   $instances    = [ 'agent' ]
 ) {
 
@@ -134,22 +157,39 @@ define logstash::output::zeromq (
   }
 
   #### Validate parameters
+
+  if ($conditional != '') {
+    validate_string($conditional)
+    $opt_indent = "   "
+    $opt_cond_start = " ${conditional}\n "
+    $opt_cond_end = "  }\n "
+  } else {
+    $opt_indent = "  "
+    $opt_cond_end = " "
+  }
+
+  if ($codec != '') {
+    validate_string($codec)
+    $opt_codec = "${opt_indent}codec => ${codec}\n"
+  }
+
+
   if ($address != '') {
     validate_array($address)
     $arr_address = join($address, '\', \'')
-    $opt_address = "  address => ['${arr_address}']\n"
+    $opt_address = "${opt_indent}address => ['${arr_address}']\n"
   }
 
   if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
-    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
+    $opt_exclude_tags = "${opt_indent}exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
-    $opt_fields = "  fields => ['${arr_fields}']\n"
+    $opt_fields = "${opt_indent}fields => ['${arr_fields}']\n"
   }
 
 
@@ -158,21 +198,21 @@ define logstash::output::zeromq (
   if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
-    $opt_tags = "  tags => ['${arr_tags}']\n"
+    $opt_tags = "${opt_indent}tags => ['${arr_tags}']\n"
   }
 
   if ($sockopt != '') {
     validate_hash($sockopt)
     $var_sockopt = $sockopt
     $arr_sockopt = inline_template('<%= "["+var_sockopt.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
-    $opt_sockopt = "  sockopt => ${arr_sockopt}\n"
+    $opt_sockopt = "${opt_indent}sockopt => ${arr_sockopt}\n"
   }
 
   if ($topology != '') {
     if ! ($topology in ['pushpull', 'pubsub', 'pair']) {
       fail("\"${topology}\" is not a valid topology parameter value")
     } else {
-      $opt_topology = "  topology => \"${topology}\"\n"
+      $opt_topology = "${opt_indent}topology => \"${topology}\"\n"
     }
   }
 
@@ -180,25 +220,25 @@ define logstash::output::zeromq (
     if ! ($mode in ['server', 'client']) {
       fail("\"${mode}\" is not a valid mode parameter value")
     } else {
-      $opt_mode = "  mode => \"${mode}\"\n"
+      $opt_mode = "${opt_indent}mode => \"${mode}\"\n"
     }
   }
 
   if ($type != '') {
     validate_string($type)
-    $opt_type = "  type => \"${type}\"\n"
+    $opt_type = "${opt_indent}type => \"${type}\"\n"
   }
 
   if ($topic != '') {
     validate_string($topic)
-    $opt_topic = "  topic => \"${topic}\"\n"
+    $opt_topic = "${opt_indent}topic => \"${topic}\"\n"
   }
 
   #### Write config file
 
   file { $conffiles:
     ensure  => present,
-    content => "output {\n zeromq {\n${opt_address}${opt_exclude_tags}${opt_fields}${opt_mode}${opt_sockopt}${opt_tags}${opt_topic}${opt_topology}${opt_type} }\n}\n",
+    content => "output {\n${opt_cond_start} zeromq {\n${opt_address}${opt_exclude_tags}${opt_fields}${opt_codec}${opt_mode}${opt_sockopt}${opt_tags}${opt_topic}${opt_topology}${opt_type}${opt_cond_end}}\n}\n",
     mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

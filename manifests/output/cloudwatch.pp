@@ -46,6 +46,23 @@
 #
 # === Parameters
 #
+# [*codec*]
+#   A codec value.  It is recommended that you use the logstash_codec function
+#   to derive this variable. Example: logstash_codec('graphite', {'charset' => 'UTF-8'})
+#   but you could just pass a string, Example: "graphite{ charset => 'UTF-8' }"
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
+# [*conditional*]
+#   Surrounds the rule with a conditional.  It is recommended that you use the
+#   logstash_conditional function, Example: logstash_conditional('[type] == "apache"')
+#   or, Example: logstash_conditional(['[loglevel] == "ERROR"','[deployment] == "production"'], 'or')
+#   but you could just pass a string, Example: 'if [loglevel] == "ERROR" or [deployment] == "production" {'
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
 # [*access_key_id*]
 #   Value type is string
 #   Default value: None
@@ -218,15 +235,19 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.12
+#  This define is created based on LogStash version 1.2.2
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.12/outputs/cloudwatch
+#  http://logstash.net/docs/1.2.2/outputs/cloudwatch
 #
-#  Need help? http://logstash.net/docs/1.1.12/learn
+#  Need help? http://logstash.net/docs/1.2.2/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
+#
+# === Contributors
+#
+# * Luke Chavers <mailto:vmadman@gmail.com> - Added Initial Logstash 1.2.x Support
 #
 define logstash::output::cloudwatch (
   $access_key_id        = '',
@@ -250,6 +271,8 @@ define logstash::output::cloudwatch (
   $unit                 = '',
   $use_ssl              = '',
   $value                = '',
+  $codec                = '',
+  $conditional          = '',
   $instances            = [ 'agent' ]
 ) {
 
@@ -277,43 +300,60 @@ define logstash::output::cloudwatch (
 
   #### Validate parameters
 
+  if ($conditional != '') {
+    validate_string($conditional)
+    $opt_indent = "   "
+    $opt_cond_start = " ${conditional}\n "
+    $opt_cond_end = "  }\n "
+  } else {
+    $opt_indent = "  "
+    $opt_cond_end = " "
+  }
+
+  if ($codec != '') {
+    validate_string($codec)
+    $opt_codec = "${opt_indent}codec => ${codec}\n"
+  }
+
+
+
   validate_array($instances)
 
   if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
-    $opt_fields = "  fields => ['${arr_fields}']\n"
+    $opt_fields = "${opt_indent}fields => ['${arr_fields}']\n"
   }
 
   if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
-    $opt_tags = "  tags => ['${arr_tags}']\n"
+    $opt_tags = "${opt_indent}tags => ['${arr_tags}']\n"
   }
 
   if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
-    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
+    $opt_exclude_tags = "${opt_indent}exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if ($use_ssl != '') {
     validate_bool($use_ssl)
-    $opt_use_ssl = "  use_ssl => ${use_ssl}\n"
+    $opt_use_ssl = "${opt_indent}use_ssl => ${use_ssl}\n"
   }
 
   if ($dimensions != '') {
     validate_hash($dimensions)
     $var_dimensions = $dimensions
     $arr_dimensions = inline_template('<%= "["+var_dimensions.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
-    $opt_dimensions = "  dimensions => ${arr_dimensions}\n"
+    $opt_dimensions = "${opt_indent}dimensions => ${arr_dimensions}\n"
   }
 
   if ($queue_size != '') {
     if ! is_numeric($queue_size) {
       fail("\"${queue_size}\" is not a valid queue_size parameter value")
     } else {
-      $opt_queue_size = "  queue_size => ${queue_size}\n"
+      $opt_queue_size = "${opt_indent}queue_size => ${queue_size}\n"
     }
   }
 
@@ -321,7 +361,7 @@ define logstash::output::cloudwatch (
     if ! ($unit in ['Seconds', 'Microseconds', 'Milliseconds', 'Bytes', 'Kilobytes', 'Megabytes', 'Gigabytes', 'Terabytes', 'Bits', 'Kilobits', 'Megabits', 'Gigabits', 'Terabits', 'Percent', 'Count', 'Bytes/Second', 'Kilobytes/Second', 'Megabytes/Second', 'Gigabytes/Second', 'Terabytes/Second', 'Bits/Second', 'Kilobits/Second', 'Megabits/Second', 'Gigabits/Second', 'Terabits/Second', 'Count/Second', 'None']) {
       fail("\"${unit}\" is not a valid unit parameter value")
     } else {
-      $opt_unit = "  unit => \"${unit}\"\n"
+      $opt_unit = "${opt_indent}unit => \"${unit}\"\n"
     }
   }
 
@@ -329,80 +369,80 @@ define logstash::output::cloudwatch (
     if ! ($region in ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1', 'us-gov-west-1']) {
       fail("\"${region}\" is not a valid region parameter value")
     } else {
-      $opt_region = "  region => \"${region}\"\n"
+      $opt_region = "${opt_indent}region => \"${region}\"\n"
     }
   }
 
   if ($namespace != '') {
     validate_string($namespace)
-    $opt_namespace = "  namespace => \"${namespace}\"\n"
+    $opt_namespace = "${opt_indent}namespace => \"${namespace}\"\n"
   }
 
   if ($field_unit != '') {
     validate_string($field_unit)
-    $opt_field_unit = "  field_unit => \"${field_unit}\"\n"
+    $opt_field_unit = "${opt_indent}field_unit => \"${field_unit}\"\n"
   }
 
   if ($metricname != '') {
     validate_string($metricname)
-    $opt_metricname = "  metricname => \"${metricname}\"\n"
+    $opt_metricname = "${opt_indent}metricname => \"${metricname}\"\n"
   }
 
   if ($field_value != '') {
     validate_string($field_value)
-    $opt_field_value = "  field_value => \"${field_value}\"\n"
+    $opt_field_value = "${opt_indent}field_value => \"${field_value}\"\n"
   }
 
   if ($field_namespace != '') {
     validate_string($field_namespace)
-    $opt_field_namespace = "  field_namespace => \"${field_namespace}\"\n"
+    $opt_field_namespace = "${opt_indent}field_namespace => \"${field_namespace}\"\n"
   }
 
   if ($field_metricname != '') {
     validate_string($field_metricname)
-    $opt_field_metricname = "  field_metricname => \"${field_metricname}\"\n"
+    $opt_field_metricname = "${opt_indent}field_metricname => \"${field_metricname}\"\n"
   }
 
   if ($secret_access_key != '') {
     validate_string($secret_access_key)
-    $opt_secret_access_key = "  secret_access_key => \"${secret_access_key}\"\n"
+    $opt_secret_access_key = "${opt_indent}secret_access_key => \"${secret_access_key}\"\n"
   }
 
   if ($field_dimensions != '') {
     validate_string($field_dimensions)
-    $opt_field_dimensions = "  field_dimensions => \"${field_dimensions}\"\n"
+    $opt_field_dimensions = "${opt_indent}field_dimensions => \"${field_dimensions}\"\n"
   }
 
   if ($timeframe != '') {
     validate_string($timeframe)
-    $opt_timeframe = "  timeframe => \"${timeframe}\"\n"
+    $opt_timeframe = "${opt_indent}timeframe => \"${timeframe}\"\n"
   }
 
   if ($type != '') {
     validate_string($type)
-    $opt_type = "  type => \"${type}\"\n"
+    $opt_type = "${opt_indent}type => \"${type}\"\n"
   }
 
   if ($aws_credentials_file != '') {
     validate_string($aws_credentials_file)
-    $opt_aws_credentials_file = "  aws_credentials_file => \"${aws_credentials_file}\"\n"
+    $opt_aws_credentials_file = "${opt_indent}aws_credentials_file => \"${aws_credentials_file}\"\n"
   }
 
   if ($access_key_id != '') {
     validate_string($access_key_id)
-    $opt_access_key_id = "  access_key_id => \"${access_key_id}\"\n"
+    $opt_access_key_id = "${opt_indent}access_key_id => \"${access_key_id}\"\n"
   }
 
   if ($value != '') {
     validate_string($value)
-    $opt_value = "  value => \"${value}\"\n"
+    $opt_value = "${opt_indent}value => \"${value}\"\n"
   }
 
   #### Write config file
 
   file { $conffiles:
     ensure  => present,
-    content => "output {\n cloudwatch {\n${opt_access_key_id}${opt_aws_credentials_file}${opt_dimensions}${opt_exclude_tags}${opt_field_dimensions}${opt_field_metricname}${opt_field_namespace}${opt_field_unit}${opt_field_value}${opt_fields}${opt_metricname}${opt_namespace}${opt_queue_size}${opt_region}${opt_secret_access_key}${opt_tags}${opt_timeframe}${opt_type}${opt_unit}${opt_use_ssl}${opt_value} }\n}\n",
+    content => "output {\n${opt_cond_start} cloudwatch {\n${opt_access_key_id}${opt_aws_credentials_file}${opt_dimensions}${opt_exclude_tags}${opt_field_dimensions}${opt_field_metricname}${opt_field_namespace}${opt_field_unit}${opt_field_value}${opt_fields}${opt_codec}${opt_metricname}${opt_namespace}${opt_queue_size}${opt_region}${opt_secret_access_key}${opt_tags}${opt_timeframe}${opt_type}${opt_unit}${opt_use_ssl}${opt_value}${opt_cond_end}}\n}\n",
     mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

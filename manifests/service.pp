@@ -26,6 +26,10 @@
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
+# === Contributors
+#
+# * Luke Chavers <mailto:vmadman@gmail.com> - Added Initial Logstash 1.2.x Support
+#
 class logstash::service {
 
   #### Service management

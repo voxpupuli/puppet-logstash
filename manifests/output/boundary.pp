@@ -4,6 +4,23 @@
 #
 # === Parameters
 #
+# [*codec*]
+#   A codec value.  It is recommended that you use the logstash_codec function
+#   to derive this variable. Example: logstash_codec('graphite', {'charset' => 'UTF-8'})
+#   but you could just pass a string, Example: "graphite{ charset => 'UTF-8' }"
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
+# [*conditional*]
+#   Surrounds the rule with a conditional.  It is recommended that you use the
+#   logstash_conditional function, Example: logstash_conditional('[type] == "apache"')
+#   or, Example: logstash_conditional(['[loglevel] == "ERROR"','[deployment] == "production"'], 'or')
+#   but you could just pass a string, Example: 'if [loglevel] == "ERROR" or [deployment] == "production" {'
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
 # [*api_key*]
 #   This output lets you send annotations to Boundary based on Logstash
 #   events  Note that since Logstash maintains no state these will be
@@ -100,15 +117,19 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.12
+#  This define is created based on LogStash version 1.2.2
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.12/outputs/boundary
+#  http://logstash.net/docs/1.2.2/outputs/boundary
 #
-#  Need help? http://logstash.net/docs/1.1.12/learn
+#  Need help? http://logstash.net/docs/1.2.2/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
+#
+# === Contributors
+#
+# * Luke Chavers <mailto:vmadman@gmail.com> - Added Initial Logstash 1.2.x Support
 #
 define logstash::output::boundary (
   $api_key,
@@ -123,6 +144,8 @@ define logstash::output::boundary (
   $start_time   = '',
   $tags         = '',
   $type         = '',
+  $codec        = '',
+  $conditional  = '',
   $instances    = [ 'agent' ]
 ) {
 
@@ -150,77 +173,94 @@ define logstash::output::boundary (
 
   #### Validate parameters
 
+  if ($conditional != '') {
+    validate_string($conditional)
+    $opt_indent = "   "
+    $opt_cond_start = " ${conditional}\n "
+    $opt_cond_end = "  }\n "
+  } else {
+    $opt_indent = "  "
+    $opt_cond_end = " "
+  }
+
+  if ($codec != '') {
+    validate_string($codec)
+    $opt_codec = "${opt_indent}codec => ${codec}\n"
+  }
+
+
+
   validate_array($instances)
 
   if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
-    $opt_tags = "  tags => ['${arr_tags}']\n"
+    $opt_tags = "${opt_indent}tags => ['${arr_tags}']\n"
   }
 
   if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
-    $opt_fields = "  fields => ['${arr_fields}']\n"
+    $opt_fields = "${opt_indent}fields => ['${arr_fields}']\n"
   }
 
   if ($btags != '') {
     validate_array($btags)
     $arr_btags = join($btags, '\', \'')
-    $opt_btags = "  btags => ['${arr_btags}']\n"
+    $opt_btags = "${opt_indent}btags => ['${arr_btags}']\n"
   }
 
   if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
-    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
+    $opt_exclude_tags = "${opt_indent}exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if ($auto != '') {
     validate_bool($auto)
-    $opt_auto = "  auto => ${auto}\n"
+    $opt_auto = "${opt_indent}auto => ${auto}\n"
   }
 
   if ($start_time != '') {
     validate_string($start_time)
-    $opt_start_time = "  start_time => \"${start_time}\"\n"
+    $opt_start_time = "${opt_indent}start_time => \"${start_time}\"\n"
   }
 
   if ($bsubtype != '') {
     validate_string($bsubtype)
-    $opt_bsubtype = "  bsubtype => \"${bsubtype}\"\n"
+    $opt_bsubtype = "${opt_indent}bsubtype => \"${bsubtype}\"\n"
   }
 
   if ($org_id != '') {
     validate_string($org_id)
-    $opt_org_id = "  org_id => \"${org_id}\"\n"
+    $opt_org_id = "${opt_indent}org_id => \"${org_id}\"\n"
   }
 
   if ($btype != '') {
     validate_string($btype)
-    $opt_btype = "  btype => \"${btype}\"\n"
+    $opt_btype = "${opt_indent}btype => \"${btype}\"\n"
   }
 
   if ($end_time != '') {
     validate_string($end_time)
-    $opt_end_time = "  end_time => \"${end_time}\"\n"
+    $opt_end_time = "${opt_indent}end_time => \"${end_time}\"\n"
   }
 
   if ($type != '') {
     validate_string($type)
-    $opt_type = "  type => \"${type}\"\n"
+    $opt_type = "${opt_indent}type => \"${type}\"\n"
   }
 
   if ($api_key != '') {
     validate_string($api_key)
-    $opt_api_key = "  api_key => \"${api_key}\"\n"
+    $opt_api_key = "${opt_indent}api_key => \"${api_key}\"\n"
   }
 
   #### Write config file
 
   file { $conffiles:
     ensure  => present,
-    content => "output {\n boundary {\n${opt_api_key}${opt_auto}${opt_bsubtype}${opt_btags}${opt_btype}${opt_end_time}${opt_exclude_tags}${opt_fields}${opt_org_id}${opt_start_time}${opt_tags}${opt_type} }\n}\n",
+    content => "output {\n${opt_cond_start} boundary {\n${opt_api_key}${opt_auto}${opt_bsubtype}${opt_btags}${opt_btype}${opt_end_time}${opt_exclude_tags}${opt_fields}${opt_codec}${opt_org_id}${opt_start_time}${opt_tags}${opt_type}${opt_cond_end}}\n}\n",
     mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

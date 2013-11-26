@@ -15,6 +15,23 @@
 #
 # === Parameters
 #
+# [*codec*]
+#   A codec value.  It is recommended that you use the logstash_codec function
+#   to derive this variable. Example: logstash_codec('graphite', {'charset' => 'UTF-8'})
+#   but you could just pass a string, Example: "graphite{ charset => 'UTF-8' }"
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
+# [*conditional*]
+#   Surrounds the rule with a conditional.  It is recommended that you use the
+#   logstash_conditional function, Example: logstash_conditional('[type] == "apache"')
+#   or, Example: logstash_conditional(['[loglevel] == "ERROR"','[deployment] == "production"'], 'or')
+#   but you could just pass a string, Example: 'if [loglevel] == "ERROR" or [deployment] == "production" {'
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
 # [*count*]
 #   A count metric. metric_name =&gt; count as hash
 #   Value type is hash
@@ -112,15 +129,19 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.12
+#  This define is created based on LogStash version 1.2.2
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.12/outputs/statsd
+#  http://logstash.net/docs/1.2.2/outputs/statsd
 #
-#  Need help? http://logstash.net/docs/1.1.12/learn
+#  Need help? http://logstash.net/docs/1.2.2/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
+#
+# === Contributors
+#
+# * Luke Chavers <mailto:vmadman@gmail.com> - Added Initial Logstash 1.2.x Support
 #
 define logstash::output::statsd (
   $count        = '',
@@ -137,6 +158,8 @@ define logstash::output::statsd (
   $tags         = '',
   $timing       = '',
   $type         = '',
+  $codec        = '',
+  $conditional  = '',
   $instances    = [ 'agent' ]
 ) {
 
@@ -164,62 +187,79 @@ define logstash::output::statsd (
 
   #### Validate parameters
 
+  if ($conditional != '') {
+    validate_string($conditional)
+    $opt_indent = "   "
+    $opt_cond_start = " ${conditional}\n "
+    $opt_cond_end = "  }\n "
+  } else {
+    $opt_indent = "  "
+    $opt_cond_end = " "
+  }
+
+  if ($codec != '') {
+    validate_string($codec)
+    $opt_codec = "${opt_indent}codec => ${codec}\n"
+  }
+
+
+
   validate_array($instances)
 
   if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
-    $opt_tags = "  tags => ['${arr_tags}']\n"
+    $opt_tags = "${opt_indent}tags => ['${arr_tags}']\n"
   }
 
   if ($decrement != '') {
     validate_array($decrement)
     $arr_decrement = join($decrement, '\', \'')
-    $opt_decrement = "  decrement => ['${arr_decrement}']\n"
+    $opt_decrement = "${opt_indent}decrement => ['${arr_decrement}']\n"
   }
 
   if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
-    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
+    $opt_exclude_tags = "${opt_indent}exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if ($increment != '') {
     validate_array($increment)
     $arr_increment = join($increment, '\', \'')
-    $opt_increment = "  increment => ['${arr_increment}']\n"
+    $opt_increment = "${opt_indent}increment => ['${arr_increment}']\n"
   }
 
   if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
-    $opt_fields = "  fields => ['${arr_fields}']\n"
+    $opt_fields = "${opt_indent}fields => ['${arr_fields}']\n"
   }
 
   if ($debug != '') {
     validate_bool($debug)
-    $opt_debug = "  debug => ${debug}\n"
+    $opt_debug = "${opt_indent}debug => ${debug}\n"
   }
 
   if ($timing != '') {
     validate_hash($timing)
     $var_timing = $timing
     $arr_timing = inline_template('<%= "["+var_timing.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
-    $opt_timing = "  timing => ${arr_timing}\n"
+    $opt_timing = "${opt_indent}timing => ${arr_timing}\n"
   }
 
   if ($count != '') {
     validate_hash($count)
     $var_count = $count
     $arr_count = inline_template('<%= "["+var_count.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
-    $opt_count = "  count => ${arr_count}\n"
+    $opt_count = "${opt_indent}count => ${arr_count}\n"
   }
 
   if ($sample_rate != '') {
     if ! is_numeric($sample_rate) {
       fail("\"${sample_rate}\" is not a valid sample_rate parameter value")
     } else {
-      $opt_sample_rate = "  sample_rate => ${sample_rate}\n"
+      $opt_sample_rate = "${opt_indent}sample_rate => ${sample_rate}\n"
     }
   }
 
@@ -227,35 +267,35 @@ define logstash::output::statsd (
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
     } else {
-      $opt_port = "  port => ${port}\n"
+      $opt_port = "${opt_indent}port => ${port}\n"
     }
   }
 
   if ($host != '') {
     validate_string($host)
-    $opt_host = "  host => \"${host}\"\n"
+    $opt_host = "${opt_indent}host => \"${host}\"\n"
   }
 
   if ($sender != '') {
     validate_string($sender)
-    $opt_sender = "  sender => \"${sender}\"\n"
+    $opt_sender = "${opt_indent}sender => \"${sender}\"\n"
   }
 
   if ($type != '') {
     validate_string($type)
-    $opt_type = "  type => \"${type}\"\n"
+    $opt_type = "${opt_indent}type => \"${type}\"\n"
   }
 
   if ($namespace != '') {
     validate_string($namespace)
-    $opt_namespace = "  namespace => \"${namespace}\"\n"
+    $opt_namespace = "${opt_indent}namespace => \"${namespace}\"\n"
   }
 
   #### Write config file
 
   file { $conffiles:
     ensure  => present,
-    content => "output {\n statsd {\n${opt_count}${opt_debug}${opt_decrement}${opt_exclude_tags}${opt_fields}${opt_host}${opt_increment}${opt_namespace}${opt_port}${opt_sample_rate}${opt_sender}${opt_tags}${opt_timing}${opt_type} }\n}\n",
+    content => "output {\n${opt_cond_start} statsd {\n${opt_count}${opt_debug}${opt_decrement}${opt_exclude_tags}${opt_fields}${opt_codec}${opt_host}${opt_increment}${opt_namespace}${opt_port}${opt_sample_rate}${opt_sender}${opt_tags}${opt_timing}${opt_type}${opt_cond_end}}\n}\n",
     mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

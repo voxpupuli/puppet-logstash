@@ -6,6 +6,23 @@
 #
 # === Parameters
 #
+# [*codec*]
+#   A codec value.  It is recommended that you use the logstash_codec function
+#   to derive this variable. Example: logstash_codec('graphite', {'charset' => 'UTF-8'})
+#   but you could just pass a string, Example: "graphite{ charset => 'UTF-8' }"
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
+# [*conditional*]
+#   Surrounds the rule with a conditional.  It is recommended that you use the
+#   logstash_conditional function, Example: logstash_conditional('[type] == "apache"')
+#   or, Example: logstash_conditional(['[loglevel] == "ERROR"','[deployment] == "production"'], 'or')
+#   but you could just pass a string, Example: 'if [loglevel] == "ERROR" or [deployment] == "production" {'
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
 # [*exclude_tags*]
 #   Only handle events without any of these tags. Note this check is
 #   additional to type and tags.
@@ -94,15 +111,19 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.12
+#  This define is created based on LogStash version 1.2.2
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.12/outputs/ganglia
+#  http://logstash.net/docs/1.2.2/outputs/ganglia
 #
-#  Need help? http://logstash.net/docs/1.1.12/learn
+#  Need help? http://logstash.net/docs/1.2.2/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
+#
+# === Contributors
+#
+# * Luke Chavers <mailto:vmadman@gmail.com> - Added Initial Logstash 1.2.x Support
 #
 define logstash::output::ganglia (
   $metric,
@@ -117,6 +138,8 @@ define logstash::output::ganglia (
   $type         = '',
   $units        = '',
   $fields       = '',
+  $codec        = '',
+  $conditional  = '',
   $instances    = [ 'agent' ]
 ) {
 
@@ -143,22 +166,39 @@ define logstash::output::ganglia (
   }
 
   #### Validate parameters
+
+  if ($conditional != '') {
+    validate_string($conditional)
+    $opt_indent = "   "
+    $opt_cond_start = " ${conditional}\n "
+    $opt_cond_end = "  }\n "
+  } else {
+    $opt_indent = "  "
+    $opt_cond_end = " "
+  }
+
+  if ($codec != '') {
+    validate_string($codec)
+    $opt_codec = "${opt_indent}codec => ${codec}\n"
+  }
+
+
   if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
-    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
+    $opt_exclude_tags = "${opt_indent}exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
-    $opt_fields = "  fields => ['${arr_fields}']\n"
+    $opt_fields = "${opt_indent}fields => ['${arr_fields}']\n"
   }
 
   if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
-    $opt_tags = "  tags => ['${arr_tags}']\n"
+    $opt_tags = "${opt_indent}tags => ['${arr_tags}']\n"
   }
 
 
@@ -168,7 +208,7 @@ define logstash::output::ganglia (
     if ! is_numeric($max_interval) {
       fail("\"${max_interval}\" is not a valid max_interval parameter value")
     } else {
-      $opt_max_interval = "  max_interval => ${max_interval}\n"
+      $opt_max_interval = "${opt_indent}max_interval => ${max_interval}\n"
     }
   }
 
@@ -176,7 +216,7 @@ define logstash::output::ganglia (
     if ! is_numeric($port) {
       fail("\"${port}\" is not a valid port parameter value")
     } else {
-      $opt_port = "  port => ${port}\n"
+      $opt_port = "${opt_indent}port => ${port}\n"
     }
   }
 
@@ -184,7 +224,7 @@ define logstash::output::ganglia (
     if ! is_numeric($lifetime) {
       fail("\"${lifetime}\" is not a valid lifetime parameter value")
     } else {
-      $opt_lifetime = "  lifetime => ${lifetime}\n"
+      $opt_lifetime = "${opt_indent}lifetime => ${lifetime}\n"
     }
   }
 
@@ -192,40 +232,40 @@ define logstash::output::ganglia (
     if ! ($metric_type in ['string', 'int8', 'uint8', 'int16', 'uint16', 'int32', 'uint32', 'float', 'double']) {
       fail("\"${metric_type}\" is not a valid metric_type parameter value")
     } else {
-      $opt_metric_type = "  metric_type => \"${metric_type}\"\n"
+      $opt_metric_type = "${opt_indent}metric_type => \"${metric_type}\"\n"
     }
   }
 
   if ($metric != '') {
     validate_string($metric)
-    $opt_metric = "  metric => \"${metric}\"\n"
+    $opt_metric = "${opt_indent}metric => \"${metric}\"\n"
   }
 
   if ($type != '') {
     validate_string($type)
-    $opt_type = "  type => \"${type}\"\n"
+    $opt_type = "${opt_indent}type => \"${type}\"\n"
   }
 
   if ($units != '') {
     validate_string($units)
-    $opt_units = "  units => \"${units}\"\n"
+    $opt_units = "${opt_indent}units => \"${units}\"\n"
   }
 
   if ($value != '') {
     validate_string($value)
-    $opt_value = "  value => \"${value}\"\n"
+    $opt_value = "${opt_indent}value => \"${value}\"\n"
   }
 
   if ($host != '') {
     validate_string($host)
-    $opt_host = "  host => \"${host}\"\n"
+    $opt_host = "${opt_indent}host => \"${host}\"\n"
   }
 
   #### Write config file
 
   file { $conffiles:
     ensure  => present,
-    content => "output {\n ganglia {\n${opt_exclude_tags}${opt_fields}${opt_host}${opt_lifetime}${opt_max_interval}${opt_metric}${opt_metric_type}${opt_port}${opt_tags}${opt_type}${opt_units}${opt_value} }\n}\n",
+    content => "output {\n${opt_cond_start} ganglia {\n${opt_exclude_tags}${opt_fields}${opt_codec}${opt_host}${opt_lifetime}${opt_max_interval}${opt_metric}${opt_metric_type}${opt_port}${opt_tags}${opt_type}${opt_units}${opt_value}${opt_cond_end}}\n}\n",
     mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

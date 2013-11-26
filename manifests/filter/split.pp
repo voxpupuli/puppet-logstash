@@ -10,6 +10,15 @@
 #
 # === Parameters
 #
+# [*conditional*]
+#   Surrounds the rule with a conditional.  It is recommended that you use the
+#   logstash_conditional function, Example: logstash_conditional('[type] == "apache"')
+#   or, Example: logstash_conditional(['[loglevel] == "ERROR"','[deployment] == "production"'], 'or')
+#   but you could just pass a string, Example: 'if [loglevel] == "ERROR" or [deployment] == "production" {'
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
 # [*add_field*]
 #   If this filter is successful, add any arbitrary fields to this event.
 #   Example:  filter {   split {     add_field =&gt; [ "sample", "Hello
@@ -90,15 +99,19 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.12
+#  This define is created based on LogStash version 1.2.2
 #  Extra information about this filter can be found at:
-#  http://logstash.net/docs/1.1.12/filters/split
+#  http://logstash.net/docs/1.2.2/filters/split
 #
-#  Need help? http://logstash.net/docs/1.1.12/learn
+#  Need help? http://logstash.net/docs/1.2.2/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
+#
+# === Contributors
+#
+# * Luke Chavers <mailto:vmadman@gmail.com> - Added Initial Logstash 1.2.x Support
 #
 define logstash::filter::split (
   $add_field    = '',
@@ -110,6 +123,7 @@ define logstash::filter::split (
   $terminator   = '',
   $type         = '',
   $order        = 10,
+  $conditional  = '',
   $instances    = [ 'agent' ]
 ) {
 
@@ -137,37 +151,48 @@ define logstash::filter::split (
 
   #### Validate parameters
 
+  if ($conditional != '') {
+    validate_string($conditional)
+    $opt_indent = "   "
+    $opt_cond_start = " ${conditional}\n "
+    $opt_cond_end = "  }\n "
+  } else {
+    $opt_indent = "  "
+    $opt_cond_end = " "
+  }
+
+
   validate_array($instances)
 
   if ($add_tag != '') {
     validate_array($add_tag)
     $arr_add_tag = join($add_tag, '\', \'')
-    $opt_add_tag = "  add_tag => ['${arr_add_tag}']\n"
+    $opt_add_tag = "${opt_indent}add_tag => ['${arr_add_tag}']\n"
   }
 
   if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
-    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
+    $opt_exclude_tags = "${opt_indent}exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if ($remove_tag != '') {
     validate_array($remove_tag)
     $arr_remove_tag = join($remove_tag, '\', \'')
-    $opt_remove_tag = "  remove_tag => ['${arr_remove_tag}']\n"
+    $opt_remove_tag = "${opt_indent}remove_tag => ['${arr_remove_tag}']\n"
   }
 
   if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
-    $opt_tags = "  tags => ['${arr_tags}']\n"
+    $opt_tags = "${opt_indent}tags => ['${arr_tags}']\n"
   }
 
   if ($add_field != '') {
     validate_hash($add_field)
     $var_add_field = $add_field
     $arr_add_field = inline_template('<%= "["+var_add_field.sort.collect { |k,v| "\"#{k}\", \"#{v}\"" }.join(", ")+"]" %>')
-    $opt_add_field = "  add_field => ${arr_add_field}\n"
+    $opt_add_field = "${opt_indent}add_field => ${arr_add_field}\n"
   }
 
   if ($order != '') {
@@ -178,24 +203,24 @@ define logstash::filter::split (
 
   if ($type != '') {
     validate_string($type)
-    $opt_type = "  type => \"${type}\"\n"
+    $opt_type = "${opt_indent}type => \"${type}\"\n"
   }
 
   if ($terminator != '') {
     validate_string($terminator)
-    $opt_terminator = "  terminator => \"${terminator}\"\n"
+    $opt_terminator = "${opt_indent}terminator => \"${terminator}\"\n"
   }
 
   if ($field != '') {
     validate_string($field)
-    $opt_field = "  field => \"${field}\"\n"
+    $opt_field = "${opt_indent}field => \"${field}\"\n"
   }
 
   #### Write config file
 
   file { $conffiles:
     ensure  => present,
-    content => "filter {\n split {\n${opt_add_field}${opt_add_tag}${opt_exclude_tags}${opt_field}${opt_remove_tag}${opt_tags}${opt_terminator}${opt_type} }\n}\n",
+    content => "filter {\n${opt_cond_start} split {\n${opt_add_field}${opt_add_tag}${opt_exclude_tags}${opt_field}${opt_remove_tag}${opt_tags}${opt_terminator}${opt_type}${opt_cond_end}}\n}\n",
     mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']

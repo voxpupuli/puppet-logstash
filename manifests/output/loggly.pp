@@ -9,6 +9,23 @@
 #
 # === Parameters
 #
+# [*codec*]
+#   A codec value.  It is recommended that you use the logstash_codec function
+#   to derive this variable. Example: logstash_codec('graphite', {'charset' => 'UTF-8'})
+#   but you could just pass a string, Example: "graphite{ charset => 'UTF-8' }"
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
+# [*conditional*]
+#   Surrounds the rule with a conditional.  It is recommended that you use the
+#   logstash_conditional function, Example: logstash_conditional('[type] == "apache"')
+#   or, Example: logstash_conditional(['[loglevel] == "ERROR"','[deployment] == "production"'], 'or')
+#   but you could just pass a string, Example: 'if [loglevel] == "ERROR" or [deployment] == "production" {'
+#   Value type is string
+#   Default value: None
+#   This variable is optional
+#
 # [*exclude_tags*]
 #   Only handle events without any of these tags. Note this check is
 #   additional to type and tags.
@@ -95,15 +112,19 @@
 #
 # === Extra information
 #
-#  This define is created based on LogStash version 1.1.12
+#  This define is created based on LogStash version 1.2.2
 #  Extra information about this output can be found at:
-#  http://logstash.net/docs/1.1.12/outputs/loggly
+#  http://logstash.net/docs/1.2.2/outputs/loggly
 #
-#  Need help? http://logstash.net/docs/1.1.12/learn
+#  Need help? http://logstash.net/docs/1.2.2/learn
 #
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
+#
+# === Contributors
+#
+# * Luke Chavers <mailto:vmadman@gmail.com> - Added Initial Logstash 1.2.x Support
 #
 define logstash::output::loggly (
   $key,
@@ -117,6 +138,8 @@ define logstash::output::loggly (
   $proxy_user     = '',
   $tags           = '',
   $type           = '',
+  $codec          = '',
+  $conditional    = '',
   $instances      = [ 'agent' ]
 ) {
 
@@ -143,22 +166,39 @@ define logstash::output::loggly (
   }
 
   #### Validate parameters
+
+  if ($conditional != '') {
+    validate_string($conditional)
+    $opt_indent = "   "
+    $opt_cond_start = " ${conditional}\n "
+    $opt_cond_end = "  }\n "
+  } else {
+    $opt_indent = "  "
+    $opt_cond_end = " "
+  }
+
+  if ($codec != '') {
+    validate_string($codec)
+    $opt_codec = "${opt_indent}codec => ${codec}\n"
+  }
+
+
   if ($exclude_tags != '') {
     validate_array($exclude_tags)
     $arr_exclude_tags = join($exclude_tags, '\', \'')
-    $opt_exclude_tags = "  exclude_tags => ['${arr_exclude_tags}']\n"
+    $opt_exclude_tags = "${opt_indent}exclude_tags => ['${arr_exclude_tags}']\n"
   }
 
   if ($fields != '') {
     validate_array($fields)
     $arr_fields = join($fields, '\', \'')
-    $opt_fields = "  fields => ['${arr_fields}']\n"
+    $opt_fields = "${opt_indent}fields => ['${arr_fields}']\n"
   }
 
   if ($tags != '') {
     validate_array($tags)
     $arr_tags = join($tags, '\', \'')
-    $opt_tags = "  tags => ['${arr_tags}']\n"
+    $opt_tags = "${opt_indent}tags => ['${arr_tags}']\n"
   }
 
 
@@ -168,50 +208,50 @@ define logstash::output::loggly (
     if ! is_numeric($proxy_port) {
       fail("\"${proxy_port}\" is not a valid proxy_port parameter value")
     } else {
-      $opt_proxy_port = "  proxy_port => ${proxy_port}\n"
+      $opt_proxy_port = "${opt_indent}proxy_port => ${proxy_port}\n"
     }
   }
 
   if ($proxy_password != '') {
     validate_string($proxy_password)
-    $opt_proxy_password = "  proxy_password => \"${proxy_password}\"\n"
+    $opt_proxy_password = "${opt_indent}proxy_password => \"${proxy_password}\"\n"
   }
 
   if ($proxy_user != '') {
     validate_string($proxy_user)
-    $opt_proxy_user = "  proxy_user => \"${proxy_user}\"\n"
+    $opt_proxy_user = "${opt_indent}proxy_user => \"${proxy_user}\"\n"
   }
 
   if ($proxy_host != '') {
     validate_string($proxy_host)
-    $opt_proxy_host = "  proxy_host => \"${proxy_host}\"\n"
+    $opt_proxy_host = "${opt_indent}proxy_host => \"${proxy_host}\"\n"
   }
 
   if ($key != '') {
     validate_string($key)
-    $opt_key = "  key => \"${key}\"\n"
+    $opt_key = "${opt_indent}key => \"${key}\"\n"
   }
 
   if ($host != '') {
     validate_string($host)
-    $opt_host = "  host => \"${host}\"\n"
+    $opt_host = "${opt_indent}host => \"${host}\"\n"
   }
 
   if ($type != '') {
     validate_string($type)
-    $opt_type = "  type => \"${type}\"\n"
+    $opt_type = "${opt_indent}type => \"${type}\"\n"
   }
 
   if ($proto != '') {
     validate_string($proto)
-    $opt_proto = "  proto => \"${proto}\"\n"
+    $opt_proto = "${opt_indent}proto => \"${proto}\"\n"
   }
 
   #### Write config file
 
   file { $conffiles:
     ensure  => present,
-    content => "output {\n loggly {\n${opt_exclude_tags}${opt_fields}${opt_host}${opt_key}${opt_proto}${opt_proxy_host}${opt_proxy_password}${opt_proxy_port}${opt_proxy_user}${opt_tags}${opt_type} }\n}\n",
+    content => "output {\n${opt_cond_start} loggly {\n${opt_exclude_tags}${opt_fields}${opt_codec}${opt_host}${opt_key}${opt_proto}${opt_proxy_host}${opt_proxy_password}${opt_proxy_port}${opt_proxy_user}${opt_tags}${opt_type}${opt_cond_end}}\n}\n",
     mode    => '0440',
     notify  => Service[$services],
     require => Class['logstash::package', 'logstash::config']
