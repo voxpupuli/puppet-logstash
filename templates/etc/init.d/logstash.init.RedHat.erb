@@ -29,7 +29,7 @@ end
 
 . /etc/rc.d/init.d/functions
 
-PATH=/bin:/usr/bin:/sbin:/usr/sbin
+PATH=<%= @java_bin_dir %>:/bin:/usr/bin:/sbin:/usr/sbin
 NAME=<%=@proc_name%>
 DESC="Logstash Daemon <%=@desc_name%>"
 DEFAULT=/etc/sysconfig/$NAME
