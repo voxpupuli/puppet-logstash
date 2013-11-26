@@ -130,6 +130,7 @@ case "$1" in
          # Start Daemon
          start-stop-daemon --start -b --user "$LS_USER" -c "$LS_USER":"$LS_GROUP" \
            -d "$LS_HOME" --pidfile "$PID_FILE" --make-pidfile \
+           -N $NICE \
            --exec "$JAVA" -- $LS_JAVA_OPTS -jar $DAEMON $DAEMON_OPTS
 
          sleep 1
