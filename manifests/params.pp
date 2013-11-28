@@ -25,12 +25,11 @@
 #
 # === Authors
 #
-# * Richard Pijnenburg <mailto:richard@ispavailability.com>
+# * Richard Pijnenburg <mailto:richard.pijnenburg@elasticsearch.com>
 #
 class logstash::params {
 
   #### Default values for the parameters of the main module class, init.pp
-
 
   # ensure
   $ensure = 'present'
@@ -41,32 +40,44 @@ class logstash::params {
   # service status
   $status = 'enabled'
 
+  # restart on configuration change?
+  $restart_on_change = true
 
-  #### Defaults for other files
+  # Package dir. Temporary place to download the package to for installation
+  $package_dir = '/var/lib/logstash'
 
-  # Config directory
-  $configdir = '/etc/logstash'
-
-  # Logging dir
-  $logdir = '/var/log/logstash/'
-
-  # File user/group
+  # User and Group for the files and user to run the service as.
   $logstash_user  = 'root'
   $logstash_group = 'root'
+
+  # Purge configuration directory
+  $purge_confdir = true
+
+  ## init service provider
+
+  # init defaults
+  $init_defaults = undef
+
+
+  # Download tool
+  $dlcmd = 'wget -O'
+
+  $purge_package_dir = false
+
+  # package download timeout
+  $package_dl_timeout = 300 # 300 seconds is default of puppet
 
   #### Internal module values
 
   # packages
   case $::operatingsystem {
-    'RedHat', 'CentOS', 'Fedora', 'Scientific', 'Amazon': {
+    'RedHat', 'CentOS', 'Fedora', 'Scientific', 'Amazon', 'OracleLinux': {
       # main application
-      $package     = [ 'logstash' ]
-      $installpath = '/usr/share/logstash'
+      $package = [ 'logstash' ]
     }
     'Debian', 'Ubuntu': {
       # main application
-      $package     = [ 'logstash' ]
-      $installpath = '/var/lib/logstash'
+      $package = [ 'logstash' ]
     }
     default: {
       fail("\"${module_name}\" provides no package default value
@@ -76,11 +87,12 @@ class logstash::params {
 
   # service parameters
   case $::operatingsystem {
-    'RedHat', 'CentOS', 'Fedora', 'Scientific', 'Amazon': {
+    'RedHat', 'CentOS', 'Fedora', 'Scientific', 'Amazon', 'OracleLinux': {
       $service_name       = 'logstash'
       $service_hasrestart = true
       $service_hasstatus  = true
       $service_pattern    = $service_name
+      $service_providers  = [ 'init' ]
       $defaults_location  = '/etc/sysconfig'
     }
     'Debian', 'Ubuntu': {
@@ -88,7 +100,16 @@ class logstash::params {
       $service_hasrestart = true
       $service_hasstatus  = true
       $service_pattern    = $service_name
+      $service_providers  = [ 'init' ]
       $defaults_location  = '/etc/default'
+    }
+    'Darwin': {
+      $service_name       = 'FIXME/TODO'
+      $service_hasrestart = true
+      $service_hasstatus  = true
+      $service_pattern    = $service_name
+      $service_providers  = [ 'launchd' ]
+      $defaults_location  = false
     }
     default: {
       fail("\"${module_name}\" provides no service parameters

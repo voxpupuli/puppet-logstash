@@ -1,5 +1,10 @@
 # == Class: logstash::config
 #
+# FIXME/TODO Please check if you want to remove this class because it may be
+#            unnecessary for your module. Don't forget to update the class
+#            declarations and relationships at init.pp afterwards (the relevant
+#            parts are marked with "FIXME/TODO" comments).
+#
 # This class exists to coordinate all configuration related actions,
 # functionality and logical units in a central place.
 #
@@ -20,61 +25,28 @@
 #
 # === Authors
 #
-# * Richard Pijnenburg <mailto:richard@ispavailability.com>
+# * Richard Pijnenburg <mailto:richard.pijnenburg@elasticsearch.com>
 #
 class logstash::config {
+
+  #### Configuration
 
   File {
     owner => $logstash::logstash_user,
     group => $logstash::logstash_group
   }
 
-  # make sure he config dir exists
-  file { $logstash::configdir:
-    ensure => directory,
-    mode   => '0644'
+  $notify_service = $logstash::restart_on_change ? {
+    true  => Class['logstash::service'],
+    false => undef,
   }
 
-  if $logstash::multi_instance == true {
-
-    # Setup and manage config dirs for the instances
-    logstash::configdir { $logstash::instances:; }
-
-  } else {
-
-    # Manage the single config dir
-    file { "${logstash::configdir}/conf.d":
-      ensure  => directory,
-      mode    => '0640',
-      purge   => true,
-      recurse => true,
-      notify  => Service['logstash'],
-      require => File[$logstash::configdir]
-    }
-
-    if $logstash::conffile {
-      file { "${logstash::configdir}/conf.d/logstash.config":
-        ensure  => file,
-        mode    => '0440',
-        source  => $logstash::conffile,
-      }
-    }
-  }
-
-  $tmp_dir = "${logstash::installpath}/tmp"
-
-  #### Create the tmp dir
-  exec { 'create_tmp_dir':
-    cwd     => '/',
-    path    => ['/usr/bin', '/bin'],
-    command => "mkdir -p ${tmp_dir}",
-    creates => $tmp_dir;
-  }
-
-  file { $tmp_dir:
-    ensure  => directory,
-    mode    => '0640',
-    require => Exec[ 'create_tmp_dir' ]
+  file { 'logstash_config':
+    ensure  => 'present',
+    path    => '/etc/logstash/logstash.conf',
+    mode    => '0644',
+    content => template('logstash/config.erb'),
+    notify  => $notify_service,
   }
 
 }
