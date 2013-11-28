@@ -126,6 +126,7 @@ class logstash(
   # package download timeout
   if ! is_integer($package_dl_timeout) {
     fail("\"${package_dl_timeout}\" is not a valid number for 'package_dl_timeout' parameter")
+  }
 
   # service status
   if ! ($status in [ 'enabled', 'disabled', 'running', 'unmanaged' ]) {

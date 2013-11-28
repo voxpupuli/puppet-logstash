@@ -25,8 +25,8 @@ define logstash::condition::if(
   logstash_condition { $name:
     tag        => "LS_CONDITION_${::fqdn}",
     expression => $expression,
-    $children  => $children,
-    $require   => $require
+    children   => $children,
+    require    => $require
   }
 
 
