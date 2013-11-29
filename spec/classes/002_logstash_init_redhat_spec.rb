@@ -49,12 +49,12 @@ describe 'logstash', :type => 'class' do
 
         end
 
-        context 'via package_url setting' do
+        context 'via software_url setting' do
 
           context 'using puppet:/// schema' do
 
             let :params do {
-              :package_url => 'puppet:///path/to/package.rpm'
+              :software_url => 'puppet:///path/to/package.rpm'
             } end
 
             it { should contain_file('/var/lib/logstash/package.rpm').with(:source => 'puppet:///path/to/package.rpm', :backup => false) }
@@ -64,11 +64,11 @@ describe 'logstash', :type => 'class' do
           context 'using http:// schema' do
 
             let :params do {
-              :package_url => 'http://www.domain.com/path/to/package.rpm'
+              :software_url => 'http://www.domain.com/path/to/package.rpm'
             } end
 
-            it { should contain_exec('create_package_dir').with(:command => 'mkdir -p /var/lib/logstash') }
-            it { should contain_file('/var/lib/logstash').with(:purge => false, :force => false, :require => "Exec[create_package_dir]") }
+            it { should contain_exec('create_software_dir').with(:command => 'mkdir -p /var/lib/logstash') }
+            it { should contain_file('/var/lib/logstash').with(:purge => false, :force => false, :require => "Exec[create_software_dir]") }
             it { should contain_exec('download-package').with(:command => 'wget -O /var/lib/logstash/package.rpm http://www.domain.com/path/to/package.rpm 2> /dev/null', :require => 'File[/var/lib/logstash]') }
             it { should contain_package('logstash').with(:ensure => 'present', :source => '/var/lib/logstash/package.rpm', :provider => 'rpm') }
           end
@@ -76,11 +76,11 @@ describe 'logstash', :type => 'class' do
           context 'using https:// schema' do
 
             let :params do {
-              :package_url => 'https://www.domain.com/path/to/package.rpm'
+              :software_url => 'https://www.domain.com/path/to/package.rpm'
             } end
 
-            it { should contain_exec('create_package_dir').with(:command => 'mkdir -p /var/lib/logstash') }
-            it { should contain_file('/var/lib/logstash').with(:purge => false, :force => false, :require => 'Exec[create_package_dir]') }
+            it { should contain_exec('create_software_dir').with(:command => 'mkdir -p /var/lib/logstash') }
+            it { should contain_file('/var/lib/logstash').with(:purge => false, :force => false, :require => 'Exec[create_software_dir]') }
             it { should contain_exec('download-package').with(:command => 'wget -O /var/lib/logstash/package.rpm https://www.domain.com/path/to/package.rpm 2> /dev/null', :require => 'File[/var/lib/logstash]') }
             it { should contain_package('logstash').with(:ensure => 'present', :source => '/var/lib/logstash/package.rpm', :provider => 'rpm') }
           end
@@ -88,11 +88,11 @@ describe 'logstash', :type => 'class' do
           context 'using ftp:// schema' do
 
             let :params do {
-              :package_url => 'ftp://www.domain.com/path/to/package.rpm'
+              :software_url => 'ftp://www.domain.com/path/to/package.rpm'
             } end
 
-            it { should contain_exec('create_package_dir').with(:command => 'mkdir -p /var/lib/logstash') }
-            it { should contain_file('/var/lib/logstash').with(:purge => false, :force => false, :require => 'Exec[create_package_dir]') }
+            it { should contain_exec('create_software_dir').with(:command => 'mkdir -p /var/lib/logstash') }
+            it { should contain_file('/var/lib/logstash').with(:purge => false, :force => false, :require => 'Exec[create_software_dir]') }
             it { should contain_exec('download-package').with(:command => 'wget -O /var/lib/logstash/package.rpm ftp://www.domain.com/path/to/package.rpm 2> /dev/null', :require => 'File[/var/lib/logstash]') }
             it { should contain_package('logstash').with(:ensure => 'present', :source => '/var/lib/logstash/package.rpm', :provider => 'rpm') }
           end
@@ -100,11 +100,11 @@ describe 'logstash', :type => 'class' do
           context 'using file:// schema' do
 
             let :params do {
-              :package_url => 'file:/path/to/package.rpm'
+              :software_url => 'file:/path/to/package.rpm'
             } end
 
-            it { should contain_exec('create_package_dir').with(:command => 'mkdir -p /var/lib/logstash') }
-            it { should contain_file('/var/lib/logstash').with(:purge => false, :force => false, :require => 'Exec[create_package_dir]') }
+            it { should contain_exec('create_software_dir').with(:command => 'mkdir -p /var/lib/logstash') }
+            it { should contain_file('/var/lib/logstash').with(:purge => false, :force => false, :require => 'Exec[create_software_dir]') }
             it { should contain_file('/var/lib/logstash/package.rpm').with(:source => '/path/to/package.rpm', :backup => false) }
             it { should contain_package('logstash').with(:ensure => 'present', :source => '/var/lib/logstash/package.rpm', :provider => 'rpm') }
           end
