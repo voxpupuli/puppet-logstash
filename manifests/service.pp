@@ -134,6 +134,10 @@ class logstash::service {
 
         $instance_name = ''
         $configdir = "${logstash::configdir}/conf.d"
+        $embeddedwebflag = $logstash::embedded_web_server ? {
+          true    => ' -- web', 
+          default => '',
+        }
 
         case $::operatingsystem {
           'RedHat', 'CentOS', 'Fedora', 'Scientific', 'Amazon': {

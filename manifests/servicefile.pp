@@ -47,6 +47,10 @@ define logstash::servicefile (
       }
 
       $configdir = "${logstash::configdir}/${name}/config"
+      $embeddedwebflag = $logstash::embedded_web_server ? {
+        true    => ' -- web', 
+        default => '',
+      }
 
       # Do we get a custom init script?
       if $initfile != undef {
