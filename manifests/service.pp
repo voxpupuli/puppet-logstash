@@ -100,7 +100,7 @@ class logstash::service {
 
     } else {
 
-      if $logstash::provider == 'custom' {
+      if $logstash::provider == 'custom' or $logstash::provider == 'package' {
 
         file { "${logstash::params::defaults_location}/logstash":
           ensure => present,
