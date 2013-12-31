@@ -65,6 +65,7 @@ define logstash::configdir {
         ensure  => file,
         mode    => '0440',
         source  => $logstash::conffile[$name],
+        notify  => Service["logstash-${name}"],
       }
     }
 

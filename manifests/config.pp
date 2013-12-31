@@ -48,7 +48,7 @@ class logstash::config {
       mode    => '0640',
       purge   => true,
       recurse => true,
-      notify  => Service['logstash'],
+      notify  => Class['logstash::service'],
       require => File[$logstash::configdir]
     }
 
@@ -57,6 +57,7 @@ class logstash::config {
         ensure  => file,
         mode    => '0440',
         source  => $logstash::conffile,
+        notify  => Class['logstash::service'],
       }
     }
   }
