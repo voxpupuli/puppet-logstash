@@ -101,6 +101,8 @@ class logstash(
   $logstash_group = $logstash::params::logstash_group,
   $configdir      = $logstash::params::configdir,
   $conffile       = undef,
+  $manage_repo    = false,
+  $repo_version   = undef,
 ) inherits logstash::params {
 
   anchor {'logstash::begin': }
@@ -135,6 +137,10 @@ class logstash(
     } else {
       validate_string($defaultsfiles)
     }
+  }
+
+  if $manage_repo {
+    validate_string($repo_version)
   }
 
   #### Manage actions

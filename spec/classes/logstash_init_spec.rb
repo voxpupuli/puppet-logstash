@@ -29,6 +29,33 @@ describe 'logstash', :type => 'class' do
 
     end
 
+    context "With managed repositories" do
+
+      let :params do {
+        :manage_repo  => true,
+        :repo_version => '3.1'
+      } end
+
+      context "With osfamily Debian" do
+        let :facts do {
+          :osfamily => 'Debian',
+          :operatingsystem => 'Ubuntu'
+        } end
+        it { should contain_class('apt') }
+        it { should contain_apt__source('logstash').with(:release => 'stable', :repos => 'main', :location => 'http://packages.elasticsearch.org/logstash/3.1/debian') }
+      end
+
+      context "With osfamily RedHat" do
+        let :facts do {
+          :osfamily => 'RedHat',
+          :operatingsystem => 'RedHat'
+        } end
+
+        it { should contain_yumrepo('logstash').with(:baseurl => 'http://packages.elasticsearch.org/logstash/3.1/centos', :gpgkey => 'http://packages.elasticsearch.org/GPG-KEY-elasticsearch', :enabled => 1) }
+      end
+    end
+
+
     context "On an unknown OS" do
       let :facts do {
         :operatingsystem => 'Darwin'
