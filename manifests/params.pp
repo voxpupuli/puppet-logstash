@@ -61,12 +61,12 @@ class logstash::params {
     'RedHat', 'CentOS', 'Fedora', 'Scientific', 'Amazon': {
       # main application
       $package     = [ 'logstash' ]
-      $installpath = '/usr/share/logstash'
+      $installpath = '/opt/logstash'
     }
     'Debian', 'Ubuntu': {
       # main application
       $package     = [ 'logstash' ]
-      $installpath = '/var/lib/logstash'
+      $installpath = '/opt/logstash'
     }
     default: {
       fail("\"${module_name}\" provides no package default value
