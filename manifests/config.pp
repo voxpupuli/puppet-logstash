@@ -43,7 +43,7 @@ class logstash::config {
   } else {
 
     # Manage the single config dir
-    file { "${logstash::configdir}/conf.d":
+    file { [ "${logstash::configdir}/conf.d", "${logstash::configdir}/conf.d/patterns" ]:
       ensure  => directory,
       mode    => '0640',
       purge   => true,
