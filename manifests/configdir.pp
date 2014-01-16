@@ -37,7 +37,7 @@ define logstash::configdir {
     }
 
     #### Manage the config directory
-    file { $config_dir:
+    file { [ $config_dir, "${config_dir}/patterns" ]:
       ensure  => directory,
       mode    => '0440',
       purge   => true,

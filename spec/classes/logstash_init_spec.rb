@@ -23,6 +23,7 @@ describe 'logstash', :type => 'class' do
         it { should contain_service('logstash-agent') }
         it { should contain_file('/etc/init.d/logstash-agent') }
         it { should contain_file('/etc/logstash/agent/config') }
+        it { should contain_file('/etc/logstash/agent/config/patterns') }
         it { should contain_service('logstash').with(:enable => false, :ensure => 'stopped') }
 
       end
@@ -92,20 +93,20 @@ describe 'logstash', :type => 'class' do
       let :facts do {
         :operatingsystem => 'CentOS'
       } end
-  
+
       let :params do {
         :provider  => 'custom',
         :jarfile   => 'file:/path/to/logstash-1.1.9.jar',
         :installpath => '/opt/logstash'
       } end
-  
+
       it { should contain_file('/opt/logstash/jars/logstash-1.1.9.jar').with(
           :source => '/path/to/logstash-1.1.9.jar',
           :content => nil
       ) }
 
     end
-    
+
     context "with multi-instance" do
 
       context "and built in init script" do
@@ -256,6 +257,9 @@ describe 'logstash', :type => 'class' do
       it { should contain_file('/etc/logstash/agent/config') }
       it { should contain_file('/etc/logstash/indexer/config') }
 
+      it { should contain_file('/etc/logstash/agent/config/patterns') }
+      it { should contain_file('/etc/logstash/indexer/config/patterns') }
+
     end
 
     context "with separate defaults files" do
@@ -327,13 +331,14 @@ describe 'logstash', :type => 'class' do
 
     it { should contain_service('logstash') }
     it { should contain_file('/etc/logstash/conf.d') }
+    it { should contain_file('/etc/logstash/conf.d/patterns') }
     it { should_not contain_service('logstash-agent') }
     it { should_not contain_file('/etc/logstash/agent/config') }
 
   end
 
   context "use a config file instead of defines" do
-  
+
     let :facts do {
       :operatingsystem => 'CentOS'
     } end
