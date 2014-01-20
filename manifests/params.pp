@@ -44,7 +44,7 @@ class logstash::params {
   $restart_on_change = true
 
   # Purge configuration directory
-  $purge_configdir = true
+  $purge_configdir = false
 
   $purge_software_dir = false
 
@@ -56,7 +56,7 @@ class logstash::params {
   #### Internal module values
 
   # User and Group for the files and user to run the service as.
-  case $::osfamily {
+  case $::kernel {
     'Linux': {
       $logstash_user  = 'root'
       $logstash_group = 'root'
@@ -67,13 +67,13 @@ class logstash::params {
     }
     default: {
       fail("\"${module_name}\" provides no user/group default value
-           for \"${::osfamily}\"")
+           for \"${::kernel}\"")
     }
   }
 
   # Download tool
 
-  case $::osfamily {
+  case $::kernel {
     'Linux': {
       $download_tool = 'wget -O'
     }
@@ -82,12 +82,12 @@ class logstash::params {
     }
     default: {
       fail("\"${module_name}\" provides no download tool default value
-           for \"${::osfamily}\"")
+           for \"${::kernel}\"")
     }
   }
 
   # Different path definitions
-  case $::osfamily {
+  case $::kernel {
     'Linux': {
       $configdir = '/etc/logstash'
       $software_dir = '/opt/logstash/swdl'
@@ -100,7 +100,7 @@ class logstash::params {
     }
     default: {
       fail("\"${module_name}\" provides no config directory default value
-           for \"${::osfamily}\"")
+           for \"${::kernel}\"")
     }
   }
 

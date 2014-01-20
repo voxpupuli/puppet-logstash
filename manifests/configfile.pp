@@ -13,8 +13,15 @@
 # === Examples
 #
 #     logstash::configfile { 'apache':
-#       file  => template("${module_name}/path/to/apache.conf.erb"),
-#       order => 10
+#       content => template("${module_name}/path/to/apache.conf.erb"),
+#       order   => 10
+#     }
+#
+#     or with a puppet file source:
+#
+#     logstash::configfile { 'apache':
+#       source => 'puppet://path/to/apache.conf',
+#       order  => 10
 #     }
 #
 # === Authors
@@ -22,13 +29,15 @@
 # * Richard Pijnenburg <mailto:richard.pijnenburg@elasticsearch.com>
 #
 define logstash::configfile(
-  $file,
+  $content = undef,
+  $source = undef,
   $order = 10
 ) {
 
   @@file_fragment { $name:
     tag     => "LS_CONFIG_${::fqdn}",
-    content => $file,
+    content => $content,
+    source  => $source,
     order   => $order,
   }
 
