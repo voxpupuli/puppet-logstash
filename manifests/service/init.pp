@@ -123,7 +123,7 @@ define logstash::service::init{
   service { $name:
     ensure     => $service_ensure,
     enable     => $service_enable,
-    name       => $logstash::params::service_name,
+    name       => $name,
     hasstatus  => $logstash::params::service_hasstatus,
     hasrestart => $logstash::params::service_hasrestart,
     pattern    => $logstash::params::service_pattern,

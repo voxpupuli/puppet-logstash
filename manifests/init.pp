@@ -3,8 +3,6 @@
 # This class is able to install or remove logstash on a node.
 # It manages the status of the related service.
 #
-# [Add description - What does this module do on a node?] FIXME/TODO
-#
 #
 # === Parameters
 #
@@ -94,24 +92,23 @@ class logstash(
   $version             = false,
   $software_provider   = 'package',
   $software_url        = undef,
-  $software_dir        = $logstash::params::software_dl_dir,
-  $purge_software_dir  = $logstash::params::purge_software_dl_dir,
+  $software_dir        = $logstash::params::software_dir,
+  $purge_software_dir  = $logstash::params::purge_software_dir,
   $software_dl_timeout = $logstash::params::software_dl_timeout,
   $logstash_user       = $logstash::params::logstash_user,
   $logstash_group      = $logstash::params::logstash_group,
-  $purge_confdir       = $logstash::params::purge_confdir,
+  $configdir           = $logstash::params::configdir,
+  $purge_configdir     = $logstash::params::purge_configdir,
+  $java_install        = false,
+  $java_package        = undef,
   $service_provider    = 'init',
-  $init_defaults       = $logstash::params::init_defaults,
+  $init_defaults       = undef,
   $init_defaults_file  = undef,
   $init_template       = undef,
-  $multi_instance      = false,
-  $instances           = [ 'agent' ],
-  $confdir             = $logstash::params::confdir,
 ) inherits logstash::params {
 
   anchor {'logstash::begin': }
   anchor {'logstash::end': }
-
 
   #### Validate parameters
 
@@ -124,8 +121,8 @@ class logstash(
   validate_bool($autoupgrade)
 
   # package download timeout
-  if ! is_integer($package_dl_timeout) {
-    fail("\"${package_dl_timeout}\" is not a valid number for 'package_dl_timeout' parameter")
+  if ! is_integer($software_dl_timeout) {
+    fail("\"${software_dl_timeout}\" is not a valid number for 'software_dl_timeout' parameter")
   }
 
   # service status
@@ -137,7 +134,7 @@ class logstash(
   validate_bool($restart_on_change)
 
   # purge conf dir
-  validate_bool($purge_confdir)
+  validate_bool($purge_configdir)
 
   if ! ($service_provider in $logstash::params::service_providers) {
     fail("\"${service_provider}\" is not a valid provider for \"${::operatingsystem}\"")
@@ -149,12 +146,20 @@ class logstash(
   class { 'logstash::package': }
 
   # configuration
-  class { 'logstash::config': }   # FIXME/TODO: Remove this declaration or this comment. See "config.pp" for more information.
+  class { 'logstash::config': }
 
   # service(s)
   class { 'logstash::service': }
 
+  if $java_install == true {
+    # Install java
+    class { 'logstash::java': }
 
+    # ensure we first install java and then manage the service
+    Anchor['logstash::begin']
+    -> Class['logstash::java']
+    -> Class['logstash::service']
+  }
 
   #### Manage relationships
 
@@ -163,11 +168,11 @@ class logstash(
     # we need the software before configuring it
     Anchor['logstash::begin']
     -> Class['logstash::package']
-    -> Class['logstash::config'] # FIXME/TODO: Remove this relationship or this comment. See "config.pp" for more information.
+    -> Class['logstash::config']
 
     # we need the software and a working configuration before running a service
     Class['logstash::package'] -> Class['logstash::service']
-    Class['logstash::config']  -> Class['logstash::service']  # FIXME/TODO: Remove this relationship or this comment. See "config.pp" for more information.
+    Class['logstash::config']  -> Class['logstash::service']
 
     Class['logstash::service'] -> Anchor['logstash::end']
 

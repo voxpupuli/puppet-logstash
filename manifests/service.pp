@@ -31,7 +31,7 @@ class logstash::service {
   case $logstash::service_provider {
 
     init: {
-      logstash::service::init { 'logstash': }
+      logstash::service::init { $logstash::params::service_name: }
     }
 
     default: {

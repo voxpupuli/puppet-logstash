@@ -1,10 +1,5 @@
 # == Class: logstash::config
 #
-# FIXME/TODO Please check if you want to remove this class because it may be
-#            unnecessary for your module. Don't forget to update the class
-#            declarations and relationships at init.pp afterwards (the relevant
-#            parts are marked with "FIXME/TODO" comments).
-#
 # This class exists to coordinate all configuration related actions,
 # functionality and logical units in a central place.
 #
@@ -41,12 +36,47 @@ class logstash::config {
     false => undef,
   }
 
-  file { 'logstash_config':
-    ensure  => 'present',
-    path    => '/etc/logstash/logstash.conf',
-    mode    => '0644',
-    content => template('logstash/config.erb'),
-    notify  => $notify_service,
+  if ( $logstash::ensure == 'present' ) {
+
+    $patterns_dir = "${logstash::configdir}/patterns"
+    $plugins_dir = "${logstash::configdir}/plugins"
+
+    file { $logstash::configdir:
+      ensure  => directory,
+      purge   => $logstash::purge_configdir,
+      recurse => $logstash::purge_configdir
+    }
+
+    file_concat { 'ls-config':
+      ensure  => 'present',
+      tag     => "LS_CONFIG_${::fqdn}",
+      path    => "${logstash::configdir}/logstash.conf",
+      owner   => $logstash::logstash_user,
+      group   => $logstash::logstash_group,
+      mode    => '0644',
+      notify  => $notify_service,
+      require => File[$logstash::configdir]
+    }
+
+    file { $patterns_dir:
+      ensure  => directory,
+      require => File[$logstash::configdir]
+    }
+
+    file { $plugins_dir:
+      ensure  => directory,
+      require => File[$logstash::configdir]
+    }
+
+
+  } elsif ( $logstash::ensure == 'absent' ) {
+
+    file { $logstash::configdir:
+      ensure  => 'absent',
+      recurse => true,
+      force   => true
+    }
+
   }
 
 }

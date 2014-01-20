@@ -43,31 +43,66 @@ class logstash::params {
   # restart on configuration change?
   $restart_on_change = true
 
-  # Package dir. Temporary place to download the package to for installation
-  $package_dir = '/var/lib/logstash'
-
-  # User and Group for the files and user to run the service as.
-  $logstash_user  = 'root'
-  $logstash_group = 'root'
-
   # Purge configuration directory
-  $purge_confdir = true
+  $purge_configdir = true
 
-  ## init service provider
+  $purge_software_dir = false
 
-  # init defaults
-  $init_defaults = undef
-
-
-  # Download tool
-  $dlcmd = 'wget -O'
-
-  $purge_package_dir = false
+  $purge_software_dl_dir = false
 
   # package download timeout
-  $package_dl_timeout = 300 # 300 seconds is default of puppet
+  $software_dl_timeout = 300 # 300 seconds is default of puppet
 
   #### Internal module values
+
+  # User and Group for the files and user to run the service as.
+  case $::osfamily {
+    'Linux': {
+      $logstash_user  = 'root'
+      $logstash_group = 'root'
+    }
+    'Darwin': {
+      $logstash_user  = 'root'
+      $logstash_group = 'wheel'
+    }
+    default: {
+      fail("\"${module_name}\" provides no user/group default value
+           for \"${::osfamily}\"")
+    }
+  }
+
+  # Download tool
+
+  case $::osfamily {
+    'Linux': {
+      $download_tool = 'wget -O'
+    }
+    'Darwin': {
+      $download_tool = 'curl -o'
+    }
+    default: {
+      fail("\"${module_name}\" provides no download tool default value
+           for \"${::osfamily}\"")
+    }
+  }
+
+  # Different path definitions
+  case $::osfamily {
+    'Linux': {
+      $configdir = '/etc/logstash'
+      $software_dir = '/opt/logstash/swdl'
+      $installpath = '/opt/logstash'
+    }
+    'Darwin': {
+      $configdir = '/Library/Application Support/Logstash'
+      $software_dir = '/Library/Logstash/swdl'
+      $installpath = '/Library/Logstash'
+    }
+    default: {
+      fail("\"${module_name}\" provides no config directory default value
+           for \"${::osfamily}\"")
+    }
+  }
 
   # packages
   case $::operatingsystem {
@@ -104,7 +139,7 @@ class logstash::params {
       $defaults_location  = '/etc/default'
     }
     'Darwin': {
-      $service_name       = 'FIXME/TODO'
+      $service_name       = 'net.logstash'
       $service_hasrestart = true
       $service_hasstatus  = true
       $service_pattern    = $service_name
