@@ -34,7 +34,7 @@ define logstash::configfile(
   $order = 10
 ) {
 
-  @@file_fragment { $name:
+  file_fragment { $name:
     tag     => "LS_CONFIG_${::fqdn}",
     content => $content,
     source  => $source,

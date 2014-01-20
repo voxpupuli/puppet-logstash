@@ -12,7 +12,7 @@ describe 'logstash', :type => 'class' do
 
         let :facts do {
           :operatingsystem => distro,
-          :osfamily => 'Linux'
+          :kernel => 'Linux'
         } end
 
         it { should contain_package('openjdk-7-jre-headless') }
@@ -28,7 +28,7 @@ describe 'logstash', :type => 'class' do
 
         let :facts do {
           :operatingsystem => distro,
-          :osfamily => 'Linux'
+          :kernel => 'Linux'
         } end
 
         it { should contain_package('java-1.7.0-openjdk') }
@@ -40,7 +40,7 @@ describe 'logstash', :type => 'class' do
 
       let :facts do {
         :operatingsystem => 'Windows',
-        :osfamily => 'Windows'
+        :kernel => 'Windows'
       } end
 
       it { expect { should raise_error(Puppet::Error) } }
@@ -51,7 +51,7 @@ describe 'logstash', :type => 'class' do
 
       let :facts do {
         :operatingsystem => 'CentOS',
-        :osfamily => 'Linux'
+        :kernel => 'Linux'
       } end
 
       let :params do {

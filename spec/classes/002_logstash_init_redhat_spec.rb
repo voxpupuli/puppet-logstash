@@ -8,7 +8,7 @@ describe 'logstash', :type => 'class' do
 
       let :facts do {
         :operatingsystem => distro,
-        :osfamily => 'Linux'
+        :kernel => 'Linux'
       } end
 
       context 'Main class' do
