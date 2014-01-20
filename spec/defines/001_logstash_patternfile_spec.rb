@@ -4,7 +4,7 @@ describe 'logstash::patternfile', :type => 'define' do
 
   let :facts do {
     :operatingsystem => 'CentOS',
-    :osfamily => 'Linux'
+    :kernel => 'Linux'
   } end
   
   let(:title) { 'foopatterns' }
