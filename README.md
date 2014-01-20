@@ -1,14 +1,12 @@
 # puppet-logstash
 
-A puppet module for managing and configuring Logstash
-
-http://www.logstash.net
+A Puppet module for managing and configuring [Logstash](http://logstash.net/).
 
 [![Build Status](https://travis-ci.org/logstash/puppet-logstash.png?branch=master)](https://travis-ci.org/logstash/puppet-logstash)
 
 ## Versions
 
-This overview shows you which puppet module and logstash version work together.
+This overview shows you which Puppet module and Logstash version work together.
 
     ------------------------------------
     | Puppet module | Logstash         |
@@ -22,139 +20,136 @@ This overview shows you which puppet module and logstash version work together.
     | 0.4.0         | 1.2.x - 1.3.x    |
     ------------------------------------
 
-## Usage
+## Requirements
 
-Installation, make sure service is running and will be started at boot time:
+* Puppet 2.7.x or better.
+* The [stdlib](https://forge.puppetlabs.com/puppetlabs/stdlib) Puppet library.
+* The [file_concat](https://forge.puppetlabs.com/ispavailability/file_concat) Puppet library.
+
+## Usage Examples
+
+The minimum viable configuration ensures that the service is running and that it will be started at boot time:
 
      class { 'logstash': }
 
-Install a certain version:
+Specify a particular package (version) to be installed:
 
      class { 'logstash':
        version => '1.3.3-1_centos'
      }
 
-This assumes an logstash package is already available to your distribution's package manager. To install it in a different way:
+In the absense of an appropriate package for your environment it is possible to install from other sources as well.
 
-To download from http/https/ftp source:
+http/https/ftp source:
 
      class { 'logstash':
        package_url => 'http://download.elasticsearch.org/logstash/logstash/packages/centos/logstash-1.3.3-1_centos.noarch.rpm'
      }
 
-To download from a puppet:// source:
+`puppet://` source:
 
      class { 'logstash':
        package_url => 'puppet:///path/to/logstash-1.3.3-1_centos.noarch.rpm'
      }
 
-Or use a local file source:
+Local file source:
 
      class { 'logstash':
        package_url => 'file:/path/to/logstash-1.3.3-1_centos.noarch.rpm'
      }
 
-Automatic upgrade of the software ( default set to false ):
+Attempt to upgrade Logstash if a newer package is detected (`false` by default):
 
      class { 'logstash':
        autoupgrade => true
      }
 
-Removal/decommissioning:
-
-     class { 'logstash':
-       ensure => 'absent'
-     }
-
-Install everything but disable service(s) afterwards:
+Install everything but *disable* the service (useful for pre-configuring systems):
 
      class { 'logstash':
        status => 'disabled'
      }
 
-Disable automated restart of Elasticsearch on config file change:
+Under normal circumstances a modification to the Logstash configuration will trigger a restart of the service. This behaviour can be disabled:
 
      class { 'logstash':
        restart_on_change => false
      }
+     
+Disable and remove Logstash entirely:
 
-## Configuration
+     class { 'logstash':
+       ensure => 'absent'
+     }     
 
-For configuration you can use a single large file or multiple smaller files.
-The `file` variable expects direct content or a template.
+## Configuration Overview
 
+The Logstash configuration can be supplied as a single static file or dynamically built from multiple smaller files.
+
+The basic usage is identical in either case: simply declare a `file` attribute as you would the [`content`](http://docs.puppetlabs.com/references/latest/type.html#file-attribute-content) attribute of the `file` type, meaning either direct content or a template.
 
      logstash::configfile { 'configname':
        file => template('path/to/config.file')
      }
 
-If you have multiple smaller files you can set the ordering of the files as they show up in the end result.
-This allows you to split the different files into different locations / modules.
+To dynamically build a configuration, simply declare the `order` in which each section should appear - the lower the number the earlier it will appear in the resulting file (this should be a [familiar idiom](https://en.wikipedia.org/wiki/BASIC) for most).
 
      logstash::configfile { 'input_redis':
        file  => template('input_redis.erb'),
-       order => 1
+       order => 10
      }
 
      logstash::configfile { 'filter_apache':
        file  => template('filter_apache.erb'),
-       order => 2
+       order => 20
      }
 
      logstash::configfile { 'output_es':
        file  => template('output_es_cluster.erb')
-       order => 3
+       order => 30
      }
 
-## Pattern files
+## Patterns
 
-Grok and other plugins make the use of patterns.
-Allot of them have been included into Logstash but sometimes there is need for extra patterns.
-This define allows you to manage this and upload them to the machine.
+Many plugins (notably [Grok](http://logstash.net/docs/latest/filters/grok)) use *patterns*. Many are [included](https://github.com/logstash/logstash/tree/master/patterns) in Logstash already; however, additional site-specific patterns be declared (you are, of course, encouraged to contribute new patterns to the community).
 
-Note: you will still need to define the path into the config.
+**N.B.** As of Logstash 1.2 the path to the additional patterns needs to be configured explicitly in the Grok configuration.
 
      logstash::patternfile { 'extra_patterns':
        source => 'puppet:///path/to/extra_pattern'
      }
 
-if you want the actual file name to be different then the source:
+By default the resulting filename of the pattern will match that of the source. This can be over-ridden:
 
      logstash::patternfile { 'extra_patterns_firewall':
        source   => 'puppet:///path/to/extra_patterns_firewall_v1',
        filename => 'extra_patterns_firewall'
      }
 
-## Java install
+## Java Install
 
-For those that have no separate module for installation of java:
+Most sites will manage Java seperately; however, this module can attempt to install Java as well.
 
      class { 'logstash':
        java_install => true
      }
 
-If you want a specific java package/version:
+Specify a particular Java package (version) to be installed:
 
      class { 'logstash':
        java_install => true,
        java_package => 'packagename'
      }
 
-## Service providers
+## Service Management
 
-Currently only the 'init' service provider is supported but others can be implemented quite easy.
+Currently only the basic SysV-style [init](https://en.wikipedia.org/wiki/Init) service provider is supported but others could be implemented relatively easily (pull requests welcome).
 
 ### init
 
-#### Defaults file
+#### Defaults File
 
-You can populate the defaults file ( /etc/defaults/logstash or /etc/sysconfig/logstash )
-
-##### hash representation
-
-     class { 'logstash':
-       init_defaults => { 'LS_USER' => 'logstash', 'LS_GROUP' => 'logstash' }
-     }
+The *defaults* file (`/etc/defaults/logstash` or `/etc/sysconfig/logstash`) for the Logstash service can be populated as necessary. This can either be a static file resource or a simple key value-style  [hash](http://docs.puppetlabs.com/puppet/latest/reference/lang_datatypes.html#hashes) object, the latter being particularly well-suited to pulling out of a data source such as Hiera.
 
 ##### file source
 
@@ -162,3 +157,13 @@ You can populate the defaults file ( /etc/defaults/logstash or /etc/sysconfig/lo
        init_defaults_file => 'puppet:///path/to/defaults'
      }
 
+##### hash representation
+
+     $config_hash = {
+       'LS_USER' => 'logstash',
+       'LS_GROUP' => 'logstash',
+     }
+
+     class { 'logstash':
+       init_defaults => $config_hash
+     }
