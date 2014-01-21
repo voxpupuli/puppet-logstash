@@ -1,3 +1,19 @@
+0.4.0 ( Jan 21, 2014 )
+  ** NOTE: This is a backwards compability breaking release !! **
+  Large rewrite of the entire module described below
+  Make the core more dynamic for different service providers
+  Add better testing and devided into different files
+  Add different ways to install the package except from the repository ( puppet/http/https/ftp/file )
+  Update java class to install openjdk 1.7
+  Add validation of templates
+  Added more test scenario's
+  Added puppet parser validate task for added checking
+  Improve module removing when set to absent
+  Updated readme
+  Doc improvements by dan ( phrawzty )
+  Added define for managing pattern files
+  Added define for managing plugins
+
 0.3.4 ( Oct 14, 2013 )
   Fixing purging of created directories ( PR #61, #64 by Kayla Green and Jason Koppe )
   Documentation fixes ( PR #65, #67 by Kristian Glass and Andreas Paul )
