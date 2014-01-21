@@ -62,9 +62,9 @@
 # * Richard Pijnenburg <mailto:richard.pijnenburg@elasticsearch.com>
 #
 define logstash::plugin (
-  $ensure,
   $source,
   $type,
+  $ensure = 'present',
   $filename = '',
 ){
 
