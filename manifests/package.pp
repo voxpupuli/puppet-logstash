@@ -20,15 +20,10 @@
 #
 # === Authors
 #
-# * Richard Pijnenburg <mailto:richard@ispavailability.com>
+# * Richard Pijnenburg <mailto:richard.pijnenburg@elasticsearch.com>
 #
 class logstash::package {
 
-  File {
-    owner => 'root',
-    group => 'root',
-    mode  => '0644'
-  }
 
   #### Package management
 
@@ -44,97 +39,83 @@ class logstash::package {
       }
 
     } else {
+
       # install specific version
       $package_ensure = $logstash::version
 
     }
 
-  # set params: removal
-  } else {
-    $package_ensure = 'purged'
-  }
+    # action
+    if ($logstash::software_url != undef) {
 
-  if ($logstash::provider == 'package') {
-    # We are using a package provided by a repository
-    package { $logstash::params::package:
-      ensure => $package_ensure,
-    }
-
-  } elsif ($logstash::provider == 'custom') {
-    if $logstash::ensure == 'present' {
-
-      # We are using an external provided jar file
-      if $logstash::jarfile == undef {
-        fail('logstash needs jarfile argument when using custom provider')
+      case $logstash::software_provider {
+        'package': { $before = Package[$logstash::params::package]  }
+        default:   { fail("software provider \"${logstash::software_provider}\".") }
       }
 
-      if $logstash::installpath == undef {
-        fail('logstash need installpath argument when using custom provider')
-      }
+      $software_dir = $logstash::software_dir
 
-      $jardir = "${logstash::installpath}/jars"
-
-      # Create directory to place the jar file
-      exec { 'create_install_dir':
+      # Create directory to place the package file
+      exec { 'create_software_dir':
         cwd     => '/',
         path    => ['/usr/bin', '/bin'],
-        command => "mkdir -p ${logstash::installpath}",
-        creates => $logstash::installpath;
+        command => "mkdir -p ${logstash::software_dir}",
+        creates => $logstash::software_dir;
       }
 
-      # Purge old jar files
-      file { $jardir:
+      file { $software_dir:
         ensure  => 'directory',
-        purge   => $logstash::purge_jars,
-        force   => $logstash::purge_jars,
-        require => Exec['create_install_dir'],
+        purge   => $logstash::purge_software_dir,
+        force   => $logstash::purge_software_dir,
+        require => Exec['create_software_dir'],
       }
 
-      # Create log directory
-      exec { 'create_log_dir':
-        cwd     => '/',
-        path    => ['/usr/bin', '/bin'],
-        command => "mkdir -p ${logstash::params::logdir}",
-        creates => $logstash::params::logdir;
-      }
-
-      file { $logstash::params::logdir:
-        ensure  => 'directory',
-        owner   => $logstash::logstash_user,
-        group   => $logstash::logstash_group,
-        require => Exec['create_log_dir'],
-      }
-
-      # Place the jar file
-      $filenameArray = split($logstash::jarfile, '/')
+      $filenameArray = split($logstash::software_url, '/')
       $basefilename = $filenameArray[-1]
 
-      $sourceArray = split($logstash::jarfile, ':')
+      $sourceArray = split($logstash::software_url, ':')
       $protocol_type = $sourceArray[0]
 
+      $extArray = split($basefilename, '\.')
+      $ext = $extArray[-1]
+
+      $sw_source = "${software_dir}/${basefilename}"
+
       case $protocol_type {
+
         puppet: {
 
-          file { "${jardir}/${basefilename}":
+          file { $sw_source:
             ensure  => present,
-            source  => $logstash::jarfile,
-            require => File[$jardir],
+            source  => $logstash::software_url,
+            require => File[$software_dir],
             backup  => false,
+            before  => $before
           }
-
-          File["${jardir}/${basefilename}"] -> File["${logstash::installpath}/logstash.jar"]
 
         }
         ftp, https, http: {
 
-          exec { 'download-logstash':
-            command => "wget -O ${jardir}/${basefilename} ${logstash::jarfile} 2> /dev/null",
+          exec { 'download-package':
+            command => "${logstash::params::download_tool} ${software_dir}/${basefilename} ${logstash::software_url} 2> /dev/null",
             path    => ['/usr/bin', '/bin'],
-            creates => "${jardir}/${basefilename}",
-            require => File[$jardir],
+            creates => $sw_source,
+            timeout => $logstash::software_dl_timeout,
+            require => File[$software_dir],
+            before  => $before
           }
 
-          Exec['download-logstash'] -> File["${logstash::installpath}/logstash.jar"]
+        }
+        file: {
+
+          $source_path = $sourceArray[1]
+          file { $sw_source:
+            ensure  => present,
+            source  => $source_path,
+            require => File[$software_dir],
+            backup  => false,
+            before  => $before
+          }
 
         }
         # Manage local jar file => file:/my/local/path/to/logstash.jar
@@ -152,27 +133,42 @@ class logstash::package {
 
         }
         default: {
-          fail('Protocol must be file, puppet, http, https, or ftp.')
+          fail("Protocol must be puppet, file, http, https, or ftp. You have given \"${protocol_type}\"")
         }
       }
 
-      # Create symlink
-      file { "${logstash::installpath}/logstash.jar":
-        ensure  => 'link',
-        target  => "${jardir}/${basefilename}",
-        backup  => false
+      if ($logstash::software_provider == 'package') {
+
+        case $ext {
+          'deb':   { $pkg_provider = 'dpkg'  }
+          'rpm':   { $pkg_provider = 'rpm'   }
+          default: { fail("Unknown file extention \"${ext}\".") }
+        }
+
       }
 
     } else {
-
-      # If not present, remove installpath, leave logfiles
-      file { $logstash::installpath:
-        ensure  => 'absent',
-        force   => true,
-        recurse => true,
-        purge   => true,
-      }
+      $sw_source = undef
+      $pkg_provider = undef
     }
 
+  } else { # Package removal
+    $sw_source = undef
+    $pkg_provider = undef
+    $package_ensure = 'purged'
   }
+
+
+  if ($logstash::software_provider == 'package') {
+
+    package { $logstash::params::package:
+      ensure   => $package_ensure,
+      source   => $sw_source,
+      provider => $pkg_provider
+    }
+
+  } else {
+    fail("\"${logstash::software_provider}\" is not supported")
+  }
+
 }

@@ -20,61 +20,63 @@
 #
 # === Authors
 #
-# * Richard Pijnenburg <mailto:richard@ispavailability.com>
+# * Richard Pijnenburg <mailto:richard.pijnenburg@elasticsearch.com>
 #
 class logstash::config {
+
+  #### Configuration
 
   File {
     owner => $logstash::logstash_user,
     group => $logstash::logstash_group
   }
 
-  # make sure he config dir exists
-  file { $logstash::configdir:
-    ensure => directory,
-    mode   => '0644'
+  $notify_service = $logstash::restart_on_change ? {
+    true  => Class['logstash::service'],
+    false => undef,
   }
 
-  if $logstash::multi_instance == true {
+  if ( $logstash::ensure == 'present' ) {
 
-    # Setup and manage config dirs for the instances
-    logstash::configdir { $logstash::instances:; }
+    $patterns_dir = "${logstash::configdir}/patterns"
+    $plugins_dir = "${logstash::configdir}/plugins"
 
-  } else {
-
-    # Manage the single config dir
-    file { "${logstash::configdir}/conf.d":
+    file { $logstash::configdir:
       ensure  => directory,
-      mode    => '0640',
-      purge   => true,
-      recurse => true,
-      notify  => Service['logstash'],
+      purge   => $logstash::purge_configdir,
+      recurse => $logstash::purge_configdir
+    }
+
+    file_concat { 'ls-config':
+      ensure  => 'present',
+      tag     => "LS_CONFIG_${::fqdn}",
+      path    => "${logstash::configdir}/logstash.conf",
+      owner   => $logstash::logstash_user,
+      group   => $logstash::logstash_group,
+      mode    => '0644',
+      notify  => $notify_service,
       require => File[$logstash::configdir]
     }
 
-    if $logstash::conffile {
-      file { "${logstash::configdir}/conf.d/logstash.config":
-        ensure  => file,
-        mode    => '0440',
-        source  => $logstash::conffile,
-      }
+    file { $patterns_dir:
+      ensure  => directory,
+      require => File[$logstash::configdir]
     }
-  }
 
-  $tmp_dir = "${logstash::installpath}/tmp"
+    file { [$plugins_dir, "${plugins_dir}/logstash", "${plugins_dir}/logstash/inputs", "${plugins_dir}/logstash/outputs", "${plugins_dir}/logstash/filters", "${plugins_dir}/logstash/codecs" ]:
+      ensure  => directory,
+      require => File[$logstash::configdir]
+    }
 
-  #### Create the tmp dir
-  exec { 'create_tmp_dir':
-    cwd     => '/',
-    path    => ['/usr/bin', '/bin'],
-    command => "mkdir -p ${tmp_dir}",
-    creates => $tmp_dir;
-  }
 
-  file { $tmp_dir:
-    ensure  => directory,
-    mode    => '0640',
-    require => Exec[ 'create_tmp_dir' ]
+  } elsif ( $logstash::ensure == 'absent' ) {
+
+    file { $logstash::configdir:
+      ensure  => 'absent',
+      recurse => true,
+      force   => true
+    }
+
   }
 
 }
