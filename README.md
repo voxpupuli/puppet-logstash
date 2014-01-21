@@ -126,6 +126,25 @@ By default the resulting filename of the pattern will match that of the source. 
        filename => 'extra_patterns_firewall'
      }
 
+## Plugins
+
+Sometimes you need a custom plugin ( input, output, filter or codec ) that suits your needs which isn't included in Logstash.
+
+     logstash::plugin { 'myplugin':
+       ensure => 'present',
+       type   => 'input',
+       source => 'puppet:///path/to/my/custom/plugin.rb'
+     }
+
+By default the resulting filename of the pattern will match that of the source. This can be over-ridden:
+
+     logstash::plugin { 'myplugin':
+       ensure   => 'present',
+       type     => 'output',
+       source   => 'puppet:///path/to/my/custom/plugin_v1.rb',
+       filename => 'plugin.rb'
+     }
+
 ## Java Install
 
 Most sites will manage Java seperately; however, this module can attempt to install Java as well.
