@@ -21,6 +21,11 @@ describe 'logstash', :type => 'class' do
         it { should contain_file('/etc/logstash') }
         it { should contain_file('/etc/logstash/patterns') }
         it { should contain_file('/etc/logstash/plugins') }
+	it { should contain_file('/etc/logstash/plugins/logstash') }
+        it { should contain_file('/etc/logstash/plugins/logstash/inputs') }
+        it { should contain_file('/etc/logstash/plugins/logstash/outputs') }
+        it { should contain_file('/etc/logstash/plugins/logstash/filters') }
+        it { should contain_file('/etc/logstash/plugins/logstash/codecs') }
 
       end
 
