@@ -111,7 +111,7 @@ To dynamically build a configuration, simply declare the `order` in which each s
 
 ## Patterns
 
-Many plugins (notably [Grok](http://logstash.net/docs/latest/filters/grok)) use *patterns*. Many are [included](https://github.com/logstash/logstash/tree/master/patterns) in Logstash already; however, additional site-specific patterns be declared (you are, of course, encouraged to contribute new patterns to the community).
+Many plugins (notably [Grok](http://logstash.net/docs/latest/filters/grok)) use *patterns*. Many are [included](https://github.com/logstash/logstash/tree/master/patterns) in Logstash already; however, additional site-specific patterns can be easily managed (you are, of course, encouraged to contribute new patterns to the community).
 
 **N.B.** As of Logstash 1.2 the path to the additional patterns needs to be configured explicitly in the Grok configuration.
 
@@ -128,7 +128,7 @@ By default the resulting filename of the pattern will match that of the source. 
 
 ## Plugins
 
-Sometimes you need a custom plugin ( input, output, filter or codec ) that suits your needs which isn't included in Logstash.
+Like the patterns above, Logstash comes with a large number of [plugins](http://logstash.net/docs/1.3.3/); however, additional site-specific plugins can be easily managed (again, you are encouraged to contribute new plugins to the community).
 
      logstash::plugin { 'myplugin':
        ensure => 'present',
@@ -136,7 +136,7 @@ Sometimes you need a custom plugin ( input, output, filter or codec ) that suits
        source => 'puppet:///path/to/my/custom/plugin.rb'
      }
 
-By default the resulting filename of the pattern will match that of the source. This can be over-ridden:
+By default the resulting filename of the plugin will match that of the source. This can be over-ridden:
 
      logstash::plugin { 'myplugin':
        ensure   => 'present',
