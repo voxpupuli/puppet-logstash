@@ -128,7 +128,7 @@ By default the resulting filename of the pattern will match that of the source. 
 
 ## Plugins
 
-Like the patterns above, Logstash comes with a large number of [plugins](http://logstash.net/docs/1.3.3/); however, additional site-specific plugins can be easily managed (again, you are encouraged to contribute new plugins to the community).
+Like the patterns above, Logstash comes with a large number of [plugins](http://logstash.net/docs/latest/); however, additional site-specific plugins can be easily managed (again, you are encouraged to contribute new plugins to the community).
 
      logstash::plugin { 'myplugin':
        ensure => 'present',
