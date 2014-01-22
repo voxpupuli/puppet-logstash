@@ -164,6 +164,17 @@ class logstash(
     -> Class['logstash::service']
   }
 
+  if $manage_repo == true {
+    # Set up repositories
+    class { 'logstash::repo': }
+
+    # Ensure that we set up the repositories before trying to install
+    # the packages
+    Anchor['logstash::begin']
+    -> Class['logstash::repo']
+    -> Class['logstash::package']
+  }
+
   #### Manage relationships
 
   if $ensure == 'present' {

@@ -56,30 +56,6 @@ class logstash::package {
 
   if ($logstash::provider == 'package') {
 
-    if ($logstash::manage_repo) {
-      if ($::osfamily == 'Debian') {
-        if !defined(Class['apt']) {
-          class { 'apt': }
-        }
-        apt::source { 'logstash':
-          location    => "http://packages.elasticsearch.org/logstash/${logstash::repo_version}/debian",
-          release     => 'stable',
-          repos       => 'main',
-          key         => 'D88E42B4',
-          key_server  => 'pgp.mit.edu',
-          include_src => false,
-          before      => Package[$logstash::params::package],
-        }
-      } elsif ($::osfamily == 'RedHat') {
-        yumrepo { 'logstash':
-          baseurl  => "http://packages.elasticsearch.org/logstash/${logstash::repo_version}/centos",
-          gpgcheck => 1,
-          gpgkey   => 'http://packages.elasticsearch.org/GPG-KEY-elasticsearch',
-          enabled  => 1,
-          before   => Package[$logstash::params::package],
-        }
-      }
-    }
     # We are using a package provided by a repository
     package { $logstash::params::package:
       ensure => $package_ensure,
