@@ -77,9 +77,9 @@ describe 'logstash', :type => 'class' do
               :software_url => 'http://www.domain.com/path/to/package.rpm'
             } end
 
-            it { should contain_exec('create_software_dir').with(:command => 'mkdir -p /opt/logstash/swdl') }
-            it { should contain_file('/opt/logstash/swdl').with(:purge => false, :force => false, :require => "Exec[create_software_dir]") }
-            it { should contain_exec('download-package').with(:command => 'wget -O /opt/logstash/swdl/package.rpm http://www.domain.com/path/to/package.rpm 2> /dev/null', :require => 'File[/opt/logstash/swdl]') }
+            it { should contain_exec('create_software_dir_logstash').with(:command => 'mkdir -p /opt/logstash/swdl') }
+            it { should contain_file('/opt/logstash/swdl').with(:purge => false, :force => false, :require => "Exec[create_software_dir_logstash]") }
+            it { should contain_exec('download_package_logstash').with(:command => 'wget -O /opt/logstash/swdl/package.rpm http://www.domain.com/path/to/package.rpm 2> /dev/null', :require => 'File[/opt/logstash/swdl]') }
             it { should contain_package('logstash').with(:ensure => 'present', :source => '/opt/logstash/swdl/package.rpm', :provider => 'rpm') }
           end
 
@@ -89,9 +89,9 @@ describe 'logstash', :type => 'class' do
               :software_url => 'https://www.domain.com/path/to/package.rpm'
             } end
 
-            it { should contain_exec('create_software_dir').with(:command => 'mkdir -p /opt/logstash/swdl') }
-            it { should contain_file('/opt/logstash/swdl').with(:purge => false, :force => false, :require => 'Exec[create_software_dir]') }
-            it { should contain_exec('download-package').with(:command => 'wget -O /opt/logstash/swdl/package.rpm https://www.domain.com/path/to/package.rpm 2> /dev/null', :require => 'File[/opt/logstash/swdl]') }
+            it { should contain_exec('create_software_dir_logstash').with(:command => 'mkdir -p /opt/logstash/swdl') }
+            it { should contain_file('/opt/logstash/swdl').with(:purge => false, :force => false, :require => 'Exec[create_software_dir_logstash]') }
+            it { should contain_exec('download_package_logstash').with(:command => 'wget -O /opt/logstash/swdl/package.rpm https://www.domain.com/path/to/package.rpm 2> /dev/null', :require => 'File[/opt/logstash/swdl]') }
             it { should contain_package('logstash').with(:ensure => 'present', :source => '/opt/logstash/swdl/package.rpm', :provider => 'rpm') }
           end
 
@@ -101,9 +101,9 @@ describe 'logstash', :type => 'class' do
               :software_url => 'ftp://www.domain.com/path/to/package.rpm'
             } end
 
-            it { should contain_exec('create_software_dir').with(:command => 'mkdir -p /opt/logstash/swdl') }
-            it { should contain_file('/opt/logstash/swdl').with(:purge => false, :force => false, :require => 'Exec[create_software_dir]') }
-            it { should contain_exec('download-package').with(:command => 'wget -O /opt/logstash/swdl/package.rpm ftp://www.domain.com/path/to/package.rpm 2> /dev/null', :require => 'File[/opt/logstash/swdl]') }
+            it { should contain_exec('create_software_dir_logstash').with(:command => 'mkdir -p /opt/logstash/swdl') }
+            it { should contain_file('/opt/logstash/swdl').with(:purge => false, :force => false, :require => 'Exec[create_software_dir_logstash]') }
+            it { should contain_exec('download_package_logstash').with(:command => 'wget -O /opt/logstash/swdl/package.rpm ftp://www.domain.com/path/to/package.rpm 2> /dev/null', :require => 'File[/opt/logstash/swdl]') }
             it { should contain_package('logstash').with(:ensure => 'present', :source => '/opt/logstash/swdl/package.rpm', :provider => 'rpm') }
           end
 
@@ -113,8 +113,8 @@ describe 'logstash', :type => 'class' do
               :software_url => 'file:/path/to/package.rpm'
             } end
 
-            it { should contain_exec('create_software_dir').with(:command => 'mkdir -p /opt/logstash/swdl') }
-            it { should contain_file('/opt/logstash/swdl').with(:purge => false, :force => false, :require => 'Exec[create_software_dir]') }
+            it { should contain_exec('create_software_dir_logstash').with(:command => 'mkdir -p /opt/logstash/swdl') }
+            it { should contain_file('/opt/logstash/swdl').with(:purge => false, :force => false, :require => 'Exec[create_software_dir_logstash]') }
             it { should contain_file('/opt/logstash/swdl/package.rpm').with(:source => '/path/to/package.rpm', :backup => false) }
             it { should contain_package('logstash').with(:ensure => 'present', :source => '/opt/logstash/swdl/package.rpm', :provider => 'rpm') }
           end

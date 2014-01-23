@@ -48,8 +48,6 @@ class logstash::params {
 
   $purge_software_dir = false
 
-  $purge_software_dl_dir = false
-
   # package download timeout
   $software_dl_timeout = 300 # 300 seconds is default of puppet
 

@@ -56,7 +56,7 @@ class logstash::package {
       $software_dir = $logstash::software_dir
 
       # Create directory to place the package file
-      exec { 'create_software_dir':
+      exec { 'create_software_dir_logstash':
         cwd     => '/',
         path    => ['/usr/bin', '/bin'],
         command => "mkdir -p ${logstash::software_dir}",
@@ -67,7 +67,7 @@ class logstash::package {
         ensure  => 'directory',
         purge   => $logstash::purge_software_dir,
         force   => $logstash::purge_software_dir,
-        require => Exec['create_software_dir'],
+        require => Exec['create_software_dir_logstash'],
       }
 
       $filenameArray = split($logstash::software_url, '/')
@@ -96,7 +96,7 @@ class logstash::package {
         }
         ftp, https, http: {
 
-          exec { 'download-package':
+          exec { 'download_package_logstash':
             command => "${logstash::params::download_tool} ${software_dir}/${basefilename} ${logstash::software_url} 2> /dev/null",
             path    => ['/usr/bin', '/bin'],
             creates => $sw_source,
