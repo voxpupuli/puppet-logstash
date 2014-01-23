@@ -24,10 +24,11 @@
 #
 class logstash::repo {
 
-if ($::osfamily == 'Debian') {
-  if !defined(Class['apt']) {
-    class { 'apt': }
-  }
+  if ($::osfamily == 'Debian') {
+    if !defined(Class['apt']) {
+      class { 'apt': }
+    }
+
     apt::source { 'logstash':
       location    => "http://packages.elasticsearch.org/logstash/${logstash::repo_version}/debian",
       release     => 'stable',
@@ -36,6 +37,7 @@ if ($::osfamily == 'Debian') {
       key_server  => 'pgp.mit.edu',
       include_src => false,
     }
+
   } elsif ($::osfamily == 'RedHat') {
     yumrepo { 'logstash':
       baseurl  => "http://packages.elasticsearch.org/logstash/${logstash::repo_version}/centos",
