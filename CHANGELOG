@@ -1,3 +1,10 @@
+0.4.1 ( Jan 23, 2014 )
+  ** Important Update **
+  Ensure exec names are unique. This caused an issue when using the Elasticsearch Puppet module
+  Removed a part in the package.pp that should have been removed ( missed with the rewrite )
+  Missed a few bits of the rewrite.
+  Updated readme to reflect reality regarding configfile define.
+
 0.4.0 ( Jan 21, 2014 )
   ** NOTE: This is a backwards compability breaking release !! **
   Large rewrite of the entire module described below
