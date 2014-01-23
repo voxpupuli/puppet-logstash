@@ -96,27 +96,33 @@ Disable and remove Logstash entirely:
 
 The Logstash configuration can be supplied as a single static file or dynamically built from multiple smaller files.
 
-The basic usage is identical in either case: simply declare a `file` attribute as you would the [`content`](http://docs.puppetlabs.com/references/latest/type.html#file-attribute-content) attribute of the `file` type, meaning either direct content or a template.
+The basic usage is identical in either case: simply declare a `file` attribute as you would the [`content`](http://docs.puppetlabs.com/references/latest/type.html#file-attribute-content) attribute of the `file` type, meaning either direct content, template or a file resource:
 
      logstash::configfile { 'configname':
-       file => template('path/to/config.file')
+       content => template('path/to/config.file')
+     }
+
+     or
+
+     logstash::configfile { 'configname':
+       file => 'puppet:///path/to/config.file'
      }
 
 To dynamically build a configuration, simply declare the `order` in which each section should appear - the lower the number the earlier it will appear in the resulting file (this should be a [familiar idiom](https://en.wikipedia.org/wiki/BASIC) for most).
 
      logstash::configfile { 'input_redis':
-       file  => template('input_redis.erb'),
-       order => 10
+       content => template('input_redis.erb'),
+       order   => 10
      }
 
      logstash::configfile { 'filter_apache':
-       file  => template('filter_apache.erb'),
+       file  => 'puppet:///path/to/filter_apache',
        order => 20
      }
 
      logstash::configfile { 'output_es':
-       file  => template('output_es_cluster.erb')
-       order => 30
+       content => template('output_es_cluster.erb')
+       order   => 30
      }
 
 ## Patterns
