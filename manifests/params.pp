@@ -46,10 +46,10 @@ class logstash::params {
   # Purge configuration directory
   $purge_configdir = false
 
-  $purge_software_dir = false
+  $purge_package_dir = false
 
   # package download timeout
-  $software_dl_timeout = 300 # 300 seconds is default of puppet
+  $package_dl_timeout = 300 # 300 seconds is default of puppet
 
   #### Internal module values
 
@@ -88,12 +88,12 @@ class logstash::params {
   case $::kernel {
     'Linux': {
       $configdir = '/etc/logstash'
-      $software_dir = '/opt/logstash/swdl'
+      $package_dir = '/opt/logstash/swdl'
       $installpath = '/opt/logstash'
     }
     'Darwin': {
       $configdir = '/Library/Application Support/Logstash'
-      $software_dir = '/Library/Logstash/swdl'
+      $package_dir = '/Library/Logstash/swdl'
       $installpath = '/Library/Logstash'
     }
     default: {

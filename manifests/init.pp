@@ -91,10 +91,10 @@ class logstash(
   $autoupgrade         = $logstash::params::autoupgrade,
   $version             = false,
   $software_provider   = 'package',
-  $software_url        = undef,
-  $software_dir        = $logstash::params::software_dir,
-  $purge_software_dir  = $logstash::params::purge_software_dir,
-  $software_dl_timeout = $logstash::params::software_dl_timeout,
+  $package_url         = undef,
+  $package_dir         = $logstash::params::package_dir,
+  $purge_package_dir   = $logstash::params::purge_package_dir,
+  $package_dl_timeout  = $logstash::params::package_dl_timeout,
   $logstash_user       = $logstash::params::logstash_user,
   $logstash_group      = $logstash::params::logstash_group,
   $configdir           = $logstash::params::configdir,
@@ -121,8 +121,8 @@ class logstash(
   validate_bool($autoupgrade)
 
   # package download timeout
-  if ! is_integer($software_dl_timeout) {
-    fail("\"${software_dl_timeout}\" is not a valid number for 'software_dl_timeout' parameter")
+  if ! is_integer($package_dl_timeout) {
+    fail("\"${package_dl_timeout}\" is not a valid number for 'package_dl_timeout' parameter")
   }
 
   # service status

@@ -46,49 +46,49 @@ class logstash::package {
     }
 
     # action
-    if ($logstash::software_url != undef) {
+    if ($logstash::package_url != undef) {
 
       case $logstash::software_provider {
         'package': { $before = Package[$logstash::params::package]  }
         default:   { fail("software provider \"${logstash::software_provider}\".") }
       }
 
-      $software_dir = $logstash::software_dir
+      $package_dir = $logstash::package_dir
 
       # Create directory to place the package file
-      exec { 'create_software_dir_logstash':
+      exec { 'create_package_dir_logstash':
         cwd     => '/',
         path    => ['/usr/bin', '/bin'],
-        command => "mkdir -p ${logstash::software_dir}",
-        creates => $logstash::software_dir;
+        command => "mkdir -p ${logstash::package_dir}",
+        creates => $logstash::package_dir;
       }
 
-      file { $software_dir:
+      file { $package_dir:
         ensure  => 'directory',
-        purge   => $logstash::purge_software_dir,
-        force   => $logstash::purge_software_dir,
-        require => Exec['create_software_dir_logstash'],
+        purge   => $logstash::purge_package_dir,
+        force   => $logstash::purge_package_dir,
+        require => Exec['create_package_dir_logstash'],
       }
 
-      $filenameArray = split($logstash::software_url, '/')
+      $filenameArray = split($logstash::package_url, '/')
       $basefilename = $filenameArray[-1]
 
-      $sourceArray = split($logstash::software_url, ':')
+      $sourceArray = split($logstash::package_url, ':')
       $protocol_type = $sourceArray[0]
 
       $extArray = split($basefilename, '\.')
       $ext = $extArray[-1]
 
-      $sw_source = "${software_dir}/${basefilename}"
+      $pkg_source = "${package_dir}/${basefilename}"
 
       case $protocol_type {
 
         puppet: {
 
-          file { $sw_source:
+          file { $pkg_source:
             ensure  => present,
-            source  => $logstash::software_url,
-            require => File[$software_dir],
+            source  => $logstash::package_url,
+            require => File[$package_dir],
             backup  => false,
             before  => $before
           }
@@ -97,11 +97,11 @@ class logstash::package {
         ftp, https, http: {
 
           exec { 'download_package_logstash':
-            command => "${logstash::params::download_tool} ${software_dir}/${basefilename} ${logstash::software_url} 2> /dev/null",
+            command => "${logstash::params::download_tool} ${pkg_source} ${logstash::package_url} 2> /dev/null",
             path    => ['/usr/bin', '/bin'],
-            creates => $sw_source,
-            timeout => $logstash::software_dl_timeout,
-            require => File[$software_dir],
+            creates => $pkg_source,
+            timeout => $logstash::package_dl_timeout,
+            require => File[$package_dir],
             before  => $before
           }
 
@@ -109,10 +109,10 @@ class logstash::package {
         file: {
 
           $source_path = $sourceArray[1]
-          file { $sw_source:
+          file { $pkg_source:
             ensure  => present,
             source  => $source_path,
-            require => File[$software_dir],
+            require => File[$package_dir],
             backup  => false,
             before  => $before
           }
@@ -134,12 +134,12 @@ class logstash::package {
       }
 
     } else {
-      $sw_source = undef
+      $pkg_source = undef
       $pkg_provider = undef
     }
 
   } else { # Package removal
-    $sw_source = undef
+    $pkg_source = undef
     $pkg_provider = undef
     $package_ensure = 'purged'
   }
@@ -149,7 +149,7 @@ class logstash::package {
 
     package { $logstash::params::package:
       ensure   => $package_ensure,
-      source   => $sw_source,
+      source   => $pkg_source,
       provider => $pkg_provider
     }
 
