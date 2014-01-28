@@ -10,7 +10,7 @@ This overview shows you which Puppet module and Logstash version work together.
 
     ------------------------------------
     | Puppet module | Logstash         |
-    ------------------------------------e
+    ------------------------------------
     | 0.0.1 - 0.1.0 | 1.1.9            |
     ------------------------------------
     | 0.2.0         | 1.1.10           |
