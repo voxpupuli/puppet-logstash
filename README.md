@@ -24,10 +24,9 @@ This overview shows you which Puppet module and Logstash version work together.
 
 ### 0.4.0
 
-Please note that this a backwards compatability breaking release.
-The plugin defines have been removed im favor of config files.
+Please note that this a **backwards compatability breaking release**: in particular, the *[plugin](#Plugins)* syntax system has been removed entirely in favour of config files.
 
-If you need any help please see the [need help ?](#need-help) section.
+If you need any help please see the [support](#Support) section.
 
 
 ## Requirements
@@ -203,6 +202,6 @@ The *defaults* file (`/etc/defaults/logstash` or `/etc/sysconfig/logstash`) for 
        init_defaults => $config_hash
      }
 
-## Need help ?
+## Support
 
-Need help? Try #logstash on freenode irc or the logstash-users@googlegroups.com mailing list.
+Need help? Join us in `#logstash` on Freenode IRC or subscribe to the `logstash-users@googlegroups.com` mailing list.
