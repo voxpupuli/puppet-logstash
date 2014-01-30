@@ -24,10 +24,9 @@ This overview shows you which Puppet module and Logstash version work together.
 
 ### 0.4.0
 
-Please note that this a backwards compatability breaking release.
-The plugin defines have been removed im favor of config files.
+Please note that this a **backwards compatability breaking release**: in particular, the *[plugin](#Plugins)* syntax system has been removed entirely in favour of config files.
 
-If you need any help please see the [need help ?](#need-help) section.
+If you need any help please see the [support](#Support) section.
 
 
 ## Requirements
@@ -127,7 +126,7 @@ To dynamically build a configuration, simply declare the `order` in which each s
 
 ## Patterns
 
-Many plugins (notably [Grok](http://logstash.net/docs/latest/filters/grok)) use *patterns*. Many are [included](https://github.com/logstash/logstash/tree/master/patterns) in Logstash already; however, additional site-specific patterns can be easily managed (you are, of course, encouraged to contribute new patterns to the community).
+Many plugins (notably [Grok](http://logstash.net/docs/latest/filters/grok)) use *patterns*. While many are [included](https://github.com/logstash/logstash/tree/master/patterns) in Logstash already, additional site-specific patterns can be managed as well; where possible, you are encouraged to contribute new patterns back to the community.
 
 **N.B.** As of Logstash 1.2 the path to the additional patterns needs to be configured explicitly in the Grok configuration.
 
@@ -144,7 +143,7 @@ By default the resulting filename of the pattern will match that of the source. 
 
 ## Plugins
 
-Like the patterns above, Logstash comes with a large number of [plugins](http://logstash.net/docs/latest/); however, additional site-specific plugins can be easily managed (again, you are encouraged to contribute new plugins to the community).
+Like the patterns above, Logstash comes with a large number of [plugins](http://logstash.net/docs/latest/); likewise, additional site-specific plugins can be managed as well.  Again, where possible, you are encouraged to contribute new plugins back to the community.
 
      logstash::plugin { 'myplugin':
        ensure => 'present',
@@ -178,7 +177,7 @@ Specify a particular Java package (version) to be installed:
 
 ## Service Management
 
-Currently only the basic SysV-style [init](https://en.wikipedia.org/wiki/Init) service provider is supported but others could be implemented relatively easily (pull requests welcome).
+Currently only the basic SysV-style [init](https://en.wikipedia.org/wiki/Init) service provider is supported but other systems could be implemented as necessary (pull requests welcome).
 
 ### init
 
@@ -203,6 +202,6 @@ The *defaults* file (`/etc/defaults/logstash` or `/etc/sysconfig/logstash`) for 
        init_defaults => $config_hash
      }
 
-## Need help ?
+## Support
 
-Need help? Try #logstash on freenode irc or the logstash-users@googlegroups.com mailing list.
+Need help? Join us in `#logstash` on Freenode IRC or subscribe to the `logstash-users@googlegroups.com` mailing list.
