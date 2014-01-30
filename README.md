@@ -35,6 +35,9 @@ If you need any help please see the [support](#Support) section.
 * The [stdlib](https://forge.puppetlabs.com/puppetlabs/stdlib) Puppet library.
 * The [file_concat](https://forge.puppetlabs.com/ispavailability/file_concat) Puppet library.
 
+Optional:
+* The [apt](http://forge.puppetlabs.com/puppetlabs/apt) Puppet library when using repo management on Debian/Ubuntu.
+
 ## Usage Examples
 
 The minimum viable configuration ensures that the service is running and that it will be started at boot time:
@@ -174,6 +177,17 @@ Specify a particular Java package (version) to be installed:
        java_install => true,
        java_package => 'packagename'
      }
+
+## Repository management
+
+Most sites will manage repositories seperately; however, this module can manage the repository for you.
+
+  class { 'logstash':
+    manage_repo  => true,
+    repo_version => '1.3'
+  }
+
+Note: When using this on Debian/Ubuntu you will need to add the [Puppetlabs/apt](http://forge.puppetlabs.com/puppetlabs/apt) module to your modules.
 
 ## Service Management
 

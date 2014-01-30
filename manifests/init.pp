@@ -105,6 +105,8 @@ class logstash(
   $init_defaults       = undef,
   $init_defaults_file  = undef,
   $init_template       = undef,
+  $manage_repo         = false,
+  $repo_version        = undef,
 ) inherits logstash::params {
 
   anchor {'logstash::begin': }
@@ -140,6 +142,12 @@ class logstash(
     fail("\"${service_provider}\" is not a valid provider for \"${::operatingsystem}\"")
   }
 
+  validate_bool($manage_repo)
+
+  if ($manage_repo == true) {
+    validate_string($repo_version)
+  }
+
   #### Manage actions
 
   # package(s)
@@ -159,6 +167,17 @@ class logstash(
     Anchor['logstash::begin']
     -> Class['logstash::java']
     -> Class['logstash::service']
+  }
+
+  if ($manage_repo == true) {
+    # Set up repositories
+    class { 'logstash::repo': }
+
+    # Ensure that we set up the repositories before trying to install
+    # the packages
+    Anchor['logstash::begin']
+    -> Class['logstash::repo']
+    -> Class['logstash::package']
   }
 
   #### Manage relationships

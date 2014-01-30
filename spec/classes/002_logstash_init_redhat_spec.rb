@@ -8,7 +8,8 @@ describe 'logstash', :type => 'class' do
 
       let :facts do {
         :operatingsystem => distro,
-        :kernel => 'Linux'
+        :kernel => 'Linux',
+        :osfamily => 'RedHat'
       } end
 
       context 'Main class' do
@@ -208,6 +209,17 @@ describe 'logstash', :type => 'class' do
          it { should contain_file('/etc/logstash').with(:ensure => 'absent', :force => true, :recurse => true) }
          it { should contain_package('logstash').with(:ensure => 'purged') }
          it { should contain_service('logstash').with(:ensure => 'stopped', :enable => false) }
+
+      end
+
+      context 'When managing the repository' do
+
+        let :params do {
+          :manage_repo => true,
+          :repo_version => '1.3'
+        } end
+
+        it { should contain_yumrepo('logstash').with(:baseurl => 'http://packages.elasticsearch.org/logstash/1.3/centos', :gpgkey => 'http://packages.elasticsearch.org/GPG-KEY-elasticsearch', :enabled => 1) }
 
       end
 

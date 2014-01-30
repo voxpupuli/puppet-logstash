@@ -8,7 +8,8 @@ describe 'logstash', :type => 'class' do
 
       let :facts do {
         :operatingsystem => distro,
-        :kernel => 'Linux'
+        :kernel => 'Linux',
+        :osfamily => 'Debian'
       } end
 
       context 'main class tests' do
@@ -208,6 +209,18 @@ describe 'logstash', :type => 'class' do
          it { should contain_file('/etc/logstash').with(:ensure => 'absent', :force => true, :recurse => true) }
          it { should contain_package('logstash').with(:ensure => 'purged') }
          it { should contain_service('logstash').with(:ensure => 'stopped', :enable => false) }
+
+      end
+
+      context 'When managing the repository' do
+
+        let :params do {
+          :manage_repo => true,
+          :repo_version => '1.3'
+        } end
+
+        it { should contain_class('apt') }
+        it { should contain_apt__source('logstash').with(:release => 'stable', :repos => 'main', :location => 'http://packages.elasticsearch.org/logstash/1.3/debian') }
 
       end
 
