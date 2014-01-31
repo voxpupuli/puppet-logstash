@@ -1,3 +1,8 @@
+0.4.2 ( Jan 31, 2014 )
+  Fix config directory for config files to be inline with the init file of the packages
+  Update readme ( thanks to PR #130 from phrawzty )
+  Added repo management ( based on work of PR #121 from pcfens )
+
 0.4.1 ( Jan 23, 2014 )
   ** Important Update **
   Ensure exec names are unique. This caused an issue when using the Elasticsearch Puppet module
