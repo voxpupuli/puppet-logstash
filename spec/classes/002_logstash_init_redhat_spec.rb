@@ -15,18 +15,24 @@ describe 'logstash', :type => 'class' do
       context 'Main class' do
 
         # init.pp
-        it { should contain_class('logstash::package') }
-        it { should contain_class('logstash::config') }
-        it { should contain_class('logstash::service') }
+        it { should contain_anchor('logstash::begin') }
+        it { should contain_anchor('logstash::end').that_requires('Class[logstash::service]') }
+        it { should contain_class('logstash::params') }
+        it { should contain_class('logstash::package').that_requires('Anchor[logstash::begin]') }
+        it { should contain_class('logstash::config').that_requires('Class[logstash::package]') }
+        it { should contain_class('logstash::service').that_requires('Class[logstash::package]').that_requires('Class[logstash::config]') }
 
         it { should contain_file('/etc/logstash') }
-        it { should contain_file('/etc/logstash/patterns') }
-        it { should contain_file('/etc/logstash/plugins') }
-	it { should contain_file('/etc/logstash/plugins/logstash') }
-        it { should contain_file('/etc/logstash/plugins/logstash/inputs') }
-        it { should contain_file('/etc/logstash/plugins/logstash/outputs') }
-        it { should contain_file('/etc/logstash/plugins/logstash/filters') }
-        it { should contain_file('/etc/logstash/plugins/logstash/codecs') }
+        it { should contain_file('/etc/logstash/conf.d').with(:require => 'File[/etc/logstash]') } 
+        it { should contain_file('/etc/logstash/patterns').with(:require => 'File[/etc/logstash]') }
+        it { should contain_file('/etc/logstash/plugins').with(:require => 'File[/etc/logstash]') }
+        it { should contain_file('/etc/logstash/plugins/logstash').with(:require => 'File[/etc/logstash]') }
+        it { should contain_file('/etc/logstash/plugins/logstash/inputs').with(:require => 'File[/etc/logstash]') }
+        it { should contain_file('/etc/logstash/plugins/logstash/outputs').with(:require => 'File[/etc/logstash]') }
+        it { should contain_file('/etc/logstash/plugins/logstash/filters').with(:require => 'File[/etc/logstash]') }
+        it { should contain_file('/etc/logstash/plugins/logstash/codecs').with(:require => 'File[/etc/logstash]') }
+
+        it { should contain_file_concat('ls-config') }
 
       end
 
@@ -128,6 +134,8 @@ describe 'logstash', :type => 'class' do
 
         context 'with provider \'init\'' do
 
+          it { should contain_logstash__service__init('logstash') }
+
           context 'and default settings' do
 
             it { should contain_service('logstash').with(:ensure => 'running') }
@@ -211,15 +219,30 @@ describe 'logstash', :type => 'class' do
          it { should contain_service('logstash').with(:ensure => 'stopped', :enable => false) }
 
       end
+ 
+      context 'Repo management' do
 
-      context 'When managing the repository' do
+        context 'When managing the repository' do
 
-        let :params do {
-          :manage_repo => true,
-          :repo_version => '1.3'
-        } end
+          let :params do {
+            :manage_repo => true,
+            :repo_version => '1.3'
+          } end
 
-        it { should contain_yumrepo('logstash').with(:baseurl => 'http://packages.elasticsearch.org/logstash/1.3/centos', :gpgkey => 'http://packages.elasticsearch.org/GPG-KEY-elasticsearch', :enabled => 1) }
+          it { should contain_class('logstash::repo').that_requires('Anchor[logstash::begin]') }
+          it { should contain_yumrepo('logstash').with(:baseurl => 'http://packages.elasticsearch.org/logstash/1.3/centos', :gpgkey => 'http://packages.elasticsearch.org/GPG-KEY-elasticsearch', :enabled => 1) }
+
+        end
+
+        context 'When not setting the repo_version' do
+
+          let :params do {
+            :manage_repo => true,
+          } end
+
+          it { expect { should raise_error(Puppet::Error) } }
+
+        end
 
       end
 
