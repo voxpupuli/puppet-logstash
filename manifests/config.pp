@@ -48,7 +48,8 @@ class logstash::config {
     }
 
     file { "${logstash::configdir}/conf.d":
-      ensure => directory,
+      ensure  => directory,
+      require => File[$logstash::configdir]
     }
 
     file_concat { 'ls-config':

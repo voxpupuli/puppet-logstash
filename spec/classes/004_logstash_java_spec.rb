@@ -15,6 +15,7 @@ describe 'logstash', :type => 'class' do
           :kernel => 'Linux'
         } end
 
+        it { should contain_class('logstash::java') }
         it { should contain_package('openjdk-7-jre-headless') }
 
       end
@@ -31,6 +32,7 @@ describe 'logstash', :type => 'class' do
           :kernel => 'Linux'
         } end
 
+        it { should contain_class('logstash::java') }
         it { should contain_package('java-1.7.0-openjdk') }
 
       end
@@ -59,6 +61,7 @@ describe 'logstash', :type => 'class' do
         :java_package => 'java-1.7.4-openjdk'
       } end
 
+      it { should contain_class('logstash::java') }
       it { should contain_package('java-1.7.4-openjdk') }
 
     end
