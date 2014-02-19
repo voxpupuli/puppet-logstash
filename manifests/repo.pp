@@ -42,6 +42,7 @@ class logstash::repo {
     }
     'RedHat': {
       yumrepo { 'logstash':
+        descr    => 'Logstash Centos Repo',
         baseurl  => "http://packages.elasticsearch.org/logstash/${logstash::repo_version}/centos",
         gpgcheck => 1,
         gpgkey   => 'http://packages.elasticsearch.org/GPG-KEY-elasticsearch',
