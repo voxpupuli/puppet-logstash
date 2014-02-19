@@ -113,7 +113,7 @@ The basic usage is identical in either case: simply declare a `file` attribute a
 To dynamically build a configuration, simply declare the `order` in which each section should appear - the lower the number the earlier it will appear in the resulting file (this should be a [familiar idiom](https://en.wikipedia.org/wiki/BASIC) for most).
 
      logstash::configfile { 'input_redis':
-       content => template('input_redis.erb'),
+       content => template('logstash/input_redis.erb'),
        order   => 10
      }
 
@@ -123,7 +123,7 @@ To dynamically build a configuration, simply declare the `order` in which each s
      }
 
      logstash::configfile { 'output_es':
-       content => template('output_es_cluster.erb')
+       content => template('logstash/output_es_cluster.erb')
        order   => 30
      }
 
