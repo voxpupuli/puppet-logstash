@@ -23,7 +23,7 @@ RSpec.configure do |c|
   # Configure all nodes in nodeset
   c.before :suite do
     # Install module and dependencies
-    puppet_module_install(:source => proj_root, :module_name => 'elasticsearch')
+    puppet_module_install(:source => proj_root, :module_name => 'logstash')
     hosts.each do |host|
       if !host.is_pe?
         on host, puppet('module','install','puppetlabs-stdlib', '-v 3.2.0'), { :acceptable_exit_codes => [0,1] }
