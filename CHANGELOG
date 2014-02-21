@@ -1,3 +1,12 @@
+0.4.3 ( Feb 21, 2014 )
+  Lower puppetlabs-stdlib depdency from 4.0.0 to 3.2.0
+  Documentation improvements ( PR #132 #137 )
+  Fixed yumrepo call to include description ( PR #138 )
+  Added beaker testing
+  Fixed bug that sometimes LS starts before all configs are processed.
+  Ensure java is installed before installing the package when using package_url
+  Fail fast when using package_url and repo config
+
 0.4.2 ( Jan 31, 2014 )
   Fix config directory for config files to be inline with the init file of the packages
   Update readme ( thanks to PR #130 from phrawzty )
