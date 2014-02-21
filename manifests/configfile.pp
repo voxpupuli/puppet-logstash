@@ -39,6 +39,7 @@ define logstash::configfile(
     content => $content,
     source  => $source,
     order   => $order,
+    before  => [ File_concat['ls-config'] ]
   }
 
 }

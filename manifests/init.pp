@@ -166,7 +166,7 @@ class logstash(
     # ensure we first install java and then manage the service
     Anchor['logstash::begin']
     -> Class['logstash::java']
-    -> Class['logstash::service']
+    -> Class['logstash::package']
   }
 
   if ($manage_repo == true) {
