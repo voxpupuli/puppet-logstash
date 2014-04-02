@@ -2,6 +2,7 @@
 spec/fixtures
 .bundle
 .vendor
-Gemfile.lock
+.gemfiles/Gemfile.*.lock
 .vagrant
 .ruby-version
+pkg/

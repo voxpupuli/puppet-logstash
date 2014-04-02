@@ -15,6 +15,7 @@ describe 'logstash', :type => 'class' do
 
       context 'main class tests' do
 
+				it { should compile.with_all_deps }
         # init.pp
         it { should contain_anchor('logstash::begin') }
         it { should contain_anchor('logstash::end').that_requires('Class[logstash::service]') }
@@ -38,11 +39,11 @@ describe 'logstash', :type => 'class' do
       end
 
       context 'package installation' do
-        
+
         context 'via repository' do
 
           context 'with default settings' do
-            
+
            it { should contain_package('logstash').with(:ensure => 'present') }
 
           end
