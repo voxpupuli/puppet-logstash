@@ -30,7 +30,7 @@ describe "Logstash class:" do
   context "install via http resource" do
 
     it 'should run successfully' do
-      pp = "class { 'logstash': package_urk => '#{url}', java_install => true }
+      pp = "class { 'logstash': package_url => '#{url}', java_install => true }
             logstash::configfile { 'basic_config': content => 'input { tcp { port => 2000 } } output { stdout { } } ' }
            "
 
@@ -71,7 +71,7 @@ describe "Logstash class:" do
   context "Install via local file resource" do
 
     it 'should run successfully' do
-      pp = "class { 'logstash': package_urk => 'file:#{local}', java_install => true }
+      pp = "class { 'logstash': package_url => 'file:#{local}', java_install => true }
             logstash::configfile { 'basic_config': content => 'input { tcp { port => 2000 } } output { stdout { } } ' }
            "
 
@@ -112,7 +112,7 @@ describe "Logstash class:" do
   context "Install via Puppet resource" do
 
     it 'should run successfully' do
-      pp = "class { 'logstash': package_urk => 'puppet:///modules/another/#{puppet}', java_install => true }
+      pp = "class { 'logstash': package_url => 'puppet:///modules/another/#{puppet}', java_install => true }
             logstash::configfile { 'basic_config': content => 'input { tcp { port => 2000 } } output { stdout { } } ' }
            "
 

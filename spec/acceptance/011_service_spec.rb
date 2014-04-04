@@ -30,6 +30,7 @@ describe "Service tests:" do
 
         # Run it twice and test for idempotency
         apply_manifest(pp, :catch_failures => true)
+        sleep 10
         expect(apply_manifest(pp, :catch_failures => true).exit_code).to be_zero
       end
     end
@@ -48,13 +49,6 @@ describe "Service tests:" do
 	      it { should be_file }
 				its(:content) { should match /[0-9]+/ }
 			end
-    end
-
-    describe port(9200) do
-      it {
-        sleep 10
-        should be_listening
-      }
     end
 
     context "Make sure we have ES_USER=root" do
