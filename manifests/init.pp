@@ -107,6 +107,7 @@ class logstash(
   $init_template       = undef,
   $manage_repo         = false,
   $repo_version        = false,
+  $install_contrib     = false
 ) inherits logstash::params {
 
   anchor {'logstash::begin': }

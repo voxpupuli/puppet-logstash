@@ -24,6 +24,12 @@
 #
 class logstash::package {
 
+  Exec {
+    path      => [ '/bin', '/usr/bin', '/usr/local/bin' ],
+    cwd       => '/',
+    tries     => 3,
+    try_sleep => 10
+  }
 
   #### Package management
 
@@ -67,6 +73,7 @@ class logstash::package {
         ensure  => 'directory',
         purge   => $logstash::purge_package_dir,
         force   => $logstash::purge_package_dir,
+        backup  => false,
         require => Exec['create_package_dir_logstash'],
       }
 
@@ -134,23 +141,62 @@ class logstash::package {
       }
 
     } else {
-      $pkg_source = undef
-      $pkg_provider = undef
+      $pkg_source      = undef
+      $pkg_provider    = undef
+      $contrib_install = 'repo'
     }
 
   } else { # Package removal
-    $pkg_source = undef
-    $pkg_provider = undef
+    $pkg_source     = undef
+    $pkg_provider   = undef
     $package_ensure = 'purged'
+
+    $package_dir = $elasticsearch::package_dir
+
+    file { $package_dir:
+      ensure => 'absent',
+      purge  => true,
+      force  => true,
+      backup => false
+    }
+
   }
 
+  if ($logstash::install_contrib == true) {
+    if ($contrib_install == 'repo') {
+      $notify_contrib = Package[$logstash::params::contrib]
+    } else {
+      $notify_contrib = Exec['logstash_plugin_install']
+    }
+  } else {
+    $notify_contrib = undef
+  }
 
   if ($logstash::software_provider == 'package') {
 
     package { $logstash::params::package:
       ensure   => $package_ensure,
       source   => $pkg_source,
-      provider => $pkg_provider
+      provider => $pkg_provider,
+      notify   => $notify_contrib
+    }
+
+    if ($logstash::install_contrib == true) {
+
+      if ($contrib_install == 'repo') {
+
+        package { $logstash::params::contrib:
+          ensure => $package_ensure
+        }
+
+      } else {
+        # install via bin/plugin
+        exec { 'logstash_plugin_install':
+          command     => "${logstash::params::plugin} install contrib",
+          refreshonly => true
+        }
+      }
+
     }
 
   } else {

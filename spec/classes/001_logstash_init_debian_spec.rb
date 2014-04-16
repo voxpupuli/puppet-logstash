@@ -249,6 +249,63 @@ describe 'logstash', :type => 'class' do
 
       end
 
+			context "installing contrib" do
+
+				context "when using repo" do
+
+	        let :params do {
+            :manage_repo => true,
+            :repo_version => '1.3',
+						:install_contrib => true
+          } end
+
+					it { should contain_package('logstash').with(:notify => 'Package[logstash-contrib]') }
+          it { should contain_package('logstash-contrib') }
+
+        end
+
+				context "when using package_url" do
+
+					let :params do {
+            :package_url => 'puppet:///path/to/package.deb',
+						:install_contrib => true
+          } end
+
+					it { should contain_package('logstash').with(:notify => 'Exec[logstash_plugin_install]') }
+					it { should contain_exec('logstash_plugin_install') }
+
+				end
+
+			end
+
+      context "not installing contrib" do
+
+				context "when using repo" do
+
+	        let :params do {
+            :manage_repo => true,
+            :repo_version => '1.3',
+          } end
+
+					it { should contain_package('logstash').without_notify }
+          it { should_not contain_package('logstash-contrib') }
+
+        end
+
+				context "when using package_url" do
+
+					let :params do {
+            :package_url => 'puppet:///path/to/package.deb'
+          } end
+
+					it { should contain_package('logstash').without_notify }
+					it { should_not contain_exec('logstash_plugin_install') }
+
+				end
+
+			end
+
+
     end
 
   end

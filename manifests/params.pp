@@ -107,10 +107,12 @@ class logstash::params {
     'RedHat', 'CentOS', 'Fedora', 'Scientific', 'Amazon', 'OracleLinux': {
       # main application
       $package = [ 'logstash' ]
+      $contrib = [ 'logstash-contrib' ]
     }
     'Debian', 'Ubuntu': {
       # main application
       $package = [ 'logstash' ]
+      $contrib = [ 'logstash-contrib' ]
     }
     default: {
       fail("\"${module_name}\" provides no package default value
