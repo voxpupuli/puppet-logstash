@@ -23,7 +23,7 @@ describe "Contrib tests:" do
 
     context "Change the defaults file" do
      it 'should run successfully' do
-				pp = "class { 'logstash': manage_repo => true, repo_version => '1.4', java_install => true, install_contrib => true } }
+				pp = "class { 'logstash': manage_repo => true, repo_version => '1.4', java_install => true, install_contrib => true }
               logstash::configfile { 'basic_config': content => 'input { tcp { port => 2000 } } output { stdout { } } ' }
              "
 
