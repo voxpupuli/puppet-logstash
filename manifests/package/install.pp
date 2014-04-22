@@ -23,7 +23,7 @@
 # * Richard Pijnenburg <mailto:richard.pijnenburg@elasticsearch.com>
 #
 define logstash::package::install(
-  $package_url
+  $package_url = undef
 ) {
 
   Exec {
