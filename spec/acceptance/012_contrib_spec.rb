@@ -45,10 +45,6 @@ describe "Contrib tests:" do
 	      it { should be_file }
 				its(:content) { should match /[0-9]+/ }
 			end
-
-			describe file('/opt/logstash/vendor/logstash/logstash-contrib-1.4.0/') do
-				it { should be_directory }
-			end
   end
 end
 end
