@@ -92,6 +92,7 @@ class logstash(
   $version             = false,
   $software_provider   = 'package',
   $package_url         = undef,
+  $contrib_package_url = undef,
   $package_dir         = $logstash::params::package_dir,
   $purge_package_dir   = $logstash::params::purge_package_dir,
   $package_dl_timeout  = $logstash::params::package_dl_timeout,

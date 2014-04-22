@@ -4,8 +4,6 @@ if fact('osfamily') != 'Suse'
 
 describe "Logstash class:" do
 
-  cluster_name = SecureRandom.hex(10)
-
   case fact('osfamily')
   when 'RedHat'
     package_name = 'logstash'

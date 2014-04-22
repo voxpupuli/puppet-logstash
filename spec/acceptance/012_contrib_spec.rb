@@ -3,8 +3,6 @@ require 'spec_helper_acceptance'
 if fact('osfamily') != 'Suse'
 describe "Contrib tests:" do
 
-  cluster_name = SecureRandom.hex(10)
-
   case fact('osfamily')
     when 'RedHat'
 			service_name    = 'logstash'
