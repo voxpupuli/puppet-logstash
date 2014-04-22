@@ -60,7 +60,7 @@ class logstash::package {
     }
 
   } else { # Package removal
-    $package_dir = $elasticsearch::package_dir
+    $package_dir = $logstash::package_dir
 
     file { $package_dir:
       ensure => 'absent',
