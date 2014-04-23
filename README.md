@@ -118,7 +118,7 @@ To dynamically build a configuration, simply declare the `order` in which each s
      }
 
      logstash::configfile { 'filter_apache':
-       file  => 'puppet:///path/to/filter_apache',
+       source  => 'puppet:///path/to/filter_apache',
        order => 20
      }
 
