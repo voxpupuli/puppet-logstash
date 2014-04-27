@@ -127,6 +127,7 @@ define logstash::service::init{
     hasstatus  => $logstash::params::service_hasstatus,
     hasrestart => $logstash::params::service_hasrestart,
     pattern    => $logstash::params::service_pattern,
+    provider   => 'init'
   }
 
 }
