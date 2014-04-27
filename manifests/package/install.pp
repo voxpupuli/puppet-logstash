@@ -6,8 +6,10 @@
 #
 # === Parameters
 #
-# This class does not provide any parameters.
-#
+# [*package_url*]
+#   Url to the contrib package to download.
+#   This can be a http,https or ftp resource for remote packages
+#   puppet:// resource or file:/ for local packages
 #
 # === Examples
 #
