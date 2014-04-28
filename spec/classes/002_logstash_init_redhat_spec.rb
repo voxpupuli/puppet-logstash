@@ -82,8 +82,8 @@ describe 'logstash', :type => 'class' do
 
 						it { should contain_class('logstash::package') }
 						it { should contain_logstash__package__install('logstash') }
-            it { should contain_file('/opt/logstash/swdl/logstash.rpm').with(:source => 'puppet:///path/to/logstash.rpm', :backup => false) }
-            it { should contain_package('logstash').with(:ensure => 'present', :source => '/opt/logstash/swdl/logstash.rpm', :provider => 'rpm') }
+            it { should contain_file('/var/lib/logstash/swdl/logstash.rpm').with(:source => 'puppet:///path/to/logstash.rpm', :backup => false) }
+            it { should contain_package('logstash').with(:ensure => 'present', :source => '/var/lib/logstash/swdl/logstash.rpm', :provider => 'rpm') }
           end
 
           context 'using http:// schema' do
@@ -94,10 +94,10 @@ describe 'logstash', :type => 'class' do
 
 						it { should contain_class('logstash::package') }
 						it { should contain_logstash__package__install('logstash') }
-            it { should contain_exec('create_package_dir_logstash').with(:command => 'mkdir -p /opt/logstash/swdl') }
-            it { should contain_file('/opt/logstash/swdl').with(:purge => false, :force => false, :require => "Exec[create_package_dir_logstash]") }
-            it { should contain_exec('download_package_logstash_logstash').with(:command => 'wget -O /opt/logstash/swdl/logstash.rpm http://www.domain.com/path/to/logstash.rpm 2> /dev/null', :require => 'File[/opt/logstash/swdl]') }
-            it { should contain_package('logstash').with(:ensure => 'present', :source => '/opt/logstash/swdl/logstash.rpm', :provider => 'rpm') }
+            it { should contain_exec('create_package_dir_logstash').with(:command => 'mkdir -p /var/lib/logstash/swdl') }
+            it { should contain_file('/var/lib/logstash/swdl').with(:purge => false, :force => false, :require => "Exec[create_package_dir_logstash]") }
+            it { should contain_exec('download_package_logstash_logstash').with(:command => 'wget -O /var/lib/logstash/swdl/logstash.rpm http://www.domain.com/path/to/logstash.rpm 2> /dev/null', :require => 'File[/var/lib/logstash/swdl]') }
+            it { should contain_package('logstash').with(:ensure => 'present', :source => '/var/lib/logstash/swdl/logstash.rpm', :provider => 'rpm') }
           end
 
           context 'using https:// schema' do
@@ -107,10 +107,10 @@ describe 'logstash', :type => 'class' do
             } end
 
 						it { should contain_logstash__package__install('logstash') }
-            it { should contain_exec('create_package_dir_logstash').with(:command => 'mkdir -p /opt/logstash/swdl') }
-            it { should contain_file('/opt/logstash/swdl').with(:purge => false, :force => false, :require => 'Exec[create_package_dir_logstash]') }
-            it { should contain_exec('download_package_logstash_logstash').with(:command => 'wget -O /opt/logstash/swdl/logstash.rpm https://www.domain.com/path/to/logstash.rpm 2> /dev/null', :require => 'File[/opt/logstash/swdl]') }
-            it { should contain_package('logstash').with(:ensure => 'present', :source => '/opt/logstash/swdl/logstash.rpm', :provider => 'rpm') }
+            it { should contain_exec('create_package_dir_logstash').with(:command => 'mkdir -p /var/lib/logstash/swdl') }
+            it { should contain_file('/var/lib/logstash/swdl').with(:purge => false, :force => false, :require => 'Exec[create_package_dir_logstash]') }
+            it { should contain_exec('download_package_logstash_logstash').with(:command => 'wget -O /var/lib/logstash/swdl/logstash.rpm https://www.domain.com/path/to/logstash.rpm 2> /dev/null', :require => 'File[/var/lib/logstash/swdl]') }
+            it { should contain_package('logstash').with(:ensure => 'present', :source => '/var/lib/logstash/swdl/logstash.rpm', :provider => 'rpm') }
           end
 
           context 'using ftp:// schema' do
@@ -121,10 +121,10 @@ describe 'logstash', :type => 'class' do
 
 						it { should contain_class('logstash::package') }
 						it { should contain_logstash__package__install('logstash') }
-            it { should contain_exec('create_package_dir_logstash').with(:command => 'mkdir -p /opt/logstash/swdl') }
-            it { should contain_file('/opt/logstash/swdl').with(:purge => false, :force => false, :require => 'Exec[create_package_dir_logstash]') }
-            it { should contain_exec('download_package_logstash_logstash').with(:command => 'wget -O /opt/logstash/swdl/logstash.rpm ftp://www.domain.com/path/to/logstash.rpm 2> /dev/null', :require => 'File[/opt/logstash/swdl]') }
-            it { should contain_package('logstash').with(:ensure => 'present', :source => '/opt/logstash/swdl/logstash.rpm', :provider => 'rpm') }
+            it { should contain_exec('create_package_dir_logstash').with(:command => 'mkdir -p /var/lib/logstash/swdl') }
+            it { should contain_file('/var/lib/logstash/swdl').with(:purge => false, :force => false, :require => 'Exec[create_package_dir_logstash]') }
+            it { should contain_exec('download_package_logstash_logstash').with(:command => 'wget -O /var/lib/logstash/swdl/logstash.rpm ftp://www.domain.com/path/to/logstash.rpm 2> /dev/null', :require => 'File[/var/lib/logstash/swdl]') }
+            it { should contain_package('logstash').with(:ensure => 'present', :source => '/var/lib/logstash/swdl/logstash.rpm', :provider => 'rpm') }
           end
 
           context 'using file:// schema' do
@@ -135,10 +135,10 @@ describe 'logstash', :type => 'class' do
 
 						it { should contain_class('logstash::package') }
 						it { should contain_logstash__package__install('logstash') }
-            it { should contain_exec('create_package_dir_logstash').with(:command => 'mkdir -p /opt/logstash/swdl') }
-            it { should contain_file('/opt/logstash/swdl').with(:purge => false, :force => false, :require => 'Exec[create_package_dir_logstash]') }
-            it { should contain_file('/opt/logstash/swdl/logstash.rpm').with(:source => '/path/to/logstash.rpm', :backup => false) }
-            it { should contain_package('logstash').with(:ensure => 'present', :source => '/opt/logstash/swdl/logstash.rpm', :provider => 'rpm') }
+            it { should contain_exec('create_package_dir_logstash').with(:command => 'mkdir -p /var/lib/logstash/swdl') }
+            it { should contain_file('/var/lib/logstash/swdl').with(:purge => false, :force => false, :require => 'Exec[create_package_dir_logstash]') }
+            it { should contain_file('/var/lib/logstash/swdl/logstash.rpm').with(:source => '/path/to/logstash.rpm', :backup => false) }
+            it { should contain_package('logstash').with(:ensure => 'present', :source => '/var/lib/logstash/swdl/logstash.rpm', :provider => 'rpm') }
           end
 
         end
@@ -202,8 +202,8 @@ describe 'logstash', :type => 'class' do
 						it { should contain_class('logstash::package') }
 						it { should contain_logstash__package__install('logstash') }
 						it { should contain_logstash__package__install('logstash-contrib') }
-            it { should contain_file('/opt/logstash/swdl/logstash-contrib.rpm').with(:source => 'puppet:///path/to/logstash-contrib.rpm', :backup => false) }
-            it { should contain_package('logstash-contrib').with(:ensure => 'present', :source => '/opt/logstash/swdl/logstash-contrib.rpm', :provider => 'rpm') }
+            it { should contain_file('/var/lib/logstash/swdl/logstash-contrib.rpm').with(:source => 'puppet:///path/to/logstash-contrib.rpm', :backup => false) }
+            it { should contain_package('logstash-contrib').with(:ensure => 'present', :source => '/var/lib/logstash/swdl/logstash-contrib.rpm', :provider => 'rpm') }
           end
 
           context 'using http:// schema' do
@@ -217,10 +217,10 @@ describe 'logstash', :type => 'class' do
 						it { should contain_class('logstash::package') }
 						it { should contain_logstash__package__install('logstash') }
 						it { should contain_logstash__package__install('logstash-contrib') }
-            it { should contain_exec('create_package_dir_logstash').with(:command => 'mkdir -p /opt/logstash/swdl') }
-            it { should contain_file('/opt/logstash/swdl').with(:purge => false, :force => false, :require => "Exec[create_package_dir_logstash]") }
-            it { should contain_exec('download_package_logstash_logstash-contrib').with(:command => 'wget -O /opt/logstash/swdl/logstash-contrib.rpm http://www.domain.com/path/to/logstash-contrib.rpm 2> /dev/null', :require => 'File[/opt/logstash/swdl]') }
-            it { should contain_package('logstash-contrib').with(:ensure => 'present', :source => '/opt/logstash/swdl/logstash-contrib.rpm', :provider => 'rpm') }
+            it { should contain_exec('create_package_dir_logstash').with(:command => 'mkdir -p /var/lib/logstash/swdl') }
+            it { should contain_file('/var/lib/logstash/swdl').with(:purge => false, :force => false, :require => "Exec[create_package_dir_logstash]") }
+            it { should contain_exec('download_package_logstash_logstash-contrib').with(:command => 'wget -O /var/lib/logstash/swdl/logstash-contrib.rpm http://www.domain.com/path/to/logstash-contrib.rpm 2> /dev/null', :require => 'File[/var/lib/logstash/swdl]') }
+            it { should contain_package('logstash-contrib').with(:ensure => 'present', :source => '/var/lib/logstash/swdl/logstash-contrib.rpm', :provider => 'rpm') }
           end
 
           context 'using https:// schema' do
@@ -234,10 +234,10 @@ describe 'logstash', :type => 'class' do
 						it { should contain_class('logstash::package') }
 						it { should contain_logstash__package__install('logstash') }
 						it { should contain_logstash__package__install('logstash-contrib') }
-            it { should contain_exec('create_package_dir_logstash').with(:command => 'mkdir -p /opt/logstash/swdl') }
-            it { should contain_file('/opt/logstash/swdl').with(:purge => false, :force => false, :require => 'Exec[create_package_dir_logstash]') }
-            it { should contain_exec('download_package_logstash_logstash-contrib').with(:command => 'wget -O /opt/logstash/swdl/logstash-contrib.rpm https://www.domain.com/path/to/logstash-contrib.rpm 2> /dev/null', :require => 'File[/opt/logstash/swdl]') }
-            it { should contain_package('logstash-contrib').with(:ensure => 'present', :source => '/opt/logstash/swdl/logstash-contrib.rpm', :provider => 'rpm') }
+            it { should contain_exec('create_package_dir_logstash').with(:command => 'mkdir -p /var/lib/logstash/swdl') }
+            it { should contain_file('/var/lib/logstash/swdl').with(:purge => false, :force => false, :require => 'Exec[create_package_dir_logstash]') }
+            it { should contain_exec('download_package_logstash_logstash-contrib').with(:command => 'wget -O /var/lib/logstash/swdl/logstash-contrib.rpm https://www.domain.com/path/to/logstash-contrib.rpm 2> /dev/null', :require => 'File[/var/lib/logstash/swdl]') }
+            it { should contain_package('logstash-contrib').with(:ensure => 'present', :source => '/var/lib/logstash/swdl/logstash-contrib.rpm', :provider => 'rpm') }
           end
 
           context 'using ftp:// schema' do
@@ -251,10 +251,10 @@ describe 'logstash', :type => 'class' do
 						it { should contain_class('logstash::package') }
 						it { should contain_logstash__package__install('logstash') }
 						it { should contain_logstash__package__install('logstash-contrib') }
-            it { should contain_exec('create_package_dir_logstash').with(:command => 'mkdir -p /opt/logstash/swdl') }
-            it { should contain_file('/opt/logstash/swdl').with(:purge => false, :force => false, :require => 'Exec[create_package_dir_logstash]') }
-            it { should contain_exec('download_package_logstash_logstash-contrib').with(:command => 'wget -O /opt/logstash/swdl/logstash-contrib.rpm ftp://www.domain.com/path/to/logstash-contrib.rpm 2> /dev/null', :require => 'File[/opt/logstash/swdl]') }
-            it { should contain_package('logstash-contrib').with(:ensure => 'present', :source => '/opt/logstash/swdl/logstash-contrib.rpm', :provider => 'rpm') }
+            it { should contain_exec('create_package_dir_logstash').with(:command => 'mkdir -p /var/lib/logstash/swdl') }
+            it { should contain_file('/var/lib/logstash/swdl').with(:purge => false, :force => false, :require => 'Exec[create_package_dir_logstash]') }
+            it { should contain_exec('download_package_logstash_logstash-contrib').with(:command => 'wget -O /var/lib/logstash/swdl/logstash-contrib.rpm ftp://www.domain.com/path/to/logstash-contrib.rpm 2> /dev/null', :require => 'File[/var/lib/logstash/swdl]') }
+            it { should contain_package('logstash-contrib').with(:ensure => 'present', :source => '/var/lib/logstash/swdl/logstash-contrib.rpm', :provider => 'rpm') }
           end
 
           context 'using file:// schema' do
@@ -268,10 +268,10 @@ describe 'logstash', :type => 'class' do
 						it { should contain_class('logstash::package') }
 						it { should contain_logstash__package__install('logstash') }
 						it { should contain_logstash__package__install('logstash-contrib') }
-            it { should contain_exec('create_package_dir_logstash').with(:command => 'mkdir -p /opt/logstash/swdl') }
-            it { should contain_file('/opt/logstash/swdl').with(:purge => false, :force => false, :require => 'Exec[create_package_dir_logstash]') }
-            it { should contain_file('/opt/logstash/swdl/logstash-contrib.rpm').with(:source => '/path/to/logstash-contrib.rpm', :backup => false) }
-            it { should contain_package('logstash-contrib').with(:ensure => 'present', :source => '/opt/logstash/swdl/logstash-contrib.rpm', :provider => 'rpm') }
+            it { should contain_exec('create_package_dir_logstash').with(:command => 'mkdir -p /var/lib/logstash/swdl') }
+            it { should contain_file('/var/lib/logstash/swdl').with(:purge => false, :force => false, :require => 'Exec[create_package_dir_logstash]') }
+            it { should contain_file('/var/lib/logstash/swdl/logstash-contrib.rpm').with(:source => '/path/to/logstash-contrib.rpm', :backup => false) }
+            it { should contain_package('logstash-contrib').with(:ensure => 'present', :source => '/var/lib/logstash/swdl/logstash-contrib.rpm', :provider => 'rpm') }
           end
 
         end
