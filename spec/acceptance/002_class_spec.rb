@@ -41,7 +41,7 @@ describe "logstash class:" do
 
     describe port(2000) do
       it {
-        sleep 10
+        sleep 15
         should be_listening
       }
     end

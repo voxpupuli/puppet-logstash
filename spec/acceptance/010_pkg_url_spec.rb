@@ -102,7 +102,7 @@ describe "Logstash class:" do
 
     describe service(service_name) do
       it { should_not be_enabled }
-      it { should_not be_running } 
+      it { should_not be_running }
     end
 
   end
