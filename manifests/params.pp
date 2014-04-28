@@ -88,13 +88,15 @@ class logstash::params {
   case $::kernel {
     'Linux': {
       $configdir = '/etc/logstash'
-      $package_dir = '/opt/logstash/swdl'
+      $package_dir = '/var/lib/logstash/swdl'
       $installpath = '/opt/logstash'
+      $plugin = '/opt/logstash/bin/plugin'
     }
     'Darwin': {
       $configdir = '/Library/Application Support/Logstash'
       $package_dir = '/Library/Logstash/swdl'
       $installpath = '/Library/Logstash'
+      $plugin = '/Library/Logstash/bin/plugin'
     }
     default: {
       fail("\"${module_name}\" provides no config directory default value
