@@ -26,6 +26,9 @@ RSpec.configure do |c|
   # Readable test descriptions
   c.formatter = :documentation
 
+	# declare an exclusion filter
+	c.filter_run_excluding :broken => true
+
   # Configure all nodes in nodeset
   c.before :suite do
     # Install module and dependencies
@@ -35,12 +38,12 @@ RSpec.configure do |c|
       on host, puppet('module','install','ispavailability-file_concat'), { :acceptable_exit_codes => [0,1] }
 
       if !host.is_pe?
-				scp_to(host, '/home/jenkins/puppet/puppetlabs-stdlib-3.2.0.tar.gz', '/tmp/puppetlabs-stdlib-3.2.0.tar.gz')
-				on host, puppet('module','install','/tmp/puppetlabs-stdlib-3.2.0.tar.gz'), { :acceptable_exit_codes => [0,1] }
+        scp_to(host, '/home/jenkins/puppet/puppetlabs-stdlib-3.2.0.tar.gz', '/tmp/puppetlabs-stdlib-3.2.0.tar.gz')
+        on host, puppet('module','install','/tmp/puppetlabs-stdlib-3.2.0.tar.gz'), { :acceptable_exit_codes => [0,1] }
       end
       if fact('osfamily') == 'Debian'
-				scp_to(host, '/home/jenkins/puppet/puppetlabs-apt-1.4.2.tar.gz', '/tmp/puppetlabs-apt-1.4.2.tar.gz')
-				on host, puppet('module','install','/tmp/puppetlabs-apt-1.4.2.tar.gz'), { :acceptable_exit_codes => [0,1] }
+        scp_to(host, '/home/jenkins/puppet/puppetlabs-apt-1.4.2.tar.gz', '/tmp/puppetlabs-apt-1.4.2.tar.gz')
+        on host, puppet('module','install','/tmp/puppetlabs-apt-1.4.2.tar.gz'), { :acceptable_exit_codes => [0,1] }
       end
       if fact('osfamily') == 'Suse'
         on host, puppet('module','install','darin-zypprepo'), { :acceptable_exit_codes => [0,1] }

@@ -1,7 +1,7 @@
 require 'spec_helper_acceptance'
 
 if fact('osfamily') != 'Suse'
-describe "Contrib tests:" do
+describe "Contrib tests:", :broken => true do
 
   case fact('osfamily')
     when 'RedHat'
@@ -19,7 +19,7 @@ describe "Contrib tests:" do
 
   describe "Install the contrib package" do
 
-    context "Change the defaults file" do
+    context "via repository" do
      it 'should run successfully' do
 				pp = "class { 'logstash': manage_repo => true, repo_version => '1.4', java_install => true, install_contrib => true }
               logstash::configfile { 'basic_config': content => 'input { tcp { port => 2000 } } output { stdout { } } ' }
@@ -34,10 +34,14 @@ describe "Contrib tests:" do
 
       describe service(service_name) do
         it { should be_enabled }
-        it { should be_running } 
+        it { should be_running }
       end
 
       describe package(package_name) do
+        it { should be_installed }
+      end
+
+      describe package(package_contrib) do
         it { should be_installed }
       end
 
