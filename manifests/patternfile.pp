@@ -56,7 +56,7 @@ define logstash::patternfile (
     ensure  => 'file',
     owner   => $logstash::logstash_user,
     group   => $logstash::logstash_group,
-    mode    => '0440',
+    mode    => '0644',
     source  => $source,
   }
 
