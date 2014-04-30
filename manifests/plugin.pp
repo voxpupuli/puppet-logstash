@@ -88,7 +88,7 @@ define logstash::plugin (
   file { "${plugins_dir}/logstash/${type}s/${filename_real}":
     ensure  => $ensure,
     owner   => $logstash::logstash_user,
-    group   => $logstash::logstsah_group,
+    group   => $logstash::logstash_group,
     mode    => '0440',
     source  => $source,
   }
