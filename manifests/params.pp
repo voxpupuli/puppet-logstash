@@ -73,7 +73,7 @@ class logstash::params {
 
   case $::kernel {
     'Linux': {
-      $download_tool = 'wget -O'
+      $download_tool = 'wget --no-check-certificate -O'
     }
     'Darwin': {
       $download_tool = 'curl -o'
