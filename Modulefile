@@ -1,5 +1,5 @@
 name    'elasticsearch-logstash'
-version '0.4.3'
+version '0.5.0'
 source 'https://github.com/elasticsearch/puppet-logstash'
 author 'elasticsearch'
 license 'Apache License, Version 2.0'

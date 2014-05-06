@@ -19,6 +19,8 @@ This overview shows you which Puppet module and Logstash version work together.
     ------------------------------------
     | 0.4.0 - 0.4.2 | 1.2.x - 1.3.x    |
     ------------------------------------
+    | 0.5.0         | 1.4.x            |
+    ------------------------------------
 
 ## Important notes
 
@@ -41,6 +43,7 @@ Optional:
 ## Usage Examples
 
 The minimum viable configuration ensures that the service is running and that it will be started at boot time:
+**N.B.** you will still need to supply a configuration.
 
      class { 'logstash': }
 
@@ -87,12 +90,30 @@ Under normal circumstances a modification to the Logstash configuration will tri
      class { 'logstash':
        restart_on_change => false
      }
-     
+
 Disable and remove Logstash entirely:
 
      class { 'logstash':
        ensure => 'absent'
-     }     
+     }
+
+## Contrib package installation
+
+As of Logstash 1.4.0 plugins have been split into 2 packages.
+To install the contrib package:
+
+via the repository:
+
+     class { 'logstash':
+       install_contrib => true
+     }
+
+via contrib_package_url:
+
+     class { 'logstash':
+       install_contrib => true,
+       contrib_package_install => 'package_url => 'http://download.elasticsearch.org/logstash/logstash/packages/centos/logstash-contrib-1.4.0-1_centos.noarch.rpm'
+     }
 
 ## Configuration Overview
 
@@ -118,8 +139,8 @@ To dynamically build a configuration, simply declare the `order` in which each s
      }
 
      logstash::configfile { 'filter_apache':
-       file  => 'puppet:///path/to/filter_apache',
-       order => 20
+       source => 'puppet:///path/to/filter_apache',
+       order  => 20
      }
 
      logstash::configfile { 'output_es':
@@ -182,10 +203,10 @@ Specify a particular Java package (version) to be installed:
 
 Most sites will manage repositories seperately; however, this module can manage the repository for you.
 
-  class { 'logstash':
-    manage_repo  => true,
-    repo_version => '1.3'
-  }
+     class { 'logstash':
+       manage_repo  => true,
+       repo_version => '1.3'
+     }
 
 Note: When using this on Debian/Ubuntu you will need to add the [Puppetlabs/apt](http://forge.puppetlabs.com/puppetlabs/apt) module to your modules.
 
@@ -218,4 +239,4 @@ The *defaults* file (`/etc/defaults/logstash` or `/etc/sysconfig/logstash`) for 
 
 ## Support
 
-Need help? Join us in `#logstash` on Freenode IRC or subscribe to the `logstash-users@googlegroups.com` mailing list.
+Need help? Join us in [#logstash](https://webchat.freenode.net?channels=%23logstash) on Freenode IRC or subscribe to the [logstash-users@googlegroups.com](https://groups.google.com/forum/#!forum/logstash-users) mailing list.

@@ -1,3 +1,15 @@
+0.5.0 ( May 06, 2014 )
+  Move beaker testing to use docker
+  Large module update to work with the contrib package
+  Refactored rspec testing
+  Fix inline docs
+  Added Puppet 3.5.0 testing
+  Fix typo in group name variable ( PR #147 )
+  Improve puppet module removal ( PR #149 )
+  Reverted PR #149. Caused issues with package removal.
+  added lsbdistid = Debian to rspec facts ( PR #146 )
+  match other config perms with patterns ( PR #151 )
+
 0.4.3 ( Feb 21, 2014 )
   Lower puppetlabs-stdlib depdency from 4.0.0 to 3.2.0
   Documentation improvements ( PR #132 #137 )
