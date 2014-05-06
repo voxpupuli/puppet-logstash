@@ -76,7 +76,7 @@ class logstash::config {
 
   } elsif ( $logstash::ensure == 'absent' ) {
 
-    file { [$logstash::configdir, $logstash::installpath ]:
+    file { $logstash::configdir:
       ensure  => 'absent',
       recurse => true,
       force   => true

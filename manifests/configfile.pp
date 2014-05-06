@@ -4,11 +4,14 @@
 #
 # === Parameters
 #
-# [*file*]
-#  Supply a template to be used for the config
+# [*content*]
+#  Supply content to be used for the config file. This can also be a template.
+#
+# [*source*]
+#  Supply a puppet file resource to be used for the config file.
 #
 # [*order*]
-#  The order number controls in which sequence the config file fragments are concatenated
+#  The order number controls in which sequence the config file fragments are concatenated.
 #
 # === Examples
 #

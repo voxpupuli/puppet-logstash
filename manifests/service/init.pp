@@ -119,6 +119,16 @@ define logstash::service::init{
 
   }
 
+  file { "/etc/init/${name}.conf":
+    ensure => 'absent',
+    before => Service[$name],
+  }
+
+  $service_provider = $::osfamily ? {
+    'Debian' => 'debian',
+    default  => 'init'
+  }
+
   # action
   service { $name:
     ensure     => $service_ensure,
@@ -127,6 +137,7 @@ define logstash::service::init{
     hasstatus  => $logstash::params::service_hasstatus,
     hasrestart => $logstash::params::service_hasrestart,
     pattern    => $logstash::params::service_pattern,
+    provider   => $service_provider
   }
 
 }

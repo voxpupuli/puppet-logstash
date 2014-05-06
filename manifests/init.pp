@@ -63,6 +63,69 @@
 # a look at the corresponding <tt>params.pp</tt> manifest file if you need more
 # technical information about them.
 #
+# [*package_url*]
+#   Url to the package to download.
+#   This can be a http,https or ftp resource for remote packages
+#   puppet:// resource or file:/ for local packages
+#
+# [*contrib_package_url*]
+#   Url to the contrib package to download.
+#   This can be a http,https or ftp resource for remote packages
+#   puppet:// resource or file:/ for local packages
+#
+# [*software_provider*]
+#   Way to install the packages, currently only packages are supported.
+#
+# [*package_dir*]
+#   Directory where the packages are downloaded to
+#
+# [*purge_package_dir*]
+#   Purge package directory on removal
+#
+# [*package_dl_timeout*]
+#   For http,https and ftp downloads you can set howlong the exec resource may take.
+#   Defaults to: 600 seconds
+#
+# [*logstash_user*]
+#   The user Logstash should run as. This also sets the file rights.
+#
+# [*logstash_group*]
+#   The group logstash should run as. This also sets the file rights
+#
+# [*purge_configdir*]
+#   Purge the config directory for any unmanaged files
+#
+# [*service_provider*]
+#   Service provider to use. By Default when a single service provider is possibe that one is selected.
+#
+# [*init_defaults*]
+#   Defaults file content in hash representation
+#
+# [*init_defaults_file*]
+#   Defaults file as puppet resource
+#
+# [*init_template*]
+#   Service file as a template
+#
+# [*java_install*]
+#  Install java which is required for Logstash.
+#  Defaults to: false
+#
+# [*java_package*]
+#   If you like to install a custom java package, put the name here.
+#
+# [*manage_repo*]
+#   Enable repo management by enabling our official repositories
+#
+# [*repo_version*]
+#   Our repositories are versioned per major version (1.3, 1.4) select here which version you want
+#
+# [*configdir*]
+#   Path to directory containing the logstash configuration.
+#   Use this setting if your packages deviate from the norm (/etc/logstash)
+#
+# [*install_contrib*]
+#  Enable installation of the contrib package
 #
 # === Examples
 #
@@ -92,6 +155,7 @@ class logstash(
   $version             = false,
   $software_provider   = 'package',
   $package_url         = undef,
+  $contrib_package_url = undef,
   $package_dir         = $logstash::params::package_dir,
   $purge_package_dir   = $logstash::params::purge_package_dir,
   $package_dl_timeout  = $logstash::params::package_dl_timeout,
@@ -107,6 +171,7 @@ class logstash(
   $init_template       = undef,
   $manage_repo         = false,
   $repo_version        = false,
+  $install_contrib     = false
 ) inherits logstash::params {
 
   anchor {'logstash::begin': }
