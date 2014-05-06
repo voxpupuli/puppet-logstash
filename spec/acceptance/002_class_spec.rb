@@ -6,11 +6,11 @@ describe "logstash class:" do
   when 'RedHat'
     package_name = 'logstash'
     service_name = 'logstash'
-		pid_file     = '/var/run/logstash/logstash.pid'
+    pid_file     = '/var/run/logstash/logstash.pid'
   when 'Debian'
     package_name = 'logstash'
     service_name = 'logstash'
-		pid_file     = '/var/run/logstash.pid'
+    pid_file     = '/var/run/logstash.pid'
   end
 
   describe "default parameters" do
@@ -34,10 +34,10 @@ describe "logstash class:" do
       it { should be_installed }
     end
 
-	  describe file(pid_file) do
-	    it { should be_file }
-		  its(:content) { should match /[0-9]+/ }
-		end
+    describe file(pid_file) do
+      it { should be_file }
+      its(:content) { should match /[0-9]+/ }
+    end
 
     describe port(2000) do
       it {

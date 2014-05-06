@@ -7,18 +7,18 @@ describe "Logstash class:" do
   case fact('osfamily')
   when 'RedHat'
     package_name = 'logstash'
-		service_name = 'logstash'
+    service_name = 'logstash'
     url          = 'https://download.elasticsearch.org/logstash/logstash/packages/centos/logstash-1.4.0-1_c82dc09.noarch.rpm'
     local        = '/tmp/logstash-1.4.0-1_c82dc09.noarch.rpm'
     puppet       = 'logstash-1.4.0-1_c82dc09.noarch.rpm'
-		pid_file     = '/var/run/logstash/logstash.pid'
+    pid_file     = '/var/run/logstash/logstash.pid'
   when 'Debian'
     package_name = 'logstash'
-		service_name = 'logstash'
+    service_name = 'logstash'
     url          = 'https://download.elasticsearch.org/logstash/logstash/packages/debian/logstash_1.4.0-1-c82dc09_all.deb'
     local        = '/tmp/logstash_1.4.0-1-c82dc09_all.deb'
     puppet       = 'logstash_1.4.0-1-c82dc09_all.deb'
-		pid_file     = '/var/run/logstash.pid'
+    pid_file     = '/var/run/logstash.pid'
   end
 
   shell("mkdir -p #{default['distmoduledir']}/another/files")
@@ -44,9 +44,9 @@ describe "Logstash class:" do
     end
 
     describe file(pid_file) do
-	    it { should be_file }
-		  its(:content) { should match /[0-9]+/ }
-	  end
+      it { should be_file }
+      its(:content) { should match /[0-9]+/ }
+    end
 
   end
 
@@ -85,9 +85,9 @@ describe "Logstash class:" do
     end
 
     describe file(pid_file) do
-	    it { should be_file }
-		  its(:content) { should match /[0-9]+/ }
-	  end
+      it { should be_file }
+      its(:content) { should match /[0-9]+/ }
+    end
 
   end
 
@@ -126,9 +126,9 @@ describe "Logstash class:" do
     end
 
     describe file(pid_file) do
-	    it { should be_file }
-		  its(:content) { should match /[0-9]+/ }
-	  end
+      it { should be_file }
+      its(:content) { should match /[0-9]+/ }
+    end
 
   end
 

@@ -5,15 +5,15 @@ describe "Contrib tests:", :broken => true do
 
   case fact('osfamily')
     when 'RedHat'
-			service_name    = 'logstash'
-			package_name    = 'logstash'
-			package_contrib = 'logstash-contrib'
-			pid_file        = '/var/run/logstash/logstash.pid'
+      service_name    = 'logstash'
+      package_name    = 'logstash'
+      package_contrib = 'logstash-contrib'
+      pid_file        = '/var/run/logstash/logstash.pid'
     when 'Debian'
-			service_name    = 'logstash'
-			package_name    = 'logstash'
-			package_contrib = 'logstash-contrib'
-			pid_file        = '/var/run/logstash.pid'
+      service_name    = 'logstash'
+      package_name    = 'logstash'
+      package_contrib = 'logstash-contrib'
+      pid_file        = '/var/run/logstash.pid'
   end
 
 
@@ -21,7 +21,7 @@ describe "Contrib tests:", :broken => true do
 
     context "via repository" do
      it 'should run successfully' do
-				pp = "class { 'logstash': manage_repo => true, repo_version => '1.4', java_install => true, install_contrib => true }
+        pp = "class { 'logstash': manage_repo => true, repo_version => '1.4', java_install => true, install_contrib => true }
               logstash::configfile { 'basic_config': content => 'input { tcp { port => 2000 } } output { stdout { } } ' }
              "
 
@@ -45,10 +45,10 @@ describe "Contrib tests:", :broken => true do
         it { should be_installed }
       end
 
-			describe file(pid_file) do
-	      it { should be_file }
-				its(:content) { should match /[0-9]+/ }
-			end
+      describe file(pid_file) do
+        it { should be_file }
+        its(:content) { should match /[0-9]+/ }
+      end
   end
 end
 end
