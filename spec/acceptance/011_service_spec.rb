@@ -9,7 +9,7 @@ describe "Service tests:" do
       defaults_file = '/etc/sysconfig/logstash'
       service_name  = 'logstash'
       package_name  = 'logstash'
-      pid_file      = '/var/run/logstash/logstash.pid'
+      pid_file      = '/var/run/logstash.pid'
     when 'Debian'
       defaults_file = '/etc/default/logstash'
       service_name  = 'logstash'

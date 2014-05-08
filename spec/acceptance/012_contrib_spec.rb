@@ -1,14 +1,14 @@
 require 'spec_helper_acceptance'
 
 if fact('osfamily') != 'Suse'
-describe "Contrib tests:", :broken => true do
+describe "Contrib tests:" do
 
   case fact('osfamily')
     when 'RedHat'
       service_name    = 'logstash'
       package_name    = 'logstash'
       package_contrib = 'logstash-contrib'
-      pid_file        = '/var/run/logstash/logstash.pid'
+      pid_file        = '/var/run/logstash.pid'
     when 'Debian'
       service_name    = 'logstash'
       package_name    = 'logstash'

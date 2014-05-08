@@ -6,7 +6,7 @@ describe "logstash class:" do
   when 'RedHat'
     package_name = 'logstash'
     service_name = 'logstash'
-    pid_file     = '/var/run/logstash/logstash.pid'
+    pid_file     = '/var/run/logstash.pid'
   when 'Debian'
     package_name = 'logstash'
     service_name = 'logstash'
