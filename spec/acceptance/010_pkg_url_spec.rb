@@ -22,7 +22,6 @@ describe "Logstash class:" do
   end
 
   shell("mkdir -p #{default['distmoduledir']}/another/files")
-  curl_with_retries('Download package for local file test', default, "#{url} -o #{local}", 0)
   shell("cp #{local} #{default['distmoduledir']}/another/files/#{puppet}")
 
   context "install via http resource" do
