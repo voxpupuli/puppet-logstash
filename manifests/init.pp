@@ -171,7 +171,8 @@ class logstash(
   $init_template       = undef,
   $manage_repo         = false,
   $repo_version        = false,
-  $install_contrib     = false
+  $install_contrib     = false,
+  $repo_stage          = false
 ) inherits logstash::params {
 
   anchor {'logstash::begin': }
@@ -239,14 +240,30 @@ class logstash(
   }
 
   if ($manage_repo == true) {
-    # Set up repositories
-    class { 'logstash::repo': }
 
-    # Ensure that we set up the repositories before trying to install
-    # the packages
-    Anchor['logstash::begin']
-    -> Class['logstash::repo']
-    -> Class['logstash::package']
+    if ($repo_stage == false) {
+      # use anchor for ordering
+
+      # Set up repositories
+      class { 'logstash::repo': }
+
+      # Ensure that we set up the repositories before trying to install
+      # the packages
+      Anchor['logstash::begin']
+      -> Class['logstash::repo']
+      -> Class['logstash::package']
+
+    } else {
+      # use staging for ordering
+
+      if !(defined(Stage[$repo_stage])) {
+        stage { $repo_stage:  before => Stage['main'] }
+      }
+
+      class { 'logstash::repo':
+        stage => $repo_stage
+      }
+    }
   }
 
   #### Manage relationships
