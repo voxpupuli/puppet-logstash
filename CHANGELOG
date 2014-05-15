@@ -1,3 +1,8 @@
+0.5.1 ( May 15, 2014 )
+  Updated system tests to work with LS 1.4.1
+  Increase package download timeout
+  Add option to use stages for the repo setup instead anchors
+
 0.5.0 ( May 06, 2014 )
   Move beaker testing to use docker
   Large module update to work with the contrib package
