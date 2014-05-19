@@ -127,6 +127,9 @@
 # [*install_contrib*]
 #  Enable installation of the contrib package
 #
+# [*repo_stage*]
+#   Use stdlib stage setup for managing the repo, instead of anchoring
+#
 # === Examples
 #
 # * Installation, make sure service is running and will be started at boot time:
