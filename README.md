@@ -112,7 +112,7 @@ via contrib_package_url:
 
      class { 'logstash':
        install_contrib => true,
-       contrib_package_install => 'package_url => 'http://download.elasticsearch.org/logstash/logstash/packages/centos/logstash-contrib-1.4.0-1_centos.noarch.rpm'
+       contrib_package_url => 'http://download.elasticsearch.org/logstash/logstash/packages/centos/logstash-contrib-1.4.0-1_centos.noarch.rpm'
      }
 
 ## Configuration Overview
