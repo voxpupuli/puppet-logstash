@@ -39,11 +39,8 @@ describe "logstash class:" do
       its(:content) { should match /[0-9]+/ }
     end
 
-    describe port(2000) do
-      it {
-        sleep 15
-        should be_listening
-      }
+    it 'Port 2000 should be listening' do
+        retry_command('Check port', default, 'netstat -tunl | grep -- :2000\ ', 0, 10, 5)
     end
 
   end
