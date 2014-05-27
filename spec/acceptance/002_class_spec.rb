@@ -40,7 +40,7 @@ describe "logstash class:" do
     end
 
     it 'Port 2000 should be listening' do
-        retry_command('Check port', default, 'netstat -tunl | grep -- :2000\ ', 0, 10, 5)
+        retry_command('Check port', default, 'netstat -tunl | grep -- :2000\ ', 0, 15, 10)
     end
 
   end
