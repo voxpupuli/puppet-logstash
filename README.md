@@ -43,7 +43,7 @@ Optional:
 ## Usage Examples
 
 The minimum viable configuration ensures that the service is running and that it will be started at boot time:
-**N.B.** you will still need to supply a configuration using either a configs param or the logstash::configfile define.
+**N.B.** you will still need to supply a configuration using either a configs parameter or the logstash::configfile define.
 
 ```puppet
      class { 'logstash': }
@@ -115,6 +115,14 @@ Disable and remove Logstash entirely:
      }
 ```
 
+Enable [Hiera Hash Merging](http://docs.puppetlabs.com/hiera/1/lookup_types.html#hash-merge) for parameter lookups. When using the [Hiera Automatic Parameter Lookup](http://docs.puppetlabs.com/hiera/1/puppet.html#automatic-parameter-lookup) functionality, only priority based lookups are supported. Setting this to enabled will override this behaviour to allow hash merging.
+
+```puppet
+     class { 'logstash':
+       hieramerge => true
+     }
+```
+
 ## Contrib package installation
 
 As of Logstash 1.4.0 plugins have been split into 2 packages.
@@ -139,7 +147,7 @@ via contrib_package_url:
 
 ## Configuration Overview
 
-The Logstash configuration can be supplied as a single static file or dynamically built from multiple smaller files.
+The Logstash configuration can be supplied as a single static file or dynamically built from multiple smaller files or using raw content.
 
 The basic usage is identical in either case: simply declare a `file` attribute as you would the [`content`](http://docs.puppetlabs.com/references/latest/type.html#file-attribute-content) attribute of the `file` type, meaning either direct content, template or a file resource:
 
@@ -148,7 +156,6 @@ The basic usage is identical in either case: simply declare a `file` attribute a
        content => template('path/to/config.file')
      }
 ```
-
      or
 
 ```puppet
@@ -174,6 +181,57 @@ To dynamically build a configuration, simply declare the `order` in which each s
        content => template('logstash/output_es_cluster.erb')
        order   => 30
      }
+```
+
+You may alternatively specify a list of configfile directives via the hash parameter *configs* during the module load.
+This allows storing the configuration data in hiera.
+
+```puppet
+     class { 'logstash':
+       configs => {
+         input_redis => {
+            content => template('logstash/input_redis.erb'),
+            order   => 10
+          },
+          filter_apache => {
+            source => 'puppet:///path/to/filter_apache',
+            order  => 20
+          },
+          output_es => {
+            content => template('logstash/output_es_cluster.erb'),
+            order   => 30
+          },
+       }
+     }
+```
+
+The following example stores raw configuration settings in [Hiera (YAML)](http://docs.puppetlabs.com/hiera/1/puppet.html):
+
+```yaml
+logstash::configs:
+  input_json:
+    order   : 10
+    content : |
+      input {
+        tcp {
+          port  => 3333
+          type  => "json-tcp"
+          codec => "json"
+        }
+      }
+
+  output_plain:
+    order   : 20
+    content : |
+      output {
+        file {
+          codec           => "plain"
+          flush_interval  => 2
+          gzip            => false
+          path            => "/var/log/logstash/test.log"
+          workers         => 1
+        }
+      }
 ```
 
 ## Patterns
