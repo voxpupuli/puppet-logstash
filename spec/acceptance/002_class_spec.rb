@@ -40,7 +40,7 @@ describe "logstash class:" do
     end
 
     describe 'Show all running logstash processes' do
-      shell('ps auxfw | grep logstash | grep -v grep'
+      shell('ps auxfw | grep logstash | grep -v grep')
     end
 
   end
