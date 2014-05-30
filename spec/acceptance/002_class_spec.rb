@@ -39,7 +39,7 @@ describe "logstash class:" do
       its(:content) { should match /[0-9]+/ }
     end
 
-    describe 'Show all running logstash processes' do
+    it 'Show all running logstash processes' do
       shell('ps auxfw | grep logstash | grep -v grep')
     end
 

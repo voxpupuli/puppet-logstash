@@ -46,7 +46,8 @@ describe "Logstash class:" do
       it { should be_file }
       its(:content) { should match /[0-9]+/ }
     end
-    describe 'Show all running logstash processes' do
+
+    it 'Show all running logstash processes' do
       shell('ps auxfw | grep logstash | grep -v grep')
     end
 
@@ -65,7 +66,8 @@ describe "Logstash class:" do
       it { should_not be_enabled }
       it { should_not be_running }
     end
-    describe 'Show all running logstash processes' do
+
+    it 'Show all running logstash processes' do
       shell('ps auxfw | grep logstash | grep -v grep')
     end
 
@@ -93,7 +95,8 @@ describe "Logstash class:" do
       it { should be_file }
       its(:content) { should match /[0-9]+/ }
     end
-    describe 'Show all running logstash processes' do
+
+    it 'Show all running logstash processes' do
       shell('ps auxfw | grep logstash | grep -v grep')
     end
 
@@ -112,7 +115,8 @@ describe "Logstash class:" do
       it { should_not be_enabled }
       it { should_not be_running }
     end
-    describe 'Show all running logstash processes' do
+
+    it 'Show all running logstash processes' do
       shell('ps auxfw | grep logstash | grep -v grep')
     end
 
@@ -140,7 +144,8 @@ describe "Logstash class:" do
       it { should be_file }
       its(:content) { should match /[0-9]+/ }
     end
-    describe 'Show all running logstash processes' do
+
+    it 'Show all running logstash processes' do
       shell('ps auxfw | grep logstash | grep -v grep')
     end
 
@@ -160,7 +165,7 @@ describe "Logstash class:" do
       it { should_not be_running }
     end
 
-    describe 'Show all running logstash processes' do
+    it 'Show all running logstash processes' do
       shell('ps auxfw | grep logstash | grep -v grep')
     end
 
