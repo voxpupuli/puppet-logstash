@@ -213,8 +213,7 @@ class logstash(
   # restart on change
   validate_bool($restart_on_change)
 
-  # configuration file settings
-  validate_hash($configs)
+  # hiera hash merge setting
   validate_bool($hieramerge)
 
   # purge conf dir
