@@ -43,59 +43,76 @@ Optional:
 ## Usage Examples
 
 The minimum viable configuration ensures that the service is running and that it will be started at boot time:
-**N.B.** you will still need to supply a configuration.
+**N.B.** you will still need to supply a configuration using either a configs param or the logstash::configfile define.
 
+```puppet
      class { 'logstash': }
+```
 
 Specify a particular package (version) to be installed:
 
+```puppet
      class { 'logstash':
        version => '1.3.3-1_centos'
      }
+```
 
 In the absense of an appropriate package for your environment it is possible to install from other sources as well.
 
 http/https/ftp source:
 
+```puppet
      class { 'logstash':
        package_url => 'http://download.elasticsearch.org/logstash/logstash/packages/centos/logstash-1.3.3-1_centos.noarch.rpm'
      }
+```
 
 `puppet://` source:
 
+```puppet
      class { 'logstash':
        package_url => 'puppet:///path/to/logstash-1.3.3-1_centos.noarch.rpm'
      }
+```
 
 Local file source:
 
+```puppet
      class { 'logstash':
        package_url => 'file:/path/to/logstash-1.3.3-1_centos.noarch.rpm'
      }
+```
 
 Attempt to upgrade Logstash if a newer package is detected (`false` by default):
 
      class { 'logstash':
        autoupgrade => true
      }
+```
 
 Install everything but *disable* the service (useful for pre-configuring systems):
 
+```puppet
      class { 'logstash':
        status => 'disabled'
      }
+```
 
 Under normal circumstances a modification to the Logstash configuration will trigger a restart of the service. This behaviour can be disabled:
 
+```puppet
      class { 'logstash':
        restart_on_change => false
      }
+```
 
 Disable and remove Logstash entirely:
 
+```puppet
      class { 'logstash':
        ensure => 'absent'
      }
+```
 
 ## Contrib package installation
 
@@ -104,16 +121,20 @@ To install the contrib package:
 
 via the repository:
 
+```puppet
      class { 'logstash':
        install_contrib => true
      }
+```
 
 via contrib_package_url:
 
+```puppet
      class { 'logstash':
        install_contrib => true,
        contrib_package_url => 'http://download.elasticsearch.org/logstash/logstash/packages/centos/logstash-contrib-1.4.0-1_centos.noarch.rpm'
      }
+```
 
 ## Configuration Overview
 
@@ -121,18 +142,23 @@ The Logstash configuration can be supplied as a single static file or dynamicall
 
 The basic usage is identical in either case: simply declare a `file` attribute as you would the [`content`](http://docs.puppetlabs.com/references/latest/type.html#file-attribute-content) attribute of the `file` type, meaning either direct content, template or a file resource:
 
+```puppet
      logstash::configfile { 'configname':
        content => template('path/to/config.file')
      }
+```
 
      or
 
+```puppet
      logstash::configfile { 'configname':
        source => 'puppet:///path/to/config.file'
      }
+```
 
 To dynamically build a configuration, simply declare the `order` in which each section should appear - the lower the number the earlier it will appear in the resulting file (this should be a [familiar idiom](https://en.wikipedia.org/wiki/BASIC) for most).
 
+```puppet
      logstash::configfile { 'input_redis':
        content => template('logstash/input_redis.erb'),
        order   => 10
@@ -147,6 +173,7 @@ To dynamically build a configuration, simply declare the `order` in which each s
        content => template('logstash/output_es_cluster.erb')
        order   => 30
      }
+```
 
 ## Patterns
 
@@ -154,59 +181,73 @@ Many plugins (notably [Grok](http://logstash.net/docs/latest/filters/grok)) use 
 
 **N.B.** As of Logstash 1.2 the path to the additional patterns needs to be configured explicitly in the Grok configuration.
 
+```puppet
      logstash::patternfile { 'extra_patterns':
        source => 'puppet:///path/to/extra_pattern'
      }
+```
 
 By default the resulting filename of the pattern will match that of the source. This can be over-ridden:
 
+```puppet
      logstash::patternfile { 'extra_patterns_firewall':
        source   => 'puppet:///path/to/extra_patterns_firewall_v1',
        filename => 'extra_patterns_firewall'
      }
+```
 
 ## Plugins
 
 Like the patterns above, Logstash comes with a large number of [plugins](http://logstash.net/docs/latest/); likewise, additional site-specific plugins can be managed as well.  Again, where possible, you are encouraged to contribute new plugins back to the community.
 
+```puppet
      logstash::plugin { 'myplugin':
        ensure => 'present',
        type   => 'input',
        source => 'puppet:///path/to/my/custom/plugin.rb'
      }
+```
 
 By default the resulting filename of the plugin will match that of the source. This can be over-ridden:
 
+```puppet
      logstash::plugin { 'myplugin':
        ensure   => 'present',
        type     => 'output',
        source   => 'puppet:///path/to/my/custom/plugin_v1.rb',
        filename => 'plugin.rb'
      }
+```
 
 ## Java Install
 
 Most sites will manage Java seperately; however, this module can attempt to install Java as well.
 
+```puppet
      class { 'logstash':
        java_install => true
      }
+```
 
 Specify a particular Java package (version) to be installed:
 
+```puppet
      class { 'logstash':
        java_install => true,
        java_package => 'packagename'
      }
+```
 
 ## Repository management
 
 Most sites will manage repositories seperately; however, this module can manage the repository for you.
 
+```puppet
      class { 'logstash':
        manage_repo  => true,
        repo_version => '1.3'
      }
+```
 
 Note: When using this on Debian/Ubuntu you will need to add the [Puppetlabs/apt](http://forge.puppetlabs.com/puppetlabs/apt) module to your modules.
 
@@ -222,12 +263,15 @@ The *defaults* file (`/etc/defaults/logstash` or `/etc/sysconfig/logstash`) for 
 
 ##### file source
 
+```puppet
      class { 'logstash':
        init_defaults_file => 'puppet:///path/to/defaults'
      }
+```
 
 ##### hash representation
 
+```puppet
      $config_hash = {
        'LS_USER' => 'logstash',
        'LS_GROUP' => 'logstash',
@@ -236,6 +280,7 @@ The *defaults* file (`/etc/defaults/logstash` or `/etc/sysconfig/logstash`) for 
      class { 'logstash':
        init_defaults => $config_hash
      }
+```
 
 ## Support
 
