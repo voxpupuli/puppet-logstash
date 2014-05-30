@@ -85,6 +85,7 @@ Local file source:
 
 Attempt to upgrade Logstash if a newer package is detected (`false` by default):
 
+```puppet
      class { 'logstash':
        autoupgrade => true
      }
