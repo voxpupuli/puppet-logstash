@@ -124,11 +124,18 @@
 #   Path to directory containing the logstash configuration.
 #   Use this setting if your packages deviate from the norm (/etc/logstash)
 #
+# [*configs*]
+#   Hash. Configuration file settings in logstash::configfile format.
+#   Defaults to <tt>undef</tt>.
+#
 # [*install_contrib*]
 #  Enable installation of the contrib package
 #
 # [*repo_stage*]
 #   Use stdlib stage setup for managing the repo, instead of anchoring
+#
+# [*hieramerge*]
+#   Enable hash merging when loading hash based parameters from hiera
 #
 # === Examples
 #
@@ -165,6 +172,7 @@ class logstash(
   $logstash_user       = $logstash::params::logstash_user,
   $logstash_group      = $logstash::params::logstash_group,
   $configdir           = $logstash::params::configdir,
+  $configs             = undef,
   $purge_configdir     = $logstash::params::purge_configdir,
   $java_install        = false,
   $java_package        = undef,
@@ -175,7 +183,8 @@ class logstash(
   $manage_repo         = false,
   $repo_version        = false,
   $install_contrib     = false,
-  $repo_stage          = false
+  $repo_stage          = false,
+  $hieramerge          = false
 ) inherits logstash::params {
 
   anchor {'logstash::begin': }
@@ -203,6 +212,10 @@ class logstash(
 
   # restart on change
   validate_bool($restart_on_change)
+
+  # configuration file settings
+  validate_hash($configs)
+  validate_bool($hieramerge)
 
   # purge conf dir
   validate_bool($purge_configdir)
