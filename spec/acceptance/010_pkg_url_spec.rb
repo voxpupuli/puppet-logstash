@@ -67,10 +67,6 @@ describe "Logstash class:" do
       it { should_not be_running }
     end
 
-    it 'Show all running logstash processes' do
-      shell('ps auxfw | grep logstash | grep -v grep')
-    end
-
   end
 
   context "Install via local file resource" do
@@ -116,10 +112,6 @@ describe "Logstash class:" do
       it { should_not be_running }
     end
 
-    it 'Show all running logstash processes' do
-      shell('ps auxfw | grep logstash | grep -v grep')
-    end
-
   end
 
   context "Install via Puppet resource" do
@@ -163,10 +155,6 @@ describe "Logstash class:" do
     describe service(service_name) do
       it { should_not be_enabled }
       it { should_not be_running }
-    end
-
-    it 'Show all running logstash processes' do
-      shell('ps auxfw | grep logstash | grep -v grep')
     end
 
   end

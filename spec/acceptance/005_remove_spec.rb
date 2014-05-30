@@ -32,8 +32,4 @@ describe "module removal" do
     it { should_not be_installed }
   end
 
-  it 'Show all running logstash processes' do
-    shell('ps auxfw | grep logstash | grep -v grep')
-  end
-
 end
