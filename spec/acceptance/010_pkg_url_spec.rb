@@ -28,7 +28,7 @@ describe "Logstash class:" do
 
     it 'should run successfully' do
       pp = "class { 'logstash': package_url => '#{url}', java_install => true }
-            logstash::configfile { 'basic_config': content => 'input { tcp { port => 2000 } } output { stdout { } } ' }
+            logstash::configfile { 'basic_config': content => 'input { tcp { port => 2000 } } output { null { } } ' }
            "
 
       # Run it twice and test for idempotency
@@ -73,7 +73,7 @@ describe "Logstash class:" do
 
     it 'should run successfully' do
       pp = "class { 'logstash': package_url => 'file:#{local}', java_install => true }
-            logstash::configfile { 'basic_config': content => 'input { tcp { port => 2000 } } output { stdout { } } ' }
+            logstash::configfile { 'basic_config': content => 'input { tcp { port => 2000 } } output { null { } } ' }
            "
 
       # Run it twice and test for idempotency
@@ -118,7 +118,7 @@ describe "Logstash class:" do
 
     it 'should run successfully' do
       pp = "class { 'logstash': package_url => 'puppet:///modules/another/#{puppet}', java_install => true }
-            logstash::configfile { 'basic_config': content => 'input { tcp { port => 2000 } } output { stdout { } } ' }
+            logstash::configfile { 'basic_config': content => 'input { tcp { port => 2000 } } output { null { } } ' }
            "
 
       # Run it twice and test for idempotency

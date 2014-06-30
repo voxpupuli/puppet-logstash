@@ -25,7 +25,7 @@ describe "Service tests:" do
     context "Change the defaults file" do
      it 'should run successfully' do
         pp = "class { 'logstash': manage_repo => true, repo_version => '1.4', java_install => true, init_defaults => { 'LS_USER' => 'root', 'LS_JAVA_OPTS' => '\"-Djava.io.tmpdir=$HOME -XX:+UseTLAB\"' } }
-              logstash::configfile { 'basic_config': content => 'input { tcp { port => 2000 } } output { stdout { } } ' }
+              logstash::configfile { 'basic_config': content => 'input { tcp { port => 2000 } } output { null { } } ' }
              "
 
         # Run it twice and test for idempotency

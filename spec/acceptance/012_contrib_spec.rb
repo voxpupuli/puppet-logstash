@@ -22,7 +22,7 @@ describe "Contrib tests:" do
     context "via repository" do
      it 'should run successfully' do
         pp = "class { 'logstash': manage_repo => true, repo_version => '1.4', java_install => true, install_contrib => true }
-              logstash::configfile { 'basic_config': content => 'input { tcp { port => 2000 } } output { stdout { } } ' }
+              logstash::configfile { 'basic_config': content => 'input { tcp { port => 2000 } } output { null { } } ' }
              "
 
         # Run it twice and test for idempotency
