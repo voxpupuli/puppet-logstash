@@ -26,7 +26,6 @@ hosts.each do |host|
     install_pe
   else
     puppetversion = ENV['VM_PUPPET_VERSION']
-    install_package host, 'rubygems'
     on host, "#{gem_proxy} gem install puppet --no-ri --no-rdoc --version '~> #{puppetversion}'"
     on host, "mkdir -p #{host['distmoduledir']}"
 
