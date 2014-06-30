@@ -49,6 +49,11 @@ describe "Contrib tests:" do
         it { should be_file }
         its(:content) { should match /[0-9]+/ }
       end
+
+    it 'Show all running logstash processes' do
+      shell('ps auxfw | grep logstash | grep -v grep')
+    end
+
   end
 end
 end

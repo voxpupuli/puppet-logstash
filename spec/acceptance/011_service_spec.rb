@@ -60,5 +60,10 @@ describe "Service tests:" do
       end
 
     end
+
+    it 'Show all running logstash processes' do
+      shell('ps auxfw | grep logstash | grep -v grep')
+    end
+
   end
 end
