@@ -43,6 +43,9 @@ describe "logstash class:" do
       shell('ps auxfw | grep logstash | grep -v grep')
     end
 
+    it "should only have 1 java process running" do
+      shell('test $(ps aux | grep -w -- java | grep -v grep | wc -l) -eq 1')
+    end
   end
 
 end
