@@ -16,7 +16,7 @@ describe "module removal" do
 
     # Run it twice and test for idempotency
     apply_manifest(pp, :catch_failures => true)
-
+    sleep 5
   end
 
   describe file('/etc/logstash') do

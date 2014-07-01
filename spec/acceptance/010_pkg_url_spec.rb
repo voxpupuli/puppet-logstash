@@ -33,9 +33,9 @@ describe "Logstash class:" do
 
       # Run it twice and test for idempotency
       apply_manifest(pp, :catch_failures => true)
-      sleep 10
+      sleep 5
       expect(apply_manifest(pp, :catch_failures => true).exit_code).to be_zero
-
+      sleep 5
     end
 
     describe package(package_name) do
@@ -60,6 +60,7 @@ describe "Logstash class:" do
   context "Clean" do
     it 'should run successfully' do
       apply_manifest("class { 'logstash': ensure => absent }", :catch_failures => true)
+      sleep 5
     end
 
     describe package(package_name) do
@@ -82,8 +83,9 @@ describe "Logstash class:" do
 
       # Run it twice and test for idempotency
       apply_manifest(pp, :catch_failures => true)
-      sleep 10
+      sleep 5
       expect(apply_manifest(pp, :catch_failures => true).exit_code).to be_zero
+      sleep 5
 
     end
 
@@ -109,6 +111,7 @@ describe "Logstash class:" do
   context "Clean" do
     it 'should run successfully' do
       apply_manifest("class { 'logstash': ensure => absent }", :catch_failures => true)
+      sleep 5
     end
 
     describe package(package_name) do
@@ -131,8 +134,9 @@ describe "Logstash class:" do
 
       # Run it twice and test for idempotency
       apply_manifest(pp, :catch_failures => true)
-      sleep 10
+      sleep 5
       expect(apply_manifest(pp, :catch_failures => true).exit_code).to be_zero
+      sleep 5
 
     end
 
@@ -158,6 +162,7 @@ describe "Logstash class:" do
   context "Clean" do
     it 'should run successfully' do
       apply_manifest("class { 'logstash': ensure => absent }", :catch_failures => true)
+      sleep 5
     end
 
     describe package(package_name) do

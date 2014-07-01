@@ -1,6 +1,5 @@
 require 'spec_helper_acceptance'
 
-if fact('osfamily') != 'Suse'
 describe "Contrib tests:" do
 
   case fact('osfamily')
@@ -27,10 +26,10 @@ describe "Contrib tests:" do
 
         # Run it twice and test for idempotency
         apply_manifest(pp, :catch_failures => true)
-        sleep 10
+        sleep 5
         expect(apply_manifest(pp, :catch_failures => true).exit_code).to be_zero
+        sleep 5
       end
-    end
 
       describe service(service_name) do
         it { should be_enabled }
