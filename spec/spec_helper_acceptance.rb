@@ -19,7 +19,7 @@ if !proxy_host.empty?
     end
     on host, "echo 'export http_proxy='http://#{proxy_host}'' >> /root/.bashrc"
     on host, "echo 'export https_proxy='http://#{proxy_host}'' >> /root/.bashrc"
-    on host, "echo 'no_proxy=\"localhost,127.0.0.1,localaddress,.localdomain.com,#{host.name}\"' >> /root/.bashrc"
+    on host, "echo 'export no_proxy=\"localhost,127.0.0.1,localaddress,.localdomain.com,#{host.name}\"' >> /root/.bashrc"
   end
 end
 
@@ -79,8 +79,10 @@ RSpec.configure do |c|
         on host, puppet('module','install','/tmp/puppetlabs-stdlib-3.2.0.tar.gz'), { :acceptable_exit_codes => [0,1] }
       end
       if fact('osfamily') == 'Debian'
-        scp_to(host, '/home/jenkins/puppet/puppetlabs-apt-1.4.2.tar.gz', '/tmp/puppetlabs-apt-1.4.2.tar.gz')
-        on host, puppet('module','install','/tmp/puppetlabs-apt-1.4.2.tar.gz'), { :acceptable_exit_codes => [0,1] }
+        if !host.is_pe?
+          scp_to(host, '/home/jenkins/puppet/puppetlabs-apt-1.4.2.tar.gz', '/tmp/puppetlabs-apt-1.4.2.tar.gz')
+          on host, puppet('module','install','/tmp/puppetlabs-apt-1.4.2.tar.gz'), { :acceptable_exit_codes => [0,1] }
+        end
       end
       if fact('osfamily') == 'Suse'
         on host, puppet('module','install','darin-zypprepo'), { :acceptable_exit_codes => [0,1] }
