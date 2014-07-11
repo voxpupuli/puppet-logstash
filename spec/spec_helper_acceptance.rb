@@ -17,6 +17,8 @@ if !proxy_host.empty?
     when /^el-/, /centos/, /fedora/, /redhat/
       on host, "echo 'proxy=http://#{proxy_host}/' >> /etc/yum.conf"
     end
+    on host, "echo 'export http_proxy='http://#{proxy_host}'' >> /root/.bashrc"
+    on host, "echo 'export https_proxy='http://#{proxy_host}'' >> /root/.bashrc"
   end
 end
 
