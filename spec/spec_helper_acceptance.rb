@@ -19,6 +19,7 @@ if !proxy_host.empty?
     end
     on host, "echo 'export http_proxy='http://#{proxy_host}'' >> /root/.bashrc"
     on host, "echo 'export https_proxy='http://#{proxy_host}'' >> /root/.bashrc"
+    on host, "echo 'no_proxy=\"localhost,127.0.0.1,localaddress,.localdomain.com,#{host.name}\"' >> /root/.bashrc"
   end
 end
 
