@@ -22,6 +22,7 @@
 #
 # * Phil Fenstermacher <mailto:phillip.fenstermacher@gmail.com>
 # * Richard Pijnenburg <mailto:richard.pijnenburg@elasticsearch.com>
+# * Matthias Baur <mailto:matthias.baur@dmc.de>
 #
 class logstash::repo {
 
@@ -48,6 +49,23 @@ class logstash::repo {
         gpgkey   => 'http://packages.elasticsearch.org/GPG-KEY-elasticsearch',
         enabled  => 1,
       }
+    }
+    'Suse' : {
+      zypprepo { 'logstash':
+	type         => 'yum',
+	baseurl      => "http://packages.elasticsearch.org/logstash/${logstash::repo_version}/centos/",
+	enabled      => 1,
+	autorefresh  => 0,
+	name         => 'logstash',
+	require     => Exec['add-rpm-gpg-key-elasticsearch'],
+      }
+      # Workaround until zypprepo allows the adding of the keys
+      # https://github.com/deadpoint/puppet-zypprepo/issues/4
+      exec { 'add-rpm-gpg-key-elasticsearch':
+	path    =>  ['/bin', '/sbin', '/usr/bin/', '/usr/sbin/'],
+	command =>  'wget -q -O /tmp/RPM-GPG-KEY-elasticsearch http://packages.elasticsearch.org/GPG-KEY-elasticsearch; rpm --import /tmp/RPM-GPG-KEY-elasticsearch',
+	unless  =>  'rpm -q gpg-pubkey-d88e42b4',
+      }     
     }
     default: {
       fail("\"${module_name}\" provides no repository information for OSfamily \"${::osfamily}\"")

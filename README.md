@@ -39,6 +39,7 @@ If you need any help please see the [support](#Support) section.
 
 Optional:
 * The [apt](http://forge.puppetlabs.com/puppetlabs/apt) Puppet library when using repo management on Debian/Ubuntu.
+* The [zypprepo](https://github.com/deadpoint/puppet-zypprepo) Puppet library when using repo management on SLES/SuSE
 
 ## Usage Examples
 

@@ -20,6 +20,7 @@
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard.pijnenburg@elasticsearch.com>
+# * Matthias Baur <mailto:matthias.baur@dmc.de>
 #
 class logstash::java {
 
@@ -41,6 +42,9 @@ class logstash::java {
       }
       'OpenSuSE': {
         $package = 'java-1_6_0-openjdk'
+      }
+      'SLES': {
+        $package = 'java-1_7_0-ibm'
       }
       default: {
         fail("\"${module_name}\" provides no java package
