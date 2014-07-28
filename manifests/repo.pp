@@ -52,19 +52,21 @@ class logstash::repo {
     }
     'Suse' : {
       zypprepo { 'logstash':
-	type         => 'yum',
-	baseurl      => "http://packages.elasticsearch.org/logstash/${logstash::repo_version}/centos/",
-	enabled      => 1,
-	autorefresh  => 0,
-	name         => 'logstash',
-	require     => Exec['add-rpm-gpg-key-elasticsearch'],
+        baseurl      => "http://packages.elasticsearch.org/logstash/${logstash::repo_version}/centos/",
+        enabled      => 1,
+        autorefresh  => 1,
+        name         => 'logstash',
+        gpgcheck     => 1,
+        gpgkey       => 'http://packages.elasticsearch.org/GPG-KEY-elasticsearch',
+        type         => 'yum',
       }
+
       # Workaround until zypprepo allows the adding of the keys
       # https://github.com/deadpoint/puppet-zypprepo/issues/4
-      exec { 'add-rpm-gpg-key-elasticsearch':
-	path    =>  ['/bin', '/sbin', '/usr/bin/', '/usr/sbin/'],
-	command =>  'wget -q -O /tmp/RPM-GPG-KEY-elasticsearch http://packages.elasticsearch.org/GPG-KEY-elasticsearch; rpm --import /tmp/RPM-GPG-KEY-elasticsearch',
-	unless  =>  'rpm -q gpg-pubkey-d88e42b4',
+      exec { 'logstash_suse_import_gpg':
+        command =>  'wget -q -O /tmp/RPM-GPG-KEY-elasticsearch http://packages.elasticsearch.org/GPG-KEY-elasticsearch; rpm --import /tmp/RPM-GPG-KEY-elasticsearch; rm /tmp/RPM-GPG-KEY-elasticsearch',
+        unless  =>  'test $(rpm -qa gpg-pubkey | grep -i "D88E42B4" | wc -l) -eq 1 ',
+        notify  =>  Zypprepo['logstash'],
       }     
     }
     default: {
