@@ -38,8 +38,8 @@ If you need any help please see the [support](#Support) section.
 * The [file_concat](https://forge.puppetlabs.com/ispavailability/file_concat) Puppet library.
 
 Optional:
-* The [apt](http://forge.puppetlabs.com/puppetlabs/apt) Puppet library when using repo management on Debian/Ubuntu.
-* The [zypprepo](https://github.com/deadpoint/puppet-zypprepo) Puppet library when using repo management on SLES/SuSE
+* The [apt](https://forge.puppetlabs.com/puppetlabs/apt) Puppet library when using repo management on Debian/Ubuntu.
+* The [zypprepo](https://forge.puppetlabs.com/darin/zypprepo) Puppet library when using repo management on SLES/SuSE
 
 ## Usage Examples
 
