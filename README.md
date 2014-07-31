@@ -115,6 +115,15 @@ via contrib_package_url:
        contrib_package_url => 'http://download.elasticsearch.org/logstash/logstash/packages/centos/logstash-contrib-1.4.0-1_centos.noarch.rpm'
      }
 
+with a version specified:
+
+     class { 'logstash':
+       install_contrib => true,
+       contrib_version => '1.4.0'
+     }
+
+
+
 ## Configuration Overview
 
 The Logstash configuration can be supplied as a single static file or dynamically built from multiple smaller files.

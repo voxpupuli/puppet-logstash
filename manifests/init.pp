@@ -47,7 +47,11 @@
 #   case).
 #
 # [*version*]
-#   String to set the specific version you want to install.
+#   String to set the specific core package version you want to install.
+#   Defaults to <tt>false</tt>.
+#
+# [*contrib_version*]
+#   String to set the specific contrib package version you want to install.
 #   Defaults to <tt>false</tt>.
 #
 # [*restart_on_change*]
@@ -156,6 +160,7 @@ class logstash(
   $restart_on_change   = $logstash::params::restart_on_change,
   $autoupgrade         = $logstash::params::autoupgrade,
   $version             = false,
+  $contrib_version     = false,
   $software_provider   = 'package',
   $package_url         = undef,
   $contrib_package_url = undef,
