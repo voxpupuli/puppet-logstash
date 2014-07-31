@@ -11,6 +11,9 @@
 #   This can be a http,https or ftp resource for remote packages
 #   puppet:// resource or file:/ for local packages
 #
+# [*version*]
+#   Version of package to install
+#
 # === Examples
 #
 # This class may be imported by other classes to use its functionality:
@@ -25,7 +28,8 @@
 # * Richard Pijnenburg <mailto:richard.pijnenburg@elasticsearch.com>
 #
 define logstash::package::install(
-  $package_url = undef
+  $package_url = undef,
+  $version = undef
 ) {
 
   Exec {
@@ -41,7 +45,7 @@ define logstash::package::install(
   if $logstash::ensure == 'present' {
 
     # Check if we want to install a specific version or not
-    if $logstash::version == false {
+    if $version == false {
 
       $package_ensure = $logstash::autoupgrade ? {
         true  => 'latest',
@@ -51,7 +55,7 @@ define logstash::package::install(
     } else {
 
       # install specific version
-      $package_ensure = $logstash::version
+      $package_ensure = $version
 
     }
 

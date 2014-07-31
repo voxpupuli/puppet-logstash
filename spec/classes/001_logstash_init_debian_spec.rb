@@ -168,7 +168,7 @@ describe 'logstash', :type => 'class' do
 
             let :params do {
               :install_contrib => true,
-              :version => '1.0'
+              :contrib_version => '1.0'
             } end
 
             it { should contain_class('logstash::package') }
