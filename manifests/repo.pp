@@ -26,6 +26,11 @@
 #
 class logstash::repo {
 
+  Exec {
+    path      => [ '/bin', '/usr/bin', '/usr/local/bin' ],
+    cwd       => '/',
+  }
+
   case $::osfamily {
     'Debian': {
       if !defined(Class['apt']) {
