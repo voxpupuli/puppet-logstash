@@ -7,6 +7,10 @@ require 'spec_helper_acceptance'
   when 'Debian'
     package_name = 'logstash'
     service_name = 'logstash'
+  when 'Suse'
+    package_name = 'logstash'
+    service_name = 'logstash'
+    pid_file     = '/var/run/logstash.pid'
   end
 
 describe "module removal" do

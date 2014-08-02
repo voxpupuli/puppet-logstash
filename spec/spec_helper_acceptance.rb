@@ -48,6 +48,11 @@ hosts.each do |host|
     scp_to(host, "#{files_dir}/logstash-1.4.1-1_bd507eb.noarch.rpm", '/tmp/logstash-1.4.1-1_bd507eb.noarch.rpm')
   end
 
+  if fact('osfamily') == 'Suse'
+    scp_to(host, "#{files_dir}/logstash-1.4.1-1_bd507eb.noarch.rpm", '/tmp/logstash-1.4.1-1_bd507eb.noarch.rpm')
+  end
+
+
   # on debian/ubuntu nodes ensure we get the latest info
   # Can happen we have stalled data in the images
   if fact('osfamily') == 'Debian'

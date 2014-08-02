@@ -11,6 +11,10 @@ describe "logstash class:" do
     package_name = 'logstash'
     service_name = 'logstash'
     pid_file     = '/var/run/logstash.pid'
+  when 'Suse'
+    package_name = 'logstash'
+    service_name = 'logstash'
+    pid_file     = '/var/run/logstash.pid'
   end
 
   describe "default parameters" do
