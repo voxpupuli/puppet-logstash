@@ -35,7 +35,7 @@ hosts.each do |host|
     if fact('osfamily') == 'Suse'
       if fact('operatingsystem') == 'SLES'
         on host, "zypper --non-interactive ar --name puppet-devel http://download.opensuse.org/repositories/systemsmanagement:/puppet:/devel/SLE_11_SP3/ puppet-devel"
-        on host, "zypper --non-interactive refresh"
+        on host, "zypper --non-interactive --gpg-auto-import-keys refresh"
         install_package host 'rubygem-ruby-augeas libaugeas0 augeas-devel augeas-lenses'
       elsif fact('operatingsystem') == 'OpenSuSE'
         install_package host, 'ruby-devel augeas-devel libxml2-devel'
