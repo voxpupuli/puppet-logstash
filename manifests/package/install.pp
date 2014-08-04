@@ -136,7 +136,7 @@ define logstash::package::install(
   } else { # Package removal
     $pkg_source     = undef
     $package_ensure = 'absent'
-    if ($::operatingsystem == 'OpenSuSE') {
+    if ($::osfamily == 'Suse') {
       $pkg_provider = 'rpm'
     } else {
       $pkg_provider = undef
