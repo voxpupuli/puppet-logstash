@@ -1,5 +1,5 @@
 HOSTS:
-  sles-11sp3-x64:
+  sles-11-x64:
     roles:
       - master
       - database
