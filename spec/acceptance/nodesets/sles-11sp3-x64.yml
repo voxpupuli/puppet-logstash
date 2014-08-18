@@ -4,7 +4,7 @@ HOSTS:
       - master
       - database
       - dashboard
-    platform: sles-11sp3-x64
+    platform: sles-11-x64
     box: sles-11sp3-x64
     box_url: https://s3-eu-west-1.amazonaws.com/users.eu.elasticsearch.org/electrical/sles-11sp3-x64.box
     hypervisor: vagrant
