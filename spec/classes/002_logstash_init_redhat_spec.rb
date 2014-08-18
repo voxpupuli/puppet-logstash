@@ -283,6 +283,7 @@ describe 'logstash', :type => 'class' do
         context 'with provider \'init\'' do
 
           it { should contain_logstash__service__init('logstash') }
+          it { should contain_file('/etc/init/logstash.conf').with(:ensure => 'absent') }
 
           context 'and default settings' do
 
@@ -363,7 +364,7 @@ describe 'logstash', :type => 'class' do
          } end
 
          it { should contain_file('/etc/logstash').with(:ensure => 'absent', :force => true, :recurse => true) }
-         it { should contain_package('logstash').with(:ensure => 'purged') }
+         it { should contain_package('logstash').with(:ensure => 'absent') }
          it { should contain_service('logstash').with(:ensure => 'stopped', :enable => false) }
 
       end

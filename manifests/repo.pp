@@ -67,6 +67,9 @@ class logstash::repo {
           $gpg_key = 'GPG-KEY-elasticsearch'
           $gpg_id = 'D88E42B4'
         }
+        default: {
+          fail("Unknown Operating system (${::operatingsystem})for Suse family")
+        }
       }
 
       zypprepo { 'logstash':
@@ -85,7 +88,7 @@ class logstash::repo {
         command =>  "wget -q -O /tmp/RPM-GPG-KEY-elasticsearch http://packages.elasticsearch.org/${gpg_key}; rpm --import /tmp/RPM-GPG-KEY-elasticsearch; rm /tmp/RPM-GPG-KEY-elasticsearch",
         unless  =>  "test $(rpm -qa gpg-pubkey | grep -i \"${gpg_id}\" | wc -l) -eq 1 ",
         notify  =>  Zypprepo['logstash'],
-      }     
+      }
     }
     default: {
       fail("\"${module_name}\" provides no repository information for OSfamily \"${::osfamily}\"")
