@@ -13,6 +13,11 @@ describe "Contrib tests:" do
       package_name    = 'logstash'
       package_contrib = 'logstash-contrib'
       pid_file        = '/var/run/logstash.pid'
+    when 'Suse'
+      service_name    = 'logstash'
+      package_name    = 'logstash'
+      package_contrib = 'logstash-contrib'
+      pid_file        = '/var/run/logstash.pid'
   end
 
 

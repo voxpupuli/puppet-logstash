@@ -17,6 +17,9 @@ describe "Service tests:" do
       pid_file      = '/var/run/logstash.pid'
     when 'Suse'
       defaults_file = '/etc/sysconfig/logstash'
+      service_name  = 'logstash'
+      package_name  = 'logstash'
+      pid_file      = '/var/run/logstash.pid'
   end
 
 

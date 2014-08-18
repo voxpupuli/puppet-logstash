@@ -19,6 +19,13 @@ describe "Logstash class:" do
     local        = '/tmp/logstash_1.4.1-1-bd507eb_all.deb'
     puppet       = 'logstash_1.4.1-1-bd507eb_all.deb'
     pid_file     = '/var/run/logstash.pid'
+  when 'Suse'
+    package_name = 'logstash'
+    service_name = 'logstash'
+    pid_file     = '/var/run/logstash.pid'
+    url          = 'http://download.elasticsearch.org/logstash/logstash/packages/centos/logstash-1.4.1-1_bd507eb.noarch.rpm'
+    local        = '/tmp/logstash-1.4.1-1_bd507eb.noarch.rpm'
+    puppet       = 'logstash-1.4.1-1_bd507eb.noarch.rpm'
   end
 
   shell("mkdir -p #{default['distmoduledir']}/another/files")

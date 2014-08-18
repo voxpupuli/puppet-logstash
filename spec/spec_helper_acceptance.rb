@@ -33,8 +33,10 @@ hosts.each do |host|
     on host, "mkdir -p #{host['distmoduledir']}"
 
     if fact('osfamily') == 'Suse'
-      install_package host, 'ruby-devel augeas-devel libxml2-devel'
-      on host, "#{gem_proxy} gem install ruby-augeas --no-ri --no-rdoc"
+      if fact('operatingsystem') == 'OpenSuSE'
+        install_package host, 'ruby-devel augeas-devel libxml2-devel'
+        on host, "#{gem_proxy} gem install ruby-augeas --no-ri --no-rdoc"
+      end
     end
 
   end
@@ -47,6 +49,11 @@ hosts.each do |host|
   if fact('osfamily') == 'RedHat'
     scp_to(host, "#{files_dir}/logstash-1.4.1-1_bd507eb.noarch.rpm", '/tmp/logstash-1.4.1-1_bd507eb.noarch.rpm')
   end
+
+  if fact('osfamily') == 'Suse'
+    scp_to(host, "#{files_dir}/logstash-1.4.1-1_bd507eb.noarch.rpm", '/tmp/logstash-1.4.1-1_bd507eb.noarch.rpm')
+  end
+
 
   # on debian/ubuntu nodes ensure we get the latest info
   # Can happen we have stalled data in the images

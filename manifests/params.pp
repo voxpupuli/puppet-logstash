@@ -26,6 +26,7 @@
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard.pijnenburg@elasticsearch.com>
+# * Matthias Baur <mailto:matthias.baur@dmc.de>
 #
 class logstash::params {
 
@@ -106,7 +107,7 @@ class logstash::params {
 
   # packages
   case $::operatingsystem {
-    'RedHat', 'CentOS', 'Fedora', 'Scientific', 'Amazon', 'OracleLinux': {
+    'RedHat', 'CentOS', 'Fedora', 'Scientific', 'Amazon', 'OracleLinux', 'SLES', 'OpenSuSE': {
       # main application
       $package = [ 'logstash' ]
       $contrib = [ 'logstash-contrib' ]
@@ -124,7 +125,7 @@ class logstash::params {
 
   # service parameters
   case $::operatingsystem {
-    'RedHat', 'CentOS', 'Fedora', 'Scientific', 'Amazon', 'OracleLinux': {
+    'RedHat', 'CentOS', 'Fedora', 'Scientific', 'Amazon', 'OracleLinux', 'SLES', 'OpenSuSE': {
       $service_name       = 'logstash'
       $service_hasrestart = true
       $service_hasstatus  = true
