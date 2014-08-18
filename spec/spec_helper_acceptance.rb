@@ -26,6 +26,7 @@ end
 hosts.each do |host|
   # Install Puppet
   if host.is_pe?
+    on host, "hostname #{host.name}"
     install_pe
   else
     puppetversion = ENV['VM_PUPPET_VERSION']
