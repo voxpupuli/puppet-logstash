@@ -85,7 +85,7 @@ class logstash::repo {
         command =>  "wget -q -O /tmp/RPM-GPG-KEY-elasticsearch http://packages.elasticsearch.org/${gpg_key}; rpm --import /tmp/RPM-GPG-KEY-elasticsearch; rm /tmp/RPM-GPG-KEY-elasticsearch",
         unless  =>  "test $(rpm -qa gpg-pubkey | grep -i \"${gpg_id}\" | wc -l) -eq 1 ",
         notify  =>  Zypprepo['logstash'],
-      }     
+      }
     }
     default: {
       fail("\"${module_name}\" provides no repository information for OSfamily \"${::osfamily}\"")
