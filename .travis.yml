@@ -8,15 +8,13 @@ gemfile: .gemfiles/Gemfile.rspec
 script:
  - "bundle exec rake lint"
  - "bundle exec rake syntax"
- - "bundle exec rake spec SPEC_OPTS='--format documentation'"
+ - "bundle exec rake spec SPEC_OPTS='--format documentation --order random'"
 env:
-  - PUPPET_VERSION="~> 2.7.0"
-  - PUPPET_VERSION="~> 3.1.0"
   - PUPPET_VERSION="~> 3.2.0"
   - PUPPET_VERSION="~> 3.3.0"
   - PUPPET_VERSION="~> 3.4.0"
   - PUPPET_VERSION="~> 3.5.0"
+  - PUPPET_VERSION="~> 3.6.0"
 matrix:
-  fast_finish: true
   allow_failures:
     - rvm: 2.0.0
