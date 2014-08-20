@@ -34,15 +34,23 @@
 define logstash::configfile(
   $content = undef,
   $source = undef,
-  $order = 10
+  $order = 10,
+  $use_template = false,
 ) {
-
-  file_fragment { $name:
-    tag     => "LS_CONFIG_${::fqdn}",
-    content => $content,
-    source  => $source,
-    order   => $order,
-    before  => [ File_concat['ls-config'] ]
+  if $use_template == true {
+      file_fragment { $name:
+        tag     => "LS_CONFIG_${::fqdn}",
+        content => template($content),
+        order   => $order,
+        before  => [ File_concat['ls-config'] ]
+      }
+  } else {
+      file_fragment { $name:
+        tag     => "LS_CONFIG_${::fqdn}",
+        content => $config_contents,
+        source  => $source,
+        order   => $order,
+        before  => [ File_concat['ls-config'] ]
+      }
   }
-
 }
