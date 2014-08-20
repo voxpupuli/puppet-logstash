@@ -47,7 +47,7 @@ define logstash::configfile(
   } else {
       file_fragment { $name:
         tag     => "LS_CONFIG_${::fqdn}",
-        content => $contents,
+        content => $content,
         source  => $source,
         order   => $order,
         before  => [ File_concat['ls-config'] ]
