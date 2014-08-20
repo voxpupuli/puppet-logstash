@@ -141,6 +141,22 @@ The basic usage is identical in either case: simply declare a `file` attribute a
        source => 'puppet:///path/to/config.file'
      }
 
+     or if you want to use hiera to specify your configs, include the following create_resources call in your node manifest or in manifests/site.pp:
+
+     $logstash_configs = hiera('logstash_configs', {})
+     create_resources('logstash::configfile', $logstash_configs)
+
+     and then include the following config within the corresponding hiera file:
+
+     "logstash_configs": {
+        "config-name": {
+          "use_template": true,
+          "content": "logstash/logstash.conf.erb"
+        }
+      }
+
+
+
 To dynamically build a configuration, simply declare the `order` in which each section should appear - the lower the number the earlier it will appear in the resulting file (this should be a [familiar idiom](https://en.wikipedia.org/wiki/BASIC) for most).
 
      logstash::configfile { 'input_redis':
