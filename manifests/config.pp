@@ -68,7 +68,14 @@ class logstash::config {
       require => File[$logstash::configdir]
     }
 
-    file { [$plugins_dir, "${plugins_dir}/logstash", "${plugins_dir}/logstash/inputs", "${plugins_dir}/logstash/outputs", "${plugins_dir}/logstash/filters", "${plugins_dir}/logstash/codecs" ]:
+    file { [
+      $plugins_dir,
+      "${plugins_dir}/logstash",
+      "${plugins_dir}/logstash/inputs",
+      "${plugins_dir}/logstash/outputs",
+      "${plugins_dir}/logstash/filters",
+      "${plugins_dir}/logstash/codecs"
+    ]:
       ensure  => directory,
       require => File[$logstash::configdir]
     }
