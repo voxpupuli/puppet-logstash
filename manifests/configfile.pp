@@ -15,8 +15,10 @@
 #
 # === Examples
 #
+#     Set config file content with a literal value:
+#
 #     logstash::configfile { 'apache':
-#       content => template("${module_name}/path/to/apache.conf.erb"),
+#       content => "",
 #       order   => 10
 #     }
 #
@@ -27,6 +29,13 @@
 #       order  => 10
 #     }
 #
+#     or with template (useful with Hiera):
+#
+#     logstash::configfile { 'apache':
+#       template => "${module_name}/path/to/apache.conf.erb",
+#       order   => 10
+#     }
+#
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard.pijnenburg@elasticsearch.com>
@@ -34,12 +43,20 @@
 define logstash::configfile(
   $content = undef,
   $source = undef,
-  $order = 10
+  $order = 10,
+  $template = undef,
 ) {
+
+  if ($template != undef ) {
+    $config_content = template($template)
+  }
+  elsif ($content != undef) {
+    $config_content = $content
+  }
 
   file_fragment { $name:
     tag     => "LS_CONFIG_${::fqdn}",
-    content => $content,
+    content => $config_content,
     source  => $source,
     order   => $order,
     before  => [ File_concat['ls-config'] ]
