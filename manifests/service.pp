@@ -32,6 +32,11 @@ class logstash::service {
 
     init: {
       logstash::service::init { $logstash::params::service_name: }
+
+      # in case of init, make sure the upstart script provided by the package doesn't interfere:
+      file { "/etc/init/logstash.conf":
+        ensure  => 'absent',
+      }
     }
 
     default: {
