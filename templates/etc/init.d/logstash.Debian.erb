@@ -33,8 +33,8 @@ fi
 # The following variables can be overwritten in $DEFAULT
 
 # Run logstash as this user ID and group ID
-LS_USER=logstash
-LS_GROUP=logstash
+LS_USER=<%= @logstash_user %>
+LS_GROUP=<%= @logstash_group %>
 
 JAVA=/usr/bin/java
 
