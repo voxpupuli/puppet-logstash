@@ -17,8 +17,8 @@ if !proxy_host.empty?
     when /^el-/, /centos/, /fedora/, /redhat/
       on host, "echo 'proxy=http://#{proxy_host}/' >> /etc/yum.conf"
     end
-    on host, "echo 'export http_proxy='http://#{proxy_host}'' >> /root/.bashrc"
-    on host, "echo 'export https_proxy='http://#{proxy_host}'' >> /root/.bashrc"
+    on host, "echo 'export http_proxy=\"http://#{proxy_host}\"' >> /root/.bashrc"
+    on host, "echo 'export https_proxy=\"http://#{proxy_host}\"' >> /root/.bashrc"
     on host, "echo 'export no_proxy=\"localhost,127.0.0.1,localaddress,.localdomain.com,#{host.name}\"' >> /root/.bashrc"
   end
 end
@@ -44,15 +44,15 @@ hosts.each do |host|
 
   # Copy over some files
   if fact('osfamily') == 'Debian'
-    scp_to(host, "#{files_dir}/logstash_1.4.1-1-bd507eb_all.deb", '/tmp/logstash_1.4.1-1-bd507eb_all.deb')
+    scp_to(host, "#{files_dir}/logstash_1.4.2-1-2c0f5a1_all.deb", '/tmp/logstash_1.4.2-1-2c0f5a1_all.deb')
   end
 
   if fact('osfamily') == 'RedHat'
-    scp_to(host, "#{files_dir}/logstash-1.4.1-1_bd507eb.noarch.rpm", '/tmp/logstash-1.4.1-1_bd507eb.noarch.rpm')
+    scp_to(host, "#{files_dir}/logstash-1.4.2-1_2c0f5a1.noarch.rpm", '/tmp/logstash-1.4.2-1_2c0f5a1.noarch.rpm')
   end
 
   if fact('osfamily') == 'Suse'
-    scp_to(host, "#{files_dir}/logstash-1.4.1-1_bd507eb.noarch.rpm", '/tmp/logstash-1.4.1-1_bd507eb.noarch.rpm')
+    scp_to(host, "#{files_dir}/logstash-1.4.2-1_2c0f5a1.noarch.rpm", '/tmp/logstash-1.4.2-1_2c0f5a1.noarch.rpm')
   end
 
 
