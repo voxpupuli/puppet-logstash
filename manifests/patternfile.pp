@@ -53,11 +53,11 @@ define logstash::patternfile (
   }
 
   file { "${patterns_dir}/${filename_real}":
-    ensure  => 'file',
-    owner   => $logstash::logstash_user,
-    group   => $logstash::logstash_group,
-    mode    => '0644',
-    source  => $source,
+    ensure => 'file',
+    owner  => $logstash::logstash_user,
+    group  => $logstash::logstash_group,
+    mode   => '0644',
+    source => $source,
   }
 
 }

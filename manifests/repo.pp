@@ -73,13 +73,13 @@ class logstash::repo {
       }
 
       zypprepo { 'logstash':
-        baseurl      => "http://packages.elasticsearch.org/logstash/${logstash::repo_version}/${centos_version}/",
-        enabled      => 1,
-        autorefresh  => 1,
-        name         => 'logstash',
-        gpgcheck     => 1,
-        gpgkey       => "http://packages.elasticsearch.org/${gpg_key}",
-        type         => 'yum',
+        baseurl     => "http://packages.elasticsearch.org/logstash/${logstash::repo_version}/${centos_version}/",
+        enabled     => 1,
+        autorefresh => 1,
+        name        => 'logstash',
+        gpgcheck    => 1,
+        gpgkey      => "http://packages.elasticsearch.org/${gpg_key}",
+        type        => 'yum',
       }
 
       # Workaround until zypprepo allows the adding of the keys
