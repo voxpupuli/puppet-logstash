@@ -79,6 +79,23 @@ define logstash::service::init{
       $defaults_content = undef
       $defaults_source  = $logstash::init_defaults_file
     } elsif ($logstash::init_defaults != undef and is_hash($logstash::init_defaults) ) {
+      #
+      # Load any Hiera based configuration settings (if enabled and present)
+      #
+      # NOTE: hiera hash merging does not work in a parameterized class
+      #   definition; so we call it here.
+      #
+      # http://docs.puppetlabs.com/hiera/1/puppet.html#limitations
+      # https://tickets.puppetlabs.com/browse/HI-118
+      #
+      if $::logstash::hieramerge {
+        $x_init_defaults = hiera_hash('logstash::init_defaults', $::logstash::init_defaults)
+
+      # Fall back to user given class parameter / priority based hiera lookup
+      } else {
+        $x_init_defaults = $::logstash::init_defaults
+      }
+
       $defaults_content = template("${module_name}/etc/sysconfig/defaults.erb")
       $defaults_source  = undef
     } else {

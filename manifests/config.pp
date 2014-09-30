@@ -63,6 +63,26 @@ class logstash::config {
       require => File[ "${logstash::configdir}/conf.d" ]
     }
 
+    # Load any Hiera based configuration settings (if enabled and present)
+    #
+    # NOTE: hiera hash merging does not work in a parameterized class
+    #   definition; so we call it here.
+    #
+    # http://docs.puppetlabs.com/hiera/1/puppet.html#limitations
+    # https://tickets.puppetlabs.com/browse/HI-118
+    #
+    if $::logstash::hieramerge {
+      $x_configs = hiera_hash('logstash::configs', $::logstash::configs)
+
+    # Fall back to user given class parameter / priority based hiera lookup
+    } else {
+      $x_configs = $::logstash::configs
+    }
+
+    if $x_configs {
+      create_resources('::logstash::configfile', $x_configs)
+    }
+
     file { $patterns_dir:
       ensure  => directory,
       require => File[$logstash::configdir]
