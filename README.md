@@ -190,6 +190,17 @@ By default the resulting filename of the pattern will match that of the source. 
        source   => 'puppet:///path/to/extra_patterns_firewall_v1',
        filename => 'extra_patterns_firewall'
      }
+     
+**IMPORTANT NOTE**: Using logstash::patternfile places new patterns in the correct directory, however, it does NOT cause the path to be included automatically for filters (example: grok filter). You will still need to include this path (by default, /etc/logstash/patterns/) explicitly in your configurations.
+
+Example: If using 'grok' in one of your configurations, you must include the pattern path in each filter like this:
+
+```
+grok {
+      patterns_dir => "/etc/logstash/patterns/"
+      ...
+    }
+```
 
 ## Plugins
 
