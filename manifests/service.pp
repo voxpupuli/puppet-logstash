@@ -34,6 +34,10 @@ class logstash::service {
       logstash::service::init { $logstash::params::service_name: }
     }
 
+    openrc: {
+      logstash::service::init { $logstash::params::service_name: }
+    }
+
     default: {
       fail("Unknown service provider ${logstash::service_provider}")
     }

@@ -11,8 +11,8 @@ depend() {
 }
 
 start() {
-        if [ ! -e ${LOGSTASH_CONF:-/etc/logstash/logstash.conf} ]; then
-                eerror "${LOGSTASH_CONF:-/etc/logstash/logstash.conf} does not exist; cannot start Logstash"
+        if [ ! -e ${LOGSTASH_CONF:-/etc/logstash/conf.d/logstash.conf} ]; then
+                eerror "${LOGSTASH_CONF:-/etc/logstash/conf.d/logstash.conf} does not exist; cannot start Logstash"
                 return 1
         fi
 
@@ -25,7 +25,7 @@ start() {
         start-stop-daemon --start --background -m \
                 --pidfile ${LOGSTASH_PID} \
                 --exec ${LOGSTASH_HOME:-/opt/logstash/bin}/logstash \
-                        -- -f ${LOGSTASH_CONF:-/etc/logstash/logstash.conf} \
+                        -- -f ${LOGSTASH_CONF:-/etc/logstash/conf.d/logstash.conf} \
                         ${LOGSTASH_LOG}
 
         # There's no way to know if anything went wrong, so the only

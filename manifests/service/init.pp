@@ -126,6 +126,7 @@ define logstash::service::init{
 
   $service_provider = $::osfamily ? {
     'Debian' => 'debian',
+    'Gentoo' => 'openrc',
     default  => 'init'
   }
 
