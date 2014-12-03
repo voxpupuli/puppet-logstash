@@ -1,4 +1,4 @@
-# == Define: logstash::service::init
+# == Define: logstash::service::openrc
 #
 # This class exists to coordinate all service management related actions,
 # functionality and logical units in a central place.
@@ -17,9 +17,9 @@
 #
 # === Authors
 #
-# * Richard Pijnenburg <mailto:richard.pijnenburg@elasticsearch.com>
+# * Daniel Klockenkämper <mailto:dk@marketing-factory.de>
 #
-define logstash::service::init{
+define logstash::service::openrc{
 
   #### Service management
 
@@ -119,14 +119,8 @@ define logstash::service::init{
 
   }
 
-  file { "/etc/init/${name}.conf":
-    ensure => 'absent',
-    before => Service[$name],
-  }
-
   $service_provider = $::osfamily ? {
-    'Debian' => 'debian',
-    default  => 'init'
+    default  => 'openrc'
   }
 
   # action

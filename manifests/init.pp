@@ -181,8 +181,8 @@ class logstash(
   $repo_version        = false,
   $install_contrib     = false,
   $repo_stage          = false,
-  $gentoo_package_name = false,
-  $gentoo_contrib_name = false
+  $package_name        = $logstash::params::package,
+  $contrib_package_name= $logstash::params::contrib
 ) inherits logstash::params {
 
   anchor {'logstash::begin': }

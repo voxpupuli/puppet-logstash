@@ -35,7 +35,7 @@ class logstash::service {
     }
 
     openrc: {
-      logstash::service::init { $logstash::params::service_name: }
+      logstash::service::openrc { $logstash::params::service_name: }
     }
 
     default: {
