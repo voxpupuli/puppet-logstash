@@ -46,6 +46,9 @@ class logstash::java {
       'SLES': {
         $package = 'java-1_7_0-ibm'
       }
+      'Gentoo': {
+        $package = 'dev-java/oracle-jre-bin'
+      }
       default: {
         fail("\"${module_name}\" provides no java package
               for \"${::operatingsystem}\"")

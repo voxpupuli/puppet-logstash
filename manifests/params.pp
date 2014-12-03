@@ -117,6 +117,20 @@ class logstash::params {
       $package = [ 'logstash' ]
       $contrib = [ 'logstash-contrib' ]
     }
+    'Gentoo': {
+      # since logstash is available in different portage overlays
+      # allow specifiyng package name
+      if $logstash::init::gentoo_package_name {
+        $package = [ "$logstash::init::gentoo_package_name" ]
+      } else {
+        $package = [ 'app-admin/logstash' ]
+      }
+      if $logstash::init::gentoo_contrib_name {
+        $contrib = [ "$logstash::init::gentoo_contrib_name" ]
+      } else {
+        $contrib = [ 'app-admin/logstash-contrib' ]
+      }
+    }
     default: {
       fail("\"${module_name}\" provides no package default value
             for \"${::operatingsystem}\"")
@@ -147,6 +161,14 @@ class logstash::params {
       $service_hasstatus  = true
       $service_pattern    = $service_name
       $service_providers  = [ 'launchd' ]
+      $defaults_location  = false
+    }
+    'Gentoo': {
+      $service_name       = 'logstash'
+      $service_hasrestart = true
+      $service_hasstatus  = true
+      $service_pattern    = $service_name
+      $service_providers  = [ 'openrc' ]
       $defaults_location  = false
     }
     default: {

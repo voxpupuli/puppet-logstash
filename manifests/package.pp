@@ -72,7 +72,7 @@ class logstash::package {
   }
 
   #class { 'logstash::package::core': }
-  logstash::package::install { 'logstash':
+  logstash::package::install { $logstash::params::package:
     package_url => $logstash::package_url,
     version     => $logstash::version
   }
@@ -80,7 +80,7 @@ class logstash::package {
   if ($logstash::install_contrib == true) {
 
     #class { 'logstash::package::contrib': }
-    logstash::package::install { 'logstash-contrib':
+    logstash::package::install { $logstash::params::contrib:
       package_url => $logstash::contrib_package_url,
       version     => $logstash::contrib_version
     }
