@@ -33,7 +33,7 @@ describe 'logstash', :type => 'class' do
         it { should contain_file('/etc/logstash/plugins/logstash/filters').with(:require => 'File[/etc/logstash]') }
         it { should contain_file('/etc/logstash/plugins/logstash/codecs').with(:require => 'File[/etc/logstash]') }
 
-        it { should contain_file_concat('ls-config') }
+        it { should contain_concat('/etc/logstash/conf.d/logstash.conf') }
 
       end
 

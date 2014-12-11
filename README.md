@@ -35,7 +35,7 @@ If you need any help please see the [support](#Support) section.
 
 * Puppet 2.7.x or better.
 * The [stdlib](https://forge.puppetlabs.com/puppetlabs/stdlib) Puppet library.
-* The [file_concat](https://forge.puppetlabs.com/ispavailability/file_concat) Puppet library.
+* The [puppetlabs-concat](https://github.com/puppetlabs/puppetlabs-concat) Puppet library.
 
 Optional:
 * The [apt](https://forge.puppetlabs.com/puppetlabs/apt) Puppet library when using repo management on Debian/Ubuntu.
