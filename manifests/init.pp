@@ -178,7 +178,7 @@ class logstash(
   $init_defaults_file  = undef,
   $init_template       = undef,
   $manage_repo         = false,
-  $repo_version        = false,
+  $repo_version        = $logstash::params::repo_version,
   $install_contrib     = false,
   $repo_stage          = false
 ) inherits logstash::params {
