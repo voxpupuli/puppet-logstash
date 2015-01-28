@@ -246,7 +246,7 @@ Most sites will manage repositories seperately; however, this module can manage 
      }
 
 Note: When using this on Debian/Ubuntu you will need to add the [Puppetlabs/apt](http://forge.puppetlabs.com/puppetlabs/apt) module to your modules.
-If no repo_version is provided, default is set to 1.3.
+If no repo_version is provided, default is set to 1.4.
 
 ## Service Management
 
