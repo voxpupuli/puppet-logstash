@@ -153,7 +153,8 @@ define logstash::package::install(
     package { $name:
       ensure   => $package_ensure,
       source   => $pkg_source,
-      provider => $pkg_provider
+      provider => $pkg_provider,
+      install_options => $logstash::package_install_opts,
     }
 
   } else {

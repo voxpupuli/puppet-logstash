@@ -77,6 +77,9 @@
 #   This can be a http,https or ftp resource for remote packages
 #   puppet:// resource or file:/ for local packages
 #
+# [*package_install_opts*]
+#   Optional package installation options
+#
 # [*software_provider*]
 #   Way to install the packages, currently only packages are supported.
 #
@@ -155,32 +158,33 @@
 # * Richard Pijnenburg <mailto:richard.pijnenburg@elasticsearch.com>
 #
 class logstash(
-  $ensure              = $logstash::params::ensure,
-  $status              = $logstash::params::status,
-  $restart_on_change   = $logstash::params::restart_on_change,
-  $autoupgrade         = $logstash::params::autoupgrade,
-  $version             = false,
-  $contrib_version     = false,
-  $software_provider   = 'package',
-  $package_url         = undef,
-  $contrib_package_url = undef,
-  $package_dir         = $logstash::params::package_dir,
-  $purge_package_dir   = $logstash::params::purge_package_dir,
-  $package_dl_timeout  = $logstash::params::package_dl_timeout,
-  $logstash_user       = $logstash::params::logstash_user,
-  $logstash_group      = $logstash::params::logstash_group,
-  $configdir           = $logstash::params::configdir,
-  $purge_configdir     = $logstash::params::purge_configdir,
-  $java_install        = false,
-  $java_package        = undef,
-  $service_provider    = 'init',
-  $init_defaults       = undef,
-  $init_defaults_file  = undef,
-  $init_template       = undef,
-  $manage_repo         = false,
-  $repo_version        = $logstash::params::repo_version,
-  $install_contrib     = false,
-  $repo_stage          = false
+  $ensure               = $logstash::params::ensure,
+  $status               = $logstash::params::status,
+  $restart_on_change    = $logstash::params::restart_on_change,
+  $autoupgrade          = $logstash::params::autoupgrade,
+  $version              = false,
+  $contrib_version      = false,
+  $software_provider    = 'package',
+  $package_url          = undef,
+  $contrib_package_url  = undef,
+  $package_install_opts = undef,
+  $package_dir          = $logstash::params::package_dir,
+  $purge_package_dir    = $logstash::params::purge_package_dir,
+  $package_dl_timeout   = $logstash::params::package_dl_timeout,
+  $logstash_user        = $logstash::params::logstash_user,
+  $logstash_group       = $logstash::params::logstash_group,
+  $configdir            = $logstash::params::configdir,
+  $purge_configdir      = $logstash::params::purge_configdir,
+  $java_install         = false,
+  $java_package         = undef,
+  $service_provider     = 'init',
+  $init_defaults        = undef,
+  $init_defaults_file   = undef,
+  $init_template        = undef,
+  $manage_repo          = false,
+  $repo_version         = $logstash::params::repo_version,
+  $install_contrib      = false,
+  $repo_stage           = false
 ) inherits logstash::params {
 
   anchor {'logstash::begin': }
