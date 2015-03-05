@@ -28,6 +28,19 @@ describe 'logstash::plugin', :type => 'define' do
 
       end
 
+      context 'using file:// schema' do
+
+        let(:params) { {
+          :ensure   => 'present',
+          :source   => 'file:///path/to/plugin.rb',
+          :type     => plugin_type 
+        } }
+
+        it { should contain_logstash__plugin('fooplugin') }
+        it { should contain_file("/etc/logstash/plugins/logstash/#{plugin_type}s/plugin.rb").with( :source => 'file:///path/to/plugin.rb') }
+
+      end
+
       context 'set filename' do
 
         let(:params) { {

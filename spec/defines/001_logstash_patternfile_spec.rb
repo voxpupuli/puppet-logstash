@@ -22,6 +22,17 @@ describe 'logstash::patternfile', :type => 'define' do
 
   end
 
+  context 'using file:// schema' do
+
+    let(:params) { {
+      :source   => 'file:///mypatterns',
+    } }
+
+    it { should contain_logstash__patternfile('foopatterns') }
+    it { should contain_file('/etc/logstash/patterns/mypatterns').with( :source => 'file:///mypatterns') }
+
+  end
+
   context 'set filename' do
 
     let(:params) { {
