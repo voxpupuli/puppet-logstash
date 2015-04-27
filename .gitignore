@@ -1,8 +1,9 @@
-.swp
-spec/fixtures
 .bundle
-.vendor
 .gemfiles/Gemfile.*.lock
-.vagrant
 .ruby-version
+.swp
+.vagrant
+.vendor
+Gemfile.lock
 pkg/
+spec/fixtures
