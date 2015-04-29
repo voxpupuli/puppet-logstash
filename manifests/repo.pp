@@ -43,7 +43,7 @@ class logstash::repo {
         repos       => 'main',
         key => {
           id         => '46095ACC8548582C1A2699A9D27D666CD88E42B4',
-          source  => 'pgp.mit.edu',
+          source  => 'http://packages.elasticsearch.org/GPG-KEY-elasticsearch',
 		},
 		include => { 'src' => false },
 
