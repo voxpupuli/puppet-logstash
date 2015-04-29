@@ -41,9 +41,12 @@ class logstash::repo {
         location    => "http://packages.elasticsearch.org/logstash/${logstash::repo_version}/debian",
         release     => 'stable',
         repos       => 'main',
-        key         => '46095ACC8548582C1A2699A9D27D666CD88E42B4',
-        key_server  => 'pgp.mit.edu',
-        include_src => false,
+        key => {
+          id         => '46095ACC8548582C1A2699A9D27D666CD88E42B4',
+          source  => 'http://packages.elasticsearch.org/GPG-KEY-elasticsearch',
+		},
+		include => { 'src' => false },
+
       }
     }
     'RedHat': {
