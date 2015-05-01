@@ -47,7 +47,6 @@ class logstash::repo {
         },
         include  => {
           'src' => false,
-          'deb' => true,
         }
       }
     }
