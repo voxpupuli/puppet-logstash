@@ -38,12 +38,17 @@ class logstash::repo {
       }
 
       apt::source { 'logstash':
-        location    => "http://packages.elasticsearch.org/logstash/${logstash::repo_version}/debian",
-        release     => 'stable',
-        repos       => 'main',
-        key         => '46095ACC8548582C1A2699A9D27D666CD88E42B4',
-        key_server  => 'pgp.mit.edu',
-        include_src => false,
+        location => "http://packages.elasticsearch.org/logstash/${logstash::repo_version}/debian",
+        release  => 'stable',
+        repos    => 'main',
+        key      => {
+          'id'     => '46095ACC8548582C1A2699A9D27D666CD88E42B4',
+          'server' => 'pgp.mit.edu',
+        },
+        include  => {
+          'src' => false,
+          'deb' => true,
+        }
       }
     }
     'RedHat': {
