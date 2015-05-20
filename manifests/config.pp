@@ -49,7 +49,9 @@ class logstash::config {
 
     file { "${logstash::configdir}/conf.d":
       ensure  => directory,
-      require => File[$logstash::configdir]
+      require => File[$logstash::configdir],
+      purge   => $logstash::purge_configdir,
+      recurse => $logstash::purge_configdir
     }
 
     file_concat { 'ls-config':
@@ -65,7 +67,9 @@ class logstash::config {
 
     file { $patterns_dir:
       ensure  => directory,
-      require => File[$logstash::configdir]
+      require => File[$logstash::configdir],
+      purge   => $logstash::purge_configdir,
+      recurse => $logstash::purge_configdir
     }
 
     file { [
@@ -77,7 +81,9 @@ class logstash::config {
       "${plugins_dir}/logstash/codecs"
     ]:
       ensure  => directory,
-      require => File[$logstash::configdir]
+      require => File[$logstash::configdir],
+      purge   => $logstash::purge_configdir,
+      recurse => $logstash::purge_configdir
     }
 
 
