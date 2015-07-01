@@ -129,12 +129,18 @@ define logstash::service::init{
     default  => 'init'
   }
 
+  if ($logstash::ensure != 'present') {
+    $hasstatus = false
+  } else {
+    $hasstatus = $logstash::params::service_hasstatus
+  }
+
   # action
   service { $name:
     ensure     => $service_ensure,
     enable     => $service_enable,
     name       => $name,
-    hasstatus  => $logstash::params::service_hasstatus,
+    hasstatus  => $hasstatus,
     hasrestart => $logstash::params::service_hasrestart,
     pattern    => $logstash::params::service_pattern,
     provider   => $service_provider
