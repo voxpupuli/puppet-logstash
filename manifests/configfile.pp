@@ -13,6 +13,10 @@
 # [*order*]
 #  The order number controls in which sequence the config file fragments are concatenated.
 #
+# [*concat*]
+#  If true, concatenates the config with the main conf.d/logstash.conf config file.
+#  If false, deploys the config as a separate file in conf.d.
+#
 # === Examples
 #
 #     Set config file content with a literal value:
@@ -36,6 +40,14 @@
 #       order   => 10
 #     }
 #
+#     to create separate config files under conf.d instead of a combined config:
+#
+#     logstash::configfile { 'apache':
+#       source => 'puppet://path/to/apache.conf',
+#       order  => 10,
+#       concat => false,
+#     }
+#
 # === Authors
 #
 # * Richard Pijnenburg <mailto:richard.pijnenburg@elasticsearch.com>
@@ -45,6 +57,7 @@ define logstash::configfile(
   $source = undef,
   $order = 10,
   $template = undef,
+  $concat = true,
 ) {
 
   if ($template != undef ) {
@@ -54,12 +67,24 @@ define logstash::configfile(
     $config_content = $content
   }
 
-  file_fragment { $name:
-    tag     => "LS_CONFIG_${::fqdn}",
-    content => $config_content,
-    source  => $source,
-    order   => $order,
-    before  => [ File_concat['ls-config'] ]
+
+  if $concat {
+
+    file_fragment { $name:
+      tag     => "LS_CONFIG_${::fqdn}",
+      content => $config_content,
+      source  => $source,
+      order   => $order,
+      before  => [ File_concat['ls-config'] ]
+    }
+
+  } else {
+
+    file { "${logstash::configdir}/conf.d/${name}.conf":
+      content => $config_content,
+      source  => $source,
+    }
+
   }
 
 }
