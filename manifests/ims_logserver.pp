@@ -1,11 +1,9 @@
 # The puppet logstash module doesn't support multiple instances of logstash,
 # so we're rolling our own here for log-st.
-class ims_logserver(
-  logstash_version = undef,
-) {
+class logstash::ims_logserver {
   
   package { 'logstash':
-    version     => $logstash_version,
+    ensure => installed,
   }
 
   # conf files
