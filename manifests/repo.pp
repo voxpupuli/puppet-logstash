@@ -33,9 +33,8 @@ class logstash::repo {
 
   case $::osfamily {
     'Debian': {
-      if !defined(Class['apt']) {
-        class { 'apt': }
-      }
+      include ::apt
+      Class['apt::update'] -> Package<| tag == 'logstash-package' |>
 
       apt::source { 'logstash':
         location    => "http://packages.elasticsearch.org/logstash/${logstash::repo_version}/debian",
