@@ -39,25 +39,40 @@
 # * Richard Pijnenburg <mailto:richard.pijnenburg@elasticsearch.com>
 #
 define logstash::patternfile (
-  $source,
+  $content  = '',
+  $source   = '',
   $filename = '',
 ){
-
-  validate_re($source, '^puppet://', 'Source must be from a puppet fileserver (begin with puppet://)' )
-
+  if ($content == '') and ($source == '') {
+    fail('please specify $content or $source')
+  }
+  if ($content != '') and ($source != '') {
+    fail("you provided \$content with ${content} and \$source with ${source}, please only provide one of them")
+  }
+  unless  ($source == ''){
+    validate_re($source, '^puppet://', 'Source must be from a puppet fileserver (begin with puppet://)' )
+  }
   $patterns_dir = "${logstash::configdir}/patterns"
 
   $filename_real = $filename ? {
     ''      => inline_template('<%= @source.split("/").last %>'),
     default => $filename
   }
-
-  file { "${patterns_dir}/${filename_real}":
-    ensure => 'file',
-    owner  => $logstash::logstash_user,
-    group  => $logstash::logstash_group,
-    mode   => '0644',
-    source => $source,
+  unless ($content == ''){
+    file { "${patterns_dir}/${filename_real}":
+      ensure  => 'file',
+      owner   => $logstash::logstash_user,
+      group   => $logstash::logstash_group,
+      mode    => '0644',
+      content => $content,
+    }
+  } else {
+    file { "${patterns_dir}/${filename_real}":
+      ensure  => 'file',
+      owner   => $logstash::logstash_user,
+      group   => $logstash::logstash_group,
+      mode    => '0644',
+      source  => $source,
+    }
   }
-
 }
