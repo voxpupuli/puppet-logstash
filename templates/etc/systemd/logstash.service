@@ -1,0 +1,22 @@
+[Unit]
+Description=Logstash Agent
+
+[Service]
+User=logstash
+Group=logstash
+Environment=LS_CONF_DIR=/etc/logstash/conf.d
+Environment=LS_WORKERS=1
+Environment=LS_HEAP_SIZE=500m
+Environment=LS_LOG_FILE=/var/log/logstash/logstash.log
+Environment=LS_LOG_DIR=/var/log/logstash/
+EnvironmentFile=/etc/default/logstash
+WorkingDirectory=/opt/logstash
+ExecStart=/opt/logstash/bin/logstash agent -f $LS_CONF_DIR -l $LS_LOG_FILE -w $LS_WORKERS $LS_OPTS
+PrivateTmp=true
+ProtectSystem=full
+ReadOnlyDirectories=/
+ReadWriteDirectories=/var/log/logstash/
+ReadWriteDirectories=${LS_LOG_DIR}
+
+[Install]
+WantedBy=multi-user.target

@@ -71,6 +71,15 @@ define logstash::service::init{
     false => undef,
   }
 
+  if ($::lsbdistid == "Debian" and $::lsbmajdistrelease >= 8) {
+    $service_provider = 'systemd'
+  }
+  else {
+    $service_provider = $::osfamily ? {
+      'Debian' => 'debian',
+      default  => 'init'
+    }
+  }
 
   if ( $logstash::status != 'unmanaged' ) {
 
@@ -102,9 +111,19 @@ define logstash::service::init{
 
     }
 
+    if ($service_provider == "systemd") {
+      file { "/lib/systemd/system/${name}.service":
+        ensure  => $logstash::ensure,
+        content => template("logstash/etc/systemd/logstash.service"),
+        owner   => 'root',
+        group   => 'root',
+        mode    => '0755',
+        before  => Service[$name],
+        notify  => $notify_service
+      }
+    }
     # init file from template
-    if ($logstash::init_template != undef) {
-
+    elsif ($logstash::init_template != undef) {
       file { "/etc/init.d/${name}":
         ensure  => $logstash::ensure,
         content => template($logstash::init_template),
@@ -113,8 +132,7 @@ define logstash::service::init{
         mode    => '0755',
         before  => Service[$name],
         notify  => $notify_service
-      }
-
+      } 
     }
 
   }
@@ -122,11 +140,6 @@ define logstash::service::init{
   file { "/etc/init/${name}.conf":
     ensure => 'absent',
     before => Service[$name],
-  }
-
-  $service_provider = $::osfamily ? {
-    'Debian' => 'debian',
-    default  => 'init'
   }
 
   # action
