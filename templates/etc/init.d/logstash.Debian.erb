@@ -57,7 +57,7 @@ LOG_FILE=$LOG_DIR/$NAME.log
 OPEN_FILES=2048
 
 # LogStash options
-LS_OPTS="--log ${LOG_DIR}/${NAME}.log"
+FILTER_THREADS=1
 
 # Nice level
 NICE=19
@@ -72,6 +72,7 @@ fi
 # Define other required variables
 PID_FILE=/var/run/$NAME.pid
 DAEMON=$LS_JAR
+LS_OPTS="--log ${LOG_DIR}/${NAME}.log -w ${FILTER_THREADS}"
 DAEMON_OPTS="agent -f ${CONF_DIR} ${LS_OPTS}"
 
 is_true() {
@@ -118,7 +119,7 @@ case "$1" in
          start-stop-daemon --start -b --user "$LS_USER" -c "$LS_USER":"$LS_GROUP" \
            -d "$LS_HOME" --pidfile "$PID_FILE" --make-pidfile \
            -N $NICE \
-           --exec "$JAVA" -- $LS_JAVA_OPTS -jar $DAEMON $DAEMON_OPTS
+           --exec "$JAVA" -- $LS_JAVA_OPTS -jar $DAEMON $DAEMON_OPTS -w $FILTER_THREADS
 
          sleep 1
 
