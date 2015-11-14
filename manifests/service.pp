@@ -10,8 +10,8 @@
 #
 # === Parameters
 #
-# This class does not provide any parameters.
-#
+# ===== service_flags
+# String, used on OpenBSD to override/set the service flags, defaults to undef.
 #
 # === Examples
 #
@@ -26,12 +26,19 @@
 #
 # * Richard Pijnenburg <mailto:richard.pijnenburg@elasticsearch.com>
 #
-class logstash::service {
+class logstash::service (
+  $service_flags = undef,
+){
 
   case $logstash::service_provider {
 
-    init: {
+    'init': {
       logstash::service::init { $logstash::params::service_name: }
+    }
+    'openbsd': {
+      logstash::service::openbsd { $logstash::params::service_name:
+        service_flags => $service_flags,
+      }
     }
 
     default: {
