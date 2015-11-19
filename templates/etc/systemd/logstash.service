@@ -16,7 +16,7 @@ PrivateTmp=true
 ProtectSystem=full
 ReadOnlyDirectories=/
 ReadWriteDirectories=/var/log/logstash/
-ReadWriteDirectories=${LS_LOG_DIR}
+ReadWriteDirectories=/data/logs/logstash/
 
 [Install]
 WantedBy=multi-user.target
