@@ -58,7 +58,11 @@ class logstash::repo {
     'Suse' : {
       case $::operatingsystem {
         'SLES': {
-          $centos_version = 'centos5'
+          if versioncmp($logstash::repo_version, '1.5') >= 0 {
+            $centos_version = 'centos'
+          } else {
+            $centos_version = 'centos5'
+          }
           $gpg_key = 'GPG-KEY-elasticsearch-v3'
           $gpg_id = '465C1136'
         }
