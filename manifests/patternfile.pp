@@ -43,7 +43,7 @@ define logstash::patternfile (
   $filename = '',
 ){
 
-  validate_re($source, '^puppet://', 'Source must be from a puppet fileserver (begin with puppet://)' )
+  validate_re($source, '^(puppet|file)://', 'Source must be either from a puppet fileserver or a locally accessible file (begins with either puppet:// or file://)' )
 
   $patterns_dir = "${logstash::configdir}/patterns"
 
