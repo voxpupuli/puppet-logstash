@@ -126,7 +126,8 @@ define logstash::service::init{
 
   $service_provider = $::osfamily ? {
     'Debian' => 'debian',
-    default  => 'init'
+    'RedHat' => 'redhat',
+    default  => $logstash::service_provider,
   }
 
   # action
