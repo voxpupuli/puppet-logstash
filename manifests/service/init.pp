@@ -126,7 +126,12 @@ define logstash::service::init{
 
   $service_provider = $::osfamily ? {
     'Debian' => 'debian',
-    default  => 'init'
+    'RedHat' => $::operatingsystemmajrelease ? {
+      '7'      => 'systemd',
+      /(5|6)/  => 'init',
+      undef    => 'init',
+    },
+    default  => $logstash::service_provider,
   }
 
   # action

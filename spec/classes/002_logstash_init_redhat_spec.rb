@@ -287,7 +287,20 @@ describe 'logstash', :type => 'class' do
 
           context 'and default settings' do
 
-            it { should contain_service('logstash').with(:ensure => 'running') }
+            it { should contain_service('logstash').with(:ensure => 'running', :provider => 'init') }
+
+          end
+
+          context 'RHEl/CentOS 7' do
+
+            let :facts do {
+              :operatingsystem => distro,
+              :kernel => 'Linux',
+              :osfamily => 'RedHat',
+              :operatingsystemmajrelease => '7',
+            } end
+
+            it { should contain_service('logstash').with(:ensure => 'running', :provider => 'systemd') }
 
           end
 
