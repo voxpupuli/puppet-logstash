@@ -1,0 +1,64 @@
+#!/sbin/runscript
+
+LOGSTASH_PID="/var/run/${SVCNAME}.pid"
+
+_removepid() {
+        rm -f ${LOGSTASH_PID} > /dev/null 2>&1
+}
+
+depend() {
+        after logger
+}
+
+start() {
+        if [ ! -e ${LOGSTASH_CONF:-/etc/logstash/conf.d/logstash.conf} ]; then
+                eerror "${LOGSTASH_CONF:-/etc/logstash/conf.d/logstash.conf} does not exist; cannot start Logstash"
+                return 1
+        fi
+
+        if [ "${LOGSTASH_WRITE_LOG}" == "true" ]; then
+                LOGSTASH_LOG="--log ${LOGSTASH_LOG_PATH:-/var/log}/logstash.log"
+        fi
+
+        ebegin "Starting ${SVCNAME}"
+        export RUBYOPT=""
+        start-stop-daemon --start --background -m \
+                --pidfile ${LOGSTASH_PID} \
+                --exec ${LOGSTASH_HOME:-/opt/logstash/bin}/logstash \
+                        -- -f ${LOGSTASH_CONF:-/etc/logstash/conf.d/logstash.conf} \
+                        ${LOGSTASH_LOG}
+
+        # There's no way to know if anything went wrong, so the only
+        # thing we can do is wait and see if it's running afterwards
+        sleep 3
+        logstash_test
+        eend ${?} || return 1
+}
+
+stop() {
+        ebegin "Stopping ${SVCNAME}"
+        start-stop-daemon --stop \
+                --pidfile ${LOGSTASH_PID}
+
+        eend ${?}
+
+        _removepid # just in case
+}
+
+logstash_test() {
+        # Logstash only deletes its PID file if it hits a config error
+        if [ ! -e ${LOGSTASH_PID} ]; then
+                eerror "Configuration problem, check ${LOGSTASH_CONF}"
+                return 1
+        fi
+        PID=$(cat "${PIDFILE}" 2>/dev/null)
+
+        # Logstash isn't running, so that means there was a problem
+        if [ ! -e /proc/${PID} ]; then
+                eerror "Something went wrong."
+                _removepid
+                return 1
+        fi
+
+        return 0
+}

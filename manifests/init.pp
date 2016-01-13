@@ -180,7 +180,9 @@ class logstash(
   $manage_repo         = false,
   $repo_version        = $logstash::params::repo_version,
   $install_contrib     = false,
-  $repo_stage          = false
+  $repo_stage          = false,
+  $package_name        = $logstash::params::package,
+  $contrib_package_name= $logstash::params::contrib
 ) inherits logstash::params {
 
   anchor {'logstash::begin': }

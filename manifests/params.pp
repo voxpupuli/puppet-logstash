@@ -120,6 +120,11 @@ class logstash::params {
       $package = [ 'logstash' ]
       $contrib = [ 'logstash-contrib' ]
     }
+    'Gentoo': {
+      # main application
+      $package = [ 'app-admin/logstash' ]
+      $contrib = [ 'app-admin/logstash-contrib' ]
+      }
     default: {
       fail("\"${module_name}\" provides no package default value
             for \"${::operatingsystem}\"")
@@ -151,6 +156,14 @@ class logstash::params {
       $service_pattern    = $service_name
       $service_providers  = [ 'launchd' ]
       $defaults_location  = false
+    }
+    'Gentoo': {
+      $service_name       = 'logstash'
+      $service_hasrestart = true
+      $service_hasstatus  = true
+      $service_pattern    = $service_name
+      $service_providers  = [ 'openrc' ]
+      $defaults_location  = '/etc/conf.d'
     }
     default: {
       fail("\"${module_name}\" provides no service parameters
