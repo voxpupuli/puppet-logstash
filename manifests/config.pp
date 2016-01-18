@@ -49,6 +49,8 @@ class logstash::config {
 
     file { "${logstash::configdir}/conf.d":
       ensure  => directory,
+      purge   => $logstash::purge_configdir,
+      recurse => $logstash::purge_configdir,
       require => File[$logstash::configdir]
     }
 
