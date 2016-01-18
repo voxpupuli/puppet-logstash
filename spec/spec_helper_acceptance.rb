@@ -80,7 +80,7 @@ RSpec.configure do |c|
     puppet_module_install(:source => proj_root, :module_name => 'logstash')
     hosts.each do |host|
 
-      on host, puppet('module','install','ispavailability-file_concat'), { :acceptable_exit_codes => [0,1] }
+      on host, puppet('module','install','puppetlabs-concat'), { :acceptable_exit_codes => [0,1] }
 
       if !host.is_pe?
         scp_to(host, '/home/jenkins/puppet/puppetlabs-stdlib-3.2.0.tar.gz', '/tmp/puppetlabs-stdlib-3.2.0.tar.gz')
