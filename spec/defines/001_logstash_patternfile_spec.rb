@@ -6,7 +6,7 @@ describe 'logstash::patternfile', :type => 'define' do
     :operatingsystem => 'CentOS',
     :kernel => 'Linux'
   } end
-  
+
   let(:title) { 'foopatterns' }
 
   let(:pre_condition) { 'class {"logstash": }'}
@@ -30,6 +30,17 @@ describe 'logstash::patternfile', :type => 'define' do
 
     it { should contain_logstash__patternfile('foopatterns') }
     it { should contain_file('/etc/logstash/patterns/mypatterns').with( :source => 'file:///mypatterns') }
+
+  end
+
+  context 'using content' do
+
+    let(:params) { {
+      :content   => "FOO: BAR"
+    } }
+
+    it { should contain_logstash__patternfile('foopatterns') }
+    it { should contain_file('/etc/logstash/patterns/foopatterns').with( :content => 'FOO: BAR') }
 
   end
 
