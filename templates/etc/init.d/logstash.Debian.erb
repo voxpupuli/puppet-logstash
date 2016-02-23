@@ -48,7 +48,7 @@ LS_JAVA_OPTS=" -Djava.io.tmpdir=/var/logstash/"
 LOG_DIR=/var/log/logstash
 
 # logstash configuration directory
-CONF_DIR=/etc/logstash/conf.d
+CONF_DIR="/etc/logstash/conf.d/*.conf"
 
 # logstash log file
 LOG_FILE=$LOG_DIR/$NAME.log
