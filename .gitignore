@@ -1,7 +1,8 @@
 .swp
 spec/fixtures/manifests/*
 !spec/fixtures/manifests/.gitignore
-spec/fixtures/modules
+spec/fixtures/modules/*
+!spec/fixtures/modules/logstash
 .bundle
 .vendor
 .vagrant
