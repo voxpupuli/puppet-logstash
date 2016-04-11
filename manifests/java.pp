@@ -58,7 +58,7 @@ class logstash::java {
   ## Install the java package unless already specified somewhere else
   if !defined(Package[$package]) {
     package { $package:
-      ensure => present
+      ensure => present,
     }
   }
 }
