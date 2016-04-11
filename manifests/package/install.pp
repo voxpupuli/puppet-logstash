@@ -36,7 +36,7 @@ define logstash::package::install(
     path      => [ '/bin', '/usr/bin', '/usr/local/bin' ],
     cwd       => '/',
     tries     => 3,
-    try_sleep => 10
+    try_sleep => 10,
   }
 
   #### Package management
@@ -82,18 +82,18 @@ define logstash::package::install(
 
       case $protocol_type {
 
-        puppet: {
+        'puppet': {
 
           file { $pkg_source:
-            ensure  => present,
+            ensure  => file,
             source  => $package_url,
             require => File[$package_dir],
             backup  => false,
-            before  => $before
+            before  => $before,
           }
 
         }
-        ftp, https, http: {
+        'ftp', 'https', 'http': {
 
           exec { "download_package_logstash_${name}":
             command => "${logstash::params::download_tool} ${pkg_source} ${package_url} 2> /dev/null",
@@ -101,19 +101,20 @@ define logstash::package::install(
             creates => $pkg_source,
             timeout => $logstash::package_dl_timeout,
             require => File[$package_dir],
-            before  => $before
+            before  => $before,
           }
 
         }
-        file: {
+
+        'file': {
 
           $source_path = $sourceArray[1]
           file { $pkg_source:
-            ensure  => present,
+            ensure  => file,
             source  => $source_path,
             require => File[$package_dir],
             backup  => false,
-            before  => $before
+            before  => $before,
           }
 
         }
@@ -153,7 +154,7 @@ define logstash::package::install(
     package { $name:
       ensure   => $package_ensure,
       source   => $pkg_source,
-      provider => $pkg_provider
+      provider => $pkg_provider,
     }
 
   } else {

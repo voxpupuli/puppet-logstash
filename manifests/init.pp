@@ -269,7 +269,7 @@ class logstash(
       }
 
       class { 'logstash::repo':
-        stage => $repo_stage
+        stage => $repo_stage,
       }
     }
   }
