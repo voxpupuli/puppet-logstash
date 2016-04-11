@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'puppetlabs_spec_helper/rake_tasks'
+require 'rspec/core/rake_task'
 
 exclude_paths = [
   "pkg/**/*",
@@ -15,4 +16,14 @@ PuppetLint::RakeTask.new :lint do |config|
   config.with_context = true
   config.ignore_paths = exclude_paths
   config.log_format = log_format
+end
+
+RSpec::Core::RakeTask.new(:spec_verbose) do |t|
+  t.pattern = 'spec/{classes,defines}/**/*_spec.rb'
+  t.rspec_opts = [
+    '--format documentation',
+    '--require "ci/reporter/rspec"',
+    '--format CI::Reporter::RSpecFormatter',
+    '--color',
+  ]
 end

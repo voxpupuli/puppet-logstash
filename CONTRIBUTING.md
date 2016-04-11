@@ -24,9 +24,16 @@ Then sit back and wait. There will probably be discussion about the pull request
 
 There are a few testing prerequisites to meet:
 
-* Ruby.
-  As long as you have a recent version with `bundler` available, `bundler` will install development dependencies.
+* Ruby
+* [Bundler](http://bundler.io/)
+* Puppet (You should be able to run `puppet module install`
 
-You can then install the necessary gems with:
+You can then set up the test enviroment with:
+```bash
+make
+```
 
-    make
+Or run the rspec tests with:
+```bash
+make test-rspec
+```
