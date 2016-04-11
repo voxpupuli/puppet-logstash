@@ -8,4 +8,4 @@
 test-rspec: .vendor
 	bundle exec rake lint
 	bundle exec rake validate
-#	bundle exec rake spec_verbose
+	#bundle exec rake spec_verbose
