@@ -1,5 +1,6 @@
 .swp
-spec/fixtures/manifests
+spec/fixtures/manifests/*
+!spec/fixtures/manifests/.gitignore
 spec/fixtures/modules
 .bundle
 .vendor
