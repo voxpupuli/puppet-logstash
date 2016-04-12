@@ -9,8 +9,9 @@ HOSTS:
     hypervisor: docker
     docker_cmd: '["/sbin/init"]'
     docker_image_commands:
-      - 'yum install -y wget ntpdate rubygems ruby-augeas ruby-devel augeas-devel'
+      - 'yum install -y wget ntpdate rubygems ruby-augeas ruby-devel augeas-devel logrotate'
       - 'touch /etc/sysconfig/network'
     docker_preserve_image: true
 CONFIG:
   type: foss
+  :trace_limit: 100  # Get more than 10 lines of trace when something fails.

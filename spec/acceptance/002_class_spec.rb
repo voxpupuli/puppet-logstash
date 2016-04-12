@@ -17,8 +17,6 @@ describe "logstash class:" do
       sleep 5
 
       expect(apply_manifest(pp, :catch_failures => true).exit_code).to be_zero
-
-      binding.pry
       sleep 5
     end
 

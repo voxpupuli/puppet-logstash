@@ -3,7 +3,7 @@ require 'spec_helper_acceptance'
 if fact('osfamily') != 'Suse'
 
 describe "Logstash class:" do
-  version = $LS_VERSION
+  version = LS_VERSION
   url_root = 'http://download.elasticsearch.org/logstash/logstash/packages'
   package_name = 'logstash'
   service_name = 'logstash'
@@ -29,10 +29,10 @@ describe "Logstash class:" do
       pp = "class { 'logstash': package_url => '#{url}', java_install => true }
             logstash::configfile { 'basic_config': content => 'input { tcp { port => 2000 } } output { null { } } ' }
            "
-
       # Run it twice and test for idempotency
       apply_manifest(pp, :catch_failures => true)
       sleep 5
+
       expect(apply_manifest(pp, :catch_failures => true).exit_code).to be_zero
       sleep 5
     end

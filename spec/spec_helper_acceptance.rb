@@ -2,11 +2,11 @@ require 'beaker-rspec'
 require 'pry'
 require 'securerandom'
 
+files_dir = './spec/fixtures/artifacts'
+
 # Collect global options from the environment.
 raise "Please set the BEAKER_ls_version environment variable." if ENV['BEAKER_ls_version'].nil?
-$LS_VERSION = ENV['BEAKER_ls_version']
-
-files_dir = './spec/fixtures/artifacts'
+LS_VERSION = ENV['BEAKER_ls_version']
 
 hosts.each do |host|
   # Install Puppet
@@ -49,6 +49,7 @@ hosts.each do |host|
 end
 
 RSpec.configure do |c|
+
   project_root = File.dirname(File.dirname(__FILE__))
 
   # Readable test descriptions

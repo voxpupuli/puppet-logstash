@@ -1,4 +1,6 @@
 .swp
+spec/fixtures/artifacts/*
+!spec/fixtures/artifacts/.gitignore
 spec/fixtures/manifests/*
 !spec/fixtures/manifests/.gitignore
 spec/fixtures/modules/*
