@@ -19,11 +19,19 @@ PuppetLint::RakeTask.new :lint do |config|
 end
 
 RSpec::Core::RakeTask.new(:spec_verbose) do |t|
-  t.pattern = 'spec/{classes,defines}/**/*_spec.rb'
+  t.pattern = 'spec/{classes,defines,lib,reports}/**/*_spec.rb'
   t.rspec_opts = [
     '--format documentation',
     '--require "ci/reporter/rspec"',
     '--format CI::Reporter::RSpecFormatter',
+    '--color',
+  ]
+end
+
+RSpec::Core::RakeTask.new(:beaker) do |t|
+  t.pattern = 'spec/{acceptance}/**/*_spec.rb'
+  t.rspec_opts = [
+    '--format documentation',
     '--color',
   ]
 end

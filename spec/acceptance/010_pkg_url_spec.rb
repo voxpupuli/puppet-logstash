@@ -3,29 +3,21 @@ require 'spec_helper_acceptance'
 if fact('osfamily') != 'Suse'
 
 describe "Logstash class:" do
+  version = $LS_VERSION
+  url_root = 'http://download.elasticsearch.org/logstash/logstash/packages'
+  package_name = 'logstash'
+  service_name = 'logstash'
+  pid_file = '/var/run/logstash.pid'
 
   case fact('osfamily')
-  when 'RedHat'
-    package_name = 'logstash'
-    service_name = 'logstash'
-    url          = 'http://download.elasticsearch.org/logstash/logstash/packages/centos/logstash-1.4.2-1_2c0f5a1.noarch.rpm'
-    local        = '/tmp/logstash-1.4.2-1_2c0f5a1.noarch.rpm'
-    puppet       = 'logstash-1.4.2-1_2c0f5a1.noarch.rpm'
-    pid_file     = '/var/run/logstash.pid'
+  when 'RedHat', 'Suse'
+    url          = "#{url_root}/centos/logstash-#{version}.noarch.rpm"
+    local        = "/tmp/logstash-#{version}.noarch.rpm"
+    puppet       = "logstash-#{version}.noarch.rpm"
   when 'Debian'
-    package_name = 'logstash'
-    service_name = 'logstash'
-    url          = 'http://download.elasticsearch.org/logstash/logstash/packages/debian/logstash_1.4.2-1-2c0f5a1_all.deb'
-    local        = '/tmp/logstash_1.4.2-1-2c0f5a1_all.deb'
-    puppet       = 'logstash_1.4.2-1-2c0f5a1_all.deb'
-    pid_file     = '/var/run/logstash.pid'
-  when 'Suse'
-    package_name = 'logstash'
-    service_name = 'logstash'
-    pid_file     = '/var/run/logstash.pid'
-    url          = 'http://download.elasticsearch.org/logstash/logstash/packages/centos/logstash-1.4.2-1_2c0f5a1.noarch.rpm'
-    local        = '/tmp/logstash-1.4.2-1_2c0f5a1.noarch.rpm'
-    puppet       = 'logstash-1.4.2-1_2c0f5a1.noarch.rpm'
+    url          = "#{url_root}/debian/logstash_#{version}_all.deb"
+    local        = "/tmp/logstash_#{version}_all.deb"
+    puppet       = "logstash_#{version}_all.deb"
   end
 
   shell("mkdir -p #{default['distmoduledir']}/another/files")

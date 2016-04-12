@@ -5,6 +5,8 @@ deps:
 	puppet module install puppetlabs/stdlib --target-dir spec/fixtures/modules
 	puppet module install electrical/file_concat --target-dir spec/fixtures/modules
 	touch spec/fixtures/manifests/site.pp
+	(cd spec/fixtures/artifacts/ && wget --no-clobber https://download.elastic.co/logstash/logstash/packages/centos/logstash-1.5.5-1.noarch.rpm)
+
 
 .PHONY: test-rspec
 test-rspec: deps

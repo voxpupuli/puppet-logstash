@@ -1,21 +1,9 @@
 require 'spec_helper_acceptance'
 
 describe "logstash class:" do
-
-  case fact('osfamily')
-  when 'RedHat'
-    package_name = 'logstash'
-    service_name = 'logstash'
-    pid_file     = '/var/run/logstash.pid'
-  when 'Debian'
-    package_name = 'logstash'
-    service_name = 'logstash'
-    pid_file     = '/var/run/logstash.pid'
-  when 'Suse'
-    package_name = 'logstash'
-    service_name = 'logstash'
-    pid_file     = '/var/run/logstash.pid'
-  end
+  package_name = 'logstash'
+  service_name = 'logstash'
+  pid_file     = '/var/run/logstash.pid'
 
   describe "default parameters" do
 
@@ -27,7 +15,10 @@ describe "logstash class:" do
       # Run it twice and test for idempotency
       apply_manifest(pp, :catch_failures => true)
       sleep 5
+
       expect(apply_manifest(pp, :catch_failures => true).exit_code).to be_zero
+
+      binding.pry
       sleep 5
     end
 
@@ -53,5 +44,4 @@ describe "logstash class:" do
       shell('test $(ps aux | grep -w -- logstash | grep -v grep | wc -l) -eq 1')
     end
   end
-
 end
