@@ -14,3 +14,4 @@ HOSTS:
     docker_preserve_image: true
 CONFIG:
   type: foss
+  :trace_limit: 100  # Get more than 10 lines of trace when something fails.
