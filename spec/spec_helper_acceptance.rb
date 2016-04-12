@@ -1,4 +1,5 @@
 require 'beaker-rspec'
+require 'net/http'
 require 'pry'
 require 'securerandom'
 
@@ -14,8 +15,7 @@ hosts.each do |host|
     on host, "hostname #{host.name}"
     install_pe
   else
-    install_puppet_on host, :default_action => 'gem_install'
-
+    install_puppet_on host, default_action: 'gem_install'
 
     if fact('osfamily') == 'Suse'
       if fact('operatingsystem') == 'OpenSuSE'
@@ -23,29 +23,24 @@ hosts.each do |host|
         on host, "#{gem_proxy} gem install ruby-augeas --no-ri --no-rdoc"
       end
     end
-
   end
 
-  # Copy over some files
-  if fact('osfamily') == 'Debian'
-    scp_to(host, "#{files_dir}/logstash_#{LS_VERSION}_all.deb", '/tmp/')
+  # Update package cache for those who need it.
+  on host, 'apt-get update' if fact('osfamily') == 'Debian'
+
+  # Aquire binary packages of Logstash for various operating systems.
+  url_root = 'https://download.elastic.co/logstash/logstash/packages'
+  case fact('osfamily')
+  when 'Debian'
+    package = "logstash_#{LS_VERSION}_all.deb"
+    package_url = "#{url_root}/debian/#{package}"
+  when 'RedHat', 'Suse'
+    package = "logstash_#{LS_VERSION}.noarch.rpm"
+    package_url = "#{url_root}/centos/#{package}"
   end
-
-  if fact('osfamily') == 'RedHat'
-    scp_to(host, "#{files_dir}/logstash-#{LS_VERSION}.noarch.rpm", '/tmp/')
-  end
-
-  if fact('osfamily') == 'Suse'
-    scp_to(host, "#{files_dir}/logstash-#{LS_VERSION}.noarch.rpm", '/tmp/')
-  end
-
-
-  # on debian/ubuntu nodes ensure we get the latest info
-  # Can happen we have stalled data in the images
-  if fact('osfamily') == 'Debian'
-    on host, "apt-get update"
-  end
-
+  download = "#{files_dir}/#{package}"
+  File.write(download, Net::HTTP.get(URI(package_url))) unless File.exist?(download)
+  scp_to(host, download, '/tmp/')
 end
 
 RSpec.configure do |c|
@@ -57,15 +52,14 @@ RSpec.configure do |c|
   c.color = true
 
   # declare an exclusion filter
-  c.filter_run_excluding :broken => true
+  c.filter_run_excluding broken: true
 
   c.before :suite do
-
     # Provide all the Puppet modules we need to the test instance.
     Dir.glob('spec/fixtures/modules/*').each do |path|
       name = File.basename(path)
       path = project_root if name == 'logstash' # Otherwise, all we get is a useless symlink.
-      puppet_module_install(:source => path, :module_name => name)
+      puppet_module_install(source: path, module_name: name)
     end
 
     # if fact('osfamily') == 'Suse'

@@ -25,6 +25,7 @@
 # * Matthias Baur <mailto:matthias.baur@dmc.de>
 #
 class logstash::repo {
+  require apt
 
   Exec {
     path      => [ '/bin', '/usr/bin', '/usr/local/bin' ],
@@ -33,9 +34,9 @@ class logstash::repo {
 
   case $::osfamily {
     'Debian': {
-      if !defined(Class['apt']) {
-        class { 'apt': }
-      }
+#      if !defined(Class['apt']) {
+#        class { 'apt': }
+#      }
 
       apt::source { 'logstash':
         location    => "http://packages.elasticsearch.org/logstash/${logstash::repo_version}/debian",

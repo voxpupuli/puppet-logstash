@@ -1,4 +1,3 @@
-.PHONY: deps
 deps:
 	bundle install --path .vendor
 	puppet module install puppetlabs/apt --target-dir spec/fixtures/modules
@@ -8,8 +7,10 @@ deps:
 	(cd spec/fixtures/artifacts/ && wget --no-clobber https://download.elastic.co/logstash/logstash/packages/centos/logstash-1.5.5-1.noarch.rpm)
 
 
-.PHONY: test-rspec
 test-rspec: deps
 	bundle exec rake lint
 	bundle exec rake validate
 	bundle exec rake spec_verbose
+
+clean:
+	rm spec/fixtures/artifacts/logstash*
