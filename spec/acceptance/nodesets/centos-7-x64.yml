@@ -9,7 +9,9 @@ HOSTS:
     hypervisor: docker
     docker_cmd: '["/usr/sbin/init"]'
     docker_image_commands:
-      - 'yum install -y wget ntpdate rubygems ruby-devel augeas-devel ruby-augeas tar'
+      - rm /lib/systemd/system/systemd*udev*
+      - rm /lib/systemd/system/getty.target
+      - yum install -y wget ntpdate rubygems ruby-devel augeas-devel ruby-augeas tar logrotate
     docker_preserve_image: true
 CONFIG:
   type: foss

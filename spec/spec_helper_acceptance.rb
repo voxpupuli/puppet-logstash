@@ -6,8 +6,9 @@ require 'securerandom'
 files_dir = './spec/fixtures/artifacts'
 
 # Collect global options from the environment.
-raise "Please set the BEAKER_ls_version environment variable." if ENV['BEAKER_ls_version'].nil?
+raise 'Please set the BEAKER_ls_version environment variable.' if ENV['BEAKER_ls_version'].nil?
 LS_VERSION = ENV['BEAKER_ls_version']
+REPO_VERSION = LS_VERSION[0..(LS_VERSION.rindex('.') - 1)] # "1.5.3-1" -> "1.5"
 
 hosts.each do |host|
   # Install Puppet
@@ -20,7 +21,7 @@ hosts.each do |host|
     if fact('osfamily') == 'Suse'
       if fact('operatingsystem') == 'OpenSuSE'
         install_package host, 'ruby-devel augeas-devel libxml2-devel'
-        on host, "#{gem_proxy} gem install ruby-augeas --no-ri --no-rdoc"
+        on host, "gem install ruby-augeas --no-ri --no-rdoc"
       end
     end
   end
@@ -35,7 +36,7 @@ hosts.each do |host|
     package = "logstash_#{LS_VERSION}_all.deb"
     package_url = "#{url_root}/debian/#{package}"
   when 'RedHat', 'Suse'
-    package = "logstash_#{LS_VERSION}.noarch.rpm"
+    package = "logstash-#{LS_VERSION}.noarch.rpm"
     package_url = "#{url_root}/centos/#{package}"
   end
   download = "#{files_dir}/#{package}"

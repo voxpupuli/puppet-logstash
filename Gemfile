@@ -19,6 +19,8 @@ gem 'puppet-lint'
 gem 'puppetlabs_spec_helper'
 gem 'puppet-syntax'
 gem 'rspec-puppet-facts'
+gem 'rubocop'
+gem 'semantic'
 gem 'serverspec'
 gem 'webmock'
 

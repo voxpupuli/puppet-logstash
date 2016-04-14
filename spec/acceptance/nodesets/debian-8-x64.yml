@@ -9,8 +9,10 @@ HOSTS:
     hypervisor: docker
     docker_cmd: '["/sbin/init"]'
     docker_image_commands:
-      - 'apt-get install -yq ruby ruby-dev lsb-release wget net-tools libaugeas-dev libaugeas-ruby ntpdate locales-all'
-      - 'REALLY_GEM_UPDATE_SYSTEM=1 gem update --system --no-ri --no-rdoc'
+      - rm /lib/systemd/system/systemd*udev*
+      - rm /lib/systemd/system/getty.target
+      - apt-get install -yq ruby ruby-dev lsb-release wget net-tools libaugeas-dev libaugeas-ruby ntpdate locales-all logrotate
+      - REALLY_GEM_UPDATE_SYSTEM=1 gem update --system --no-ri --no-rdoc
     docker_preserve_image: true
 CONFIG:
   type: foss
