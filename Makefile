@@ -1,5 +1,4 @@
 #	opensuse-121 \
-#	opensuse-131 \
 #       sles-11sp3 \
 
 distros = \
@@ -7,11 +6,12 @@ distros = \
 	centos-7 \
 	debian-7 \
 	debian-8 \
-	ubuntu-server-1204 \
-	ubuntu-server-1210 \
-	ubuntu-server-1304 \
-	ubuntu-server-1310 \
-	ubuntu-server-1404
+	opensuse-13 \
+	ubuntu-1204 \
+	ubuntu-1210 \
+	ubuntu-1304 \
+	ubuntu-1310 \
+	ubuntu-1404
 
 deps:
 	bundle install --path .vendor
