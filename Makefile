@@ -8,9 +8,6 @@ distros = \
 	debian-8 \
 	opensuse-13 \
 	ubuntu-1204 \
-	ubuntu-1210 \
-	ubuntu-1304 \
-	ubuntu-1310 \
 	ubuntu-1404
 
 deps:
