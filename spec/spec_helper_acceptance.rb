@@ -50,13 +50,13 @@ hosts.each do |host|
     on host, "hostname #{host.name}"
     install_pe
   else
-    install_puppet_on host, default_action: 'gem_install'
+    install_puppet_on(host, version: '3.0.0')
+  end
 
-    if fact('osfamily') == 'Suse'
-      if fact('operatingsystem') == 'OpenSuSE'
-        install_package host, 'ruby-devel augeas-devel libxml2-devel'
-        on host, 'gem install ruby-augeas --no-ri --no-rdoc'
-      end
+  if fact('osfamily') == 'Suse'
+    if fact('operatingsystem') == 'OpenSuSE'
+      install_package host, 'ruby-devel augeas-devel libxml2-devel'
+      on host, 'gem install ruby-augeas --no-ri --no-rdoc'
     end
   end
 
