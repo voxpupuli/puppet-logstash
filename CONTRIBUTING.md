@@ -27,6 +27,7 @@ There are a few testing prerequisites to meet:
 * Ruby
 * [Bundler](http://bundler.io/)
 * Puppet (You should be able to run `puppet module install`
+* Docker or Vagrant/Virtualbox for the acceptance tests
 
 You can then set up the test enviroment with:
 ```bash
@@ -43,15 +44,15 @@ make test-unit
 ```
 
 ## Acceptance Tests
-Acceptance test are implemented Beaker, RSpec and Serverspec.
+Acceptance tests are implemented with Beaker, RSpec and Serverspec.
 
-You can run them for a particular operating system, and a particular Logstash version like this:
+You can run them for a particular operating system and a particular Logstash version like this:
 
 ```
 BEAKER_set=debian-8 BEAKER_ls_version=1.4.5 bundle exec rake beaker
 ```
 
-That invokation requires that you have Docker installed on your development system.
+That invocation requires that you have Docker installed on your development system.
 If you'd prefer to use Vagrant and Virtualbox, you can:
 
 ```

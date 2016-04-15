@@ -18,12 +18,13 @@ deps:
 	puppet module install puppetlabs/apt --target-dir spec/fixtures/modules
 	puppet module install puppetlabs/stdlib --target-dir spec/fixtures/modules
 	puppet module install electrical/file_concat --target-dir spec/fixtures/modules
+	puppet module install darin/zypprepo --target-dir spec/fixtures/modules
 	touch spec/fixtures/manifests/site.pp
 
 lint:
 	bundle exec rake lint
 	bundle exec rake validate
-	bundle exec rubocop spec Rakefile
+	# bundle exec rubocop spec Rakefile
 
 test-unit: deps lint
 	bundle exec rake spec_verbose
@@ -31,8 +32,7 @@ test-unit: deps lint
 test-acceptance: $(distros)
 
 $(distros):
-	# BEAKER_set=$@-x64 BEAKER_ls_version=1.5.6-1 bundle exec rspec --fail-fast spec/acceptance/
-	BEAKER_set=$@-docker bundle exec rake beaker
+	BEAKER_set=$@ bundle exec rake beaker
 
 clean:
 	rm -f spec/fixtures/artifacts/logstash*

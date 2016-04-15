@@ -41,7 +41,7 @@ class logstash::java {
         }
       }
       'OpenSuSE': {
-        $package = 'java-1_6_0-openjdk'
+        $package = 'java-1_7_0-openjdk'
       }
       'SLES': {
         $package = 'java-1_7_0-ibm'
