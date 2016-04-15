@@ -9,6 +9,7 @@ gem 'metadata-json-lint'
 gem 'rspec-puppet', '2.2.0'
 
 gem 'pry'
+gem 'pry-rescue'
 gem 'docker-api', '~> 1.0'
 gem 'rubysl-securerandom'
 gem 'ci_reporter_rspec'

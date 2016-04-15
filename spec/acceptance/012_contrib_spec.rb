@@ -10,23 +10,22 @@ if version < Semantic::Version.new('1.5.0')
     pid_file        = '/var/run/logstash.pid'
 
     describe 'install' do
+      manifest = <<-END
+        class { 'logstash':
+          manage_repo => true,
+          repo_version => '#{REPO_VERSION}',
+          java_install => true,
+          install_contrib => true
+        }
+
+        logstash::configfile { 'basic_config':
+          content => 'input { tcp { port => 2000 } } output { null { } } '
+        }
+        END
+
       context 'via repository' do
         it 'should run successfully' do
-          manifest = <<-END
-            class { 'logstash':
-              manage_repo => true,
-              repo_version => '#{REPO_VERSION}',
-              java_install => true,
-              install_contrib => true
-            }
-
-            logstash::configfile { 'basic_config':
-              content => 'input { tcp { port => 2000 } } output { null { } } '
-            }
-            END
-
-          # Run it twice and test for idempotency
-          apply_manifest(manifest, :catch_failures => true)
+          apply_manifest(manifest, catch_failures: true)
           sleep 5
         end
 

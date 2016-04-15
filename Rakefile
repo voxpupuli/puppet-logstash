@@ -3,12 +3,12 @@ require 'puppetlabs_spec_helper/rake_tasks'
 require 'rspec/core/rake_task'
 
 exclude_paths = [
-  "pkg/**/*",
-  "vendor/**/*",
-  "spec/**/*",
+  'pkg/**/*',
+  'vendor/**/*',
+  'spec/**/*'
 ]
 
-log_format = "%{path}:%{linenumber}:%{check}:%{KIND}:%{message}"
+log_format = '%{path}:%{linenumber}:%{check}:%{KIND}:%{message}'
 
 PuppetLint::RakeTask.new :lint do |config|
   config.disable_checks = ['80chars']
@@ -24,14 +24,19 @@ RSpec::Core::RakeTask.new(:spec_verbose) do |t|
     '--format documentation',
     '--require "ci/reporter/rspec"',
     '--format CI::Reporter::RSpecFormatter',
-    '--color',
+    '--color'
   ]
 end
 
-RSpec::Core::RakeTask.new(:beaker) do |t|
-  t.pattern = 'spec/{acceptance}/**/*_spec.rb'
-  t.rspec_opts = [
-    '--format documentation',
-    '--color',
-  ]
-end
+# RSpec::Core::RakeTask.new(:henry) do |t|
+#   t.pattern = 'spec/acceptance/**/*_spec.rb'
+#   t.rspec_opts = '--format progress --color'
+# end
+
+# RSpec::Core::RakeTask.new(:beaker_verbose) do |t|
+#   t.pattern = 'spec/acceptance/**/*_spec.rb'
+#   t.rspec_opts = [
+#     '--format documentation',
+#     '--color'
+#   ]
+# end

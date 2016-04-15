@@ -1,32 +1,22 @@
+
 require 'spec_helper_acceptance'
 
 if fact('osfamily') != 'Suse'
   describe 'class logstash' do
-    version = LS_VERSION
-    url_root = 'http://download.elasticsearch.org/logstash/logstash/packages'
     package_name = 'logstash'
     service_name = 'logstash'
     pid_file = '/var/run/logstash.pid'
 
-    case fact('osfamily')
-    when 'RedHat', 'Suse'
-      url          = "#{url_root}/centos/logstash-#{version}.noarch.rpm"
-      local        = "/tmp/logstash-#{version}.noarch.rpm"
-      puppet       = "logstash-#{version}.noarch.rpm"
-    when 'Debian'
-      url          = "#{url_root}/debian/logstash_#{version}_all.deb"
-      local        = "/tmp/logstash_#{version}_all.deb"
-      puppet       = "logstash_#{version}_all.deb"
-    end
+    local_package_path = "/tmp/#{logstash_package_filename}"
 
     shell("mkdir -p #{default['distmoduledir']}/another/files")
-    shell("cp #{local} #{default['distmoduledir']}/another/files/#{puppet}")
+    shell("cp #{local_package_path} #{default['distmoduledir']}/another/files/#{logstash_package_filename}")
 
     context 'install via http resource' do
       it 'should run successfully' do
         manifest = <<-END
         class { 'logstash':
-          package_url => '#{url}',
+          package_url => '#{logstash_package_url}',
           java_install => true
         }
 
@@ -77,7 +67,7 @@ if fact('osfamily') != 'Suse'
     context 'install via local file resource' do
       manifest = <<-END
         class { 'logstash':
-          package_url => 'file:#{local}',
+          package_url => 'file:#{local_package_path}',
           java_install => true
         }
 
@@ -116,7 +106,7 @@ if fact('osfamily') != 'Suse'
     context 'install via puppet resource' do
       manifest = <<-END
         class { 'logstash':
-          package_url => 'puppet:///modules/another/#{puppet}',
+          package_url => 'puppet:///modules/another/#{logstash_package_filename}',
           java_install => true
         }
 

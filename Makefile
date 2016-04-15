@@ -1,11 +1,12 @@
+#	opensuse-121 \
+#	opensuse-131 \
+#       sles-11sp3 \
+
 distros = \
 	centos-6 \
 	centos-7 \
 	debian-7 \
 	debian-8 \
-	opensuse-121 \
-	opensuse-131 \
-	sles-11sp3 \
 	ubuntu-server-1204 \
 	ubuntu-server-1210 \
 	ubuntu-server-1304 \
@@ -22,15 +23,16 @@ deps:
 lint:
 	bundle exec rake lint
 	bundle exec rake validate
-	bundle exec rubocop
+	bundle exec rubocop spec Rakefile
 
-test-rspec: deps lint
+test-unit: deps lint
 	bundle exec rake spec_verbose
 
-test-beaker: $(distros)
+test-acceptance: $(distros)
 
 $(distros):
-	BEAKER_set=$@-x64 BEAKER_ls_version=1.5.6-1 bundle exec rspec spec/acceptance/
+	# BEAKER_set=$@-x64 BEAKER_ls_version=1.5.6-1 bundle exec rspec --fail-fast spec/acceptance/
+	BEAKER_set=$@-docker bundle exec rake beaker
 
 clean:
 	rm -f spec/fixtures/artifacts/logstash*
