@@ -6,10 +6,12 @@ require 'securerandom'
 files_dir = './spec/fixtures/artifacts'
 
 # Collect global options from the environment.
-if ENV['BEAKER_ls_version'].nil?
-  raise 'Please set the BEAKER_ls_version environment variable.'
+if ENV['LOGSTASH_VERSION'].nil?
+  raise 'Please set the LOGSTASH_VERSION environment variable.'
 end
-LS_VERSION = ENV['BEAKER_ls_version']
+LS_VERSION = ENV['LOGSTASH_VERSION']
+
+PUPPET_VERSION = ENV['PUPPET_VERSION'] || '3.8.6'
 REPO_VERSION = LS_VERSION[0..(LS_VERSION.rindex('.') - 1)] # "1.5.3-1" -> "1.5"
 
 # Package naming is not super-consistent for early versions, so we
@@ -50,7 +52,7 @@ hosts.each do |host|
     on host, "hostname #{host.name}"
     install_pe
   else
-    install_puppet_on(host, version: '3.0.0')
+    install_puppet_on(host, version: PUPPET_VERSION)
   end
 
   if fact('osfamily') == 'Suse'

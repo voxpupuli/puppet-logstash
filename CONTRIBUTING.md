@@ -49,12 +49,12 @@ Acceptance tests are implemented with Beaker, RSpec and Serverspec.
 You can run them for a particular operating system and a particular Logstash version like this:
 
 ```
-BEAKER_set=debian-8 BEAKER_ls_version=1.4.5 bundle exec rake beaker
+BEAKER_set=debian-8 LOGSTASH_VERSION=1.4.5 bundle exec rake beaker
 ```
 
 That invocation requires that you have Docker installed on your development system.
 If you'd prefer to use Vagrant and Virtualbox, you can:
 
 ```
-BEAKER_set=debian-8-vagrant BEAKER_ls_version=1.4.5 bundle exec rake beaker
+BEAKER_set=debian-8-vagrant LOGSTASH_VERSION=1.4.5 bundle exec rake beaker
 ```

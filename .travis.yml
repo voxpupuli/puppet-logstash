@@ -1,17 +1,20 @@
+sudo: required
+
+services:
+  - docker
+
 language: ruby
 rvm:
   - 1.9.3
   - 2.0.0
 script:
- - "bundle exec rake lint"
- - "bundle exec rake syntax"
- - "bundle exec rake spec SPEC_OPTS='--format documentation --order random'"
+ - bundle exec rake lint
+ - bundle exec rake syntax
+ - bundle exec rake spec SPEC_OPTS='--format documentation --order random'
+ - bundle exec rake beaker
 env:
-  - PUPPET_VERSION="~> 3.2.0"
-  - PUPPET_VERSION="~> 3.3.0"
-  - PUPPET_VERSION="~> 3.4.0"
-  - PUPPET_VERSION="~> 3.5.0"
-  - PUPPET_VERSION="~> 3.6.0"
-matrix:
-  allow_failures:
-    - rvm: 2.0.0
+  - PUPPET_VERSION="~> 3.2.0" LOGSTASH_VERSION=1.4.5 BEAKER_set=debian-7
+  - PUPPET_VERSION="~> 3.3.0" LOGSTASH_VERSION=1.4.5 BEAKER_set=debian-7
+  - PUPPET_VERSION="~> 3.4.0" LOGSTASH_VERSION=1.4.5 BEAKER_set=debian-7
+  - PUPPET_VERSION="~> 3.5.0" LOGSTASH_VERSION=1.4.5 BEAKER_set=debian-7
+  - PUPPET_VERSION="~> 3.6.0" LOGSTASH_VERSION=1.4.5 BEAKER_set=debian-7
