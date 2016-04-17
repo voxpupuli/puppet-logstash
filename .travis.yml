@@ -4,14 +4,17 @@ services:
   - docker
 
 language: ruby
+
 rvm:
   - 1.9.3
   - 2.0.0
+
 script:
  - bundle exec rake lint
  - bundle exec rake syntax
  - bundle exec rake spec SPEC_OPTS='--format documentation --order random'
  - bundle exec rake beaker
+
 env:
   - PUPPET_VERSION="3.2.4" LOGSTASH_VERSION=1.4.5 BEAKER_set=debian-7
   - PUPPET_VERSION="3.3.2" LOGSTASH_VERSION=1.4.5 BEAKER_set=debian-7
@@ -25,7 +28,6 @@ env:
 matrix:
   exclude:
     - rvm: 2.0.0
-      env:
-        - PUPPET_VERSION="3.2.4" LOGSTASH_VERSION=1.4.5 BEAKER_set=debian-7
-        - PUPPET_VERSION="3.3.2" LOGSTASH_VERSION=1.4.5 BEAKER_set=debian-7
-
+      env: PUPPET_VERSION="3.2.4" LOGSTASH_VERSION=1.4.5 BEAKER_set=debian-7
+    - rvm: 2.0.0
+      env: PUPPET_VERSION="3.3.2" LOGSTASH_VERSION=1.4.5 BEAKER_set=debian-7
