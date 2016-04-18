@@ -16,10 +16,9 @@ bundle-install:
 	bundle install --path .vendor
 
 puppet-module-deps:
-	puppet module install puppetlabs/apt --target-dir spec/fixtures/modules
-	puppet module install puppetlabs/stdlib --target-dir spec/fixtures/modules
-	puppet module install electrical/file_concat --target-dir spec/fixtures/modules
-	puppet module install darin/zypprepo --target-dir spec/fixtures/modules
+	for m in puppetlabs/apt puppetlabs/stdlib electrical/file_concat darin/zypprepo ; do \
+	  puppet module install --target-dir spec/fixtures/modules --force $$m ; \
+	done
 	touch spec/fixtures/manifests/site.pp
 
 lint:
