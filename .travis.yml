@@ -14,12 +14,48 @@ script:
  - bundle exec rake beaker
 
 env:
-  - PUPPET_VERSION="3.2.4" LOGSTASH_VERSION=1.4.5 BEAKER_set=debian-7
-  - PUPPET_VERSION="3.3.2" LOGSTASH_VERSION=1.4.5 BEAKER_set=debian-7
-  - PUPPET_VERSION="3.4.3" LOGSTASH_VERSION=1.4.5 BEAKER_set=debian-7
-  - PUPPET_VERSION="3.5.1" LOGSTASH_VERSION=1.4.5 BEAKER_set=debian-7
-  - PUPPET_VERSION="3.6.2" LOGSTASH_VERSION=1.4.5 BEAKER_set=debian-7
-  - PUPPET_VERSION="3.7.5" LOGSTASH_VERSION=1.4.5 BEAKER_set=debian-7
+  global:
+    - LOGSTASH_VERSION=1.4.5
+  matrix:
+    - PUPPET_VERSION="3.0.2" BEAKER_set=debian-7
+    - PUPPET_VERSION="3.1.1" BEAKER_set=debian-7
+    - PUPPET_VERSION="3.2.4" BEAKER_set=debian-7
+    - PUPPET_VERSION="3.3.2" BEAKER_set=debian-7
+    - PUPPET_VERSION="3.4.3" BEAKER_set=debian-7
+    - PUPPET_VERSION="3.5.1" BEAKER_set=debian-7
+    - PUPPET_VERSION="3.6.2" BEAKER_set=debian-7
+    - PUPPET_VERSION="3.7.5" BEAKER_set=debian-7
+    - PUPPET_VERSION="3.8.6" BEAKER_set=debian-7
+
+    - PUPPET_VERSION="3.0.2" BEAKER_set=debian-8
+    - PUPPET_VERSION="3.1.1" BEAKER_set=debian-8
+    - PUPPET_VERSION="3.2.4" BEAKER_set=debian-8
+    - PUPPET_VERSION="3.3.2" BEAKER_set=debian-8
+    - PUPPET_VERSION="3.4.3" BEAKER_set=debian-8
+    - PUPPET_VERSION="3.5.1" BEAKER_set=debian-8
+    - PUPPET_VERSION="3.6.2" BEAKER_set=debian-8
+    - PUPPET_VERSION="3.7.5" BEAKER_set=debian-8
+    - PUPPET_VERSION="3.8.6" BEAKER_set=debian-8
+
+    - PUPPET_VERSION="3.0.2" BEAKER_set=centos-6
+    - PUPPET_VERSION="3.1.1" BEAKER_set=centos-6
+    - PUPPET_VERSION="3.2.4" BEAKER_set=centos-6
+    - PUPPET_VERSION="3.3.2" BEAKER_set=centos-6
+    - PUPPET_VERSION="3.4.3" BEAKER_set=centos-6
+    - PUPPET_VERSION="3.5.1" BEAKER_set=centos-6
+    - PUPPET_VERSION="3.6.2" BEAKER_set=centos-6
+    - PUPPET_VERSION="3.7.5" BEAKER_set=centos-6
+    - PUPPET_VERSION="3.8.6" BEAKER_set=centos-6
+
+    - PUPPET_VERSION="3.0.2" BEAKER_set=centos-7
+    - PUPPET_VERSION="3.1.1" BEAKER_set=centos-7
+    - PUPPET_VERSION="3.2.4" BEAKER_set=centos-7
+    - PUPPET_VERSION="3.3.2" BEAKER_set=centos-7
+    - PUPPET_VERSION="3.4.3" BEAKER_set=centos-7
+    - PUPPET_VERSION="3.5.1" BEAKER_set=centos-7
+    - PUPPET_VERSION="3.6.2" BEAKER_set=centos-7
+    - PUPPET_VERSION="3.7.5" BEAKER_set=centos-7
+    - PUPPET_VERSION="3.8.6" BEAKER_set=centos-7
 
 # Puppet < 3.4.3 fails on Ruby 2
 # REF: https://github.com/puppetlabs/puppet/commit/d02820a116d5e3ae0b129a0b4384ddaf76f0f83b
