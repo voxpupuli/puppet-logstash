@@ -10,7 +10,7 @@ distros = \
 	ubuntu-1204 \
 	ubuntu-1404
 
-deps: bundle-install puppet-modules-deps
+deps: bundle-install puppet-module-deps
 
 bundle-install:
 	bundle install --path .vendor

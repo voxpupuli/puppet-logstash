@@ -67,10 +67,16 @@ hosts.each do |host|
 
   # Aquire a binary package of Logstash.
   on host, "wget #{logstash_package_url} -O /tmp/#{logstash_package_filename}"
+
+  project_root = File.dirname(File.dirname(__FILE__))
+  install_dev_puppet_module_on(host, source: project_root, module_name: 'logstash')
+  install_puppet_module_via_pmt_on(host, module_name: 'puppetlabs-stdlib')
+  install_puppet_module_via_pmt_on(host, module_name: 'puppetlabs-apt')
+  install_puppet_module_via_pmt_on(host, module_name: 'electrical-file_concat')
+  install_puppet_module_via_pmt_on(host, module_name: 'darin-zypprepo')
 end
 
 RSpec.configure do |c|
-  project_root = File.dirname(File.dirname(__FILE__))
 
   # Readable test descriptions
   c.formatter = :documentation
@@ -78,13 +84,4 @@ RSpec.configure do |c|
 
   # declare an exclusion filter
   c.filter_run_excluding broken: true
-
-  c.before :suite do
-    # Provide all the Puppet modules we need to the test instance.
-    Dir.glob('spec/fixtures/modules/*').each do |path|
-      name = File.basename(path)
-      path = project_root if name == 'logstash' # Otherwise, all we get is a useless symlink.
-      puppet_module_install(source: path, module_name: name)
-    end
-  end
 end
