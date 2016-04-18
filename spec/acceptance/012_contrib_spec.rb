@@ -1,8 +1,6 @@
 require 'spec_helper_acceptance'
-require 'semantic'
 
-version = Semantic::Version.new(LS_VERSION)
-if version < Semantic::Version.new('1.5.0')
+if LS_VERSION =~ /^1\.[0-4]\./
   describe 'logstash-contrib package' do
     service_name    = 'logstash'
     package_name    = 'logstash'
