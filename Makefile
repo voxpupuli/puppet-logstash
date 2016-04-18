@@ -10,8 +10,12 @@ distros = \
 	ubuntu-1204 \
 	ubuntu-1404
 
-deps:
+deps: bundle-install puppet-modules-deps
+
+bundle-install:
 	bundle install --path .vendor
+
+puppet-module-deps:
 	puppet module install puppetlabs/apt --target-dir spec/fixtures/modules
 	puppet module install puppetlabs/stdlib --target-dir spec/fixtures/modules
 	puppet module install electrical/file_concat --target-dir spec/fixtures/modules

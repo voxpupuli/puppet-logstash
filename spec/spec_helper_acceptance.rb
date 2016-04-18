@@ -86,9 +86,5 @@ RSpec.configure do |c|
       path = project_root if name == 'logstash' # Otherwise, all we get is a useless symlink.
       puppet_module_install(source: path, module_name: name)
     end
-
-    # if fact('osfamily') == 'Suse'
-    #   on host, puppet('module','install','darin-zypprepo'), { :acceptable_exit_codes => [0,1] }
-    # end
   end
 end
