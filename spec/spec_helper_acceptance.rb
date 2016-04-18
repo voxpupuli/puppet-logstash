@@ -65,10 +65,8 @@ hosts.each do |host|
   # Update package cache for those who need it.
   on host, 'apt-get update' if fact('osfamily') == 'Debian'
 
-  # Aquire binary packages of Logstash for various operating systems.
-  download = "#{files_dir}/#{logstash_package_filename}"
-  File.write(download, Net::HTTP.get(URI(logstash_package_url))) unless File.exist?(download)
-  scp_to(host, download, '/tmp/')
+  # Aquire a binary package of Logstash.
+  on host, "wget #{logstash_package_url} -O /tmp/#{logstash_package_filename}"
 end
 
 RSpec.configure do |c|
