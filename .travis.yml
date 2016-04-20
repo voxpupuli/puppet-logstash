@@ -17,8 +17,6 @@ env:
   global:
     - LOGSTASH_VERSION=1.4.5
   matrix:
-    - PUPPET_VERSION="3.0.2" BEAKER_set=debian-7
-    - PUPPET_VERSION="3.1.1" BEAKER_set=debian-7
     - PUPPET_VERSION="3.2.4" BEAKER_set=debian-7
     - PUPPET_VERSION="3.3.2" BEAKER_set=debian-7
     - PUPPET_VERSION="3.4.3" BEAKER_set=debian-7
@@ -27,8 +25,6 @@ env:
     - PUPPET_VERSION="3.7.5" BEAKER_set=debian-7
     - PUPPET_VERSION="3.8.6" BEAKER_set=debian-7
 
-    - PUPPET_VERSION="3.0.2" BEAKER_set=debian-8
-    - PUPPET_VERSION="3.1.1" BEAKER_set=debian-8
     - PUPPET_VERSION="3.2.4" BEAKER_set=debian-8
     - PUPPET_VERSION="3.3.2" BEAKER_set=debian-8
     - PUPPET_VERSION="3.4.3" BEAKER_set=debian-8
@@ -37,8 +33,6 @@ env:
     - PUPPET_VERSION="3.7.5" BEAKER_set=debian-8
     - PUPPET_VERSION="3.8.6" BEAKER_set=debian-8
 
-    - PUPPET_VERSION="3.0.2" BEAKER_set=centos-6
-    - PUPPET_VERSION="3.1.1" BEAKER_set=centos-6
     - PUPPET_VERSION="3.2.4" BEAKER_set=centos-6
     - PUPPET_VERSION="3.3.2" BEAKER_set=centos-6
     - PUPPET_VERSION="3.4.3" BEAKER_set=centos-6
@@ -47,8 +41,6 @@ env:
     - PUPPET_VERSION="3.7.5" BEAKER_set=centos-6
     - PUPPET_VERSION="3.8.6" BEAKER_set=centos-6
 
-    - PUPPET_VERSION="3.0.2" BEAKER_set=centos-7
-    - PUPPET_VERSION="3.1.1" BEAKER_set=centos-7
     - PUPPET_VERSION="3.2.4" BEAKER_set=centos-7
     - PUPPET_VERSION="3.3.2" BEAKER_set=centos-7
     - PUPPET_VERSION="3.4.3" BEAKER_set=centos-7

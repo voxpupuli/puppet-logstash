@@ -52,7 +52,11 @@ hosts.each do |host|
     on host, "hostname #{host.name}"
     install_pe
   else
-    install_puppet_on(host, version: PUPPET_VERSION)
+    begin
+      install_puppet_on(host, version: PUPPET_VERSION)
+    rescue Beaker::Host::CommandFailure
+      install_puppet_from_gem_on(host, version: PUPPET_VERSION)
+    end
   end
 
   if fact('osfamily') == 'Suse'
