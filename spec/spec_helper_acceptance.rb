@@ -54,7 +54,7 @@ hosts.each do |host|
   else
     begin
       install_puppet_on(host, version: PUPPET_VERSION)
-    rescue Beaker::Host::CommandFailure
+    rescue
       install_puppet_from_gem_on(host, version: PUPPET_VERSION)
     end
   end

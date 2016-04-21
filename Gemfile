@@ -17,6 +17,7 @@ gem 'pry-rescue'
 gem 'docker-api', '~> 1.0'
 gem 'rubysl-securerandom'
 gem 'ci_reporter_rspec'
+gem 'google-api-client', '0.9.4' # 0.9.5 needs Ruby 2.
 gem 'rspec', '~> 3.0'
 gem 'rake'
 gem 'puppet-doc-lint'

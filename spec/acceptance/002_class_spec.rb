@@ -46,6 +46,7 @@ describe 'class logstash' do
     end
 
     it 'should install the correct logstash version' do
+      binding.pry
       expect(shell('/opt/logstash/bin/logstash --version').stdout).to eq("logstash #{LS_VERSION}\n")
     end
 
