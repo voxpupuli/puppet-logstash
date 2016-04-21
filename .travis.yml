@@ -5,6 +5,10 @@ services:
 
 language: ruby
 
+rvm:
+  - 1.9.3
+
+
 script:
  - make test-unit
  - bundle exec rake beaker
@@ -13,36 +17,36 @@ env:
   global:
     - LOGSTASH_VERSION=1.4.5
   matrix:
-    - PUPPET_VERSION="3.2.4" BEAKER_set=debian-7
-    - PUPPET_VERSION="3.3.2" BEAKER_set=debian-7
-    - PUPPET_VERSION="3.4.3" BEAKER_set=debian-7
-    - PUPPET_VERSION="3.5.1" BEAKER_set=debian-7
-    - PUPPET_VERSION="3.6.2" BEAKER_set=debian-7
-    - PUPPET_VERSION="3.7.5" BEAKER_set=debian-7
-    - PUPPET_VERSION="3.8.6" BEAKER_set=debian-7
+    - PUPPET_VERSION=3.2.4 BEAKER_set=debian-7
+    - PUPPET_VERSION=3.3.2 BEAKER_set=debian-7
+    - PUPPET_VERSION=3.4.3 BEAKER_set=debian-7
+    - PUPPET_VERSION=3.5.1 BEAKER_set=debian-7
+    - PUPPET_VERSION=3.6.2 BEAKER_set=debian-7
+    - PUPPET_VERSION=3.7.5 BEAKER_set=debian-7
+    - PUPPET_VERSION=3.8.6 BEAKER_set=debian-7
 
     # 3.2 and 3.3 won't work on debian-8.
     # REF: https://github.com/puppetlabs/puppet/pull/2184
-    # - PUPPET_VERSION="3.2.4" BEAKER_set=debian-8
-    # - PUPPET_VERSION="3.3.2" BEAKER_set=debian-8
-    - PUPPET_VERSION="3.4.3" BEAKER_set=debian-8
-    - PUPPET_VERSION="3.5.1" BEAKER_set=debian-8
-    - PUPPET_VERSION="3.6.2" BEAKER_set=debian-8
-    - PUPPET_VERSION="3.7.5" BEAKER_set=debian-8
-    - PUPPET_VERSION="3.8.6" BEAKER_set=debian-8
+    # - PUPPET_VERSION=3.2.4 BEAKER_set=debian-8
+    # - PUPPET_VERSION=3.3.2 BEAKER_set=debian-8
+    - PUPPET_VERSION=3.4.3 BEAKER_set=debian-8
+    - PUPPET_VERSION=3.5.1 BEAKER_set=debian-8
+    - PUPPET_VERSION=3.6.2 BEAKER_set=debian-8
+    - PUPPET_VERSION=3.7.5 BEAKER_set=debian-8
+    - PUPPET_VERSION=3.8.6 BEAKER_set=debian-8
 
-    - PUPPET_VERSION="3.2.4" BEAKER_set=centos-6
-    - PUPPET_VERSION="3.3.2" BEAKER_set=centos-6
-    - PUPPET_VERSION="3.4.3" BEAKER_set=centos-6
-    - PUPPET_VERSION="3.5.1" BEAKER_set=centos-6
-    - PUPPET_VERSION="3.6.2" BEAKER_set=centos-6
-    - PUPPET_VERSION="3.7.5" BEAKER_set=centos-6
-    - PUPPET_VERSION="3.8.6" BEAKER_set=centos-6
+    - PUPPET_VERSION=3.2.4 BEAKER_set=centos-6
+    - PUPPET_VERSION=3.3.2 BEAKER_set=centos-6
+    - PUPPET_VERSION=3.4.3 BEAKER_set=centos-6
+    - PUPPET_VERSION=3.5.1 BEAKER_set=centos-6
+    - PUPPET_VERSION=3.6.2 BEAKER_set=centos-6
+    - PUPPET_VERSION=3.7.5 BEAKER_set=centos-6
+    - PUPPET_VERSION=3.8.6 BEAKER_set=centos-6
 
-    - PUPPET_VERSION="3.2.4" BEAKER_set=centos-7
-    - PUPPET_VERSION="3.3.2" BEAKER_set=centos-7
-    - PUPPET_VERSION="3.4.3" BEAKER_set=centos-7
-    - PUPPET_VERSION="3.5.1" BEAKER_set=centos-7
-    - PUPPET_VERSION="3.6.2" BEAKER_set=centos-7
-    - PUPPET_VERSION="3.7.5" BEAKER_set=centos-7
-    - PUPPET_VERSION="3.8.6" BEAKER_set=centos-7
+    - PUPPET_VERSION=3.2.4 BEAKER_set=centos-7
+    - PUPPET_VERSION=3.3.2 BEAKER_set=centos-7
+    - PUPPET_VERSION=3.4.3 BEAKER_set=centos-7
+    - PUPPET_VERSION=3.5.1 BEAKER_set=centos-7
+    - PUPPET_VERSION=3.6.2 BEAKER_set=centos-7
+    - PUPPET_VERSION=3.7.5 BEAKER_set=centos-7
+    - PUPPET_VERSION=3.8.6 BEAKER_set=centos-7
