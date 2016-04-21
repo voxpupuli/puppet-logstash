@@ -1,11 +1,7 @@
 HOSTS:
   debian-8:
-    roles:
-      - master
-      - database
-      - dashboard
     platform: debian-8-amd64
-    image: electrical/debian:8
+    image: debian:8
     hypervisor: docker
     docker_cmd: '["/sbin/init"]'
     docker_image_commands:

@@ -45,6 +45,10 @@ describe 'class logstash' do
       its(:content) { should match(/^[0-9]+$/) }
     end
 
+    it 'should install the correct logstash version' do
+      expect(shell('/opt/logstash/bin/logstash --version').stdout).to eq("logstash #{LS_VERSION}\n")
+    end
+
     it 'should only have 1 logstash process running' do
       shell('test $(ps aux | grep -w -- logstash | grep -v grep | wc -l) -eq 1')
     end

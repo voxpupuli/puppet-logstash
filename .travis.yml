@@ -5,10 +5,6 @@ services:
 
 language: ruby
 
-rvm:
-  - 1.9.3
-  - 2.0.0
-
 script:
  - make test-unit
  - bundle exec rake beaker
@@ -25,8 +21,10 @@ env:
     - PUPPET_VERSION="3.7.5" BEAKER_set=debian-7
     - PUPPET_VERSION="3.8.6" BEAKER_set=debian-7
 
-    - PUPPET_VERSION="3.2.4" BEAKER_set=debian-8
-    - PUPPET_VERSION="3.3.2" BEAKER_set=debian-8
+    # 3.2 and 3.3 won't work on debian-8.
+    # REF: https://github.com/puppetlabs/puppet/pull/2184
+    # - PUPPET_VERSION="3.2.4" BEAKER_set=debian-8
+    # - PUPPET_VERSION="3.3.2" BEAKER_set=debian-8
     - PUPPET_VERSION="3.4.3" BEAKER_set=debian-8
     - PUPPET_VERSION="3.5.1" BEAKER_set=debian-8
     - PUPPET_VERSION="3.6.2" BEAKER_set=debian-8
@@ -48,24 +46,3 @@ env:
     - PUPPET_VERSION="3.6.2" BEAKER_set=centos-7
     - PUPPET_VERSION="3.7.5" BEAKER_set=centos-7
     - PUPPET_VERSION="3.8.6" BEAKER_set=centos-7
-
-# Puppet < 3.4.3 fails on Ruby 2
-# REF: https://github.com/puppetlabs/puppet/commit/d02820a116d5e3ae0b129a0b4384ddaf76f0f83b
-matrix:
-  exclude:
-    - rvm: 2.0.0
-      env: PUPPET_VERSION="3.2.4" LOGSTASH_VERSION=1.4.5 BEAKER_set=debian-7
-    - rvm: 2.0.0
-      env: PUPPET_VERSION="3.3.2" LOGSTASH_VERSION=1.4.5 BEAKER_set=debian-7
-    - rvm: 2.0.0
-      env: PUPPET_VERSION="3.2.4" LOGSTASH_VERSION=1.4.5 BEAKER_set=debian-8
-    - rvm: 2.0.0
-      env: PUPPET_VERSION="3.3.2" LOGSTASH_VERSION=1.4.5 BEAKER_set=debian-8
-    - rvm: 2.0.0
-      env: PUPPET_VERSION="3.2.4" LOGSTASH_VERSION=1.4.5 BEAKER_set=centos-6
-    - rvm: 2.0.0
-      env: PUPPET_VERSION="3.3.2" LOGSTASH_VERSION=1.4.5 BEAKER_set=centos-6
-    - rvm: 2.0.0
-      env: PUPPET_VERSION="3.2.4" LOGSTASH_VERSION=1.4.5 BEAKER_set=centos-7
-    - rvm: 2.0.0
-      env: PUPPET_VERSION="3.3.2" LOGSTASH_VERSION=1.4.5 BEAKER_set=centos-7
