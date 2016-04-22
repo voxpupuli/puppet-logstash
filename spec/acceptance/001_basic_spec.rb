@@ -17,7 +17,7 @@ describe 'logstash module' do
 
   it 'should be parsable' do
     shell(
-      "puppet parser validate #{default['distmoduledir']}/logstash/manifests/",
+      "puppet parser validate #{default['distmoduledir']}/logstash/manifests/*.pp",
       acceptable_exit_codes: 0
     )
   end
