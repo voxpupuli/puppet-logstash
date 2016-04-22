@@ -298,5 +298,4 @@ class logstash(
     -> Anchor['logstash::end']
 
   }
-
 }
