@@ -1,9 +1,6 @@
 HOSTS:
   debian-7:
-    roles:
-      - master
-      - database
-      - dashboard
+    roles: [agent, database, dashboard, master]
     platform: debian-7-amd64
     image: electrical/debian:7.3
     hypervisor: docker

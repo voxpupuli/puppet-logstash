@@ -1,9 +1,6 @@
 HOSTS:
   centos-6-x64:
-    roles:
-      - master
-      - database
-      - dashboard
+    roles: [agent, database, dashboard, master]
     platform: el-6-x86_64
     image: electrical/centos:6.4
     hypervisor: docker

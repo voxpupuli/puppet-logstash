@@ -3,7 +3,11 @@ require 'spec_helper_acceptance'
 # Here we put the more basic fundamental tests, ultra obvious stuff.
 describe 'puppet' do
   it 'should be the right version' do
-    expect(shell('puppet --version').stdout.chomp).to eq(PUPPET_VERSION)
+    if puppet_enterprise?
+      expect(shell('puppet --version').stdout.chomp).to include("Puppet Enterprise #{PE_VERSION}")
+    else
+      expect(shell('puppet --version').stdout.chomp).to eq(PUPPET_VERSION)
+    end
   end
 end
 

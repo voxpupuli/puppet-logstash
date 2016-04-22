@@ -36,3 +36,4 @@ $(distros):
 
 clean:
 	rm -f spec/fixtures/artifacts/logstash*
+	rm -f spec/fixtures/artifacts/puppet-enterprise*
