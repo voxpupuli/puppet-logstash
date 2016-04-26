@@ -13,7 +13,7 @@
       "version_requirement": ">= 3.2.0"
     },
     {
-      "name": "ispavailability/file_concat",
+      "name": "electrical/file_concat",
       "version_requirement": ">= 0.1.0"
     }
   ],
