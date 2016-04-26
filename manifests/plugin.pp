@@ -65,7 +65,7 @@ define logstash::plugin (
   $source,
   $type,
   $ensure = 'present',
-  $filename = '',
+  $filename = undef,
 ){
 
   validate_re($source, '^(puppet|file)://', 'Source must be either from a puppet fileserver or a locally accessible file (begins with either puppet:// or file://)' )
@@ -81,7 +81,7 @@ define logstash::plugin (
   $plugins_dir = "${logstash::configdir}/plugins"
 
   $filename_real = $filename ? {
-    ''      => inline_template('<%= @source.split("/").last %>'),
+    undef   => inline_template('<%= @source.split("/").last %>'),
     default => $filename
   }
 

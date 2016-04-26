@@ -97,7 +97,7 @@ define logstash::service::init{
         group   => 'root',
         mode    => '0644',
         before  => Service[$name],
-        notify  => $notify_service
+        notify  => $notify_service,
       }
 
     }
@@ -112,7 +112,7 @@ define logstash::service::init{
         group   => 'root',
         mode    => '0755',
         before  => Service[$name],
-        notify  => $notify_service
+        notify  => $notify_service,
       }
 
     }
@@ -124,12 +124,18 @@ define logstash::service::init{
     before => Service[$name],
   }
 
-  $service_provider = $::osfamily ? {
-    'Debian' => 'debian',
-    default  => 'init'
+  # Puppet 3 doesn't know that Debian 8 uses systemd, not SysV init,
+  # so we'll help it out with our knowledge from the future.
+  if($::operatingsystem == 'debian' and $::operatingsystemmajrelease == '8'){
+    $service_provider = 'systemd'
+  }
+  else {
+    # In most cases, Puppet can figure out the correct service
+    # provider on its own, so we'll just say 'undef', and let it do
+    # whatever it thinks is best.
+    $service_provider = undef
   }
 
-  # action
   service { $name:
     ensure     => $service_ensure,
     enable     => $service_enable,
@@ -137,7 +143,6 @@ define logstash::service::init{
     hasstatus  => $logstash::params::service_hasstatus,
     hasrestart => $logstash::params::service_hasrestart,
     pattern    => $logstash::params::service_pattern,
-    provider   => $service_provider
+    provider   => $service_provider,
   }
-
 }

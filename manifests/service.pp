@@ -30,7 +30,7 @@ class logstash::service {
 
   case $logstash::service_provider {
 
-    init: {
+    'init': {
       logstash::service::init { $logstash::params::service_name: }
     }
 

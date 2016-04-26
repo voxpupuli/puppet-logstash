@@ -1,28 +1,42 @@
 require 'rubygems'
 require 'puppetlabs_spec_helper/rake_tasks'
+require 'rspec/core/rake_task'
 
 exclude_paths = [
-  "pkg/**/*",
-  "vendor/**/*",
-  "spec/**/*",
+  'pkg/**/*',
+  'vendor/**/*',
+  'spec/**/*'
 ]
 
-require 'puppet-doc-lint/rake_task'
-PuppetDocLint.configuration.ignore_paths = exclude_paths
+log_format = '%{path}:%{linenumber}:%{check}:%{KIND}:%{message}'
 
-require 'puppet-lint/tasks/puppet-lint'
-require 'puppet-syntax/tasks/puppet-syntax'
+PuppetLint::RakeTask.new :lint do |config|
+  config.disable_checks = ['80chars']
+  config.fail_on_warnings = true
+  config.with_context = true
+  config.ignore_paths = exclude_paths
+  config.log_format = log_format
+end
 
-PuppetSyntax.exclude_paths = exclude_paths
-PuppetSyntax.future_parser = true if ENV['FUTURE_PARSER'] == 'true'
+RSpec::Core::RakeTask.new(:spec_verbose) do |t|
+  t.pattern = 'spec/{classes,defines,lib,reports}/**/*_spec.rb'
+  t.rspec_opts = [
+    '--format documentation',
+    '--require "ci/reporter/rspec"',
+    '--format CI::Reporter::RSpecFormatter',
+    '--color'
+  ]
+end
 
-disable_checks = [
-  '80chars',
-  'class_inherits_from_params_class',
-  'class_parameter_defaults',
-  'documentation',
-  'single_quote_string_with_variables'
-].each { |check| PuppetLint.configuration.send("disable_#{check}") }
+# RSpec::Core::RakeTask.new(:henry) do |t|
+#   t.pattern = 'spec/acceptance/**/*_spec.rb'
+#   t.rspec_opts = '--format progress --color'
+# end
 
-PuppetLint.configuration.ignore_paths = exclude_paths
-PuppetLint.configuration.log_format = "%{path}:%{linenumber}:%{check}:%{KIND}:%{message}"
+# RSpec::Core::RakeTask.new(:beaker_verbose) do |t|
+#   t.pattern = 'spec/acceptance/**/*_spec.rb'
+#   t.rspec_opts = [
+#     '--format documentation',
+#     '--color'
+#   ]
+# end

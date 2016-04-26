@@ -28,7 +28,7 @@ class logstash::package {
     path      => [ '/bin', '/usr/bin', '/usr/local/bin' ],
     cwd       => '/',
     tries     => 3,
-    try_sleep => 10
+    try_sleep => 10,
   }
 
   #### Package management
@@ -66,7 +66,7 @@ class logstash::package {
       ensure => 'absent',
       purge  => true,
       force  => true,
-      backup => false
+      backup => false,
     }
 
   }
@@ -74,7 +74,7 @@ class logstash::package {
   #class { 'logstash::package::core': }
   logstash::package::install { 'logstash':
     package_url => $logstash::package_url,
-    version     => $logstash::version
+    version     => $logstash::version,
   }
 
   if ($logstash::install_contrib == true) {
@@ -82,7 +82,7 @@ class logstash::package {
     #class { 'logstash::package::contrib': }
     logstash::package::install { 'logstash-contrib':
       package_url => $logstash::contrib_package_url,
-      version     => $logstash::contrib_version
+      version     => $logstash::contrib_version,
     }
 
     # Ensure we install Core package before contrib

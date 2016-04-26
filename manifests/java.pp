@@ -41,7 +41,7 @@ class logstash::java {
         }
       }
       'OpenSuSE': {
-        $package = 'java-1_6_0-openjdk'
+        $package = 'java-1_7_0-openjdk'
       }
       'SLES': {
         $package = 'java-1_7_0-ibm'
@@ -58,7 +58,7 @@ class logstash::java {
   ## Install the java package unless already specified somewhere else
   if !defined(Package[$package]) {
     package { $package:
-      ensure => present
+      ensure => present,
     }
   }
 }

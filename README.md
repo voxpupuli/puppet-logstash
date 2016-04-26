@@ -2,7 +2,7 @@
 
 A Puppet module for managing and configuring [Logstash](http://logstash.net/).
 
-[![Build Status](https://travis-ci.org/elasticsearch/puppet-logstash.png?branch=master)](https://travis-ci.org/elasticsearch/puppet-logstash)
+[![Build Status](https://travis-ci.org/elastic/puppet-logstash.png?branch=master)](https://travis-ci.org/elastic/puppet-logstash)
 
 ## Versions
 
@@ -33,7 +33,7 @@ If you need any help please see the [support](#Support) section.
 
 ## Requirements
 
-* Puppet 2.7.x or better.
+* Puppet 3.2.0 or better.
 * The [stdlib](https://forge.puppetlabs.com/puppetlabs/stdlib) Puppet library.
 * The [file_concat](https://forge.puppetlabs.com/ispavailability/file_concat) Puppet library.
 

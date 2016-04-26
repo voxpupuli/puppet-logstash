@@ -1,6 +1,10 @@
 .swp
-spec/fixtures/manifests
-spec/fixtures/modules
+spec/fixtures/artifacts/*
+!spec/fixtures/artifacts/.gitignore
+spec/fixtures/manifests/*
+!spec/fixtures/manifests/.gitignore
+spec/fixtures/modules/*
+!spec/fixtures/modules/logstash
 .bundle
 .vendor
 .vagrant
@@ -10,3 +14,4 @@ spec/reports/
 spec/logs
 log
 *.lock
+**.swp

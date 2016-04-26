@@ -28,7 +28,7 @@ class logstash::config {
 
   File {
     owner => $logstash::logstash_user,
-    group => $logstash::logstash_group
+    group => $logstash::logstash_group,
   }
 
   $notify_service = $logstash::restart_on_change ? {
@@ -44,12 +44,12 @@ class logstash::config {
     file { $logstash::configdir:
       ensure  => directory,
       purge   => $logstash::purge_configdir,
-      recurse => $logstash::purge_configdir
+      recurse => $logstash::purge_configdir,
     }
 
     file { "${logstash::configdir}/conf.d":
       ensure  => directory,
-      require => File[$logstash::configdir]
+      require => File[$logstash::configdir],
     }
 
     file_concat { 'ls-config':
@@ -60,12 +60,12 @@ class logstash::config {
       group   => $logstash::logstash_group,
       mode    => '0644',
       notify  => $notify_service,
-      require => File[ "${logstash::configdir}/conf.d" ]
+      require => File[ "${logstash::configdir}/conf.d" ],
     }
 
     file { $patterns_dir:
       ensure  => directory,
-      require => File[$logstash::configdir]
+      require => File[$logstash::configdir],
     }
 
     file { [
@@ -74,10 +74,10 @@ class logstash::config {
       "${plugins_dir}/logstash/inputs",
       "${plugins_dir}/logstash/outputs",
       "${plugins_dir}/logstash/filters",
-      "${plugins_dir}/logstash/codecs"
+      "${plugins_dir}/logstash/codecs",
     ]:
       ensure  => directory,
-      require => File[$logstash::configdir]
+      require => File[$logstash::configdir],
     }
 
 
@@ -86,7 +86,7 @@ class logstash::config {
     file { $logstash::configdir:
       ensure  => 'absent',
       recurse => true,
-      force   => true
+      force   => true,
     }
 
   }
