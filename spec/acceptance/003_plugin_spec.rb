@@ -45,8 +45,8 @@ describe 'class plugin' do
 
       it 'can install the plugin from a local gem' do
         pending
-        ensure_present("source => '/tmp/#{plugin}.gem'")
-        expect(installed_plugins).to contain(plugin)
+        ensure_present("source => '/tmp/logstash-output-localtest.gem'")
+        expect(installed_plugins).to contain('logstash-output-localtest')
       end
     end
 
