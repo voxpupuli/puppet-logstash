@@ -35,7 +35,7 @@ define logstash::plugin (
     'present': {
       exec { "install-${name}":
         command => "${exe} install ${name}",
-        unless  => "${exe} list | grep -q ^${name}$"
+        unless  => "${exe} list | grep -q ^${name}$",
       }
     }
 
