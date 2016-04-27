@@ -50,6 +50,16 @@ def logstash_package_filename
   File.basename(logstash_package_url)
 end
 
+# Provided a basic Logstash install. Useful as a testing pre-requisite.
+def install_logstash
+  manifest = <<-END
+    class { "logstash":
+      java_install => true,
+    }
+    END
+  apply_manifest(manifest, catch_failures: true)
+end
+
 def pe_package_url
   distro, distro_version = ENV['BEAKER_set'].split('-')
   case distro

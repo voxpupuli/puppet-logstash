@@ -53,7 +53,7 @@ class logstash::params {
   $package_dl_timeout = 600 # 300 seconds is default of puppet
 
   # default version to use if non is provided when manage_repo is set to true
-  $repo_version = '1.4'
+  $repo_version = '1.5'
 
   #### Internal module values
 

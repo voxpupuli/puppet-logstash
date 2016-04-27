@@ -7,9 +7,14 @@
 shell_script = <<-END
   apt-get update
   apt-get --assume-yes upgrade
-  puppet module install puppetlabs-apt
-  puppet module install puppetlabs-stdlib
-  puppet module install electrical-file_concat
+
+  for mod in puppetlabs-apt puppetlabs-stdlib electrical-file_concat; do
+    puppet module install --target-dir=/opt/puppetlabs/puppet/modules $mod
+  done
+
+  for exe in facter puppet hiera; do
+    ln -s /opt/puppetlabs/bin/$exe /usr/local/bin
+  done
   END
 
 module_root = '/etc/puppetlabs/code/environments/production/modules/logstash'
