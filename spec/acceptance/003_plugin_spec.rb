@@ -17,9 +17,9 @@ describe 'class plugin' do
 
   def ensure_absent
     manifest = <<-END
-    logstash::plugin { '#{plugin}':
-      ensure => absent,
-    }
+      logstash::plugin { '#{plugin}':
+        ensure => absent,
+      }
     END
     apply_manifest(manifest, catch_failures: true)
   end
@@ -40,6 +40,12 @@ describe 'class plugin' do
 
       it 'can install the plugin from rubygems' do
         ensure_present
+        expect(installed_plugins).to contain(plugin)
+      end
+
+      it 'can install the plugin from a local gem' do
+        pending
+        ensure_present("source => '/tmp/#{plugin}.gem'")
         expect(installed_plugins).to contain(plugin)
       end
     end
