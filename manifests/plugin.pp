@@ -29,16 +29,15 @@ define logstash::plugin (
 )
 {
   require logstash
+  $exe = '/opt/logstash/bin/plugin'
 
   case $ensure {
     present: {
-      exec { "install-logstash-plugin-${name}":
-        command => "/opt/logstash/bin/plugin install ${name}"
-      }
+      exec { "install-${name}": command => "${exe} install ${name}" }
     }
 
     absent:  {
-
+      exec { "remove-${name}":  command => "${exe} uninstall ${name}" }
     }
 
     default: {
