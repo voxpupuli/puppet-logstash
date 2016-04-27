@@ -32,11 +32,11 @@ define logstash::plugin (
   $exe = '/opt/logstash/bin/plugin'
 
   case $ensure {
-    present: {
+    'present': {
       exec { "install-${name}": command => "${exe} install ${name}" }
     }
 
-    absent:  {
+    'absent':  {
       exec { "remove-${name}":  command => "${exe} uninstall ${name}" }
     }
 

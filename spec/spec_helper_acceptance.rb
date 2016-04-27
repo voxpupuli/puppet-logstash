@@ -54,6 +54,7 @@ end
 def install_logstash
   manifest = <<-END
     class { "logstash":
+      manage_repo  => true,
       java_install => true,
     }
     END
