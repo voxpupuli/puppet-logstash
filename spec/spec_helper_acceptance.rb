@@ -52,28 +52,44 @@ end
 
 # Provided a basic Logstash install. Useful as a testing pre-requisite.
 def install_logstash
+  logstash_config = <<-END
+    input {
+      stdin {}
+    }
+    output {
+      stdout {
+        codec => rubydebug
+      }
+    }
+    END
+
   manifest = <<-END
-    class { "logstash":
+    class { 'logstash':
       manage_repo  => true,
       java_install => true,
     }
+
+    logstash::configfile { 'basic':
+      content => '#{logstash_config}'
+    }
     END
+
   apply_manifest(manifest, catch_failures: true)
 end
 
 def pe_package_url
   distro, distro_version = ENV['BEAKER_set'].split('-')
   case distro
-    when 'debian'
-      os = 'debian'
-      arch = 'amd64'
-    when 'centos'
-      os = 'el'
-      arch = 'x86_64'
-    when 'ubuntu'
-      os = 'ubuntu'
-      arch = 'amd64'
-    end
+  when 'debian'
+    os = 'debian'
+    arch = 'amd64'
+  when 'centos'
+    os = 'el'
+    arch = 'x86_64'
+  when 'ubuntu'
+    os = 'ubuntu'
+    arch = 'amd64'
+  end
   url_root = "https://s3.amazonaws.com/pe-builds/released/#{PE_VERSION}"
   url = "#{url_root}/puppet-enterprise-#{PE_VERSION}-#{os}-#{distro_version}-#{arch}.tar.gz"
 end

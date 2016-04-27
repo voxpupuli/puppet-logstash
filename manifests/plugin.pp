@@ -33,15 +33,21 @@ define logstash::plugin (
 
   case $ensure {
     'present': {
-      exec { "install-${name}": command => "${exe} install ${name}" }
+      exec { "install-${name}":
+        command => "${exe} install ${name}",
+        unless  => "${exe} list | grep -q ^${name}$"
+      }
     }
 
     'absent':  {
-      exec { "remove-${name}":  command => "${exe} uninstall ${name}" }
+      exec { "remove-${name}":
+        command => "${exe} uninstall ${name}",
+        onlyif  => "${exe} list | grep -q ^${name}$",
+      }
     }
 
     default: {
-      fail "The parameter 'ensure' should be either 'present' or 'absent'."
+      fail "'ensure' should be 'present' or 'absent'."
     }
   }
 }
