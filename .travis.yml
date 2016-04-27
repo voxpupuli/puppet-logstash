@@ -12,7 +12,7 @@ rvm:
 
 script:
  # - make test-unit
- - travis_wait 60 bundle exec rake beaker
+ - bundle exec rake beaker
 
 env:
   global:
