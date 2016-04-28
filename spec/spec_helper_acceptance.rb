@@ -67,6 +67,9 @@ def install_logstash
     class { 'logstash':
       manage_repo  => true,
       java_install => true,
+      # Running the service _seems_ to have negative effects on some tests,
+      # particularly the plugin tests, which have a tendency to hang if the
+      # service is running.
       status       => 'disabled',
     }
 
@@ -130,6 +133,9 @@ hosts.each do |host|
 
   # Aquire a binary package of Logstash.
   on host, "wget #{logstash_package_url} -O /tmp/#{logstash_package_filename}"
+
+  # Provide a Logstash plugin as a local Gem.
+  scp_to(host, './spec/fixtures/plugins/logstash-output-cowsay-0.1.0.gem', '/tmp/')
 
   project_root = File.dirname(File.dirname(__FILE__))
   install_dev_puppet_module_on(host, source: project_root, module_name: 'logstash')

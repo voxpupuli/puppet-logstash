@@ -31,10 +31,17 @@ define logstash::plugin (
   require logstash
   $exe = '/opt/logstash/bin/plugin'
 
+  if($source) {
+    $plugin = $source
+  }
+  else {
+    $plugin = $name
+  }
+
   case $ensure {
     'present': {
       exec { "install-${name}":
-        command => "${exe} install ${name}",
+        command => "${exe} install ${plugin}",
         unless  => "${exe} list | grep -q ^${name}$",
       }
     }

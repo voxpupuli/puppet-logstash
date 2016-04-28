@@ -39,12 +39,6 @@ describe 'class plugin' do
         ensure_plugin('present', 'logstash-output-csv')
         expect(installed_plugins).to contain('logstash-output-csv')
       end
-
-      # it 'can install the plugin from a local gem' do
-      #   pending
-      #   ensure_plugin('present', "source => '/tmp/logstash-output-localtest.gem'")
-      #   expect(installed_plugins).to contain('logstash-output-localtest')
-      # end
     end
 
     context 'when input-file is installed' do
@@ -59,6 +53,12 @@ describe 'class plugin' do
         ensure_plugin('absent', 'logstash-input-file')
         expect(installed_plugins).not_to contain('logstash-input-file')
       end
+    end
+
+    it 'can install a plugin from a local gem' do
+      plugin = 'logstash-output-cowsay'
+      ensure_plugin('present', plugin, "source => '/tmp/#{plugin}-0.1.0.gem'")
+      expect(installed_plugins).to contain(plugin)
     end
   end
 end
