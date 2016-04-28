@@ -39,7 +39,8 @@ define logstash::plugin (
       }
     }
 
-    'absent':  {
+    'absent': {
+      notify { "${exe} list | grep -q ^${name}$": } ->
       exec { "remove-${name}":
         command => "${exe} uninstall ${name}",
         onlyif  => "${exe} list | grep -q ^${name}$",
