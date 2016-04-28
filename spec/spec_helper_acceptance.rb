@@ -67,6 +67,7 @@ def install_logstash
     class { 'logstash':
       manage_repo  => true,
       java_install => true,
+      status       => 'disabled',
     }
 
     logstash::configfile { 'basic':
