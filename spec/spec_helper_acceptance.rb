@@ -3,9 +3,6 @@ require 'net/http'
 require 'pry'
 require 'securerandom'
 
-files_dir = './spec/fixtures/artifacts'
-
-
 # Collect global options from the environment.
 if ENV['LOGSTASH_VERSION'].nil?
   raise 'Please set the LOGSTASH_VERSION environment variable.'
@@ -17,6 +14,11 @@ PE_VERSION = ENV['BEAKER_PE_VER'] || ENV['PE_VERSION'] || '3.8.3'
 PE_DIR = ENV['BEAKER_PE_DIR']
 
 REPO_VERSION = LS_VERSION[0..(LS_VERSION.rindex('.') - 1)] # "1.5.3-1" -> "1.5"
+
+def apply_manifest_fixture(manifest_name)
+  manifest = File.read("./spec/fixtures/manifests/#{manifest_name}.pp")
+  apply_manifest(manifest, catch_failures: true)
+end
 
 # Package naming is not super-consistent for early versions, so we
 # need to explicitly provide URLs for the ones that we can't construct
@@ -52,33 +54,12 @@ end
 
 # Provided a basic Logstash install. Useful as a testing pre-requisite.
 def install_logstash
-  logstash_config = <<-END
-    input {
-      stdin {}
-    }
-    output {
-      stdout {
-        codec => rubydebug
-      }
-    }
-    END
+  apply_manifest_fixture('install_logstash')
+end
 
-  manifest = <<-END
-    class { 'logstash':
-      manage_repo  => true,
-      java_install => true,
-      # Running the service _seems_ to have negative effects on some tests,
-      # particularly the plugin tests, which have a tendency to hang if the
-      # service is running.
-      status       => 'disabled',
-    }
-
-    logstash::configfile { 'basic':
-      content => '#{logstash_config}'
-    }
-    END
-
-  apply_manifest(manifest, catch_failures: true)
+def stop_logstash
+  apply_manifest_fixture('stop_logstash')
+  shell('ps -ef comm | grep java | xargs kill -9')
 end
 
 def pe_package_url
@@ -146,7 +127,6 @@ hosts.each do |host|
 end
 
 RSpec.configure do |c|
-
   # Readable test descriptions
   c.formatter = :documentation
   c.color = true

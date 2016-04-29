@@ -43,6 +43,7 @@ define logstash::plugin (
       exec { "install-${name}":
         command => "${exe} install ${plugin}",
         unless  => "${exe} list | grep -q ^${name}$",
+        timeout => 1800,
       }
     }
 
@@ -51,6 +52,7 @@ define logstash::plugin (
       exec { "remove-${name}":
         command => "${exe} uninstall ${name}",
         onlyif  => "${exe} list | grep -q ^${name}$",
+        timeout => 1800,
       }
     }
 

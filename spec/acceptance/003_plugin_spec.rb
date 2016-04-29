@@ -15,7 +15,6 @@ describe 'class plugin' do
         #{extra_args if extra_args}
       }
       END
-
     apply_manifest(manifest, catch_failures: true)
   end
 
@@ -24,7 +23,7 @@ describe 'class plugin' do
   end
 
   def remove(plugin)
-    apply_manifest('service { "logstash": ensure => "stopped" }')
+    stop_logstash
     shell("/opt/logstash/bin/plugin uninstall #{plugin} || true")
   end
 
@@ -45,7 +44,9 @@ describe 'class plugin' do
   end
 
   context 'when input-file is installed' do
-    before(:each) { expect(installed_plugins).to contain('logstash-input-file') }
+    before(:each) do
+      expect(installed_plugins).to contain('logstash-input-file')
+    end
 
     it 'will not install it again' do
       log = ensure_plugin('present', 'logstash-input-file').stdout
