@@ -10,7 +10,7 @@ gem 'beaker-rspec'
 # REF: https://github.com/voxpupuli/metadata-json-lint/issues/10
 # gem 'metadata-json-lint'
 
-gem 'rspec-puppet', '2.2.0'
+gem 'rspec-puppet'
 
 gem 'pry'
 gem 'pry-rescue'
