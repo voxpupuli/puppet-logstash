@@ -52,14 +52,78 @@ def logstash_package_filename
   File.basename(logstash_package_url)
 end
 
+def logstash_config_manifest
+  <<-END
+  logstash::configfile { 'basic_config':
+    content => 'input { tcp { port => 2000 } } output { null {} }'
+  }
+  END
+end
+
+def install_logstash_manifest(extra_args = nil)
+  <<-END
+  class { 'logstash':
+    manage_repo => true,
+    repo_version => '#{REPO_VERSION}',
+    java_install => true,
+    #{extra_args if extra_args}
+  }
+
+  #{logstash_config_manifest}
+  END
+end
+
+def install_logstash_from_local_file_manifest(extra_args = nil)
+  <<-END
+  class { 'logstash':
+    package_url => 'file:/tmp/#{logstash_package_filename}',
+    java_install => true,
+    #{extra_args if extra_args}
+  }
+
+  #{logstash_config_manifest}
+  END
+end
+
+def remove_logstash_manifest
+  <<-END
+  class { 'logstash':
+    ensure => absent,
+  }
+  END
+end
+
+def stop_logstash_manifest
+  <<-END
+  service { 'logstash':
+    ensure => stopped,
+    enable => false,
+  }
+  END
+end
+
 # Provided a basic Logstash install. Useful as a testing pre-requisite.
-def install_logstash
-  apply_manifest_fixture('install_logstash')
+def install_logstash(extra_args = nil)
+  apply_manifest(install_logstash_manifest(extra_args), catch_failures: true)
+end
+
+def install_logstash_from_local_file(extra_args = nil)
+  manifest = install_logstash_from_local_file_manifest(extra_args)
+  apply_manifest(manifest, catch_failures: true)
+end
+
+def remove_logstash
+  apply_manifest(remove_logstash_manifest)
 end
 
 def stop_logstash
-  apply_manifest_fixture('stop_logstash')
-  shell('(ps -eo comm | grep java | xargs kill -9) || true')
+  apply_manifest(stop_logstash_manifest, catch_failures: true)
+  shell('ps -eo comm | grep java | xargs kill -9', accept_all_exit_codes: true)
+end
+
+def logstash_process_list
+  ps_cmd = 'ps --no-headers -C java -o user,command | grep logstash/runner.rb'
+  shell(ps_cmd, accept_all_exit_codes: true).stdout.split("\n")
 end
 
 def pe_package_url
@@ -113,12 +177,18 @@ hosts.each do |host|
   on host, 'apt-get update' if fact('osfamily') == 'Debian'
 
   # Aquire a binary package of Logstash.
-  on host, "wget #{logstash_package_url} -O /tmp/#{logstash_package_filename}"
+  logstash_download = "spec/fixtures/artifacts/#{logstash_package_filename}"
+  `curl -s -o #{logstash_download} #{logstash_package_url}` unless File.exist?(logstash_download)
+  # ...send it to the test host
+  scp_to(host, logstash_download, '/tmp/')
+  # ...and also make it available as a "puppet://" url, by putting it in the
+  # 'files' directory of the Logstash module.
+  FileUtils.cp(logstash_download, './files/')
 
   # Provide a Logstash plugin as a local Gem.
   scp_to(host, './spec/fixtures/plugins/logstash-output-cowsay-0.1.0.gem', '/tmp/')
 
-  # ...and another plugin that can be fetched from Puppet with "puppet:///"
+  # ...and another plugin that can be fetched from Puppet with "puppet:/"
   FileUtils.cp('./spec/fixtures/plugins/logstash-output-cowthink-0.1.0.gem', './files/')
 
   project_root = File.dirname(File.dirname(__FILE__))

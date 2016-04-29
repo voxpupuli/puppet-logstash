@@ -4,6 +4,8 @@ spec/fixtures/artifacts/*
 spec/fixtures/modules/*
 !spec/fixtures/modules/logstash
 files/*.gem
+files/*.rpm
+files/*.deb
 .bundle
 .vendor
 .vagrant

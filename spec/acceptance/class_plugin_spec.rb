@@ -5,8 +5,6 @@ describe 'class plugin' do
   def ensure_plugin(present_absent, plugin, extra_args = nil)
     manifest = <<-END
       class { 'logstash':
-        manage_repo  => true,
-        java_install => true,
         status       => 'disabled',
       }
 
@@ -27,14 +25,14 @@ describe 'class plugin' do
   end
 
   before(:all) do
-    install_logstash
+    install_logstash_from_local_file
   end
 
   before(:each) do
     stop_logstash
   end
 
-  context 'when output-csv is not installed' do
+  context 'when a plugin is not installed' do
     before(:each) do
       remove('logstash-output-csv')
     end
@@ -50,7 +48,7 @@ describe 'class plugin' do
     end
   end
 
-  context 'when input-file is installed' do
+  context 'when a plugin is installed' do
     before(:each) do
       expect(installed_plugins).to contain('logstash-input-file')
     end
