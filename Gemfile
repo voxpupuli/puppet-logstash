@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 ruby '1.9.3'
 
-puppetversion = ENV['PUPPET_VERSION'] || '~> 3.8.6'
+puppetversion = ENV['PUPPET_VERSION'] || '3.8.6'
 gem 'puppet', puppetversion, :require => false
 
 gem 'beaker'
@@ -22,7 +22,7 @@ gem 'rspec', '~> 3.0'
 gem 'rake'
 gem 'puppet-doc-lint'
 gem 'puppet-lint'
-gem 'puppet-strings'
+gem 'puppet-strings' if puppetversion =~ /^(3\.[789]|4\.)/
 gem 'puppetlabs_spec_helper'
 gem 'puppet-syntax'
 gem 'rspec-puppet-facts'
