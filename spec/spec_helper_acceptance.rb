@@ -59,7 +59,7 @@ end
 
 def stop_logstash
   apply_manifest_fixture('stop_logstash')
-  shell('ps -eo comm | grep java | xargs kill -9')
+  shell('(ps -eo comm | grep java | xargs kill -9) || true')
 end
 
 def pe_package_url
