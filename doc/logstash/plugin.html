@@ -108,6 +108,9 @@
   <div class="discussion">
     <p>
 <p>Manage the installation of a Logstash plugin.</p>
+
+<p>By default, plugins are downloaded from RubyGems, but it is also possible
+to install from a local Gem, or one stored in Puppet.</p>
 </p>
   </div>
 </div>
@@ -121,12 +124,17 @@
     
       <div class="inline"><p>remove a plugin</p></div>
       <pre class="example code"><code><span>logstash::plugin { 'logstash-input-stout':
-  ensure => absent
+  ensure => absent,
 }</span></code></pre>
     
-      <div class="inline"><p>install a plugin from an explicit source</p></div>
-      <pre class="example code"><code><span>logstash::plugin { 'logstash-input-stout':
-  filename => 'puppet:///custom-module/custom-plugin.rb'
+      <div class="inline"><p>install a plugin from a local file</p></div>
+      <pre class="example code"><code><span>logstash::plugin { 'logstash-input-custom':
+  source => 'file:///tmp/logstash-input-custom.gem',
+}</span></code></pre>
+    
+      <div class="inline"><p>install a plugin from a Puppet module.</p></div>
+      <pre class="example code"><code><span>logstash::plugin { 'logstash-input-custom':
+  source => 'puppet:///modules/logstash-site-plugins/logstash-input-custom.gem',
 }</span></code></pre>
     
     </div>
@@ -137,15 +145,15 @@
 <h2>Parameter Summary</h2>
 <div class="tags">
   <ul class="param">
-    <li><span class="name">source </span><span class="type">(<tt>Any</tt>)</span></li><li><span class="name">type </span><span class="type">(<tt>Any</tt>)</span></li><li><span class="name">ensure </span><span class="type">(<tt>Any</tt>)</span><tt> => 'present'</tt></li><li><span class="name">filename </span><span class="type">(<tt>String</tt>)</span><tt> => undef</tt> - <div class="inline"><p> install from this file, not from RubyGems. </p></div></li>
+    <li><span class="name">source </span><span class="type">(<tt>String</tt>)</span><tt> => undef</tt> - <div class="inline"><p> install from this file, not from RubyGems. </p></div></li><li><span class="name">ensure </span><span class="type">(<tt>Any</tt>)</span><tt> => present</tt></li>
   </ul>
 </div>
 </div>
 
     <div id="footer">
-  Generated on Wed Apr 27 09:48:40 2016 by
+  Generated on Fri Apr 29 14:30:48 2016 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.8.7.6 (ruby-2.1.8).
+  0.8.7.6 (ruby-1.9.3).
 </div>
 
   </body>

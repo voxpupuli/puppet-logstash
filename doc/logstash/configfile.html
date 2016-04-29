@@ -126,27 +126,27 @@ concatenated.</p>
 
 <h3 id="label-Examples">Examples</h3>
 
-<pre class="code ruby"><code class="ruby">Set config file content with a literal value:
+<pre class="ruby"><span class="ruby-constant">Set</span> <span class="ruby-identifier">config</span> <span class="ruby-identifier">file</span> <span class="ruby-identifier">content</span> <span class="ruby-identifier">with</span> <span class="ruby-identifier">a</span> <span class="ruby-identifier">literal</span> <span class="ruby-identifier">value</span><span class="ruby-operator">:</span>
 
-logstash::configfile { &#39;apache&#39;:
-  content =&gt; &quot;&quot;,
-  order   =&gt; 10
+<span class="ruby-identifier">logstash</span><span class="ruby-operator">::</span><span class="ruby-identifier">configfile</span> { <span class="ruby-string">'apache'</span><span class="ruby-operator">:</span>
+  <span class="ruby-identifier">content</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">&quot;&quot;</span>,
+  <span class="ruby-identifier">order</span>   =<span class="ruby-operator">&gt;</span> <span class="ruby-value">10</span>
 }
 
-or with a puppet file source:
+<span class="ruby-keyword">or</span> <span class="ruby-identifier">with</span> <span class="ruby-identifier">a</span> <span class="ruby-identifier">puppet</span> <span class="ruby-identifier">file</span> <span class="ruby-identifier">source</span><span class="ruby-operator">:</span>
 
-logstash::configfile { &#39;apache&#39;:
-  source =&gt; &#39;puppet://path/to/apache.conf&#39;,
-  order  =&gt; 10
+<span class="ruby-identifier">logstash</span><span class="ruby-operator">::</span><span class="ruby-identifier">configfile</span> { <span class="ruby-string">'apache'</span><span class="ruby-operator">:</span>
+  <span class="ruby-identifier">source</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">'puppet://path/to/apache.conf'</span>,
+  <span class="ruby-identifier">order</span>  =<span class="ruby-operator">&gt;</span> <span class="ruby-value">10</span>
 }
 
-or with template (useful with Hiera):
+<span class="ruby-keyword">or</span> <span class="ruby-identifier">with</span> <span class="ruby-identifier">template</span> (<span class="ruby-identifier">useful</span> <span class="ruby-identifier">with</span> <span class="ruby-constant">Hiera</span>)<span class="ruby-operator">:</span>
 
-logstash::configfile { &#39;apache&#39;:
-  template =&gt; &quot;${module_name}/path/to/apache.conf.erb&quot;,
-  order   =&gt; 10
+<span class="ruby-identifier">logstash</span><span class="ruby-operator">::</span><span class="ruby-identifier">configfile</span> { <span class="ruby-string">'apache'</span><span class="ruby-operator">:</span>
+  <span class="ruby-identifier">template</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">&quot;${module_name}/path/to/apache.conf.erb&quot;</span>,
+  <span class="ruby-identifier">order</span>   =<span class="ruby-operator">&gt;</span> <span class="ruby-value">10</span>
 }
-</code></pre>
+</pre>
 
 <h3 id="label-Authors">Authors</h3>
 <ul><li>
@@ -170,9 +170,9 @@ href="mailto:richard.pijnenburg@elasticsearch.com">richard.pijnenburg@elasticsea
 </div>
 
     <div id="footer">
-  Generated on Wed Apr 27 09:48:40 2016 by
+  Generated on Fri Apr 29 14:30:48 2016 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.8.7.6 (ruby-2.1.8).
+  0.8.7.6 (ruby-1.9.3).
 </div>
 
   </body>

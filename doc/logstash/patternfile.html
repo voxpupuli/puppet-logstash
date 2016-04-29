@@ -127,17 +127,17 @@ name Value type is string This variable is optional</p>
 
 <h3 id="label-Examples">Examples</h3>
 
-<pre class="code ruby"><code class="ruby">logstash::patternfile { &#39;mypattern&#39;:
-  source =&gt; &#39;puppet:///path/to/my/custom/pattern&#39;
+<pre class="ruby"><span class="ruby-identifier">logstash</span><span class="ruby-operator">::</span><span class="ruby-identifier">patternfile</span> { <span class="ruby-string">'mypattern'</span><span class="ruby-operator">:</span>
+  <span class="ruby-identifier">source</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">'puppet:///path/to/my/custom/pattern'</span>
 }
 
-or wil an other actual file name
+<span class="ruby-keyword">or</span> <span class="ruby-identifier">wil</span> <span class="ruby-identifier">an</span> <span class="ruby-identifier">other</span> <span class="ruby-identifier">actual</span> <span class="ruby-identifier">file</span> <span class="ruby-identifier">name</span>
 
-logstash::patternfile { &#39;mypattern&#39;:
-  source   =&gt; &#39;puppet:///path/to/my/custom/pattern_v1&#39;,
-  filename =&gt; &#39;custom_pattern&#39;
+<span class="ruby-identifier">logstash</span><span class="ruby-operator">::</span><span class="ruby-identifier">patternfile</span> { <span class="ruby-string">'mypattern'</span><span class="ruby-operator">:</span>
+  <span class="ruby-identifier">source</span>   =<span class="ruby-operator">&gt;</span> <span class="ruby-string">'puppet:///path/to/my/custom/pattern_v1'</span>,
+  <span class="ruby-identifier">filename</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">'custom_pattern'</span>
 }
-</code></pre>
+</pre>
 
 <h3 id="label-Authors">Authors</h3>
 <ul><li>
@@ -163,9 +163,9 @@ href="mailto:richard.pijnenburg@elasticsearch.com">richard.pijnenburg@elasticsea
 </div>
 
     <div id="footer">
-  Generated on Wed Apr 27 09:48:40 2016 by
+  Generated on Fri Apr 29 14:30:48 2016 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.8.7.6 (ruby-2.1.8).
+  0.8.7.6 (ruby-1.9.3).
 </div>
 
   </body>
