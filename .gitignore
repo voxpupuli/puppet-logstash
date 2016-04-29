@@ -3,6 +3,7 @@ spec/fixtures/artifacts/*
 !spec/fixtures/artifacts/.gitignore
 spec/fixtures/modules/*
 !spec/fixtures/modules/logstash
+files/*.gem
 .bundle
 .vendor
 .vagrant

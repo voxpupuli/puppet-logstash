@@ -22,12 +22,14 @@ gem 'rspec', '~> 3.0'
 gem 'rake'
 gem 'puppet-doc-lint'
 gem 'puppet-lint'
+gem 'puppet-strings'
 gem 'puppetlabs_spec_helper'
 gem 'puppet-syntax'
 gem 'rspec-puppet-facts'
 gem 'rubocop'
 gem 'serverspec'
 gem 'webmock'
+gem 'redcarpet'
 
 # Extra Puppet-lint gems
 gem 'puppet-lint-appends-check', :require => false

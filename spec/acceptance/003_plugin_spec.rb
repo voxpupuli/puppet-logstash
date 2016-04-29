@@ -23,8 +23,15 @@ describe 'class plugin' do
   end
 
   def remove(plugin)
-    stop_logstash
     shell("/opt/logstash/bin/plugin uninstall #{plugin} || true")
+  end
+
+  before(:all) do
+    install_logstash
+  end
+
+  before(:each) do
+    stop_logstash
   end
 
   context 'when output-csv is not installed' do
@@ -61,7 +68,15 @@ describe 'class plugin' do
 
   it 'can install a plugin from a local gem' do
     plugin = 'logstash-output-cowsay'
-    ensure_plugin('present', plugin, "source => '/tmp/#{plugin}-0.1.0.gem'")
+    source = "/tmp/#{plugin}-0.1.0.gem"
+    ensure_plugin('present', plugin, "source => '#{source}'")
+    expect(installed_plugins).to contain(plugin)
+  end
+
+  it 'can install a plugin from a "puppet://" url' do
+    plugin = 'logstash-output-cowthink'
+    source = "puppet:///modules/logstash/#{plugin}-0.1.0.gem"
+    ensure_plugin('present', plugin, "source => '#{source}'")
     expect(installed_plugins).to contain(plugin)
   end
 end

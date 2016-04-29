@@ -118,6 +118,9 @@ hosts.each do |host|
   # Provide a Logstash plugin as a local Gem.
   scp_to(host, './spec/fixtures/plugins/logstash-output-cowsay-0.1.0.gem', '/tmp/')
 
+  # ...and another plugin that can be fetched from Puppet with "puppet:///"
+  FileUtils.cp('./spec/fixtures/plugins/logstash-output-cowthink-0.1.0.gem', './files/')
+
   project_root = File.dirname(File.dirname(__FILE__))
   install_dev_puppet_module_on(host, source: project_root, module_name: 'logstash')
   install_puppet_module_via_pmt_on(host, module_name: 'puppetlabs-stdlib')

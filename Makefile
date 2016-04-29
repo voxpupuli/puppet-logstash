@@ -1,6 +1,8 @@
 #	opensuse-121 \
 #       sles-11sp3 \
 
+default: deps lint test-unit docs
+
 distros = \
 	centos-6 \
 	centos-7 \
@@ -20,6 +22,9 @@ puppet-module-deps:
 	  bundle exec puppet module install --target-dir spec/fixtures/modules --force $$m ; \
 	done
 	touch spec/fixtures/manifests/site.pp
+
+docs:
+	bundle exec puppet strings
 
 lint:
 	bundle exec rake lint
