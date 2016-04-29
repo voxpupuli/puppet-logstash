@@ -27,6 +27,7 @@ script:
 
 env:
   global:
+    - TRAVIS_CI=true
     - LOGSTASH_VERSION=1.5.6
     - BEAKER_PE_DIR=spec/fixtures/artifacts
   matrix:

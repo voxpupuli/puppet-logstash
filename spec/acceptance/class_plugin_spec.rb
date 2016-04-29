@@ -32,35 +32,38 @@ describe 'class plugin' do
     stop_logstash
   end
 
-  context 'when a plugin is not installed' do
-    before(:each) do
-      remove('logstash-output-csv')
+  unless ENV['TRAVIS_CI']
+    # These tests are inexplicably, maddeningly slow under Travis CI.
+    context 'when a plugin is not installed' do
+      before(:each) do
+        remove('logstash-output-csv')
+      end
+
+      it 'will not remove it again' do
+        log = ensure_plugin('absent', 'logstash-output-csv').stdout
+        expect(log).to_not contain('remove-logstash-output-csv')
+      end
+
+      it 'can install it from rubygems' do
+        ensure_plugin('present', 'logstash-output-csv')
+        expect(installed_plugins).to contain('logstash-output-csv')
+      end
     end
 
-    it 'will not remove it again' do
-      log = ensure_plugin('absent', 'logstash-output-csv').stdout
-      expect(log).to_not contain('remove-logstash-output-csv')
-    end
+    context 'when a plugin is installed' do
+      before(:each) do
+        expect(installed_plugins).to contain('logstash-input-file')
+      end
 
-    it 'can install it from rubygems' do
-      ensure_plugin('present', 'logstash-output-csv')
-      expect(installed_plugins).to contain('logstash-output-csv')
-    end
-  end
+      it 'will not install it again' do
+        log = ensure_plugin('present', 'logstash-input-file').stdout
+        expect(log).to_not contain('install-logstash-input-file')
+      end
 
-  context 'when a plugin is installed' do
-    before(:each) do
-      expect(installed_plugins).to contain('logstash-input-file')
-    end
-
-    it 'will not install it again' do
-      log = ensure_plugin('present', 'logstash-input-file').stdout
-      expect(log).to_not contain('install-logstash-input-file')
-    end
-
-    it 'can remove it' do
-      ensure_plugin('absent', 'logstash-input-file')
-      expect(installed_plugins).not_to contain('logstash-input-file')
+      it 'can remove it' do
+        ensure_plugin('absent', 'logstash-input-file')
+        expect(installed_plugins).not_to contain('logstash-input-file')
+      end
     end
   end
 
