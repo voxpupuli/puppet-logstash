@@ -21,15 +21,8 @@ This overview shows you which Puppet module and Logstash version work together.
     ------------------------------------
     | 0.5.0 - 0.5.1 | 1.4.1 - 1.4.2    |
     ------------------------------------
-
-## Important notes
-
-### 0.4.0
-
-Please note that this a **backwards compatability breaking release**: in particular, the *[plugin](#Plugins)* syntax system has been removed entirely in favour of config files.
-
-If you need any help please see the [support](#Support) section.
-
+    | 0.6.0 - 0.6.x | 1.5.0 - 1.5.x    |
+    ------------------------------------
 
 ## Requirements
 
@@ -41,89 +34,129 @@ Optional:
 * The [apt](https://forge.puppetlabs.com/puppetlabs/apt) Puppet library when using repo management on Debian/Ubuntu.
 * The [zypprepo](https://forge.puppetlabs.com/darin/zypprepo) Puppet library when using repo management on SLES/SuSE
 
-## Usage Examples
+## Quick Start
 
-The minimum viable configuration ensures that the service is running and that it will be started at boot time:
-**N.B.** you will still need to supply a configuration.
+This minimum viable configuration ensures that the service is running and that it will be started at boot time.
 
-     class { 'logstash': }
+``` puppet
+class { 'logstash':
+  manage_repo  => true,
+  java_install => true,
+}
 
-Specify a particular package (version) to be installed:
+#It is essential to provide valid a Logstash configuration file for the daemon to start.
+logstash::configfile { 'my_ls_config':
+  content => template('path/to/config.file')
+}
+```
 
-     class { 'logstash':
-       version => '1.3.3-1_centos'
-     }
+## More Options
+### Disable Java installation
+This module can install Java for you, buy if you already manage Java, then
+feel free to tell it not to mess with your Java install:
 
-In the absense of an appropriate package for your environment it is possible to install from other sources as well.
+``` puppet
+class { 'logstash'
+  manage_repo => true,
+}
+```
 
-http/https/ftp source:
+### Inline Logstash config
+For simple cases, it's possible to provide your Logstash config as an
+inline string:
 
-     class { 'logstash':
-       package_url => 'http://download.elasticsearch.org/logstash/logstash/packages/centos/logstash-1.3.3-1_centos.noarch.rpm'
-     }
+``` puppet
+logstash::configfile { 'basic_ls_config':
+  content => 'input { tcp { port => 2000 } } output { null {} }',
+}
+```
 
-`puppet://` source:
+### Choosing a logstash minor version
 
-     class { 'logstash':
-       package_url => 'puppet:///path/to/logstash-1.3.3-1_centos.noarch.rpm'
-     }
+``` puppet
+class { 'logstash':
+  manage_repo => true,
+  repo_version => '1.4'
+}
+```
 
-Local file source:
+### Using an explicit package source
+Rather than use your distribution's repository system, you can specify an
+explicit package to fetch and install.
 
-     class { 'logstash':
-       package_url => 'file:/path/to/logstash-1.3.3-1_centos.noarch.rpm'
-     }
+#### From an HTTP/HTTPS/FTP URL
+``` puppet
+class { 'logstash':
+  package_url => 'http://download.elasticsearch.org/logstash/logstash/packages/centos/logstash-1.3.3-1_centos.noarch.rpm'
+}
+```
 
-Attempt to upgrade Logstash if a newer package is detected (`false` by default):
+#### From a 'puppet://' URL
+``` puppet
+class { 'logstash':
+  package_url => 'puppet:///modules/my_module/logstash-1.3.3-1_centos.noarch.rpm'
+}
+```
 
-     class { 'logstash':
-       autoupgrade => true
-     }
+#### From a local file on the agent
+``` puppet
+class { 'logstash':
+  package_url => 'file:///tmp/logstash-1.3.3-1_centos.noarch.rpm'
+}
+```
 
-Install everything but *disable* the service (useful for pre-configuring systems):
+### Allow automatic point-release upgrades
+``` puppet
+class { 'logstash':
+  manage_repo  => true,
+  repo_version => '1.5',
+  autoupgrade  => true,
+}
+```
 
-     class { 'logstash':
-       status => 'disabled'
-     }
+### Do not run as a daemon
+``` puppet
+class { 'logstash':
+  status => 'disabled'
+}
+```
 
+### Disable automatic restarts
 Under normal circumstances a modification to the Logstash configuration will trigger a restart of the service. This behaviour can be disabled:
+``` puppet
+class { 'logstash':
+  restart_on_change => false
+}
+```
 
-     class { 'logstash':
-       restart_on_change => false
-     }
+### Disable and remove Logstash
 
-Disable and remove Logstash entirely:
+``` puppet
+class { 'logstash':
+  ensure => 'absent'
+}
+```
 
-     class { 'logstash':
-       ensure => 'absent'
-     }
+## Plugin management
 
-## Contrib package installation
+### Installing by name (from RubyGems.org)
+``` puppet
+logstash::plugin { 'logstash-input-beats': }
+```
 
-As of Logstash 1.4.0 plugins have been split into 2 packages.
-To install the contrib package:
+### Installing from a local Gem
+``` puppet
+logstash::plugin { 'logstash-input-custom':
+  source => '/tmp/logstash-input-custom-0.1.0.gem',
+}
+```
 
-via the repository:
-
-     class { 'logstash':
-       install_contrib => true
-     }
-
-via contrib_package_url:
-
-     class { 'logstash':
-       install_contrib => true,
-       contrib_package_url => 'http://download.elasticsearch.org/logstash/logstash/packages/centos/logstash-contrib-1.4.0-1_centos.noarch.rpm'
-     }
-
-with a version specified:
-
-     class { 'logstash':
-       install_contrib => true,
-       contrib_version => '1.4.0'
-     }
-
-
+### Installing from a 'puppet://' URL
+``` puppet
+logstash::plugin { 'logstash-filter-custom':
+  source => 'puppet:///modules/my_ls_module/logstash-filter-custom-0.1.0.gem',
+}
+```
 
 ## Configuration Overview
 
