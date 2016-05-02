@@ -7,7 +7,7 @@ describe 'puppet' do
 
   it "should be version: #{desired_version}" do
     actual_version = shell('puppet --version').stdout.chomp
-    expect(actual_version).to match(/^#{desired_version}/)
+    expect(actual_version).to contain(desired_version)
   end
 end
 
