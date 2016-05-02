@@ -59,7 +59,7 @@ class { 'logstash':
 }
 ```
 
-#### Using an explicit package source
+### Using an explicit package source
 Rather than use your distribution's repository system, you can specify an
 explicit package to fetch and install.
 
