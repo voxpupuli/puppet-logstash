@@ -263,7 +263,7 @@ The *defaults* file (`/etc/defaults/logstash` or `/etc/sysconfig/logstash`) for 
 ### File source
 ``` puppet
 class { 'logstash':
-  init_defaults_file => 'puppet:///path/to/defaults'
+  init_defaults_file => 'puppet:///path/to/defaults',
 }
 ```
 
@@ -275,7 +275,7 @@ $config_hash = {
 }
 
 class { 'logstash':
-  init_defaults => $config_hash
+  init_defaults => $config_hash,
 }
 ```
 
