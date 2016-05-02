@@ -15,7 +15,7 @@ shell_script = <<-END
     done
   fi
 
-  puppet apply /vagrant/spec/fixtures/manifests/install_logstash.pp
+  puppet apply -e 'class {"logstash": manage_repo => true, java_install => true}'
   END
 
 module_root = '/etc/puppetlabs/code/environments/production/modules/logstash'
