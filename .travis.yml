@@ -1,5 +1,11 @@
 sudo: required
 
+# Use Travis' Ubuntu Trusty machines. They have more RAM.
+# It does not affect which OSs we are testing, since they all provided
+# by Docker containers. This simply defines which OS Docker itself will
+# be running on.
+dist: trusty
+
 services:
   - docker
 
@@ -8,14 +14,21 @@ language: ruby
 rvm:
   - 1.9.3
 
-
 script:
- - make test-unit
- - bundle exec rake beaker
+  # Some of our test can take long time, and not output anything while they
+  # are running. If this goes on for too long (ten minutes), then Travis
+  # will assume the build has stalled, and kill it.
+  #
+  # It' a bit cheeky, but lets make sure that _something_ goes to STDOUT
+  # every five minutes, so that our build won't be killed unjustly.
+  - (while true; do date --iso-8601=seconds; sleep 300; done) &
+  - bundle exec rake beaker 2>&1 | grep -Fv 'localhost $ scp /tmp/beaker'
+  #                         ^ filter out annoying debug lines from Beaker.
 
 env:
   global:
-    - LOGSTASH_VERSION=1.4.5
+    - TRAVIS_CI=true
+    - LOGSTASH_VERSION=1.5.6
     - BEAKER_PE_DIR=spec/fixtures/artifacts
   matrix:
     - PUPPET_VERSION=3.2.4 BEAKER_set=centos-6

@@ -3,9 +3,6 @@ require 'net/http'
 require 'pry'
 require 'securerandom'
 
-files_dir = './spec/fixtures/artifacts'
-
-
 # Collect global options from the environment.
 if ENV['LOGSTASH_VERSION'].nil?
   raise 'Please set the LOGSTASH_VERSION environment variable.'
@@ -17,6 +14,11 @@ PE_VERSION = ENV['BEAKER_PE_VER'] || ENV['PE_VERSION'] || '3.8.3'
 PE_DIR = ENV['BEAKER_PE_DIR']
 
 REPO_VERSION = LS_VERSION[0..(LS_VERSION.rindex('.') - 1)] # "1.5.3-1" -> "1.5"
+
+def apply_manifest_fixture(manifest_name)
+  manifest = File.read("./spec/fixtures/manifests/#{manifest_name}.pp")
+  apply_manifest(manifest, catch_failures: true)
+end
 
 # Package naming is not super-consistent for early versions, so we
 # need to explicitly provide URLs for the ones that we can't construct
@@ -50,19 +52,93 @@ def logstash_package_filename
   File.basename(logstash_package_url)
 end
 
+def logstash_config_manifest
+  <<-END
+  logstash::configfile { 'basic_config':
+    content => 'input { tcp { port => 2000 } } output { null {} }'
+  }
+  END
+end
+
+def install_logstash_manifest(extra_args = nil)
+  <<-END
+  class { 'logstash':
+    manage_repo => true,
+    repo_version => '#{REPO_VERSION}',
+    java_install => true,
+    #{extra_args if extra_args}
+  }
+
+  #{logstash_config_manifest}
+  END
+end
+
+def install_logstash_from_local_file_manifest(extra_args = nil)
+  <<-END
+  class { 'logstash':
+    package_url => 'file:/tmp/#{logstash_package_filename}',
+    java_install => true,
+    #{extra_args if extra_args}
+  }
+
+  #{logstash_config_manifest}
+  END
+end
+
+def remove_logstash_manifest
+  <<-END
+  class { 'logstash':
+    ensure => absent,
+  }
+  END
+end
+
+def stop_logstash_manifest
+  <<-END
+  service { 'logstash':
+    ensure => stopped,
+    enable => false,
+  }
+  END
+end
+
+# Provided a basic Logstash install. Useful as a testing pre-requisite.
+def install_logstash(extra_args = nil)
+  apply_manifest(install_logstash_manifest(extra_args), catch_failures: true)
+end
+
+def install_logstash_from_local_file(extra_args = nil)
+  manifest = install_logstash_from_local_file_manifest(extra_args)
+  apply_manifest(manifest, catch_failures: true)
+end
+
+def remove_logstash
+  apply_manifest(remove_logstash_manifest)
+end
+
+def stop_logstash
+  apply_manifest(stop_logstash_manifest, catch_failures: true)
+  shell('ps -eo comm | grep java | xargs kill -9', accept_all_exit_codes: true)
+end
+
+def logstash_process_list
+  ps_cmd = 'ps --no-headers -C java -o user,command | grep logstash/runner.rb'
+  shell(ps_cmd, accept_all_exit_codes: true).stdout.split("\n")
+end
+
 def pe_package_url
   distro, distro_version = ENV['BEAKER_set'].split('-')
   case distro
-    when 'debian'
-      os = 'debian'
-      arch = 'amd64'
-    when 'centos'
-      os = 'el'
-      arch = 'x86_64'
-    when 'ubuntu'
-      os = 'ubuntu'
-      arch = 'amd64'
-    end
+  when 'debian'
+    os = 'debian'
+    arch = 'amd64'
+  when 'centos'
+    os = 'el'
+    arch = 'x86_64'
+  when 'ubuntu'
+    os = 'ubuntu'
+    arch = 'amd64'
+  end
   url_root = "https://s3.amazonaws.com/pe-builds/released/#{PE_VERSION}"
   url = "#{url_root}/puppet-enterprise-#{PE_VERSION}-#{os}-#{distro_version}-#{arch}.tar.gz"
 end
@@ -101,7 +177,19 @@ hosts.each do |host|
   on host, 'apt-get update' if fact('osfamily') == 'Debian'
 
   # Aquire a binary package of Logstash.
-  on host, "wget #{logstash_package_url} -O /tmp/#{logstash_package_filename}"
+  logstash_download = "spec/fixtures/artifacts/#{logstash_package_filename}"
+  `curl -s -o #{logstash_download} #{logstash_package_url}` unless File.exist?(logstash_download)
+  # ...send it to the test host
+  scp_to(host, logstash_download, '/tmp/')
+  # ...and also make it available as a "puppet://" url, by putting it in the
+  # 'files' directory of the Logstash module.
+  FileUtils.cp(logstash_download, './files/')
+
+  # Provide a Logstash plugin as a local Gem.
+  scp_to(host, './spec/fixtures/plugins/logstash-output-cowsay-0.1.0.gem', '/tmp/')
+
+  # ...and another plugin that can be fetched from Puppet with "puppet:/"
+  FileUtils.cp('./spec/fixtures/plugins/logstash-output-cowthink-0.1.0.gem', './files/')
 
   project_root = File.dirname(File.dirname(__FILE__))
   install_dev_puppet_module_on(host, source: project_root, module_name: 'logstash')
@@ -112,7 +200,6 @@ hosts.each do |host|
 end
 
 RSpec.configure do |c|
-
   # Readable test descriptions
   c.formatter = :documentation
   c.color = true

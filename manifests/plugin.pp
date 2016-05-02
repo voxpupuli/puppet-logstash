@@ -1,96 +1,86 @@
-# == Define: logstash::plugin
+# Manage the installation of a Logstash plugin.
 #
-# This define allows you to transport custom plugins to the Logstash instance
+# By default, plugins are downloaded from RubyGems, but it is also possible
+# to install from a local Gem, or one stored in Puppet.
 #
-# All default values are defined in the logstashc::params class.
+# @example install a plugin
+#   logstash::plugin { 'logstash-input-stdin': }
 #
+# @example remove a plugin
+#   logstash::plugin { 'logstash-input-stout':
+#     ensure => absent,
+#   }
 #
-# === Parameters
+# @example install a plugin from a local file
+#   logstash::plugin { 'logstash-input-custom':
+#     source => 'file:///tmp/logstash-input-custom.gem',
+#   }
 #
-# [*ensure*]
-#   String. Controls if the managed resources shall be <tt>present</tt> or
-#   <tt>absent</tt>. If set to <tt>absent</tt>:
-#   * The managed software packages are being uninstalled.
-#   * Any traces of the packages will be purged as good as possible. This may
-#     include existing configuration files. The exact behavior is provider
-#     dependent. Q.v.:
-#     * Puppet type reference: {package, "purgeable"}[http://j.mp/xbxmNP]
-#     * {Puppet's package provider source code}[http://j.mp/wtVCaL]
-#   * System modifications (if any) will be reverted as good as possible
-#     (e.g. removal of created users, services, changed log settings, ...).
-#   * This is thus destructive and should be used with care.
-#   Defaults to <tt>present</tt>.
+# @example install a plugin from a Puppet module.
+#   logstash::plugin { 'logstash-input-custom':
+#     source => 'puppet:///modules/logstash-site-plugins/logstash-input-custom.gem',
+#   }
 #
-# [*source*]
-#   Puppet file resource of the plugin file ( puppet:// )
-#   Value type is string
-#   Default value: None
-#   This variable is required
-#
-# [*type*]
-#   plugin type, can be 'input', 'output,' filter' or 'codec'.
-#   Value type is string
-#   Default value: None
-#   This variable is required
-#
-# [*filename*]
-#   if you would like the actual file name to be different then the source file name
-#   Value type is string
-#   This variable is optional
-#
-#
-# === Examples
-#
-#     logstash::plugin { 'myplugin':
-#       ensure => 'present',
-#       type   => 'input',
-#       source => 'puppet:///path/to/my/custom/plugin.rb'
-#     }
-#
-#     or wil an other actual file name
-#
-#     logstash::plugin { 'myplugin':
-#       ensure   => 'present',
-#       type     => 'output',
-#       source   => 'puppet:///path/to/my/custom/plugin_v1.rb',
-#       filename => 'plugin.rb'
-#     }
-#
-#
-# === Authors
-#
-# * Richard Pijnenburg <mailto:richard.pijnenburg@elasticsearch.com>
+# @param source [String] install from this file, not from RubyGems.
 #
 define logstash::plugin (
-  $source,
-  $type,
-  $ensure = 'present',
-  $filename = undef,
-){
+  $source = undef,
+  $ensure = present,
+)
+{
+  require logstash
+  $exe = '/opt/logstash/bin/plugin'
 
-  validate_re($source, '^(puppet|file)://', 'Source must be either from a puppet fileserver or a locally accessible file (begins with either puppet:// or file://)' )
+  case $source { # Where should we get the plugin from?
+    undef: {
+      # No explict source, so search Rubygems for the plugin, by name.
+      # ie. "/opt/logstash/bin/plugin install logstash-output-elasticsearch"
+      $plugin = $name
+    }
 
-  if ! ($ensure in [ 'present', 'absent' ]) {
-    fail("\"${ensure}\" is not a valid ensure parameter value")
+    /^\//: {
+      # A gem file that is already available on the local filesystem.
+      # Install from the local path.
+      # ie. "/opt/logstash/bin/plugin install /tmp/logtash-filter-custom.gem"
+      $plugin = $source
+    }
+
+    /^puppet:/: {
+      # A 'puppet:///' URL. Download the gem from Puppet, then install
+      # the plugin from the downloaded file.
+      $downloaded_file = sprintf('/tmp/%s', basename($source))
+      file { $downloaded_file:
+        source => $source,
+        before => Exec["install-${name}"],
+      }
+      $plugin = $downloaded_file
+    }
+
+    default: {
+      fail('"source" should be a local path, a "puppet:///" url, or undef.')
+    }
   }
 
-  if ! ($type in [ 'input', 'output', 'filter', 'codec' ]) {
-    fail("\"${ensure}\" is not a valid ensure parameter value")
+  case $ensure {
+    'present': {
+      exec { "install-${name}":
+        command => "${exe} install ${plugin}",
+        unless  => "${exe} list | grep -q ^${name}$",
+        timeout => 1800,
+      }
+    }
+
+    'absent': {
+      notify { "${exe} list | grep -q ^${name}$": } ->
+      exec { "remove-${name}":
+        command => "${exe} uninstall ${name}",
+        onlyif  => "${exe} list | grep -q ^${name}$",
+        timeout => 1800,
+      }
+    }
+
+    default: {
+      fail "'ensure' should be 'present' or 'absent'."
+    }
   }
-
-  $plugins_dir = "${logstash::configdir}/plugins"
-
-  $filename_real = $filename ? {
-    undef   => inline_template('<%= @source.split("/").last %>'),
-    default => $filename
-  }
-
-  file { "${plugins_dir}/logstash/${type}s/${filename_real}":
-    ensure => $ensure,
-    owner  => $logstash::logstash_user,
-    group  => $logstash::logstash_group,
-    mode   => '0440',
-    source => $source,
-  }
-
 }
