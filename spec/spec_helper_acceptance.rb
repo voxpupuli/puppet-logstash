@@ -76,7 +76,7 @@ end
 def install_logstash_from_local_file_manifest(extra_args = nil)
   <<-END
   class { 'logstash':
-    package_url => 'file:/tmp/#{logstash_package_filename}',
+    package_url => 'file:///tmp/#{logstash_package_filename}',
     java_install => true,
     #{extra_args if extra_args}
   }
@@ -102,27 +102,27 @@ def stop_logstash_manifest
   END
 end
 
-# Provided a basic Logstash install. Useful as a testing pre-requisite.
+# Provide a basic Logstash install. Useful as a testing pre-requisite.
 def install_logstash(extra_args = nil)
   apply_manifest(install_logstash_manifest(extra_args), catch_failures: true)
-  sleep 3 # FIXME: This is horrible.
+  sleep 5 # FIXME: This is horrible.
 end
 
 def install_logstash_from_local_file(extra_args = nil)
   manifest = install_logstash_from_local_file_manifest(extra_args)
   apply_manifest(manifest, catch_failures: true)
-  sleep 3 # FIXME: This is horrible.
+  sleep 5 # FIXME: This is horrible.
 end
 
 def remove_logstash
   apply_manifest(remove_logstash_manifest)
-  sleep 1 # FIXME: This is horrible.
+  sleep 5 # FIXME: This is horrible.
 end
 
 def stop_logstash
   apply_manifest(stop_logstash_manifest, catch_failures: true)
   shell('ps -eo comm | grep java | xargs kill -9', accept_all_exit_codes: true)
-  sleep 1 # FIXME: This is horrible.
+  sleep 5 # FIXME: This is horrible.
 end
 
 def logstash_process_list

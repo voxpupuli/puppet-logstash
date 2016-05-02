@@ -21,6 +21,7 @@ script:
   #
   # It' a bit cheeky, but lets make sure that _something_ goes to STDOUT
   # every five minutes, so that our build won't be killed unjustly.
+  - (while true; do date --iso-8601=seconds; sleep 300; done) &
   - bundle exec rake beaker
 
 env:
