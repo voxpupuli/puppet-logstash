@@ -42,3 +42,10 @@ $(distros):
 clean:
 	rm -f spec/fixtures/artifacts/logstash*
 	rm -f spec/fixtures/artifacts/puppet-enterprise*
+	rm -f files/*.deb
+	rm -f files/*.gem
+	rm -f files/*.rpm
+	rm -rf log
+
+release: clean
+	puppet module build
