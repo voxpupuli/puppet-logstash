@@ -1,3 +1,8 @@
+0.6.0
+  Deprecates the logstash-contrib package.
+  Supports Gem-based Logstash plugins.
+  Not compatible with Logstash versions < 1.5.0.
+
 0.5.1 ( May 15, 2014 )
   Updated system tests to work with LS 1.4.1
   Increase package download timeout
