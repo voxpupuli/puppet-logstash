@@ -46,7 +46,7 @@ class { 'logstash':
 
 #It is essential to provide valid a Logstash configuration file for the daemon to start.
 logstash::configfile { 'my_ls_config':
-  content => template('path/to/config.file')
+  content => template('path/to/config.file'),
 }
 ```
 
@@ -54,8 +54,8 @@ logstash::configfile { 'my_ls_config':
 ### Choosing a Logstash minor version
 ``` puppet
 class { 'logstash':
-  manage_repo => true,
-  repo_version => '1.4'
+  manage_repo  => true,
+  repo_version => '1.4',
 }
 ```
 
@@ -66,21 +66,21 @@ explicit package to fetch and install.
 #### From an HTTP/HTTPS/FTP URL
 ``` puppet
 class { 'logstash':
-  package_url => 'http://download.elasticsearch.org/logstash/logstash/packages/centos/logstash-1.3.3-1_centos.noarch.rpm'
+  package_url => 'http://download.elasticsearch.org/logstash/logstash/packages/centos/logstash-1.3.3-1_centos.noarch.rpm',
 }
 ```
 
 #### From a 'puppet://' URL
 ``` puppet
 class { 'logstash':
-  package_url => 'puppet:///modules/my_module/logstash-1.3.3-1_centos.noarch.rpm'
+  package_url => 'puppet:///modules/my_module/logstash-1.3.3-1_centos.noarch.rpm',
 }
 ```
 
 #### From a local file on the agent
 ``` puppet
 class { 'logstash':
-  package_url => 'file:///tmp/logstash-1.3.3-1_centos.noarch.rpm'
+  package_url => 'file:///tmp/logstash-1.3.3-1_centos.noarch.rpm',
 }
 ```
 
@@ -96,7 +96,7 @@ class { 'logstash':
 ### Do not run as a daemon
 ``` puppet
 class { 'logstash':
-  status => 'disabled'
+  status => 'disabled',
 }
 ```
 
@@ -104,14 +104,14 @@ class { 'logstash':
 Under normal circumstances a modification to the Logstash configuration will trigger a restart of the service. This behaviour can be disabled:
 ``` puppet
 class { 'logstash':
-  restart_on_change => false
+  restart_on_change => false,
 }
 ```
 
 ### Disable and remove Logstash
 ``` puppet
 class { 'logstash':
-  ensure => 'absent'
+  ensure => 'absent',
 }
 ```
 
@@ -122,13 +122,13 @@ The basic usage is identical in either case: simply declare a `file` attribute a
 
 ``` puppet
 logstash::configfile { 'configname':
-  content => template('path/to/config.file')
+  content => template('path/to/config.file'),
 }
 ```
 or
 ``` puppet
 logstash::configfile { 'configname':
-  source => 'puppet:///path/to/config.file'
+  source => 'puppet:///path/to/config.file',
 }
 ```
 
@@ -142,7 +142,7 @@ create_resources('logstash::configfile', $logstash_configs)
 ``` puppet
 "logstash_configs": {
   "config-name": {
-    "template": "logstash/config.file.erb"
+    "template": "logstash/config.file.erb",
   }
 }
 ```
@@ -153,17 +153,17 @@ To dynamically build a configuration, simply declare the `order` in which each s
 ``` puppet
 logstash::configfile { 'input_redis':
   template => 'logstash/input_redis.erb',
-  order    => 10
+  order    => 10,
 }
 
 logstash::configfile { 'filter_apache':
   source => 'puppet:///path/to/filter_apache',
-  order  => 20
+  order  => 20,
 }
 
 logstash::configfile { 'output_es':
-  template => 'logstash/output_es_cluster.erb'
-  order   => 30
+  template => 'logstash/output_es_cluster.erb',
+  order   => 30,
 }
 ```
 
@@ -184,7 +184,7 @@ Many plugins (notably [Grok](http://logstash.net/docs/latest/filters/grok)) use 
 
 ``` puppet
 logstash::patternfile { 'extra_patterns':
-  source => 'puppet:///path/to/extra_pattern'
+  source => 'puppet:///path/to/extra_pattern',
 }
 ```
 
@@ -192,7 +192,7 @@ By default the resulting filename of the pattern will match that of the source. 
 ``` puppet
 logstash::patternfile { 'extra_patterns_firewall':
   source   => 'puppet:///path/to/extra_patterns_firewall_v1',
-  filename => 'extra_patterns_firewall'
+  filename => 'extra_patterns_firewall',
 }
 ```
 
@@ -232,7 +232,7 @@ logstash::plugin { 'logstash-filter-custom':
 Most sites will manage Java seperately; however, this module can attempt to install Java as well.
 ``` puppet
 class { 'logstash':
-  java_install => true
+  java_install => true,
 }
 ```
 
@@ -250,7 +250,7 @@ Many sites will manage repositories seperately; however, this module can manage 
 ``` puppet
 class { 'logstash':
   manage_repo  => true,
-  repo_version => '1.4'
+  repo_version => '1.4',
 }
 ```
 
@@ -270,7 +270,7 @@ class { 'logstash':
 ### Hash representation
 ```puppet
 $config_hash = {
-  'LS_USER' => 'logstash',
+  'LS_USER'  => 'logstash',
   'LS_GROUP' => 'logstash',
 }
 
