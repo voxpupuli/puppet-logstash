@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/elastic/puppet-logstash.png?label=ready&title=Ready)](https://waffle.io/elastic/puppet-logstash)
 # puppet-logstash
 
 A Puppet module for managing and configuring [Logstash](http://logstash.net/).
