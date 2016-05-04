@@ -47,6 +47,10 @@ env:
     - PUPPET_VERSION=3.6.2 BEAKER_set=centos-7
     - PUPPET_VERSION=3.7.5 BEAKER_set=centos-7
     - PUPPET_VERSION=3.8.6 BEAKER_set=centos-7
+    - PUPPET_VERSION=4.0.0 BEAKER_set=centos-7
+    - PUPPET_VERSION=4.1.0 BEAKER_set=centos-7
+    - PUPPET_VERSION=4.2.3 BEAKER_set=centos-7
+    - PUPPET_VERSION=4.3.2 BEAKER_set=centos-7
     - PUPPET_VERSION=4.4.2 BEAKER_set=centos-7
 
     - PUPPET_VERSION=3.2.4 BEAKER_set=debian-7
