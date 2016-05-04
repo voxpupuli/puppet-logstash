@@ -10,11 +10,11 @@
   "dependencies": [
     {
       "name": "puppetlabs/stdlib",
-      "version_requirement": ">= 3.2.0"
+      "version_requirement": ">= 3.2.0 <5.0.0"
     },
     {
       "name": "electrical/file_concat",
-      "version_requirement": ">= 0.1.0"
+      "version_requirement": ">= 0.1.0 <2.0.0"
     }
   ],
   "operatingsystem_support": [
@@ -70,11 +70,11 @@
   "requirements": [
     {
       "name": "pe",
-      "version_requirement": ">= 3.2.0"
+      "version_requirement": ">= 3.2.0 <5.0.0"
     },
     {
       "name": "puppet",
-      "version_requirement": ">=3.2.0 <4.0.0"
+      "version_requirement": ">=3.2.0 <5.0.0"
     }
   ]
 }
