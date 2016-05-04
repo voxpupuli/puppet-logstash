@@ -179,7 +179,7 @@ hosts.each do |host|
       install_puppet_agent_on(host, puppet_agent_version: agent_version)
     else
       begin
-        install_puppet_on(host, version: PUPPET_VERSION, type: type)
+        install_puppet_on(host, version: PUPPET_VERSION)
       rescue
         install_puppet_from_gem_on(host, version: PUPPET_VERSION)
       end
