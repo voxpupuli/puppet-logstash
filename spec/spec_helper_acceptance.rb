@@ -163,10 +163,26 @@ hosts.each do |host|
     on host, "hostname #{host.name}"
     install_pe_on(host, pe_ver: PE_VERSION)
   else
-    begin
-      install_puppet_on(host, version: PUPPET_VERSION)
-    rescue
-      install_puppet_from_gem_on(host, version: PUPPET_VERSION)
+    if PUPPET_VERSION.start_with?('4.')
+      # If we want Puppet version 4.1.0, we can't just ask for it.
+      # We have to ask for Puppet _agent_ instead. And, we can't ask for Puppet
+      # Agent 4.1.0; we have to ask for version 1.1.0.
+      #
+      # So, in conclusion, to get Puppet version 4 or greater, you simply
+      # subtract 3 from the version you want, and ask for Puppet Agent
+      # instead.
+      #
+      # Wow.
+      #
+      # Just... wow.
+      agent_version = '1.' + PUPPET_VERSION[2..-1]
+      install_puppet_agent_on(host, puppet_agent_version: agent_version)
+    else
+      begin
+        install_puppet_on(host, version: PUPPET_VERSION, type: type)
+      rescue
+        install_puppet_from_gem_on(host, version: PUPPET_VERSION)
+      end
     end
   end
 
