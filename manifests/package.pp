@@ -76,19 +76,4 @@ class logstash::package {
     package_url => $logstash::package_url,
     version     => $logstash::version,
   }
-
-  if ($logstash::install_contrib == true) {
-
-    #class { 'logstash::package::contrib': }
-    logstash::package::install { 'logstash-contrib':
-      package_url => $logstash::contrib_package_url,
-      version     => $logstash::contrib_version,
-    }
-
-    # Ensure we install Core package before contrib
-    #Class['logstash::package::core'] -> Class['logstash::package::contrib']
-    Logstash::Package::Install['logstash'] -> Logstash::Package::Install['logstash-contrib']
-
-  }
-
 }
