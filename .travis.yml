@@ -37,6 +37,7 @@ env:
     - PUPPET_VERSION=3.6.2 BEAKER_set=centos-6
     - PUPPET_VERSION=3.7.5 BEAKER_set=centos-6
     - PUPPET_VERSION=3.8.6 BEAKER_set=centos-6
+    - PUPPET_VERSION=4.4.2 BEAKER_set=centos-6
     - PUPPET_VERSION=3.8.4 BEAKER_set=centos-6 BEAKER_PE_VER=3.8.4 BEAKER_IS_PE=true
 
     - PUPPET_VERSION=3.2.4 BEAKER_set=centos-7
@@ -46,6 +47,7 @@ env:
     - PUPPET_VERSION=3.6.2 BEAKER_set=centos-7
     - PUPPET_VERSION=3.7.5 BEAKER_set=centos-7
     - PUPPET_VERSION=3.8.6 BEAKER_set=centos-7
+    - PUPPET_VERSION=4.4.2 BEAKER_set=centos-7
 
     - PUPPET_VERSION=3.2.4 BEAKER_set=debian-7
     - PUPPET_VERSION=3.3.2 BEAKER_set=debian-7
@@ -54,6 +56,7 @@ env:
     - PUPPET_VERSION=3.6.2 BEAKER_set=debian-7
     - PUPPET_VERSION=3.7.5 BEAKER_set=debian-7
     - PUPPET_VERSION=3.8.6 BEAKER_set=debian-7
+    - PUPPET_VERSION=4.4.2 BEAKER_set=debian-7
     - PUPPET_VERSION=3.8.4 BEAKER_set=debian-7 BEAKER_PE_VER=3.8.4 BEAKER_IS_PE=true
 
     # 3.2 and 3.3 won't work on debian-8.
@@ -65,6 +68,7 @@ env:
     - PUPPET_VERSION=3.6.2 BEAKER_set=debian-8
     - PUPPET_VERSION=3.7.5 BEAKER_set=debian-8
     - PUPPET_VERSION=3.8.6 BEAKER_set=debian-8
+    - PUPPET_VERSION=4.4.2 BEAKER_set=debian-8
 
     # 3.2 and 3.3 won't work on opensuse-13
     # REF: https://github.com/puppetlabs/puppet/pull/2184
@@ -75,6 +79,7 @@ env:
     - PUPPET_VERSION=3.6.2 BEAKER_set=opensuse-13
     - PUPPET_VERSION=3.7.5 BEAKER_set=opensuse-13
     - PUPPET_VERSION=3.8.6 BEAKER_set=opensuse-13
+    - PUPPET_VERSION=4.4.2 BEAKER_set=opensuse-13
 
     - PUPPET_VERSION=3.2.4 BEAKER_set=ubuntu-1204
     - PUPPET_VERSION=3.3.2 BEAKER_set=ubuntu-1204
@@ -83,6 +88,7 @@ env:
     - PUPPET_VERSION=3.6.2 BEAKER_set=ubuntu-1204
     - PUPPET_VERSION=3.7.5 BEAKER_set=ubuntu-1204
     - PUPPET_VERSION=3.8.6 BEAKER_set=ubuntu-1204
+    - PUPPET_VERSION=4.4.2 BEAKER_set=ubuntu-1204
 
     - PUPPET_VERSION=3.2.4 BEAKER_set=ubuntu-1404
     - PUPPET_VERSION=3.3.2 BEAKER_set=ubuntu-1404
@@ -91,3 +97,4 @@ env:
     - PUPPET_VERSION=3.6.2 BEAKER_set=ubuntu-1404
     - PUPPET_VERSION=3.7.5 BEAKER_set=ubuntu-1404
     - PUPPET_VERSION=3.8.6 BEAKER_set=ubuntu-1404
+    - PUPPET_VERSION=4.4.2 BEAKER_set=ubuntu-1404
