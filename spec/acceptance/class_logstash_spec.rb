@@ -83,10 +83,12 @@ describe 'class logstash' do
     end
 
     it 'should be idempotent' do
-      if fact('lsbdistdescription') =~ /debian.*jessie/i
-        pending('https://github.com/elastic/puppet-logstash/issues/266')
+      it do
+        if fact('lsbdistdescription') =~ /debian.*jessie/i
+          pending('https://github.com/elastic/puppet-logstash/issues/266')
+        end
+        apply_manifest(remove_logstash_manifest, catch_changes: true)
       end
-      apply_manifest(remove_logstash_manifest, catch_changes: true)
     end
 
     describe package('logstash') do
