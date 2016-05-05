@@ -201,9 +201,11 @@ logstash::patternfile { 'extra_patterns_firewall':
 Example: If using 'grok' in one of your configurations, you must include the pattern path in each filter like this:
 
 ```
+# Note: this example is Logstash configuration, not a Puppet resource.
+# Logstash and Puppet look very similar!
 grok {
-      patterns_dir => "/etc/logstash/patterns/"
-      ...
+  patterns_dir => "/etc/logstash/patterns/"
+  ...
 }
 ```
 
