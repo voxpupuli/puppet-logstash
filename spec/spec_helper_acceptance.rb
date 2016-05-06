@@ -15,6 +15,26 @@ PE_DIR = ENV['BEAKER_PE_DIR']
 
 REPO_VERSION = LS_VERSION[0..(LS_VERSION.rindex('.') - 1)] # "1.5.3-1" -> "1.5"
 
+def agent_version_for_puppet_version(puppet_version)
+  # REF: https://docs.puppet.com/puppet/latest/reference/about_agent.html
+  version_map = {
+    # Puppet => Agent
+    '4.4.2' => '1.4.2',
+    '4.4.1' => '1.4.1',
+    '4.4.0' => '1.4.0',
+    '4.3.2' => '1.3.6',
+    '4.3.1' => '1.3.2',
+    '4.3.0' => '1.3.0',
+    '4.2.3' => '1.2.7',
+    '4.2.2' => '1.2.6',
+    '4.2.1' => '1.2.2',
+    '4.2.0' => '1.2.1',
+    '4.1.0' => '1.1.1',
+    '4.0.0' => '1.0.1'
+  }
+  version_map[puppet_version]
+end
+
 def apply_manifest_fixture(manifest_name)
   manifest = File.read("./spec/fixtures/manifests/#{manifest_name}.pp")
   apply_manifest(manifest, catch_failures: true)
@@ -164,18 +184,7 @@ hosts.each do |host|
     install_pe_on(host, pe_ver: PE_VERSION)
   else
     if PUPPET_VERSION.start_with?('4.')
-      # If we want Puppet version 4.1.0, we can't just ask for it.
-      # We have to ask for Puppet _agent_ instead. And, we can't ask for Puppet
-      # Agent 4.1.0; we have to ask for version 1.1.0.
-      #
-      # So, in conclusion, to get Puppet version 4 or greater, you simply
-      # subtract 3 from the version you want, and ask for Puppet Agent
-      # instead.
-      #
-      # Wow.
-      #
-      # Just... wow.
-      agent_version = '1.' + PUPPET_VERSION[2..-1]
+      agent_version = agent_version_for_puppet_version(PUPPET_VERSION)
       install_puppet_agent_on(host, puppet_agent_version: agent_version)
     else
       begin
