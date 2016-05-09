@@ -149,6 +149,6 @@ define logstash::service::init{
   # If any files tagged as config files for the service are changed, notify
   # the service so it restarts.
   if $::logstash::restart_on_change {
-    File<| tag == 'logstash_config' |> ~> Service [$name]
+    File<| tag == 'logstash_config' |> ~> Service[$name]
   }
 }
