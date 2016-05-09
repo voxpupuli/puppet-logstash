@@ -20,6 +20,10 @@ def apply_manifest_fixture(manifest_name)
   apply_manifest(manifest, catch_failures: true)
 end
 
+def expect_no_change_from_manifest(manifest)
+  expect(apply_manifest(manifest).exit_code).to eq(0)
+end
+
 # Package naming is not super-consistent for early versions, so we
 # need to explicitly provide URLs for the ones that we can't construct
 # correctly with simple string manipulation.
