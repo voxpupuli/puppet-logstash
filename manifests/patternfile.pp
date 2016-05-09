@@ -42,6 +42,7 @@ define logstash::patternfile (
   $source,
   $filename = undef,
 ){
+  include logstash
 
   validate_re($source, '^(puppet|file)://', 'Source must be either from a puppet fileserver or a locally accessible file (begins with either puppet:// or file://)' )
 
@@ -58,6 +59,7 @@ define logstash::patternfile (
     group  => $logstash::logstash_group,
     mode   => '0644',
     source => $source,
+    tag    => ['logstash_config'],
   }
 
 }

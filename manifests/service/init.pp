@@ -145,4 +145,10 @@ define logstash::service::init{
     pattern    => $logstash::params::service_pattern,
     provider   => $service_provider,
   }
+
+  # If any files tagged as config files for the service are changed, notify
+  # the service so it restarts.
+  if $::logstash::restart_on_change {
+    File<| tag == 'logstash_config' |> ~> Service [$name]
+  }
 }
