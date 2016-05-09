@@ -52,11 +52,17 @@ define logstash::patternfile (
     default => $filename
   }
 
+  $notify_service = $logstash::restart_on_change ? {
+    true  => Class['logstash::service'],
+    false => undef,
+  }
+
   file { "${patterns_dir}/${filename_real}":
     ensure => 'file',
     owner  => $logstash::logstash_user,
     group  => $logstash::logstash_group,
     mode   => '0644',
+    notify  => $notify_service,
     source => $source,
   }
 
