@@ -1,5 +1,6 @@
 HOSTS:
-  debian-7-x64:
+  debian-7:
+    roles: [agent, database, dashboard, master]
     platform: debian-7-amd64
     box: puppetlabs/debian-7.8-64-nocm
     hypervisor: vagrant
