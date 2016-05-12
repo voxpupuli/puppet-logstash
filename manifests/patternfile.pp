@@ -41,25 +41,23 @@
 define logstash::patternfile (
   $source,
   $filename = undef,
-){
-  include logstash
+)
+{
+  require logstash::config
 
   validate_re($source, '^(puppet|file)://', 'Source must be either from a puppet fileserver or a locally accessible file (begins with either puppet:// or file://)' )
-
-  $patterns_dir = "${logstash::configdir}/patterns"
 
   $filename_real = $filename ? {
     undef   => inline_template('<%= @source.split("/").last %>'),
     default => $filename
   }
 
-  file { "${patterns_dir}/${filename_real}":
-    ensure => 'file',
+  file { "${logstash::patterns_dir}/${filename_real}":
+    ensure => file,
+    source => $source,
     owner  => $logstash::logstash_user,
     group  => $logstash::logstash_group,
     mode   => '0644',
-    source => $source,
     tag    => ['logstash_config'],
   }
-
 }

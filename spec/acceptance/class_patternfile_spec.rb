@@ -11,7 +11,7 @@ describe 'class patternfile' do
         filename => 'the_only_pattern_file',
       }
       END
-    apply_manifest(manifest, catch_failures: true)
+    apply_manifest(manifest)
   end
 
   context 'with a pattern file in place' do
