@@ -14,6 +14,14 @@ describe 'class patternfile' do
     apply_manifest(manifest)
   end
 
+  context 'when declaring a pattern file' do
+    before(:context) { apply_pattern(0) }
+
+    it 'goes in the right location' do
+      expect('/etc/logstash/patterns/the_only_pattern_file').to be_a_file
+    end
+  end
+
   context 'with a pattern file in place' do
     before(:each) { apply_pattern(0) }
     restart_message = 'Scheduling refresh of Service[logstash]'
