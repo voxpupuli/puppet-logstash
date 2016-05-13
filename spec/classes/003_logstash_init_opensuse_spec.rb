@@ -24,17 +24,16 @@ describe 'logstash', :type => 'class' do
         it { should contain_class('logstash::service').that_requires('Class[logstash::package]').that_requires('Class[logstash::config]') }
 
         it { should contain_file('/etc/logstash') }
-        it { should contain_file('/etc/logstash/conf.d').with(:require => 'File[/etc/logstash]') }
-        it { should contain_file('/etc/logstash/patterns').with(:require => 'File[/etc/logstash]') }
-        it { should contain_file('/etc/logstash/plugins').with(:require => 'File[/etc/logstash]') }
-        it { should contain_file('/etc/logstash/plugins/logstash').with(:require => 'File[/etc/logstash]') }
-        it { should contain_file('/etc/logstash/plugins/logstash/inputs').with(:require => 'File[/etc/logstash]') }
-        it { should contain_file('/etc/logstash/plugins/logstash/outputs').with(:require => 'File[/etc/logstash]') }
-        it { should contain_file('/etc/logstash/plugins/logstash/filters').with(:require => 'File[/etc/logstash]') }
-        it { should contain_file('/etc/logstash/plugins/logstash/codecs').with(:require => 'File[/etc/logstash]') }
+        it { should contain_file('/etc/logstash/conf.d') }
+        it { should contain_file('/etc/logstash/patterns') }
+        it { should contain_file('/etc/logstash/plugins') }
+        it { should contain_file('/etc/logstash/plugins/logstash') }
+        it { should contain_file('/etc/logstash/plugins/logstash/inputs') }
+        it { should contain_file('/etc/logstash/plugins/logstash/outputs') }
+        it { should contain_file('/etc/logstash/plugins/logstash/filters') }
+        it { should contain_file('/etc/logstash/plugins/logstash/codecs') }
 
         it { should contain_file_concat('ls-config') }
-
       end
 
       context 'package installation' do
