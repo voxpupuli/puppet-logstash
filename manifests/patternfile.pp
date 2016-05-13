@@ -52,7 +52,7 @@ define logstash::patternfile (
     default => $filename
   }
 
-  file { "${logstash::patterns_dir}/${filename_real}":
+  file { "${logstash::patterndir}/${filename_real}":
     ensure => file,
     source => $source,
     owner  => $logstash::logstash_user,

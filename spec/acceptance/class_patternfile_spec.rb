@@ -14,6 +14,15 @@ describe 'class patternfile' do
     apply_manifest(manifest)
   end
 
+  context 'when declaring a pattern file' do
+    before(:context) { apply_pattern(0) }
+
+    describe file '/etc/logstash/patterns/the_only_pattern_file' do
+      it { should be_a_file }
+      its(:content) { should match(/GROK_PATTERN_0/) }
+    end
+  end
+
   context 'with a pattern file in place' do
     before(:each) { apply_pattern(0) }
     restart_message = 'Scheduling refresh of Service[logstash]'

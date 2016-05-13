@@ -107,6 +107,8 @@ class logstash::params {
            for \"${::kernel}\"")
     }
   }
+  $patterndir = "${configdir}/patterns"
+  $plugindir = "${configdir}/plugins"
 
   # packages
   case $::operatingsystem {
