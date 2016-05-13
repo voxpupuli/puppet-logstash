@@ -28,7 +28,7 @@ define logstash::plugin (
   $ensure = present,
 )
 {
-  require logstash
+  require logstash::package
   $exe = '/opt/logstash/bin/plugin'
 
   case $source { # Where should we get the plugin from?

@@ -40,6 +40,10 @@ def apply_manifest_fixture(manifest_name)
   apply_manifest(manifest, catch_failures: true)
 end
 
+def expect_no_change_from_manifest(manifest)
+  expect(apply_manifest(manifest).exit_code).to eq(0)
+end
+
 # Package naming is not super-consistent for early versions, so we
 # need to explicitly provide URLs for the ones that we can't construct
 # correctly with simple string manipulation.
@@ -214,14 +218,22 @@ hosts.each do |host|
   # 'files' directory of the Logstash module.
   FileUtils.cp(logstash_download, './files/')
 
+  # ...and put some grok pattern examples in their too.
+  Dir.glob('./spec/fixtures/grok-patterns/*').each do |f|
+    FileUtils.cp(f, './files/')
+  end
+
   # Provide a Logstash plugin as a local Gem.
   scp_to(host, './spec/fixtures/plugins/logstash-output-cowsay-0.1.0.gem', '/tmp/')
 
-  # ...and another plugin that can be fetched from Puppet with "puppet:/"
+  # ...and another plugin that can be fetched from Puppet with "puppet://"
   FileUtils.cp('./spec/fixtures/plugins/logstash-output-cowthink-0.1.0.gem', './files/')
 
+  # Provide this module to the test system.
   project_root = File.dirname(File.dirname(__FILE__))
   install_dev_puppet_module_on(host, source: project_root, module_name: 'logstash')
+
+  # Also install any other modules we need on the test system.
   install_puppet_module_via_pmt_on(host, module_name: 'puppetlabs-stdlib')
   install_puppet_module_via_pmt_on(host, module_name: 'puppetlabs-apt')
   install_puppet_module_via_pmt_on(host, module_name: 'electrical-file_concat')
