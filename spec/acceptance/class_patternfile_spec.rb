@@ -17,8 +17,9 @@ describe 'class patternfile' do
   context 'when declaring a pattern file' do
     before(:context) { apply_pattern(0) }
 
-    it 'goes in the right location' do
-      expect('/etc/logstash/patterns/the_only_pattern_file').to be_a_file
+    describe file '/etc/logstash/patterns/the_only_pattern_file' do
+      it { should be_a_file }
+      its(:content) { should match(/GROK_PATTERN_0/) }
     end
   end
 
