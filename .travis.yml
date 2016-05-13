@@ -22,7 +22,7 @@ script:
   # It' a bit cheeky, but lets make sure that _something_ goes to STDOUT
   # every five minutes, so that our build won't be killed unjustly.
   - (while true; do date --iso-8601=seconds; sleep 300; done) &
-  - bundle exec rake beaker
+  - (if [[ -n $TRAVIS_TEST_UNIT ]]; then make test-unit; else bundle exec rake beaker; fi)
 
 env:
   global:
@@ -30,6 +30,10 @@ env:
     - LOGSTASH_VERSION=2.3.2
     - BEAKER_PE_DIR=spec/fixtures/artifacts
   matrix:
+    # Run the unit tests once.
+    - TRAVIS_TEST_UNIT=true
+
+    # Then run the acceptance tests across the matrix.
     - PUPPET_VERSION=3.2.4 BEAKER_set=centos-6
     - PUPPET_VERSION=3.3.2 BEAKER_set=centos-6
     - PUPPET_VERSION=3.4.3 BEAKER_set=centos-6
