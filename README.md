@@ -21,7 +21,7 @@ This overview shows you which Puppet module and Logstash version work together.
     ------------------------------------
     | 0.5.0 - 0.5.1 | 1.4.1 - 1.4.2    |
     ------------------------------------
-    | 0.6.0         | 1.5.0 - 2.x      |
+    | 0.6.x         | 1.5.0 - 2.x      |
     ------------------------------------
 
 ## Requirements
