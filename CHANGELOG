@@ -1,3 +1,6 @@
+0.6.2
+  Bump electrical/file_concat version in metadata.json.
+
 0.6.1
   Restart service on pattern file change.
   Remove dependency on external PGP server.
