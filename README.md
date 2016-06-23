@@ -44,7 +44,7 @@ class { 'logstash':
   java_install => true,
 }
 
-#It is essential to provide valid a Logstash configuration file for the daemon to start.
+# It is essential to provide a valid Logstash configuration file for the daemon to start.
 logstash::configfile { 'my_ls_config':
   content => template('path/to/config.file'),
 }
