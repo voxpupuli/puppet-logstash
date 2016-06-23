@@ -110,6 +110,10 @@ def install_logstash_from_url_manifest(url, extra_args = nil)
   END
 end
 
+def install_logstash_from_local_file_manifest(extra_args = nil)
+  install_logstash_from_url_manifest(local_file_package_url, extra_args)
+end
+
 def remove_logstash_manifest
   <<-END
   class { 'logstash':
