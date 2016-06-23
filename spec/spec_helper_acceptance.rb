@@ -44,36 +44,28 @@ def expect_no_change_from_manifest(manifest)
   expect(apply_manifest(manifest).exit_code).to eq(0)
 end
 
-# Package naming is not super-consistent for early versions, so we
-# need to explicitly provide URLs for the ones that we can't construct
-# correctly with simple string manipulation.
 def logstash_package_url
   url_root = 'http://download.elasticsearch.org/logstash/logstash/packages'
-  url_map = {
-    '1.4.5' => {
-      'deb' => "#{url_root}/debian/logstash_1.4.5-1-a2bacae_all.deb",
-      'rpm' => "#{url_root}/centos/logstash-1.4.5-1_a2bacae.noarch.rpm"
-    }
-  }
 
   case fact('osfamily')
   when 'Debian'
-    package_format = 'deb'
+    "#{url_root}/debian/logstash_#{LS_VERSION}-1_all.deb"
   when 'RedHat', 'Suse'
-    package_format = 'rpm'
+    "#{url_root}/centos/logstash-#{LS_VERSION}-1.noarch.rpm"
   end
-
-  if url_map[LS_VERSION].nil? || url_map[LS_VERSION][package_format].nil?
-    url = "#{url_root}/debian/logstash_#{LS_VERSION}-1_all.deb" if package_format == 'deb'
-    url = "#{url_root}/centos/logstash-#{LS_VERSION}-1.noarch.rpm" if package_format == 'rpm'
-  else
-    url = url_map[LS_VERSION][package_format]
-  end
-  url
 end
 
 def logstash_package_filename
   File.basename(logstash_package_url)
+end
+
+def logstash_package_version
+  case fact('osfamily')
+  when 'RedHat', 'Suse'
+    "#{LS_VERSION}-1"
+  when 'Debian'
+    "1:#{LS_VERSION}-1"
+  end
 end
 
 def logstash_config_manifest
@@ -87,8 +79,9 @@ end
 def install_logstash_manifest(extra_args = nil)
   <<-END
   class { 'logstash':
-    manage_repo => true,
+    manage_repo  => true,
     repo_version => '#{REPO_VERSION}',
+    version      => '#{logstash_package_version}',
     java_install => true,
     #{extra_args if extra_args}
   }
