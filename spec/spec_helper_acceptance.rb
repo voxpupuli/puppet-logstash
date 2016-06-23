@@ -44,7 +44,7 @@ def expect_no_change_from_manifest(manifest)
   expect(apply_manifest(manifest).exit_code).to eq(0)
 end
 
-def logstash_package_url
+def http_package_url
   url_root = 'http://download.elasticsearch.org/logstash/logstash/packages'
 
   case fact('osfamily')
@@ -55,8 +55,16 @@ def logstash_package_url
   end
 end
 
+def local_file_package_url
+  "file:///tmp/#{logstash_package_filename}"
+end
+
+def puppet_fileserver_package_url
+  "puppet:///modules/logstash/#{logstash_package_filename}"
+end
+
 def logstash_package_filename
-  File.basename(logstash_package_url)
+  File.basename(http_package_url)
 end
 
 def logstash_package_version
@@ -90,10 +98,10 @@ def install_logstash_manifest(extra_args = nil)
   END
 end
 
-def install_logstash_from_local_file_manifest(extra_args = nil)
+def install_logstash_from_url_manifest(url, extra_args = nil)
   <<-END
   class { 'logstash':
-    package_url => 'file:///tmp/#{logstash_package_filename}',
+    package_url  => '#{url}',
     java_install => true,
     #{extra_args if extra_args}
   }
@@ -125,10 +133,14 @@ def install_logstash(extra_args = nil)
   sleep 5 # FIXME: This is horrible.
 end
 
-def install_logstash_from_local_file(extra_args = nil)
-  manifest = install_logstash_from_local_file_manifest(extra_args)
+def install_logstash_from_url(url, extra_args = nil)
+  manifest = install_logstash_from_url_manifest(url, extra_args)
   apply_manifest(manifest, catch_failures: true)
   sleep 5 # FIXME: This is horrible.
+end
+
+def install_logstash_from_local_file(extra_args = nil)
+  install_logstash_from_url(local_file_package_url, extra_args)
 end
 
 def remove_logstash
@@ -204,7 +216,7 @@ hosts.each do |host|
 
   # Aquire a binary package of Logstash.
   logstash_download = "spec/fixtures/artifacts/#{logstash_package_filename}"
-  `curl -s -o #{logstash_download} #{logstash_package_url}` unless File.exist?(logstash_download)
+  `curl -s -o #{logstash_download} #{http_package_url}` unless File.exist?(logstash_download)
   # ...send it to the test host
   scp_to(host, logstash_download, '/tmp/')
   # ...and also make it available as a "puppet://" url, by putting it in the

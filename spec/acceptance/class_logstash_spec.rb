@@ -49,7 +49,7 @@ describe 'class logstash' do
     context 'when installing from an http url' do
       before(:all) do
         remove_logstash
-        install_logstash("package_url => '#{logstash_package_url}'")
+        install_logstash_from_url(http_package_url)
       end
 
       it_behaves_like 'a logstash installer'
@@ -67,9 +67,7 @@ describe 'class logstash' do
     context 'when installing from a "puppet://" url' do
       before(:all) do
         remove_logstash
-        install_logstash(
-          "package_url => 'puppet:///modules/logstash/#{logstash_package_filename}'"
-        )
+        install_logstash_from_url(puppet_fileserver_package_url)
       end
 
       it_behaves_like 'a logstash installer'
