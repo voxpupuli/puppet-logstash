@@ -68,10 +68,10 @@ def logstash_package_filename
 end
 
 def logstash_package_version
-  case fact('osfamily')
-  when 'RedHat', 'Suse'
+  case fact('osfamily') # FIXME: Put this logic in the module, not the tests.
+  when 'RedHat'
     "#{LS_VERSION}-1"
-  when 'Debian'
+  when 'Debian', 'Suse'
     "1:#{LS_VERSION}-1"
   end
 end
