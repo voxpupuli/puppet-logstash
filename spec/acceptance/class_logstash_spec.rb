@@ -9,6 +9,11 @@ shared_examples 'a logstash installer' do
     it { should be_installed }
   end
 
+  describe service('logstash') do
+    it { should be_enabled }
+    it { should be_running }
+  end
+
   describe file('/var/run/logstash.pid') do
     it { should be_file }
     its(:content) { should match(/^[0-9]+$/) }
