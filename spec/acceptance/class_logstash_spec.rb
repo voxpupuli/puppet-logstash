@@ -9,11 +9,6 @@ shared_examples 'a logstash installer' do
     it { should be_installed }
   end
 
-  describe service('logstash') do
-    it { should be_enabled }
-    it { should be_running }
-  end
-
   describe file('/var/run/logstash.pid') do
     it { should be_file }
     its(:content) { should match(/^[0-9]+$/) }
@@ -71,6 +66,22 @@ describe 'class logstash' do
       end
 
       it_behaves_like 'a logstash installer'
+    end
+
+    context 'when logstash dies unexpectedly' do
+      before(:all) do
+        install_logstash
+        shell('killall -9 java')
+      end
+
+      it 'restarts logstash' do
+        log = apply_manifest(install_logstash_manifest).stdout
+        expect(log).to contain("Service[logstash]/ensure: ensure changed 'stopped' to 'running'")
+
+        describe service('logstash') do
+          it { should be_running }
+        end
+      end
     end
   end
 
