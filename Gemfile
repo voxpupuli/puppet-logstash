@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
-ruby '1.9.3'
+ruby '2.3.0'
 
 puppetversion = ENV['PUPPET_VERSION'] || '3.8.6'
 gem 'puppet', puppetversion, :require => false
@@ -26,7 +26,7 @@ gem 'puppet-strings' if puppetversion =~ /^(3\.[789]|4\.)/
 gem 'puppetlabs_spec_helper'
 gem 'puppet-syntax'
 gem 'rspec-puppet-facts'
-gem 'rubocop'
+gem 'rubocop', '0.41.2'
 gem 'serverspec', '2.34.0'
 gem 'specinfra', '2.57.2'
 gem 'webmock'

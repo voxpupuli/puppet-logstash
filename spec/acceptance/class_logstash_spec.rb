@@ -72,6 +72,20 @@ describe 'class logstash' do
 
       it_behaves_like 'a logstash installer'
     end
+
+    context 'when logstash dies unexpectedly' do
+      before(:all) do
+        remove_logstash
+        install_logstash
+        shell("ps -eo pid,comm | awk '/java/ { print $1 }' | xargs kill -9")
+      end
+
+      it 'restarts logstash' do
+        log = apply_manifest(install_logstash_manifest).stdout
+        msg = "Service[logstash]/ensure: ensure changed 'stopped' to 'running'"
+        expect(log).to contain(msg)
+      end
+    end
   end
 
   describe 'ensure => absent' do
