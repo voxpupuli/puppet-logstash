@@ -75,17 +75,15 @@ describe 'class logstash' do
 
     context 'when logstash dies unexpectedly' do
       before(:all) do
+        remove_logstash
         install_logstash
-        shell('killall -9 java')
+        shell("ps -eo pid,comm | awk '/java/ { print $1 }' | xargs kill -9")
       end
 
       it 'restarts logstash' do
         log = apply_manifest(install_logstash_manifest).stdout
-        expect(log).to contain("Service[logstash]/ensure: ensure changed 'stopped' to 'running'")
-
-        describe service('logstash') do
-          it { should be_running }
-        end
+        msg = "Service[logstash]/ensure: ensure changed 'stopped' to 'running'"
+        expect(log).to contain(msg)
       end
     end
   end
