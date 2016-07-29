@@ -12,7 +12,7 @@ services:
 language: ruby
 
 rvm:
-  - 1.9.3
+  - 2.1.9
 
 script:
   # Some of our test can take long time, and not output anything while they
