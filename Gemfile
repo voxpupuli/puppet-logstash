@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
-ruby '1.9.3'
+ruby '2.1.9'
 
 puppetversion = ENV['PUPPET_VERSION'] || '3.8.6'
 gem 'puppet', puppetversion, :require => false
