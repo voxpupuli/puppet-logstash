@@ -12,7 +12,7 @@ services:
 language: ruby
 
 rvm:
-  - 1.9.3
+  - 2.1.9
 
 script:
   # Some of our test can take long time, and not output anything while they
@@ -27,29 +27,17 @@ script:
 env:
   global:
     - TRAVIS_CI=true
-    - LOGSTASH_VERSION=2.3.2
+    - LOGSTASH_VERSION=2.3.4
     - BEAKER_PE_DIR=spec/fixtures/artifacts
   matrix:
     # Run the unit tests once.
     - TRAVIS_TEST_UNIT=true
 
     # Then run the acceptance tests across the matrix.
-    - PUPPET_VERSION=3.2.4 BEAKER_set=centos-6
-    - PUPPET_VERSION=3.3.2 BEAKER_set=centos-6
-    - PUPPET_VERSION=3.4.3 BEAKER_set=centos-6
-    - PUPPET_VERSION=3.5.1 BEAKER_set=centos-6
-    - PUPPET_VERSION=3.6.2 BEAKER_set=centos-6
-    - PUPPET_VERSION=3.7.5 BEAKER_set=centos-6
     - PUPPET_VERSION=3.8.6 BEAKER_set=centos-6
     - PUPPET_VERSION=4.4.2 BEAKER_set=centos-6
     - PUPPET_VERSION=3.8.4 BEAKER_set=centos-6 BEAKER_PE_VER=3.8.4 BEAKER_IS_PE=true
 
-    - PUPPET_VERSION=3.2.4 BEAKER_set=centos-7
-    - PUPPET_VERSION=3.3.2 BEAKER_set=centos-7
-    - PUPPET_VERSION=3.4.3 BEAKER_set=centos-7
-    - PUPPET_VERSION=3.5.1 BEAKER_set=centos-7
-    - PUPPET_VERSION=3.6.2 BEAKER_set=centos-7
-    - PUPPET_VERSION=3.7.5 BEAKER_set=centos-7
     - PUPPET_VERSION=3.8.6 BEAKER_set=centos-7
     - PUPPET_VERSION=4.0.0 BEAKER_set=centos-7
     - PUPPET_VERSION=4.1.0 BEAKER_set=centos-7
@@ -57,51 +45,22 @@ env:
     - PUPPET_VERSION=4.3.2 BEAKER_set=centos-7
     - PUPPET_VERSION=4.4.2 BEAKER_set=centos-7
 
-    - PUPPET_VERSION=3.2.4 BEAKER_set=debian-7
-    - PUPPET_VERSION=3.3.2 BEAKER_set=debian-7
-    - PUPPET_VERSION=3.4.3 BEAKER_set=debian-7
-    - PUPPET_VERSION=3.5.1 BEAKER_set=debian-7
-    - PUPPET_VERSION=3.6.2 BEAKER_set=debian-7
-    - PUPPET_VERSION=3.7.5 BEAKER_set=debian-7
     - PUPPET_VERSION=3.8.6 BEAKER_set=debian-7
     - PUPPET_VERSION=4.4.2 BEAKER_set=debian-7
     - PUPPET_VERSION=3.8.4 BEAKER_set=debian-7 BEAKER_PE_VER=3.8.4 BEAKER_IS_PE=true
 
-    # 3.2 and 3.3 won't work on debian-8.
-    # REF: https://github.com/puppetlabs/puppet/pull/2184
-    # - PUPPET_VERSION=3.2.4 BEAKER_set=debian-8
-    # - PUPPET_VERSION=3.3.2 BEAKER_set=debian-8
-    - PUPPET_VERSION=3.4.3 BEAKER_set=debian-8
-    - PUPPET_VERSION=3.5.1 BEAKER_set=debian-8
-    - PUPPET_VERSION=3.6.2 BEAKER_set=debian-8
-    - PUPPET_VERSION=3.7.5 BEAKER_set=debian-8
     - PUPPET_VERSION=3.8.6 BEAKER_set=debian-8
     - PUPPET_VERSION=4.4.2 BEAKER_set=debian-8
 
-    # 3.2 and 3.3 won't work on opensuse-13
-    # REF: https://github.com/puppetlabs/puppet/pull/2184
-    # - PUPPET_VERSION=3.2.4 BEAKER_set=opensuse-13
-    # - PUPPET_VERSION=3.3.2 BEAKER_set=opensuse-13
-    - PUPPET_VERSION=3.4.3 BEAKER_set=opensuse-13
-    - PUPPET_VERSION=3.5.1 BEAKER_set=opensuse-13
-    - PUPPET_VERSION=3.6.2 BEAKER_set=opensuse-13
-    - PUPPET_VERSION=3.7.5 BEAKER_set=opensuse-13
     - PUPPET_VERSION=3.8.6 BEAKER_set=opensuse-13
 
-    - PUPPET_VERSION=3.2.4 BEAKER_set=ubuntu-1204
-    - PUPPET_VERSION=3.3.2 BEAKER_set=ubuntu-1204
-    - PUPPET_VERSION=3.4.3 BEAKER_set=ubuntu-1204
-    - PUPPET_VERSION=3.5.1 BEAKER_set=ubuntu-1204
-    - PUPPET_VERSION=3.6.2 BEAKER_set=ubuntu-1204
-    - PUPPET_VERSION=3.7.5 BEAKER_set=ubuntu-1204
     - PUPPET_VERSION=3.8.6 BEAKER_set=ubuntu-1204
     - PUPPET_VERSION=4.4.2 BEAKER_set=ubuntu-1204
 
-    - PUPPET_VERSION=3.2.4 BEAKER_set=ubuntu-1404
-    - PUPPET_VERSION=3.3.2 BEAKER_set=ubuntu-1404
-    - PUPPET_VERSION=3.4.3 BEAKER_set=ubuntu-1404
-    - PUPPET_VERSION=3.5.1 BEAKER_set=ubuntu-1404
-    - PUPPET_VERSION=3.6.2 BEAKER_set=ubuntu-1404
-    - PUPPET_VERSION=3.7.5 BEAKER_set=ubuntu-1404
     - PUPPET_VERSION=3.8.6 BEAKER_set=ubuntu-1404
     - PUPPET_VERSION=4.4.2 BEAKER_set=ubuntu-1404
+
+    # A little "sub-matrix" to test a few Logstash versions.
+    - PUPPET_VERSION=4.4.2 BEAKER_set=ubuntu-1404 LOGSTASH_VERSION=2.1.2
+    - PUPPET_VERSION=4.4.2 BEAKER_set=ubuntu-1404 LOGSTASH_VERSION=2.2.4
+    - PUPPET_VERSION=4.4.2 BEAKER_set=ubuntu-1404 LOGSTASH_VERSION=2.3.4
