@@ -36,12 +36,14 @@ class logstash::repo {
       require apt
 
       apt::source { 'logstash':
-        location    => "http://packages.elasticsearch.org/logstash/${logstash::repo_version}/debian",
-        release     => 'stable',
-        repos       => 'main',
-        key         => 'D88E42B4',
-        key_source  => 'http://packages.elasticsearch.org/GPG-KEY-elasticsearch',
-        include_src => false,
+        location   => "http://packages.elasticsearch.org/logstash/${logstash::repo_version}/debian",
+        release    => 'stable',
+        repos      => 'main',
+        key        => 'D27D666CD88E42B4',
+        key_source => 'http://packages.elasticsearch.org/GPG-KEY-elasticsearch',
+        include    => {
+          src      => false,
+        }
       }
     }
     'RedHat': {
