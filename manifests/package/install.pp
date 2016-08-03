@@ -155,6 +155,7 @@ define logstash::package::install(
       ensure   => $package_ensure,
       source   => $pkg_source,
       provider => $pkg_provider,
+      tag      => 'logstash',
     }
 
   } else {

@@ -31,7 +31,7 @@ This overview shows you which Puppet module and Logstash version work together.
 * The [electrical/file_concat](https://forge.puppetlabs.com/electrical/file_concat) Puppet library.
 
 Optional:
-* The [apt](https://forge.puppetlabs.com/puppetlabs/apt) Puppet library when using repo management on Debian/Ubuntu.
+* The [apt](https://forge.puppetlabs.com/puppetlabs/apt) (>= 2.0.0) Puppet library when using repo management on Debian/Ubuntu.
 * The [zypprepo](https://forge.puppetlabs.com/darin/zypprepo) Puppet library when using repo management on SLES/SuSE
 
 ## Quick Start
