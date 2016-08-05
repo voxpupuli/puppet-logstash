@@ -119,9 +119,6 @@
 #   Path to directory containing the logstash configuration.
 #   Use this setting if your packages deviate from the norm (/etc/logstash)
 #
-# [*repo_stage*]
-#   Use stdlib stage setup for managing the repo, instead of anchoring
-#
 # === Examples
 #
 # * Installation, make sure service is running and will be started at boot time:
@@ -173,7 +170,6 @@ class logstash(
   $init_template       = undef,
   $manage_repo         = false,
   $repo_version        = $logstash::params::repo_version,
-  $repo_stage          = false
 ) inherits logstash::params {
 
   anchor {'logstash::begin': }
@@ -241,30 +237,10 @@ class logstash(
   }
 
   if ($manage_repo == true) {
-
-    if ($repo_stage == false) {
-      # use anchor for ordering
-
-      # Set up repositories
-      class { 'logstash::repo': }
-
-      # Ensure that we set up the repositories before trying to install
-      # the packages
-      Anchor['logstash::begin']
-      -> Class['logstash::repo']
-      -> Class['logstash::package']
-
-    } else {
-      # use staging for ordering
-
-      if !(defined(Stage[$repo_stage])) {
-        stage { $repo_stage:  before => Stage['main'] }
-      }
-
-      class { 'logstash::repo':
-        stage => $repo_stage,
-      }
-    }
+    # Set up repositories
+    # The order (repository before packages) is managed within logstash::repo
+    # We can't use the anchor or stage pattern here, since it breaks other modules also depending on the apt class
+    include logstash::repo
   }
 
   #### Manage relationships

@@ -59,6 +59,8 @@ class logstash::repo {
         gpgkey   => 'http://packages.elasticsearch.org/GPG-KEY-elasticsearch',
         enabled  => 1,
       }
+
+      Yumrepo['logstash'] -> Package<|tag == 'logstash'|>
     }
     'Suse' : {
       case $::operatingsystem {
@@ -92,8 +94,9 @@ class logstash::repo {
       exec { 'logstash_suse_import_gpg':
         command =>  "wget -q -O /tmp/RPM-GPG-KEY-elasticsearch http://packages.elasticsearch.org/${gpg_key}; rpm --import /tmp/RPM-GPG-KEY-elasticsearch; rm /tmp/RPM-GPG-KEY-elasticsearch",
         unless  =>  "test $(rpm -qa gpg-pubkey | grep -i \"${gpg_id}\" | wc -l) -eq 1 ",
-        notify  =>  Zypprepo['logstash'],
       }
+
+      Exec['logstash_suse_import_gpg'] ~> Zypprepo['logstash'] -> Package<|tag == 'logstash'|>
     }
     default: {
       fail("\"${module_name}\" provides no repository information for OSfamily \"${::osfamily}\"")
