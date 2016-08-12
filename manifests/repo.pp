@@ -36,12 +36,12 @@ class logstash::repo {
       require apt
 
       apt::source { 'logstash':
-        location => "http://packages.elasticsearch.org/logstash/${logstash::repo_version}/debian",
+        location => "https://packages.elasticsearch.org/logstash/${logstash::repo_version}/debian",
         release  => 'stable',
         repos    => 'main',
         key      => {
           'id'     => '46095ACC8548582C1A2699A9D27D666CD88E42B4',
-          'source' => 'http://packages.elasticsearch.org/GPG-KEY-elasticsearch',
+          'source' => 'https://packages.elasticsearch.org/GPG-KEY-elasticsearch',
         },
         include  => {
           'src' => false,
@@ -54,9 +54,9 @@ class logstash::repo {
     'RedHat': {
       yumrepo { 'logstash':
         descr    => 'Logstash Centos Repo',
-        baseurl  => "http://packages.elasticsearch.org/logstash/${logstash::repo_version}/centos",
+        baseurl  => "https://packages.elasticsearch.org/logstash/${logstash::repo_version}/centos",
         gpgcheck => 1,
-        gpgkey   => 'http://packages.elasticsearch.org/GPG-KEY-elasticsearch',
+        gpgkey   => 'https://packages.elasticsearch.org/GPG-KEY-elasticsearch',
         enabled  => 1,
       }
 
@@ -80,19 +80,19 @@ class logstash::repo {
       }
 
       zypprepo { 'logstash':
-        baseurl     => "http://packages.elasticsearch.org/logstash/${logstash::repo_version}/${centos_version}/",
+        baseurl     => "https://packages.elasticsearch.org/logstash/${logstash::repo_version}/${centos_version}/",
         enabled     => 1,
         autorefresh => 1,
         name        => 'logstash',
         gpgcheck    => 1,
-        gpgkey      => "http://packages.elasticsearch.org/${gpg_key}",
+        gpgkey      => "https://packages.elasticsearch.org/${gpg_key}",
         type        => 'yum',
       }
 
       # Workaround until zypprepo allows the adding of the keys
       # https://github.com/deadpoint/puppet-zypprepo/issues/4
       exec { 'logstash_suse_import_gpg':
-        command =>  "wget -q -O /tmp/RPM-GPG-KEY-elasticsearch http://packages.elasticsearch.org/${gpg_key}; rpm --import /tmp/RPM-GPG-KEY-elasticsearch; rm /tmp/RPM-GPG-KEY-elasticsearch",
+        command =>  "wget -q -O /tmp/RPM-GPG-KEY-elasticsearch https://packages.elasticsearch.org/${gpg_key}; rpm --import /tmp/RPM-GPG-KEY-elasticsearch; rm /tmp/RPM-GPG-KEY-elasticsearch",
         unless  =>  "test $(rpm -qa gpg-pubkey | grep -i \"${gpg_id}\" | wc -l) -eq 1 ",
       }
 
