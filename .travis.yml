@@ -27,7 +27,7 @@ script:
 env:
   global:
     - TRAVIS_CI=true
-    - LOGSTASH_VERSION=2.3.4
+    - LOGSTASH_VERSION=2.4.0
     - BEAKER_PE_DIR=spec/fixtures/artifacts
   matrix:
     # Run the unit tests once.
@@ -47,7 +47,9 @@ env:
 
     - PUPPET_VERSION=3.8.6 BEAKER_set=debian-7
     - PUPPET_VERSION=4.4.2 BEAKER_set=debian-7
-    - PUPPET_VERSION=3.8.4 BEAKER_set=debian-7 BEAKER_PE_VER=3.8.4 BEAKER_IS_PE=true
+    # FIXME: Beaker fails to install PE on Debian 7.
+    # Example: https://travis-ci.org/elastic/puppet-logstash/jobs/159507699#L542
+    # - PUPPET_VERSION=3.8.4 BEAKER_set=debian-7 BEAKER_PE_VER=3.8.4 BEAKER_IS_PE=true
 
     - PUPPET_VERSION=3.8.6 BEAKER_set=debian-8
     - PUPPET_VERSION=4.4.2 BEAKER_set=debian-8
@@ -64,3 +66,4 @@ env:
     - PUPPET_VERSION=4.4.2 BEAKER_set=ubuntu-1404 LOGSTASH_VERSION=2.1.2
     - PUPPET_VERSION=4.4.2 BEAKER_set=ubuntu-1404 LOGSTASH_VERSION=2.2.4
     - PUPPET_VERSION=4.4.2 BEAKER_set=ubuntu-1404 LOGSTASH_VERSION=2.3.4
+    - PUPPET_VERSION=4.4.2 BEAKER_set=ubuntu-1404 LOGSTASH_VERSION=2.4.0
