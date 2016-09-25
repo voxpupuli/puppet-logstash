@@ -45,13 +45,21 @@ def expect_no_change_from_manifest(manifest)
 end
 
 def http_package_url
-  url_root = 'http://download.elasticsearch.org/logstash/logstash/packages'
+  url_root = 'https://download.elastic.co/logstash/logstash/packages'
+
+  #older (but supported) versions have slightly different file numbers
+  sep = Hash.new('-')
+  trail = Hash.new('')
+  ["2.1.2", "2.2.4", "2.3.4"].each do |old_version|
+    sep[old_version] = "_"
+    trail[old_version] = "-1"
+  end
 
   case fact('osfamily')
   when 'Debian'
-    "#{url_root}/debian/logstash_#{LS_VERSION}-1_all.deb"
+    "#{url_root}/debian/logstash#{sep[LS_VERSION]}#{LS_VERSION}#{trail[LS_VERSION]}_all.deb"
   when 'RedHat', 'Suse'
-    "#{url_root}/centos/logstash-#{LS_VERSION}-1.noarch.rpm"
+    "#{url_root}/centos/logstash-#{LS_VERSION}#{trail[LS_VERSION]}.noarch.rpm"
   end
 end
 
