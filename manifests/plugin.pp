@@ -31,6 +31,10 @@ define logstash::plugin (
   require logstash::package
   $exe = '/opt/logstash/bin/plugin'
 
+  # Install plugin as logstash user
+  $exe_prefix = "/usr/bin/su - '${::logstash::logstash_user}' -s /bin/bash -c '"
+  $exe_suffix = "'"
+
   case $source { # Where should we get the plugin from?
     undef: {
       # No explict source, so search Rubygems for the plugin, by name.
@@ -64,24 +68,24 @@ define logstash::plugin (
   case $ensure {
     'present': {
       exec { "install-${name}":
-        command => "${exe} install ${plugin}",
-        unless  => "${exe} list ^${name}$",
+        command => "${exe_prefix}${exe} install ${plugin}${exe_suffix}",
+        unless  => "${exe_prefix}${exe} list ^${name}${exe_suffix}$",
         timeout => 1800,
       }
     }
 
     /^\d+\.\d+\.\d+/: {
       exec { "install-${name}":
-        command => "${exe} install --version ${ensure} ${plugin}",
-        unless  => "${exe} list --verbose ^${name}$ | grep --fixed-strings --quiet '(${ensure})'",
+        command => "${exe_prefix}${exe} install --version ${ensure} ${plugin}${exe_suffix}",
+        unless  => "${exe_prefix}${exe} list --verbose ^${name}\$${exe_suffix} | grep --fixed-strings --quiet '(${ensure})'",
         timeout => 1800,
       }
     }
 
     'absent': {
       exec { "remove-${name}":
-        command => "${exe} uninstall ${name}",
-        onlyif  => "${exe} list | grep -q ^${name}$",
+        command => "${exe_prefix}${exe} uninstall ${name}${exe_suffix}",
+        onlyif  => "${exe_prefix}${exe} list${exe_suffix} | grep -q ^${name}$",
         timeout => 1800,
       }
     }
