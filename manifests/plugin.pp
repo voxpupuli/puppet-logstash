@@ -31,8 +31,12 @@ define logstash::plugin (
   require logstash::package
   $exe = '/opt/logstash/bin/plugin'
 
-  # Install plugin as logstash user
-  $exe_prefix = "/usr/bin/su - '${::logstash::logstash_user}' -s /bin/bash -c '"
+  # Install plugin as logstash user and make
+  # sure we find su on centos and debian
+  Exec {
+    path => '/bin:/usr/bin',
+  }
+  $exe_prefix = "su - '${::logstash::logstash_user}' -s /bin/bash -c '"
   $exe_suffix = "'"
 
   case $source { # Where should we get the plugin from?
