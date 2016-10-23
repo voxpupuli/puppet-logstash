@@ -150,5 +150,6 @@ define logstash::service::init{
   # the service so it restarts.
   if $::logstash::restart_on_change {
     File<| tag == 'logstash_config' |> ~> Service[$name]
+    Logstash::Plugin<| |> ~> Service[$name]
   }
 }
