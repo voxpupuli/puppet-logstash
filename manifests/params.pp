@@ -115,13 +115,13 @@ class logstash::params {
     'RedHat', 'CentOS', 'Fedora', 'Scientific', 'Amazon', 'OracleLinux', 'SLES', 'OpenSuSE': {
       # main application
       $package = [ 'logstash' ],
-      $package_name = 'logstash',
+      $package_name = 'logstash'
       $contrib = [ 'logstash-contrib' ]
     }
     'Debian', 'Ubuntu': {
       # main application
       $package = [ 'logstash' ]
-      $package_name = 'logstash',
+      $package_name = 'logstash'
       $contrib = [ 'logstash-contrib' ]
     }
     default: {
