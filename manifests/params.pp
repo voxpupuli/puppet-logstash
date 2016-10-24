@@ -114,7 +114,7 @@ class logstash::params {
   case $::operatingsystem {
     'RedHat', 'CentOS', 'Fedora', 'Scientific', 'Amazon', 'OracleLinux', 'SLES', 'OpenSuSE': {
       # main application
-      $package = [ 'logstash' ],
+      $package = [ 'logstash' ]
       $package_name = 'logstash'
       $contrib = [ 'logstash-contrib' ]
     }
