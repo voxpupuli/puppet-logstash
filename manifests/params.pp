@@ -161,5 +161,4 @@ class logstash::params {
             for \"${::operatingsystem}\"")
     }
   }
-
 }
