@@ -29,7 +29,8 @@
 #
 define logstash::package::install(
   $package_url = undef,
-  $version = undef
+  $version = undef,
+  $package_name = undef,
 ) {
 
   Exec {
@@ -153,6 +154,7 @@ define logstash::package::install(
 
     package { $name:
       ensure   => $package_ensure,
+      name     => $package_name,
       source   => $pkg_source,
       provider => $pkg_provider,
       tag      => 'logstash',

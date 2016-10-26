@@ -74,6 +74,9 @@
 # [*package_dir*]
 #   Directory where the packages are downloaded to
 #
+# [*package_name*]
+#   Logstash packagename
+#
 # [*purge_package_dir*]
 #   Purge package directory on removal
 #
@@ -156,6 +159,7 @@ class logstash(
   $software_provider   = 'package',
   $package_url         = undef,
   $package_dir         = $logstash::params::package_dir,
+  $package_name        = $logstash::params::package_name,
   $purge_package_dir   = $logstash::params::purge_package_dir,
   $package_dl_timeout  = $logstash::params::package_dl_timeout,
   $logstash_user       = $logstash::params::logstash_user,

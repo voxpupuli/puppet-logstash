@@ -73,7 +73,8 @@ class logstash::package {
 
   #class { 'logstash::package::core': }
   logstash::package::install { 'logstash':
-    package_url => $logstash::package_url,
-    version     => $logstash::version,
+    package_url  => $logstash::package_url,
+    version      => $logstash::version,
+    package_name => $logstash::package_name,
   }
 }
