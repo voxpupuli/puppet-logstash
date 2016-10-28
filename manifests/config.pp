@@ -66,7 +66,7 @@ class logstash::config {
       "${logstash::plugindir}/logstash/codecs",
     ]
 
-    file { $directories:,
+    file { $directories:
       ensure  => directory,
     }
   }
