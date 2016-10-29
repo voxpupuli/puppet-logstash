@@ -67,6 +67,10 @@ class logstash::params {
       $logstash_user  = 'root'
       $logstash_group = 'wheel'
     }
+    'OpenBSD': {
+      $logstash_user  = '_logstash'
+      $logstash_group = '_logstash'
+    }
     default: {
       fail("\"${module_name}\" provides no user/group default value
            for \"${::kernel}\"")
@@ -81,6 +85,9 @@ class logstash::params {
     }
     'Darwin': {
       $download_tool = 'curl -o'
+    }
+    'OpenBSD': {
+      $download_tool = 'ftp -o'
     }
     default: {
       fail("\"${module_name}\" provides no download tool default value
@@ -101,6 +108,12 @@ class logstash::params {
       $package_dir = '/Library/Logstash/swdl'
       $installpath = '/Library/Logstash'
       $plugin = '/Library/Logstash/bin/plugin'
+    }
+    'OpenBSD': {
+      $configdir = '/etc/logstash'
+      $package_dir = undef
+      $installpath = undef
+      $plugin = '/usr/local/logstash/bin/plugin'
     }
     default: {
       fail("\"${module_name}\" provides no config directory default value
@@ -123,6 +136,11 @@ class logstash::params {
       $package = [ 'logstash' ]
       $package_name = 'logstash'
       $contrib = [ 'logstash-contrib' ]
+    }
+    'OpenBSD': {
+      # main application
+      $package = [ 'logstash' ]
+      $contrib = undef
     }
     default: {
       fail("\"${module_name}\" provides no package default value
@@ -154,6 +172,14 @@ class logstash::params {
       $service_hasstatus  = true
       $service_pattern    = $service_name
       $service_providers  = [ 'launchd' ]
+      $defaults_location  = false
+    }
+    'OpenBSD': {
+      $service_name       = 'logstash'
+      $service_hasrestart = true
+      $service_hasstatus  = true
+      $service_pattern    = undef
+      $service_providers  = [ 'openbsd' ]
       $defaults_location  = false
     }
     default: {

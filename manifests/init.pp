@@ -96,6 +96,10 @@
 # [*service_provider*]
 #   Service provider to use. By Default when a single service provider is possibe that one is selected.
 #
+# [*service_flags*]
+#   String, used to steer the OpenBSD service flags, in order to override/change the default values.
+#   defaults to undef
+#
 # [*init_defaults*]
 #   Defaults file content in hash representation
 #
@@ -169,6 +173,7 @@ class logstash(
   $java_install        = false,
   $java_package        = undef,
   $service_provider    = 'init',
+  $service_flags       = undef,
   $init_defaults       = undef,
   $init_defaults_file  = undef,
   $init_template       = undef,
@@ -228,7 +233,9 @@ class logstash(
   class { 'logstash::config': }
 
   # service(s)
-  class { 'logstash::service': }
+  class { 'logstash::service':
+    service_flags => $service_flags,
+  }
 
   if $java_install == true {
     # Install java

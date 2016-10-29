@@ -1,0 +1,28 @@
+#!/bin/sh
+#
+# This file is maintained via PUPPET
+
+daemon_user="_logstash"
+daemon="/usr/local/logstash/bin/logstash"
+daemon_flags="--config /etc/logstash/conf.d/ --log /var/log/logstash/logstash-<%= @name %>.log"
+
+. /etc/rc.d/rc.subr
+
+pexp="$(/usr/local/bin/javaPathHelper -c logstash).*logstash/runner.rb agent ${daemon_flags}"
+
+rc_reload=NO
+
+# Ensure _logstash can write to the logfile.
+# XXX: Remove on upgrade.
+rc_pre() {
+	chown -R _logstash:_logstash /var/log/logstash
+}
+
+rc_start() {
+	(${rcexec} "JAVA_HOME=\"$(/usr/local/bin/javaPathHelper -h logstash)\" \
+		JAVA_OPTS=\"${JAVA_OPTS} -Djava.library.path=/usr/local/jruby/lib/jni/x86_64-OpenBSD\" \
+		SINCEDB_DIR=\"/var/db/logstash\" \
+	   	     ${daemon} ${daemon_flags}") &
+}
+
+rc_cmd $1
