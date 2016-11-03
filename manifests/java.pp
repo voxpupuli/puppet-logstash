@@ -27,7 +27,7 @@ class logstash::java {
   if $logstash::java_package == undef {
     # Default Java package
     case $::operatingsystem {
-      'CentOS', 'Fedora', 'Scientific', 'RedHat', 'Amazon', 'OracleLinux': {
+      'CentOS', 'Fedora', 'Scientific', 'RedHat', 'Amazon', 'OracleLinux', 'CloudLinux': {
         $package = 'java-1.7.0-openjdk'
       }
       'Debian', 'Ubuntu': {
