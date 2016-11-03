@@ -65,18 +65,18 @@ describe 'class plugin' do
         expect(installed_plugins).not_to contain('logstash-input-file')
       end
     end
+
+    it 'can install a plugin from a "puppet://" url' do
+      plugin = 'logstash-output-cowthink'
+      source = "puppet:///modules/logstash/#{plugin}-0.1.0.gem"
+      ensure_plugin('present', plugin, "source => '#{source}'")
+      expect(installed_plugins).to contain(plugin)
+    end
   end
 
   it 'can install a plugin from a local gem' do
     plugin = 'logstash-output-cowsay'
     source = "/tmp/#{plugin}-0.1.0.gem"
-    ensure_plugin('present', plugin, "source => '#{source}'")
-    expect(installed_plugins).to contain(plugin)
-  end
-
-  it 'can install a plugin from a "puppet://" url' do
-    plugin = 'logstash-output-cowthink'
-    source = "puppet:///modules/logstash/#{plugin}-0.1.0.gem"
     ensure_plugin('present', plugin, "source => '#{source}'")
     expect(installed_plugins).to contain(plugin)
   end
