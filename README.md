@@ -26,7 +26,7 @@ This overview shows you which Puppet module and Logstash version work together.
 
 ## Requirements
 
-* Puppet 3.2.0 or better.
+* Puppet 3.8.6 or better.
 * The [stdlib](https://forge.puppetlabs.com/puppetlabs/stdlib) Puppet library.
 * The [electrical/file_concat](https://forge.puppetlabs.com/electrical/file_concat) Puppet library.
 
