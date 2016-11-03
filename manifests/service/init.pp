@@ -102,27 +102,9 @@ define logstash::service::init{
 
     }
 
-    # init file from template
-    if ($logstash::init_template != undef) {
-
-      file { "/etc/init.d/${name}":
-        ensure  => $logstash::ensure,
-        content => template($logstash::init_template),
-        owner   => 'root',
-        group   => 'root',
-        mode    => '0755',
-        before  => Service[$name],
-        notify  => $notify_service,
-      }
-
-    }
 
   }
 
-  file { "/etc/init/${name}.conf":
-    ensure => 'absent',
-    before => Service[$name],
-  }
 
   # Puppet 3 doesn't know that Debian 8 uses systemd, not SysV init,
   # so we'll help it out with our knowledge from the future.

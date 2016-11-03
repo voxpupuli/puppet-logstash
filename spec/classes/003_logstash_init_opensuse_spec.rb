@@ -188,27 +188,6 @@ describe 'logstash', :type => 'class' do
 
           end
 
-          context 'and set init file via template' do
-
-            let :params do {
-              :init_template => "logstash/etc/init.d/logstash.RedHat.erb"
-            } end
-
-            it { should contain_file('/etc/init.d/logstash').with(:notify => 'Service[logstash]') }
-
-          end
-
-          context 'No service restart when restart_on_change is false' do
-
-            let :params do {
-              :init_template     => "logstash/etc/init.d/logstash.RedHat.erb",
-              :restart_on_change => false
-            } end
-
-            it { should contain_file('/etc/init.d/logstash').without_notify }
-
-          end
-
           context 'when its unmanaged do nothing with it' do
 
             let :params do {
