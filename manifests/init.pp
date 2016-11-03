@@ -102,9 +102,6 @@
 # [*init_defaults_file*]
 #   Defaults file as puppet resource
 #
-# [*init_template*]
-#   Service file as a template
-#
 # [*java_install*]
 #  Install java which is required for Logstash.
 #  Defaults to: false
@@ -171,7 +168,6 @@ class logstash(
   $service_provider    = 'init',
   $init_defaults       = undef,
   $init_defaults_file  = undef,
-  $init_template       = undef,
   $manage_repo         = false,
   $repo_version        = $logstash::params::repo_version,
 ) inherits logstash::params {

@@ -152,7 +152,6 @@ describe 'logstash', :type => 'class' do
         context 'with provider \'init\'' do
 
           it { should contain_logstash__service__init('logstash') }
-          it { should contain_file('/etc/init/logstash.conf').with(:ensure => 'absent') }
 
           context 'and default settings' do
 
@@ -185,25 +184,6 @@ describe 'logstash', :type => 'class' do
             } end
 
             it { should contain_file('/etc/default/logstash').with(:content => "### MANAGED BY PUPPET ###\n\nSERVICE_GROUP=root\nSERVICE_USER=root\n").without_notify }
-          end
-
-          context 'and set init file via template' do
-
-            let :params do {
-              :init_template => "logstash/etc/init.d/logstash.Debian.erb"
-            } end
-
-            it { should contain_file('/etc/init.d/logstash').with(:notify => 'Service[logstash]') }
-          end
-
-          context 'No service restart when restart_on_change is false' do
-
-            let :params do {
-              :init_template     => "logstash/etc/init.d/logstash.Debian.erb",
-              :restart_on_change => false
-            } end
-
-            it { should contain_file('/etc/init.d/logstash').without_notify }
           end
 
           context 'when its unmanaged do nothing with it' do
