@@ -27,8 +27,6 @@
 # * Richard Pijnenburg <mailto:richard.pijnenburg@elasticsearch.com>
 #
 class logstash::service {
-  require ::java
-
   # set params: in operation
   if $logstash::ensure == 'present' {
     case $logstash::status {
