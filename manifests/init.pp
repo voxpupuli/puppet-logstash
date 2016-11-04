@@ -166,13 +166,11 @@ class logstash(
   $logstash_group      = $logstash::params::logstash_group,
   $configdir           = $logstash::params::configdir,
   $purge_configdir     = $logstash::params::purge_configdir,
-  $java_install        = false,
-  $java_package        = undef,
   $service_provider    = 'init',
   $init_defaults       = undef,
   $init_defaults_file  = undef,
   $init_template       = undef,
-  $manage_repo         = false,
+  $manage_repo         = true,
   $repo_version        = $logstash::params::repo_version,
 ) inherits logstash::params {
 
@@ -229,16 +227,6 @@ class logstash(
 
   # service(s)
   class { 'logstash::service': }
-
-  if $java_install == true {
-    # Install java
-    class { 'logstash::java': }
-
-    # ensure we first install java and then manage the service
-    Anchor['logstash::begin']
-    -> Class['logstash::java']
-    -> Class['logstash::package']
-  }
 
   if ($manage_repo == true) {
     # Set up repositories

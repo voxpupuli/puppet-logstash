@@ -53,7 +53,7 @@ class logstash::params {
   $package_dl_timeout = 600 # 300 seconds is default of puppet
 
   # default version to use if none is provided when manage_repo is set to true
-  $repo_version = '1.5'
+  $repo_version = '5.x'
 
   #### Internal module values
 
@@ -116,13 +116,11 @@ class logstash::params {
       # main application
       $package = [ 'logstash' ]
       $package_name = 'logstash'
-      $contrib = [ 'logstash-contrib' ]
     }
     'Debian', 'Ubuntu': {
       # main application
       $package = [ 'logstash' ]
       $package_name = 'logstash'
-      $contrib = [ 'logstash-contrib' ]
     }
     default: {
       fail("\"${module_name}\" provides no package default value

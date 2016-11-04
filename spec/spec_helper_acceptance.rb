@@ -45,21 +45,13 @@ def expect_no_change_from_manifest(manifest)
 end
 
 def http_package_url
-  url_root = 'https://download.elastic.co/logstash/logstash/packages'
-
-  #older (but supported) versions have slightly different file numbers
-  sep = Hash.new('-')
-  trail = Hash.new('')
-  ["2.1.2", "2.2.4", "2.3.4"].each do |old_version|
-    sep[old_version] = "_"
-    trail[old_version] = "-1"
-  end
+  url_root = "https://artifacts.elastic.co/downloads/logstash/logstash-#{LS_VERSION}"
 
   case fact('osfamily')
   when 'Debian'
-    "#{url_root}/debian/logstash#{sep[LS_VERSION]}#{LS_VERSION}#{trail[LS_VERSION]}_all.deb"
+    "#{url_root}.deb"
   when 'RedHat', 'Suse'
-    "#{url_root}/centos/logstash-#{LS_VERSION}#{trail[LS_VERSION]}.noarch.rpm"
+    "#{url_root}.rpm"
   end
 end
 
@@ -98,7 +90,6 @@ def install_logstash_manifest(extra_args = nil)
     manage_repo  => true,
     repo_version => '#{REPO_VERSION}',
     version      => '#{logstash_package_version}',
-    java_install => true,
     #{extra_args if extra_args}
   }
 
@@ -110,7 +101,6 @@ def install_logstash_from_url_manifest(url, extra_args = nil)
   <<-END
   class { 'logstash':
     package_url  => '#{url}',
-    java_install => true,
     #{extra_args if extra_args}
   }
 
@@ -251,6 +241,7 @@ hosts.each do |host|
   install_dev_puppet_module_on(host, source: project_root, module_name: 'logstash')
 
   # Also install any other modules we need on the test system.
+  install_puppet_module_via_pmt_on(host, module_name: 'puppetlabs-java')
   install_puppet_module_via_pmt_on(host, module_name: 'puppetlabs-stdlib')
   install_puppet_module_via_pmt_on(host, module_name: 'puppetlabs-apt')
   install_puppet_module_via_pmt_on(host, module_name: 'electrical-file_concat')

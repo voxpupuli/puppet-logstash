@@ -3,6 +3,7 @@
 export DEBIAN_FRONTEND=noninteractive
 
 apt-get update
+apt-get install -y apt-transport-https
 apt-get install -y puppetserver
 
 # REF: https://tickets.puppetlabs.com/browse/SERVER-528
@@ -19,6 +20,9 @@ service puppetserver start
 echo '127.0.0.1 localhost puppet' > /etc/hosts
 
 # Install puppet-logstash dependencies.
-for mod in puppetlabs-apt puppetlabs-stdlib electrical-file_concat; do
+for mod in puppetlabs-apt puppetlabs-java puppetlabs-stdlib electrical-file_concat; do
     puppet module install --target-dir=/etc/puppetlabs/code/environments/production/modules $mod
 done
+
+# Minimal manifest to test the Logstash module.
+echo 'include ::logstash' > /etc/puppetlabs/code/environments/production/manifests/site.pp

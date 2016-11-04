@@ -25,6 +25,11 @@
 # * Matthias Baur <mailto:matthias.baur@dmc.de>
 #
 class logstash::repo {
+  $version = $logstash::repo_version
+  $repo_name = "elastic-${version}"
+  $url_root = "https://artifacts.elastic.co/packages/${version}"
+  $gpg_key_url = 'https://artifacts.elastic.co/GPG-KEY-elasticsearch'
+  $gpg_key_id = '46095ACC8548582C1A2699A9D27D666CD88E42B4'
 
   Exec {
     path      => [ '/bin', '/usr/bin', '/usr/local/bin' ],
@@ -35,64 +40,48 @@ class logstash::repo {
     'Debian': {
       require apt
 
-      apt::source { 'logstash':
-        location => "http://packages.elasticsearch.org/logstash/${logstash::repo_version}/debian",
+      apt::source { $repo_name:
+        location => "${url_root}/apt",
         release  => 'stable',
         repos    => 'main',
         key      => {
-          'id'     => '46095ACC8548582C1A2699A9D27D666CD88E42B4',
-          'source' => 'http://packages.elasticsearch.org/GPG-KEY-elasticsearch',
+          'id'     => $gpg_key_id,
+          'source' => $gpg_key_url,
         },
         include  => {
           'src' => false,
         },
       }
 
-      Apt::Source['logstash'] -> Package<|tag == 'logstash'|>
+      Apt::Source[$repo_name] -> Package<|tag == 'logstash'|>
       Class['Apt::Update'] -> Package<|tag == 'logstash'|>
     }
     'RedHat': {
-      yumrepo { 'logstash':
+      yumrepo { $repo_name:
         descr    => 'Logstash Centos Repo',
-        baseurl  => "http://packages.elasticsearch.org/logstash/${logstash::repo_version}/centos",
+        baseurl  => "${url_root}/centos",
         gpgcheck => 1,
-        gpgkey   => 'http://packages.elasticsearch.org/GPG-KEY-elasticsearch',
+        gpgkey   => $gpg_key_url,
         enabled  => 1,
       }
 
-      Yumrepo['logstash'] -> Package<|tag == 'logstash'|>
+      Yumrepo[$repo_name] -> Package<|tag == 'logstash'|>
     }
     'Suse' : {
-      case $::operatingsystem {
-        'SLES': {
-          $centos_version = 'centos5'
-          $gpg_key = 'GPG-KEY-elasticsearch-v3'
-          $gpg_id = '465C1136'
-        }
-        'OpenSuSE': {
-          $centos_version = 'centos'
-          $gpg_key = 'GPG-KEY-elasticsearch'
-          $gpg_id = 'D88E42B4'
-        }
-        default: {
-          fail("Unknown Operating system (${::operatingsystem})for Suse family")
-        }
-      }
-
-      zypprepo { 'logstash':
-        baseurl     => "http://packages.elasticsearch.org/logstash/${logstash::repo_version}/${centos_version}/",
+      zypprepo { $repo_name:
+        baseurl     => "${baseurl}/yum",
         enabled     => 1,
         autorefresh => 1,
         name        => 'logstash',
         gpgcheck    => 1,
-        gpgkey      => "http://packages.elasticsearch.org/${gpg_key}",
+        gpgkey      => $gpg_key_url,
         type        => 'yum',
       }
 
       # Workaround until zypprepo allows the adding of the keys
       # https://github.com/deadpoint/puppet-zypprepo/issues/4
       exec { 'logstash_suse_import_gpg':
-        command =>  "wget -q -O /tmp/RPM-GPG-KEY-elasticsearch http://packages.elasticsearch.org/${gpg_key}; rpm --import /tmp/RPM-GPG-KEY-elasticsearch; rm /tmp/RPM-GPG-KEY-elasticsearch",
+        command =>  "wget -q -O /tmp/RPM-GPG-KEY-elasticsearch ${gpg_key_url}; rpm --import /tmp/RPM-GPG-KEY-elasticsearch; rm /tmp/RPM-GPG-KEY-elasticsearch",
         unless  =>  "test $(rpm -qa gpg-pubkey | grep -i \"${gpg_id}\" | wc -l) -eq 1 ",
       }
 

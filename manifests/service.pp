@@ -27,9 +27,9 @@
 # * Richard Pijnenburg <mailto:richard.pijnenburg@elasticsearch.com>
 #
 class logstash::service {
+  require ::java
 
   case $logstash::service_provider {
-
     'init': {
       logstash::service::init { $logstash::params::service_name: }
     }
@@ -37,7 +37,5 @@ class logstash::service {
     default: {
       fail("Unknown service provider ${logstash::service_provider}")
     }
-
   }
-
 }
