@@ -29,7 +29,7 @@ define logstash::plugin (
 )
 {
   require logstash::package
-  $exe = '/opt/logstash/bin/plugin'
+  $exe = '/usr/share/logstash/bin/plugin'
 
   # Install plugin as logstash user and make
   # sure we find su on centos and debian
@@ -42,14 +42,14 @@ define logstash::plugin (
   case $source { # Where should we get the plugin from?
     undef: {
       # No explict source, so search Rubygems for the plugin, by name.
-      # ie. "/opt/logstash/bin/plugin install logstash-output-elasticsearch"
+      # ie. "/usr/share/logstash/bin/plugin install logstash-output-elasticsearch"
       $plugin = $name
     }
 
     /^\//: {
       # A gem file that is already available on the local filesystem.
       # Install from the local path.
-      # ie. "/opt/logstash/bin/plugin install /tmp/logtash-filter-custom.gem"
+      # ie. "/usr/share/logstash/bin/plugin install /tmp/logtash-filter-custom.gem"
       $plugin = $source
     }
 

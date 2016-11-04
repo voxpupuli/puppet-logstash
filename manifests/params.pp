@@ -94,7 +94,7 @@ class logstash::params {
       $configdir = '/etc/logstash'
       $package_dir = '/var/lib/logstash/swdl'
       $installpath = '/opt/logstash'
-      $plugin = '/opt/logstash/bin/plugin'
+      $plugin = '/usr/share/logstash/bin/plugin'
     }
     'Darwin': {
       $configdir = '/Library/Application Support/Logstash'
@@ -124,38 +124,6 @@ class logstash::params {
     }
     default: {
       fail("\"${module_name}\" provides no package default value
-            for \"${::operatingsystem}\"")
-    }
-  }
-
-  # service parameters
-  case $::operatingsystem {
-    'RedHat', 'CentOS', 'Fedora', 'Scientific', 'Amazon', 'OracleLinux', 'SLES', 'OpenSuSE': {
-      $service_name       = 'logstash'
-      $service_hasrestart = true
-      $service_hasstatus  = true
-      $service_pattern    = $service_name
-      $service_providers  = [ 'init' ]
-      $defaults_location  = '/etc/sysconfig'
-    }
-    'Debian', 'Ubuntu': {
-      $service_name       = 'logstash'
-      $service_hasrestart = true
-      $service_hasstatus  = true
-      $service_pattern    = $service_name
-      $service_providers  = [ 'init' ]
-      $defaults_location  = '/etc/default'
-    }
-    'Darwin': {
-      $service_name       = 'net.logstash'
-      $service_hasrestart = true
-      $service_hasstatus  = true
-      $service_pattern    = $service_name
-      $service_providers  = [ 'launchd' ]
-      $defaults_location  = false
-    }
-    default: {
-      fail("\"${module_name}\" provides no service parameters
             for \"${::operatingsystem}\"")
     }
   }

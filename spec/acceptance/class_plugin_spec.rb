@@ -17,11 +17,11 @@ describe 'class plugin' do
   end
 
   def installed_plugins
-    shell('/opt/logstash/bin/plugin list').stdout
+    shell('/usr/share/logstash/bin/plugin list').stdout
   end
 
   def remove(plugin)
-    shell("/opt/logstash/bin/plugin uninstall #{plugin} || true")
+    shell("/usr/share/logstash/bin/plugin uninstall #{plugin} || true")
   end
 
   before(:all) do

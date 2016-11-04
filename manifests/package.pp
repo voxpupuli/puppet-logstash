@@ -23,7 +23,6 @@
 # * Richard Pijnenburg <mailto:richard.pijnenburg@elasticsearch.com>
 #
 class logstash::package {
-  require ::java
 
   Exec {
     path      => [ '/bin', '/usr/bin', '/usr/local/bin' ],

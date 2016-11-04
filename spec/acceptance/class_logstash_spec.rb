@@ -2,7 +2,7 @@ require 'spec_helper_acceptance'
 
 shared_examples 'a logstash installer' do
   it "should install logstash version #{LS_VERSION}" do
-    expect(shell('/opt/logstash/bin/logstash --version').stdout).to eq("logstash #{LS_VERSION}\n")
+    expect(shell('/usr/share/logstash/bin/logstash --version').stdout).to eq("logstash #{LS_VERSION}\n")
   end
 
   describe package('logstash') do
