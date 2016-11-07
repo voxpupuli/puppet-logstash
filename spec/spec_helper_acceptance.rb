@@ -13,7 +13,7 @@ PUPPET_VERSION = ENV['PUPPET_VERSION'] || '3.8.6'
 PE_VERSION = ENV['BEAKER_PE_VER'] || ENV['PE_VERSION'] || '3.8.3'
 PE_DIR = ENV['BEAKER_PE_DIR']
 
-REPO_VERSION = LS_VERSION[0..(LS_VERSION.rindex('.') - 1)] # "1.5.3-1" -> "1.5"
+REPO_VERSION = LS_VERSION[0] + ".x" # "5.0.1" -> "5.x"
 
 def agent_version_for_puppet_version(puppet_version)
   # REF: https://docs.puppet.com/puppet/latest/reference/about_agent.html

@@ -56,7 +56,6 @@ class logstash::package {
         backup  => false,
         require => Exec['create_package_dir_logstash'],
       }
-
     }
 
   } else { # Package removal

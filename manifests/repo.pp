@@ -59,7 +59,7 @@ class logstash::repo {
     'RedHat': {
       yumrepo { $repo_name:
         descr    => 'Logstash Centos Repo',
-        baseurl  => "${url_root}/centos",
+        baseurl  => "${url_root}/yum",
         gpgcheck => 1,
         gpgkey   => $gpg_key_url,
         enabled  => 1,

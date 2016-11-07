@@ -47,22 +47,17 @@ define logstash::package::install(
 
     # Check if we want to install a specific version or not
     if $version == false {
-
       $package_ensure = $logstash::autoupgrade ? {
         true  => 'latest',
         false => 'present',
       }
-
     } else {
-
       # install specific version
       $package_ensure = $version
-
     }
 
     # action
     if ($package_url != undef) {
-
       case $logstash::software_provider {
         'package': { $before = Package[$name]  }
         default:   { fail("software provider \"${logstash::software_provider}\".") }
@@ -82,9 +77,7 @@ define logstash::package::install(
       $pkg_source = "${package_dir}/${basefilename}"
 
       case $protocol_type {
-
         'puppet': {
-
           file { $pkg_source:
             ensure  => file,
             source  => $package_url,
@@ -92,10 +85,8 @@ define logstash::package::install(
             backup  => false,
             before  => $before,
           }
-
         }
         'ftp', 'https', 'http': {
-
           exec { "download_package_logstash_${name}":
             command => "${logstash::params::download_tool} ${pkg_source} ${package_url} 2> /dev/null",
             path    => ['/usr/bin', '/bin'],
@@ -104,11 +95,8 @@ define logstash::package::install(
             require => File[$package_dir],
             before  => $before,
           }
-
         }
-
         'file': {
-
           $source_path = $sourceArray[1]
           file { $pkg_source:
             ensure  => file,
@@ -117,7 +105,6 @@ define logstash::package::install(
             backup  => false,
             before  => $before,
           }
-
         }
         default: {
           fail("Protocol must be puppet, file, http, https, or ftp. You have given \"${protocol_type}\"")
@@ -125,23 +112,19 @@ define logstash::package::install(
       }
 
       if ($logstash::software_provider == 'package') {
-
         case $ext {
           'deb':   { $pkg_provider = 'dpkg'  }
           'rpm':   { $pkg_provider = 'rpm'   }
           default: { fail("Unknown file extention \"${ext}\".") }
         }
-
       }
-
     } else {
       $pkg_source      = undef
       $pkg_provider    = undef
     }
-
   } else { # Package removal
     $pkg_source     = undef
-    $package_ensure = 'absent'
+    $package_ensure = 'purged'
     if ($::osfamily == 'Suse') {
       $pkg_provider = 'rpm'
     } else {
@@ -151,7 +134,6 @@ define logstash::package::install(
   }
 
   if ($logstash::software_provider == 'package') {
-
     package { $name:
       ensure   => $package_ensure,
       name     => $package_name,
@@ -159,9 +141,7 @@ define logstash::package::install(
       provider => $pkg_provider,
       tag      => 'logstash',
     }
-
   } else {
     fail("\"${logstash::software_provider}\" is not supported")
   }
-
 }
