@@ -68,14 +68,8 @@
 #   This can be a http,https or ftp resource for remote packages
 #   puppet:// resource or file:/ for local packages
 #
-# [*package_dir*]
-#   Directory where the packages are downloaded to
-#
 # [*package_name*]
 #   Logstash packagename
-#
-# [*purge_package_dir*]
-#   Purge package directory on removal
 #
 # [*package_dl_timeout*]
 #   For http,https and ftp downloads you can set howlong the exec resource may take.
@@ -142,9 +136,7 @@ class logstash(
   $autoupgrade         = $logstash::params::autoupgrade,
   $version             = false,
   $package_url         = undef,
-  $package_dir         = $logstash::params::package_dir,
   $package_name        = $logstash::params::package_name,
-  $purge_package_dir   = $logstash::params::purge_package_dir,
   $package_dl_timeout  = $logstash::params::package_dl_timeout,
   $logstash_user       = $logstash::params::logstash_user,
   $logstash_group      = $logstash::params::logstash_group,

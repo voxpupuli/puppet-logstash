@@ -47,8 +47,6 @@ class logstash::params {
   # Purge configuration directory
   $purge_configdir = false
 
-  $purge_package_dir = false
-
   # package download timeout
   $package_dl_timeout = 600 # 300 seconds is default of puppet
 
@@ -65,7 +63,6 @@ class logstash::params {
   $download_tool = 'wget --no-check-certificate -O'
 
   $configdir = '/etc/logstash'
-  $package_dir = '/var/lib/logstash/swdl'
   $installpath = '/opt/logstash'
   $plugin = '/usr/share/logstash/bin/plugin'
 

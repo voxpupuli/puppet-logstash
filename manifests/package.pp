@@ -23,57 +23,12 @@
 # * Richard Pijnenburg <mailto:richard.pijnenburg@elasticsearch.com>
 #
 class logstash::package {
-
-  Exec {
-    path      => [ '/bin', '/usr/bin', '/usr/local/bin' ],
-    cwd       => '/',
-    tries     => 3,
-    try_sleep => 10,
-  }
-
-  #### Package management
-
-  # set params: in operation
-  if $logstash::ensure == 'present' {
-
-    # action
-    if ($logstash::package_url != undef) {
-
-      $package_dir = $logstash::package_dir
-
-      # Create directory to place the package file
-      exec { 'create_package_dir_logstash':
-        cwd     => '/',
-        path    => ['/usr/bin', '/bin'],
-        command => "mkdir -p ${logstash::package_dir}",
-        creates => $logstash::package_dir;
-      }
-
-      file { $package_dir:
-        ensure  => 'directory',
-        purge   => $logstash::purge_package_dir,
-        force   => $logstash::purge_package_dir,
-        backup  => false,
-        require => Exec['create_package_dir_logstash'],
-      }
-    }
-
-  } else { # Package removal
-    $package_dir = $logstash::package_dir
-
-    file { $package_dir:
-      ensure => 'absent',
-      purge  => true,
-      force  => true,
-      backup => false,
-    }
-
-  }
-
-  #class { 'logstash::package::core': }
   logstash::package::install { 'logstash':
     package_url  => $logstash::package_url,
     version      => $logstash::version,
     package_name => $logstash::package_name,
   }
+
+
+
 }

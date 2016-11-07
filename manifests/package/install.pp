@@ -58,9 +58,6 @@ define logstash::package::install(
 
     # action
     if ($package_url != undef) {
-
-      $package_dir = $logstash::package_dir
-
       $filenameArray = split($package_url, '/')
       $basefilename = $filenameArray[-1]
 
@@ -70,14 +67,13 @@ define logstash::package::install(
       $extArray = split($basefilename, '\.')
       $ext = $extArray[-1]
 
-      $pkg_source = "${package_dir}/${basefilename}"
+      $pkg_source = "/tmp/${basefilename}"
 
       case $protocol_type {
         'puppet': {
           file { $pkg_source:
             ensure  => file,
             source  => $package_url,
-            require => File[$package_dir],
             backup  => false,
             before  => $before,
           }
@@ -88,7 +84,6 @@ define logstash::package::install(
             path    => ['/usr/bin', '/bin'],
             creates => $pkg_source,
             timeout => $logstash::package_dl_timeout,
-            require => File[$package_dir],
             before  => $before,
           }
         }
@@ -97,7 +92,6 @@ define logstash::package::install(
           file { $pkg_source:
             ensure  => file,
             source  => $source_path,
-            require => File[$package_dir],
             backup  => false,
             before  => $before,
           }
