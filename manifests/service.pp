@@ -45,20 +45,16 @@ class logstash::service {
 
   $startup_options = merge($logstash::startup_options, $default_startup_options)
 
-  # set params: in operation
   if $logstash::ensure == 'present' {
     case $logstash::status {
-      # make sure service is currently running, start it on boot
       'enabled': {
         $service_ensure = 'running'
         $service_enable = true
       }
-      # make sure service is currently stopped, do not start it on boot
       'disabled': {
         $service_ensure = 'stopped'
         $service_enable = false
       }
-      # make sure service is currently running, do not start it on boot
       'running': {
         $service_ensure = 'running'
         $service_enable = false
@@ -67,25 +63,22 @@ class logstash::service {
         fail("\"${logstash::status}\" is an unknown service status value")
       }
     }
-  # set params: removal
   } else {
-    # make sure the service is stopped and disabled (the removal itself will be
-    # done by package.pp)
     $service_ensure = 'stopped'
     $service_enable = false
   }
 
-  # Startup options, passed as a hash.
-  # REF: https://www.elastic.co/guide/en/logstash/current/config-setting-files.html#_settings_files
-  if ($startup_options != undef) {
-    file {'/etc/logstash/startup.options':
-      content => template('logstash/startup.options.erb'),
-      owner   => 'root',
-      group   => 'root',
-      mode    => '0664',
-    }
+  file {'/etc/logstash/startup.options':
+    content => template('logstash/startup.options.erb'),
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0664',
   }
-
+  ~>
+  # Invoke 'system-install', which generates startup scripts based on the
+  # contents of the 'startup.options' file.
+  exec { '/usr/share/logstash/bin/system-install': refreshonly => true }
+  ~>
   service { 'logstash':
     ensure     => $service_ensure,
     enable     => $service_enable,
