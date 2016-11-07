@@ -43,7 +43,7 @@ class logstash::service {
     'SERVICE_DESCRIPTION' => '"logstash"',
   }
 
-  $startup_options = merge($logstash::startup_options, $default_startup_options)
+  $startup_options = merge($default_startup_options, $logstash::startup_options)
 
   if $logstash::ensure == 'present' {
     case $logstash::status {
@@ -68,17 +68,23 @@ class logstash::service {
     $service_enable = false
   }
 
-  file {'/etc/logstash/startup.options':
-    content => template('logstash/startup.options.erb'),
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0664',
+  if $service_ensure == 'running' {
+    # Then make sure the Logstash startup options are up to date.
+    file {'/etc/logstash/startup.options':
+      content => template('logstash/startup.options.erb'),
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0664',
+    }
+    ~>
+    # Invoke 'system-install', which generates startup scripts based on the
+    # contents of the 'startup.options' file.
+    exec { '/usr/share/logstash/bin/system-install':
+      refreshonly => true,
+      notify => Service['logstash'],
+    }
   }
-  ~>
-  # Invoke 'system-install', which generates startup scripts based on the
-  # contents of the 'startup.options' file.
-  exec { '/usr/share/logstash/bin/system-install': refreshonly => true }
-  ~>
+
   service { 'logstash':
     ensure     => $service_ensure,
     enable     => $service_enable,
