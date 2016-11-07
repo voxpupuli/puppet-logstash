@@ -62,39 +62,13 @@ class logstash::params {
   $logstash_group = 'logstash'
 
   # Download tool
+  $download_tool = 'wget --no-check-certificate -O'
 
-  case $::kernel {
-    'Linux': {
-      $download_tool = 'wget --no-check-certificate -O'
-    }
-    'Darwin': {
-      $download_tool = 'curl -o'
-    }
-    default: {
-      fail("\"${module_name}\" provides no download tool default value
-           for \"${::kernel}\"")
-    }
-  }
+  $configdir = '/etc/logstash'
+  $package_dir = '/var/lib/logstash/swdl'
+  $installpath = '/opt/logstash'
+  $plugin = '/usr/share/logstash/bin/plugin'
 
-  # Different path definitions
-  case $::kernel {
-    'Linux': {
-      $configdir = '/etc/logstash'
-      $package_dir = '/var/lib/logstash/swdl'
-      $installpath = '/opt/logstash'
-      $plugin = '/usr/share/logstash/bin/plugin'
-    }
-    'Darwin': {
-      $configdir = '/Library/Application Support/Logstash'
-      $package_dir = '/Library/Logstash/swdl'
-      $installpath = '/Library/Logstash'
-      $plugin = '/Library/Logstash/bin/plugin'
-    }
-    default: {
-      fail("\"${module_name}\" provides no config directory default value
-           for \"${::kernel}\"")
-    }
-  }
   $patterndir = "${configdir}/patterns"
   $plugindir = "${configdir}/plugins"
 
