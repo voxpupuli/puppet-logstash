@@ -34,9 +34,6 @@ describe 'class logstash' do
       it_behaves_like 'a logstash installer'
 
       it 'should be idempotent' do
-        if fact('lsbdistdescription') =~ /debian.*jessie/i
-          skip('https://github.com/elastic/puppet-logstash/issues/266')
-        end
         expect_no_change_from_manifest(install_logstash_manifest)
       end
     end
@@ -76,9 +73,6 @@ describe 'class logstash' do
     end
 
     it 'should be idempotent' do
-      if fact('lsbdistdescription') =~ /debian.*jessie/i
-        skip('https://github.com/elastic/puppet-logstash/issues/266')
-      end
       expect_no_change_from_manifest(remove_logstash_manifest)
     end
 
@@ -89,9 +83,6 @@ describe 'class logstash' do
     describe service('logstash') do
       it { should_not be_running }
       it 'should not be enabled' do
-        if fact('lsbdistdescription') =~ /debian.*jessie/i
-          skip('https://github.com/elastic/puppet-logstash/issues/266')
-        end
         should_not be_enabled
       end
     end

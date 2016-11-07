@@ -231,10 +231,10 @@ hosts.each do |host|
   end
 
   # Provide a Logstash plugin as a local Gem.
-  scp_to(host, './spec/fixtures/plugins/logstash-output-cowsay-0.1.0.gem', '/tmp/')
+  scp_to(host, './spec/fixtures/plugins/logstash-output-cowsay-5.0.0.gem', '/tmp/')
 
   # ...and another plugin that can be fetched from Puppet with "puppet://"
-  FileUtils.cp('./spec/fixtures/plugins/logstash-output-cowthink-0.1.0.gem', './files/')
+  FileUtils.cp('./spec/fixtures/plugins/logstash-output-cowthink-5.0.0.gem', './files/')
 
   # Provide this module to the test system.
   project_root = File.dirname(File.dirname(__FILE__))

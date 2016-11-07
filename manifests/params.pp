@@ -64,7 +64,6 @@ class logstash::params {
 
   $configdir = '/etc/logstash'
   $installpath = '/opt/logstash'
-  $plugin = '/usr/share/logstash/bin/plugin'
 
   $patterndir = "${configdir}/patterns"
   $plugindir = "${configdir}/plugins"

@@ -29,27 +29,19 @@ define logstash::plugin (
 )
 {
   require logstash::package
-  $exe = '/usr/share/logstash/bin/plugin'
-
-  # Install plugin as logstash user and make
-  # sure we find su on centos and debian
-  Exec {
-    path => '/bin:/usr/bin',
-  }
-  $exe_prefix = "su - '${::logstash::logstash_user}' -s /bin/bash -c '"
-  $exe_suffix = "'"
+  $exe = '/usr/share/logstash/bin/logstash-plugin'
 
   case $source { # Where should we get the plugin from?
     undef: {
       # No explict source, so search Rubygems for the plugin, by name.
-      # ie. "/usr/share/logstash/bin/plugin install logstash-output-elasticsearch"
+      # ie. "logstash-plugin install logstash-output-elasticsearch"
       $plugin = $name
     }
 
     /^\//: {
       # A gem file that is already available on the local filesystem.
       # Install from the local path.
-      # ie. "/usr/share/logstash/bin/plugin install /tmp/logtash-filter-custom.gem"
+      # ie. "logstash-plugin install /tmp/logtash-filter-custom.gem"
       $plugin = $source
     }
 
@@ -72,30 +64,33 @@ define logstash::plugin (
   case $ensure {
     'present': {
       exec { "install-${name}":
-        command => "${exe_prefix}${exe} install ${plugin}${exe_suffix}",
-        unless  => "${exe_prefix}${exe} list ^${name}${exe_suffix}$",
-        timeout => 1800,
+        command => "${exe} install ${plugin}",
+        unless  => "${exe} list ^${name}$",
       }
     }
 
     /^\d+\.\d+\.\d+/: {
       exec { "install-${name}":
-        command => "${exe_prefix}${exe} install --version ${ensure} ${plugin}${exe_suffix}",
-        unless  => "${exe_prefix}${exe} list --verbose ^${name}\$${exe_suffix} | grep --fixed-strings --quiet '(${ensure})'",
-        timeout => 1800,
+        command => "${exe} install --version ${ensure} ${plugin}",
+        unless  => "${exe} list --verbose ^${name}$ | grep --fixed-strings --quiet '(${ensure})'",
       }
     }
 
     'absent': {
       exec { "remove-${name}":
-        command => "${exe_prefix}${exe} uninstall ${name}${exe_suffix}",
-        onlyif  => "${exe_prefix}${exe} list${exe_suffix} | grep -q ^${name}$",
-        timeout => 1800,
+        command => "${exe} remove ${name}",
+        onlyif  => "${exe} list${exe_suffix} | grep -q ^${name}$",
       }
     }
 
     default: {
-      fail "'ensure' should be 'present' or 'absent'."
+      fail "'ensure' should be 'present', 'absent', or a version like '1.3.4'."
     }
+  }
+
+  Exec {
+    path    => '/bin:/usr/bin',
+    user    => $logstash::logstash_user,
+    timeout => 1800,
   }
 }
