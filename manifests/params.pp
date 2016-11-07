@@ -58,20 +58,8 @@ class logstash::params {
   #### Internal module values
 
   # User and Group for the files and user to run the service as.
-  case $::kernel {
-    'Linux': {
-      $logstash_user  = 'root'
-      $logstash_group = 'root'
-    }
-    'Darwin': {
-      $logstash_user  = 'root'
-      $logstash_group = 'wheel'
-    }
-    default: {
-      fail("\"${module_name}\" provides no user/group default value
-           for \"${::kernel}\"")
-    }
-  }
+  $logstash_user  = 'logstash'
+  $logstash_group = 'logstash'
 
   # Download tool
 
