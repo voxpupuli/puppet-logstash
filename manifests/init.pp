@@ -68,9 +68,6 @@
 #   This can be a http,https or ftp resource for remote packages
 #   puppet:// resource or file:/ for local packages
 #
-# [*software_provider*]
-#   Way to install the packages, currently only packages are supported.
-#
 # [*package_dir*]
 #   Directory where the packages are downloaded to
 #
@@ -96,21 +93,9 @@
 # [*service_provider*]
 #   Service provider to use. By Default when a single service provider is possibe that one is selected.
 #
-# [*init_defaults*]
-#   Defaults file content in hash representation
-#
-# [*init_defaults_file*]
-#   Defaults file as puppet resource
-#
-# [*init_template*]
-#   Service file as a template
-#
-# [*java_install*]
-#  Install java which is required for Logstash.
-#  Defaults to: false
-#
-# [*java_package*]
-#   If you like to install a custom java package, put the name here.
+# [*startup_options*]
+#   Options used for running the Logstash process.
+#   See: https://www.elastic.co/guide/en/logstash/current/config-setting-files.html
 #
 # [*manage_repo*]
 #   Enable repo management by enabling our official repositories
@@ -156,7 +141,6 @@ class logstash(
   $restart_on_change   = $logstash::params::restart_on_change,
   $autoupgrade         = $logstash::params::autoupgrade,
   $version             = false,
-  $software_provider   = 'package',
   $package_url         = undef,
   $package_dir         = $logstash::params::package_dir,
   $package_name        = $logstash::params::package_name,
@@ -166,9 +150,7 @@ class logstash(
   $logstash_group      = $logstash::params::logstash_group,
   $configdir           = $logstash::params::configdir,
   $purge_configdir     = $logstash::params::purge_configdir,
-  $init_defaults       = undef,
-  $init_defaults_file  = undef,
-  $init_template       = undef,
+  $startup_options     = {},
   $manage_repo         = true,
   $repo_version        = $logstash::params::repo_version,
 ) inherits logstash::params {

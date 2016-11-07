@@ -58,10 +58,6 @@ define logstash::package::install(
 
     # action
     if ($package_url != undef) {
-      case $logstash::software_provider {
-        'package': { $before = Package[$name]  }
-        default:   { fail("software provider \"${logstash::software_provider}\".") }
-      }
 
       $package_dir = $logstash::package_dir
 
@@ -133,15 +129,11 @@ define logstash::package::install(
 
   }
 
-  if ($logstash::software_provider == 'package') {
-    package { $name:
-      ensure   => $package_ensure,
-      name     => $package_name,
-      source   => $pkg_source,
-      provider => $pkg_provider,
-      tag      => 'logstash',
-    }
-  } else {
-    fail("\"${logstash::software_provider}\" is not supported")
+  package { 'logstash':
+    ensure   => $package_ensure,
+    name     => $package_name,
+    source   => $pkg_source,
+    provider => $pkg_provider,
+    tag      => 'logstash',
   }
 }

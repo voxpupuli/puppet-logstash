@@ -27,6 +27,24 @@
 # * Richard Pijnenburg <mailto:richard.pijnenburg@elasticsearch.com>
 #
 class logstash::service {
+  $default_startup_options = {
+    'JAVACMD'             => '/usr/bin/java',
+    'LS_HOME'             => '/usr/share/logstash',
+    'LS_SETTINGS_DIR'     => '/etc/logstash',
+    'LS_OPTS'             => '"--path.settings ${LS_SETTINGS_DIR}"',
+    'LS_JAVA_OPTS'        => '""',
+    'LS_PIDFILE'          => '/var/run/logstash.pid',
+    'LS_USER'             => $logstash::logstash_user,
+    'LS_GROUP'            => $logstash::logstash_group,
+    'LS_GC_LOG_FILE'      => '/var/log/logstash/gc.log',
+    'LS_OPEN_FILES'       => '16384',
+    'LS_NICE'             => '19',
+    'SERVICE_NAME'        => '"logstash"',
+    'SERVICE_DESCRIPTION' => '"logstash"',
+  }
+
+  $startup_options = merge($logstash::startup_options, $default_startup_options)
+
   # set params: in operation
   if $logstash::ensure == 'present' {
     case $logstash::status {
@@ -45,20 +63,10 @@ class logstash::service {
         $service_ensure = 'running'
         $service_enable = false
       }
-      # do not start service on boot, do not care whether currently running
-      # or not
-      'unmanaged': {
-        $service_ensure = undef
-        $service_enable = false
-      }
-      # unknown status
-      # note: don't forget to update the parameter check in init.pp if you
-      #       add a new or change an existing status.
       default: {
         fail("\"${logstash::status}\" is an unknown service status value")
       }
     }
-
   # set params: removal
   } else {
     # make sure the service is stopped and disabled (the removal itself will be
@@ -67,30 +75,14 @@ class logstash::service {
     $service_enable = false
   }
 
-  if ( $logstash::status != 'unmanaged' ) {
-    # defaults file content. Either from a hash or file
-    if ($logstash::init_defaults_file != undef) {
-      $defaults_content = undef
-      $defaults_source  = $logstash::init_defaults_file
-    } elsif ($logstash::init_defaults != undef and is_hash($logstash::init_defaults) ) {
-      $defaults_content = template("${module_name}/etc/sysconfig/defaults.erb")
-      $defaults_source  = undef
-    } else {
-      $defaults_content = undef
-      $defaults_source  = undef
-    }
-
-    # Check if we are going to manage the defaults file.
-    if ( $defaults_content != undef or $defaults_source != undef ) {
-      file { "${logstash::params::defaults_location}/${name}":
-        ensure  => $logstash::ensure,
-        source  => $defaults_source,
-        content => $defaults_content,
-        owner   => 'root',
-        group   => 'root',
-        mode    => '0644',
-        tag     => ['logstash_config'],
-      }
+  # Startup options, passed as a hash.
+  # REF: https://www.elastic.co/guide/en/logstash/current/config-setting-files.html#_settings_files
+  if ($startup_options != undef) {
+    file {'/etc/logstash/startup.options':
+      content => template('logstash/startup.options.erb'),
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0664',
     }
   }
 

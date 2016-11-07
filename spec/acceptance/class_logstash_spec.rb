@@ -97,11 +97,11 @@ describe 'class logstash' do
     end
   end
 
-  describe 'init_defaults parameter' do
+  describe 'startup_options parameter' do
     context "with 'LS_USER' => 'root'" do
       before do
-        init_defaults = "{ 'LS_USER' => 'root' }"
-        install_logstash_from_local_file("init_defaults => #{init_defaults}")
+        startup_options = "{ 'LS_USER' => 'root' }"
+        install_logstash_from_local_file("startup_options => #{startup_options}")
       end
 
       it 'should run logstash as root' do
