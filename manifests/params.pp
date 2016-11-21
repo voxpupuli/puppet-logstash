@@ -63,7 +63,6 @@ class logstash::params {
   $download_tool = 'wget --no-check-certificate -O'
 
   $configdir = '/etc/logstash'
-  $installpath = '/opt/logstash'
 
   $patterndir = "${configdir}/patterns"
   $plugindir = "${configdir}/plugins"
