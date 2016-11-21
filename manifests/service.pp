@@ -85,11 +85,24 @@ class logstash::service {
     }
   }
 
+  # Puppet 3 doesn't know that Debian 8 uses systemd, not SysV init,
+  # so we'll help it out with our knowledge from the future.
+  if($::operatingsystem == 'debian' and $::operatingsystemmajrelease == '8'){
+    $service_provider = 'systemd'
+  }
+  else {
+    # In most cases, Puppet can figure out the correct service
+    # provider on its own, so we'll just say 'undef', and let it do
+    # whatever it thinks is best.
+    $service_provider = undef
+  }
+
   service { 'logstash':
     ensure     => $service_ensure,
     enable     => $service_enable,
     hasstatus  => true,
     hasrestart => true,
+    provider   => $service_provider,
   }
 
   # If any files tagged as config files for the service are changed, notify
