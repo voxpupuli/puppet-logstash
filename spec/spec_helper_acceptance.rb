@@ -117,7 +117,7 @@ def remove_logstash_manifest
 end
 
 def stop_logstash_manifest
-  "class { 'logstash': ensure => 'disabled' }"
+  "class { 'logstash': status => 'disabled' }"
 end
 
 # Provide a basic Logstash install. Useful as a testing pre-requisite.
