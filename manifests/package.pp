@@ -19,7 +19,7 @@
 #
 #
 # === Authors
-# https://github.com/elastic/puppet-logstash/graphs/contributors#
+# https://github.com/elastic/puppet-logstash/graphs/contributors
 #
 class logstash::package(
   $package_url = $logstash::package_url,
@@ -95,12 +95,10 @@ class logstash::package(
         }
       }
 
-      if ($logstash::software_provider == 'package') {
-        case $ext {
-          'deb':   { $pkg_provider = 'dpkg'  }
-          'rpm':   { $pkg_provider = 'rpm'   }
-          default: { fail("Unknown file extention \"${ext}\".") }
-        }
+      case $ext {
+        'deb':   { $pkg_provider = 'dpkg'  }
+        'rpm':   { $pkg_provider = 'rpm'   }
+        default: { fail("Unknown file extention \"${ext}\".") }
       }
     } else {
       $pkg_source      = undef
@@ -114,7 +112,6 @@ class logstash::package(
     } else {
       $pkg_provider = undef
     }
-
   }
 
   package { 'logstash':

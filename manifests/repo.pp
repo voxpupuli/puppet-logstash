@@ -36,7 +36,7 @@ class logstash::repo {
 
   case $::osfamily {
     'Debian': {
-      require apt
+      include apt
 
       apt::source { $repo_name:
         location => "${url_root}/apt",
@@ -51,7 +51,7 @@ class logstash::repo {
         },
       }
 
-      Apt::Source[$repo_name] ~> Class['Apt::Update'] ~> Package['logstash']
+      Apt::Source[$repo_name] ~> Class['Apt::Update'] -> Package['logstash']
     }
     'RedHat': {
       yumrepo { $repo_name:
