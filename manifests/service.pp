@@ -24,7 +24,7 @@
 #
 # === Authors
 #
-# * Richard Pijnenburg <mailto:richard.pijnenburg@elasticsearch.com>
+# https://github.com/elastic/puppet-logstash/graphs/contributors
 #
 class logstash::service {
   $default_startup_options = {
@@ -81,7 +81,7 @@ class logstash::service {
     # contents of the 'startup.options' file.
     exec { '/usr/share/logstash/bin/system-install':
       refreshonly => true,
-      notify => Service['logstash'],
+      notify      => Service['logstash'],
     }
   }
 

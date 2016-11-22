@@ -25,63 +25,26 @@
 #
 # === Authors
 #
-# * Richard Pijnenburg <mailto:richard.pijnenburg@elasticsearch.com>
-# * Matthias Baur <mailto:matthias.baur@dmc.de>
-#
+# https://github.com/elastic/puppet-logstash/graphs/contributors#
+
 class logstash::params {
-
   #### Default values for the parameters of the main module class, init.pp
-
-  # ensure
+  $package_name = 'logstash'
   $ensure = 'present'
-
-  # autoupgrade
-  $autoupgrade = false
-
-  # service status
   $status = 'enabled'
-
-  # restart on configuration change?
-  $restart_on_change = true
-
-  # Purge configuration directory
-  $purge_configdir = false
-
-  # package download timeout
-  $package_dl_timeout = 600 # 300 seconds is default of puppet
-
-  # default version to use if none is provided when manage_repo is set to true
-  $repo_version = '5.x'
-
-  #### Internal module values
-
-  # User and Group for the files and user to run the service as.
   $logstash_user  = 'logstash'
   $logstash_group = 'logstash'
 
-  # Download tool
-  $download_tool = 'wget --no-check-certificate -O'
-
   $configdir = '/etc/logstash'
-
   $patterndir = "${configdir}/patterns"
   $plugindir = "${configdir}/plugins"
+  $purge_configdir = false
 
-  # packages
-  case $::operatingsystem {
-    'RedHat', 'CentOS', 'Fedora', 'Scientific', 'Amazon', 'OracleLinux', 'SLES', 'OpenSuSE': {
-      # main application
-      $package = [ 'logstash' ]
-      $package_name = 'logstash'
-    }
-    'Debian', 'Ubuntu': {
-      # main application
-      $package = [ 'logstash' ]
-      $package_name = 'logstash'
-    }
-    default: {
-      fail("\"${module_name}\" provides no package default value
-            for \"${::operatingsystem}\"")
-    }
-  }
+  $repo_version = '5.x'
+  $autoupgrade = false
+  $download_tool = 'wget --no-check-certificate -O'
+  $download_timeout = 600 # 300 seconds is default of puppet
+
+  # restart on configuration change?
+  $restart_on_change = true
 }

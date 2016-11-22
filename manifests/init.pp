@@ -71,7 +71,7 @@
 # [*package_name*]
 #   Logstash packagename
 #
-# [*package_dl_timeout*]
+# [*download_timeout*]
 #   For http,https and ftp downloads you can set howlong the exec resource may take.
 #   Defaults to: 600 seconds
 #
@@ -137,7 +137,7 @@ class logstash(
   $version             = false,
   $package_url         = undef,
   $package_name        = $logstash::params::package_name,
-  $package_dl_timeout  = $logstash::params::package_dl_timeout,
+  $download_timeout  = $logstash::params::download_timeout,
   $logstash_user       = $logstash::params::logstash_user,
   $logstash_group      = $logstash::params::logstash_group,
   $configdir           = $logstash::params::configdir,
@@ -161,8 +161,8 @@ class logstash(
   validate_bool($autoupgrade)
 
   # package download timeout
-  if ! is_integer($package_dl_timeout) {
-    fail("\"${package_dl_timeout}\" is not a valid number for 'package_dl_timeout' parameter")
+  if ! is_integer($download_timeout) {
+    fail("\"${download_timeout}\" is not a valid number for 'download_timeout' parameter")
   }
 
   # service status

@@ -78,7 +78,7 @@ class logstash::package(
             command => "${logstash::params::download_tool} ${pkg_source} ${package_url} 2> /dev/null",
             path    => ['/usr/bin', '/bin'],
             creates => $pkg_source,
-            timeout => $logstash::package_dl_timeout,
+            timeout => $logstash::download_timeout,
             before  => $before,
           }
         }
