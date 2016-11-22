@@ -20,9 +20,7 @@
 #
 # === Authors
 #
-# * Phil Fenstermacher <mailto:phillip.fenstermacher@gmail.com>
-# * Richard Pijnenburg <mailto:richard.pijnenburg@elasticsearch.com>
-# * Matthias Baur <mailto:matthias.baur@dmc.de>
+# https://github.com/elastic/puppet-logstash/graphs/contributors
 #
 class logstash::repo {
   $version = $logstash::repo_version
@@ -53,8 +51,7 @@ class logstash::repo {
         },
       }
 
-      Apt::Source[$repo_name] -> Package<|tag == 'logstash'|>
-      Class['Apt::Update'] -> Package<|tag == 'logstash'|>
+      Apt::Source[$repo_name] ~> Class['Apt::Update'] ~> Package['logstash']
     }
     'RedHat': {
       yumrepo { $repo_name:

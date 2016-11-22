@@ -113,20 +113,11 @@ def install_logstash_from_local_file_manifest(extra_args = nil)
 end
 
 def remove_logstash_manifest
-  <<-END
-  class { 'logstash':
-    ensure => absent,
-  }
-  END
+  "class { 'logstash': ensure => 'absent' }"
 end
 
 def stop_logstash_manifest
-  <<-END
-  service { 'logstash':
-    ensure => stopped,
-    enable => false,
-  }
-  END
+  "class { 'logstash': ensure => 'disabled' }"
 end
 
 # Provide a basic Logstash install. Useful as a testing pre-requisite.

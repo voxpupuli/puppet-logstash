@@ -19,8 +19,7 @@
 #
 #
 # === Authors
-#
-# * Richard Pijnenburg <mailto:richard.pijnenburg@elasticsearch.com>
+# https://github.com/elastic/puppet-logstash/graphs/contributors#
 #
 class logstash::package(
   $package_url = $logstash::package_url,
@@ -123,6 +122,5 @@ class logstash::package(
     name     => $package_name,
     source   => $pkg_source,
     provider => $pkg_provider,
-    tag      => 'logstash',
   }
 }

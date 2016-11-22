@@ -25,10 +25,10 @@
 #
 # === Authors
 #
-# https://github.com/elastic/puppet-logstash/graphs/contributors#
-
+# https://github.com/elastic/puppet-logstash/graphs/contributors
+#
 class logstash::params {
-  #### Default values for the parameters of the main module class, init.pp
+  # Default values for the parameters of the main module class, init.pp.
   $package_name = 'logstash'
   $ensure = 'present'
   $status = 'enabled'
@@ -43,7 +43,7 @@ class logstash::params {
   $repo_version = '5.x'
   $autoupgrade = false
   $download_tool = 'wget --no-check-certificate -O'
-  $download_timeout = 600 # 300 seconds is default of puppet
+  $download_timeout = 600  # Exec[] timeout default is 300.
 
   # restart on configuration change?
   $restart_on_change = true

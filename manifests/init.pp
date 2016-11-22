@@ -92,7 +92,7 @@
 #   See: https://www.elastic.co/guide/en/logstash/current/config-setting-files.html
 #
 # [*manage_repo*]
-#   Enable repo management by enabling our official repositories
+#   Enable repo management by enabling official repositories
 #
 # [*repo_version*]
 #   Our repositories are versioned per major version (1.3, 1.4) select here which version you want
@@ -108,12 +108,6 @@
 #       manage_repo => true,
 #     }
 #
-# * If you're not already managing Java some other way:
-#     class { 'logstash':
-#       manage_repo  => true,
-#       java_install => true,
-#     }
-#
 # * Removal/decommissioning:
 #     class { 'logstash':
 #       ensure => 'absent',
@@ -127,7 +121,7 @@
 #
 # === Authors
 #
-# * Richard Pijnenburg <mailto:richard.pijnenburg@elasticsearch.com>
+# https://github.com/elastic/puppet-logstash/graphs/contributors
 #
 class logstash(
   $ensure              = $logstash::params::ensure,
