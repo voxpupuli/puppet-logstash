@@ -5,7 +5,7 @@ HOSTS:
       - database
       - dashboard
     platform: ubuntu-16.04-amd64
-    image: ubuntu:16.04
+    image: library/ubuntu:16.04
     hypervisor: docker
     docker_cmd: '["/sbin/init"]'
     docker_image_commands:
