@@ -237,7 +237,6 @@ hosts.each do |host|
   install_dev_puppet_module_on(host, source: project_root, module_name: 'logstash')
 
   # Also install any other modules we need on the test system.
-  install_puppet_module_via_pmt_on(host, module_name: 'puppetlabs-java')
   install_puppet_module_via_pmt_on(host, module_name: 'puppetlabs-stdlib')
   install_puppet_module_via_pmt_on(host, module_name: 'puppetlabs-apt')
   install_puppet_module_via_pmt_on(host, module_name: 'electrical-file_concat')
