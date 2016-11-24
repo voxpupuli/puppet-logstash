@@ -8,7 +8,7 @@ HOSTS:
     docker_image_commands:
       - apt-get update
       - apt-get -y upgrade
-      - apt-get install -yq lsb-release wget net-tools ruby rubygems ruby1.8-dev libaugeas-dev libaugeas-ruby ntpdate locales-all logrotate
+      - apt-get install -yq apt-transport-https lsb-release wget net-tools ruby rubygems ruby1.8-dev libaugeas-dev libaugeas-ruby ntpdate locales-all logrotate
 
       # Install Oracle Java 8
       - echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" | tee /etc/apt/sources.list.d/webupd8team-java.list

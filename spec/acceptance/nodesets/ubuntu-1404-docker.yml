@@ -10,7 +10,7 @@ HOSTS:
     docker_cmd: '["/sbin/init"]'
     docker_image_commands:
       - apt-get update
-      - apt-get install -yq ruby ruby1.9.1-dev libaugeas-dev libaugeas-ruby lsb-release wget net-tools curl software-properties-common
+      - apt-get install -yq apt-transport-https ruby ruby1.9.1-dev libaugeas-dev libaugeas-ruby lsb-release wget net-tools curl software-properties-common
 
       # Install Oracle Java 8
       - echo 'debconf shared/accepted-oracle-license-v1-1 select true' | debconf-set-selections
