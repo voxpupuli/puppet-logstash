@@ -131,7 +131,7 @@ class logstash(
   $version             = false,
   $package_url         = undef,
   $package_name        = $logstash::params::package_name,
-  $download_timeout  = $logstash::params::download_timeout,
+  $download_timeout    = $logstash::params::download_timeout,
   $logstash_user       = $logstash::params::logstash_user,
   $logstash_group      = $logstash::params::logstash_group,
   $configdir           = $logstash::params::configdir,
