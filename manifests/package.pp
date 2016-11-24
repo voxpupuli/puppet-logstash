@@ -101,8 +101,12 @@ class logstash::package(
         default: { fail("Unknown file extention \"${ext}\".") }
       }
     } else {
+      # Use the OS packaging system to locate the package.
       $pkg_source      = undef
       $pkg_provider    = undef
+      if $::osfamily == 'Debian' {
+        $require = Class['apt::update']
+      }
     }
   } else { # Package removal
     $pkg_source     = undef
@@ -119,5 +123,6 @@ class logstash::package(
     name     => $package_name,
     source   => $pkg_source,
     provider => $pkg_provider,
+    require  => $require,
   }
 }

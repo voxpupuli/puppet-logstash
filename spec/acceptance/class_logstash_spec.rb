@@ -25,10 +25,10 @@ end
 
 describe 'class logstash' do
   describe 'ensure => present' do
-    context 'with basic arguments' do
+    context 'with include-like declaration' do
       before(:all) do
         remove_logstash
-        install_logstash
+        include_logstash
       end
 
       it_behaves_like 'a logstash installer'

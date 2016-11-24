@@ -49,9 +49,11 @@ class logstash::repo {
         include  => {
           'src' => false,
         },
+        notify   => [
+          Class['apt::update'],
+          Exec['apt_update'],
+        ]
       }
-
-      Apt::Source[$repo_name] ~> Class['Apt::Update'] -> Package['logstash']
     }
     'RedHat': {
       yumrepo { $repo_name:

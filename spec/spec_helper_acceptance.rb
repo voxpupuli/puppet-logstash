@@ -126,6 +126,11 @@ def install_logstash(extra_args = nil)
   sleep 5 # FIXME: This is horrible.
 end
 
+def include_logstash
+  apply_manifest('include logstash', catch_failures: true, debug: true)
+  sleep 5 # FIXME: This is horrible.
+end
+
 def install_logstash_from_url(url, extra_args = nil)
   manifest = install_logstash_from_url_manifest(url, extra_args)
   apply_manifest(manifest, catch_failures: true)

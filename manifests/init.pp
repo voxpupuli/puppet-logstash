@@ -141,85 +141,35 @@ class logstash(
   $repo_version        = $logstash::params::repo_version,
 ) inherits logstash::params {
 
-  anchor {'logstash::begin': }
-  anchor {'logstash::end': }
-
   #### Validate parameters
+  validate_bool($autoupgrade)
+  validate_bool($restart_on_change)
+  validate_bool($purge_configdir)
+  validate_bool($manage_repo)
 
-  # ensure
   if ! ($ensure in [ 'present', 'absent' ]) {
     fail("\"${ensure}\" is not a valid ensure parameter value")
   }
 
-  # autoupgrade
-  validate_bool($autoupgrade)
-
-  # package download timeout
   if ! is_integer($download_timeout) {
     fail("\"${download_timeout}\" is not a valid number for 'download_timeout' parameter")
   }
 
-  # service status
   if ! ($status in [ 'enabled', 'disabled', 'running', 'unmanaged' ]) {
     fail("\"${status}\" is not a valid status parameter value")
   }
-
-  # restart on change
-  validate_bool($restart_on_change)
-
-  # purge conf dir
-  validate_bool($purge_configdir)
 
   if ($package_url != undef and $version != false) {
     fail('Unable to set the version number when using package_url option.')
   }
 
-  validate_bool($manage_repo)
-
   if ($manage_repo == true) {
     validate_string($repo_version)
   }
 
-  #### Manage actions
 
-  # package(s)
-  class { 'logstash::package': }
-
-  # configuration
-  class { 'logstash::config': }
-
-  # service(s)
-  class { 'logstash::service': }
-
-  if ($manage_repo == true) {
-    # Set up repositories
-    # The order (repository before packages) is managed within logstash::repo
-    # We can't use the anchor or stage pattern here, since it breaks other modules also depending on the apt class
-    include logstash::repo
-  }
-
-  #### Manage relationships
-
-  if $ensure == 'present' {
-
-    # we need the software before configuring it
-    Anchor['logstash::begin']
-    -> Class['logstash::package']
-    -> Class['logstash::config']
-
-    # we need the software and a working configuration before running a service
-    Class['logstash::package'] -> Class['logstash::service']
-    Class['logstash::config']  -> Class['logstash::service']
-
-    Class['logstash::service'] -> Anchor['logstash::end']
-
-  } else {
-
-    # make sure all services are getting stopped before software removal
-    Anchor['logstash::begin']
-    -> Class['logstash::service']
-    -> Class['logstash::package']
-    -> Anchor['logstash::end']
-
-  }
+  if ($manage_repo == true) { include logstash::repo }
+  include logstash::package
+  include logstash::config
+  include logstash::service
 }
