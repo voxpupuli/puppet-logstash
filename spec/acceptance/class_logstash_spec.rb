@@ -5,8 +5,18 @@ shared_examples 'a logstash installer' do
     expect(shell('/usr/share/logstash/bin/logstash --version').stdout).to eq("logstash #{LS_VERSION}\n")
   end
 
-  describe package('logstash') do
-    it { should be_installed }
+  case fact('osfamily')
+  when 'RedHat', 'Suse'
+    describe package('logstash') do
+      it { should be_installed }
+    end
+  when 'Debian'
+    # Serverspec has been falsely reporting the package as not installed on
+    # Debian 7, so we'll implement our own version of "should be_installed".
+    it "should install logstash package version #{logstash_package_version}" do
+      apt_output = shell('apt-cache policy logstash').stdout
+      expect(apt_output).to include("Installed: #{logstash_package_version}")
+    end
   end
 
   describe service('logstash') do
