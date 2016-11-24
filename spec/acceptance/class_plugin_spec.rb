@@ -72,12 +72,12 @@ describe 'class plugin' do
       ensure_plugin('present', plugin, "source => '#{source}'")
       expect(installed_plugins).to contain(plugin)
     end
-  end
 
-  it 'can install a plugin from a local gem' do
-    plugin = 'logstash-output-cowsay'
-    source = "/tmp/#{plugin}-5.0.0.gem"
-    ensure_plugin('present', plugin, "source => '#{source}'")
-    expect(installed_plugins).to contain(plugin)
+    it 'can install a plugin from a local gem' do
+      plugin = 'logstash-output-cowsay'
+      source = "/tmp/#{plugin}-5.0.0.gem"
+      ensure_plugin('present', plugin, "source => '#{source}'")
+      expect(installed_plugins).to contain(plugin)
+    end
   end
 end
