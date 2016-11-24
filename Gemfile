@@ -5,6 +5,7 @@ puppetversion = ENV['PUPPET_VERSION'] || '4.5.1'
 gem 'puppet', puppetversion, :require => false
 
 gem 'beaker', '3.4.0'
+gem 'beaker-pe', '1.6.1'
 gem 'beaker-rspec', '6.0.0'
 
 # REF: https://github.com/voxpupuli/metadata-json-lint/issues/10
