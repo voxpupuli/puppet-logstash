@@ -95,7 +95,7 @@
 #   Enable repo management by enabling official repositories
 #
 # [*repo_version*]
-#   Our repositories are versioned per major version (1.3, 1.4) select here which version you want
+#   Logstash repositories are versioned per major version (5.x) select here which version you want
 #
 # [*configdir*]
 #   Path to directory containing the logstash configuration.
