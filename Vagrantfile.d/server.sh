@@ -1,5 +1,4 @@
 # Install and configure puppetserver.
-
 export DEBIAN_FRONTEND=noninteractive
 
 apt-get update
@@ -20,9 +19,23 @@ service puppetserver start
 echo '127.0.0.1 localhost puppet' > /etc/hosts
 
 # Install puppet-logstash dependencies.
-for mod in puppetlabs-apt puppetlabs-java puppetlabs-stdlib electrical-file_concat; do
+for mod in puppetlabs-apt puppetlabs-stdlib electrical-file_concat; do
     puppet module install --target-dir=/etc/puppetlabs/code/environments/production/modules $mod
 done
 
-# Minimal manifest to test the Logstash module.
-echo 'include ::logstash' > /etc/puppetlabs/code/environments/production/manifests/site.pp
+# Install Java 8 for Logstash.
+apt-get install openjdk-8-jre-headless
+java -version
+
+# Place a manifest to test the Logstash module.
+cat <<EOF > /etc/puppetlabs/code/environments/production/manifests/site.pp
+class { 'logstash':
+  manage_repo  => true,
+  repo_version => '5.x',
+  version      => '1:5.0.1-1',
+}
+
+logstash::configfile { 'basic_config':
+  content => 'input { tcp { port => 2000 } } output { null {} }'
+}
+EOF
