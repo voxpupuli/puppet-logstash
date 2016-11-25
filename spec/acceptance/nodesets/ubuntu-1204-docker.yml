@@ -9,6 +9,14 @@ HOSTS:
     hypervisor: docker
     docker_cmd: '["/sbin/init"]'
     docker_image_commands:
+      # The base image disables Upstart, which is the "right thing" to do for
+      # containers. However, we actually want Upstart, because we are trying
+      # to simulate a full system. Thus, we undo the magic from upstream's
+      # Dockerfile.
+      # REF: https://github.com/tianon/docker-brew-ubuntu-core/blob/aec74cf404240664b289d28948d9284a4afd1181/precise/Dockerfile#L14
+      - rm /sbin/initctl
+      - dpkg-divert --rename --remove /sbin/initctl
+
       - apt-get install -yq apt-transport-https ruby1.8-dev libaugeas-dev libaugeas-ruby ruby rubygems lsb-release wget net-tools curl python-software-properties
 
       # Install Oracle Java 8
