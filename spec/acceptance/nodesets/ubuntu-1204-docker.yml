@@ -25,7 +25,6 @@ HOSTS:
       - apt-add-repository ppa:webupd8team/java
       - apt-get update
       - apt-get install -yq oracle-java8-installer
-      - apt-get install -yq oracle-java8-set-default
     docker_preserve_image: true
 CONFIG:
   type: foss
