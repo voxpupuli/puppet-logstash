@@ -60,8 +60,16 @@ class logstash::params {
   # User and Group for the files and user to run the service as.
   case $::kernel {
     'Linux': {
-      $logstash_user  = 'root'
-      $logstash_group = 'root'
+       case $operatingsystem {
+        /^(Debian|Ubuntu)$/: {
+          $logstash_user  = 'logstash'
+          $logstash_group = 'logstash'
+        }
+        default: {
+          $logstash_user  = 'root'
+          $logstash_group = 'root'
+        }
+      }
     }
     'Darwin': {
       $logstash_user  = 'root'
