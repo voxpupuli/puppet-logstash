@@ -63,5 +63,4 @@ env:
     - PUPPET_VERSION=3.8.7 BEAKER_set=ubuntu-1404
     - PUPPET_VERSION=4.8.1 BEAKER_set=ubuntu-1404
 
-    - PUPPET_VERSION=3.8.7 BEAKER_set=ubuntu-1604
     - PUPPET_VERSION=4.8.1 BEAKER_set=ubuntu-1604
