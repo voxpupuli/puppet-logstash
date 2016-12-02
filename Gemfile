@@ -30,6 +30,7 @@ gem 'rspec-puppet-facts'
 gem 'rubocop'
 gem 'serverspec', '2.37.2'
 gem 'specinfra', '2.57.2'
+gem 'syck'
 gem 'webmock'
 gem 'redcarpet'
 
