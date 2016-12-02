@@ -22,7 +22,7 @@ shared_examples 'a logstash installer' do
   describe service('logstash') do
     it { should be_running }
     it 'should be_enabled' do
-      if fact('lsbdistdescription' =~ /centos 6/i)
+      if fact('lsbdistdescription') =~ /centos 6/
         skip('Serverspec seems confused about this on Centos 6.')
       end
       should be_enabled

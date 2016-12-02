@@ -68,7 +68,7 @@ class logstash::repo {
     }
     'Suse' : {
       zypprepo { $repo_name:
-        baseurl     => "${baseurl}/yum",
+        baseurl     => "${url_root}/yum",
         enabled     => 1,
         autorefresh => 1,
         name        => 'logstash',

@@ -5,7 +5,7 @@
 #
 #
 # === Parameters
-#
+#$
 # This class does not provide any parameters.
 #
 #
@@ -84,10 +84,10 @@ class logstash::package(
         'file': {
           $source_path = $sourceArray[1]
           file { $pkg_source:
-            ensure  => file,
-            source  => $source_path,
-            backup  => false,
-            before  => $before,
+            ensure => file,
+            source => $source_path,
+            backup => false,
+            before => $before,
           }
         }
         default: {
@@ -109,12 +109,13 @@ class logstash::package(
       }
     }
   } else { # Package removal
-    $pkg_source     = undef
-    $package_ensure = 'purged'
+    $pkg_source = undef
     if ($::osfamily == 'Suse') {
       $pkg_provider = 'rpm'
+      $package_ensure = 'absent' # "purged" not supported by provider
     } else {
       $pkg_provider = undef
+      $package_ensure = 'purged'
     }
   }
 

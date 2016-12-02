@@ -94,10 +94,15 @@ class logstash::service {
   elsif(downcase($::operatingsystem) =~ /(redhat|centos)/ and $::operatingsystemmajrelease == '6') {
     $service_provider = 'upstart'
   }
+  # Centos 6 uses Upstart by default, but Puppet can get confused about this too.
+  elsif(downcase($::operatingsystem) =~ /opensuse/ and $::operatingsystemmajrelease == '13') {
+    $service_provider = 'systemd'
+  }
   else {
     # In most cases, Puppet can figure out the correct service
     # provider on its own, so we'll just say 'undef', and let it do
     # whatever it thinks is best.
+
     $service_provider = undef
   }
 
