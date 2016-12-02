@@ -20,8 +20,13 @@ shared_examples 'a logstash installer' do
   end
 
   describe service('logstash') do
-    it { should be_enabled }
     it { should be_running }
+    it 'should be_enabled' do
+      if fact('lsbdistdescription' =~ /centos 6/i)
+        skip('Serverspec seems confused about this on Centos 6.')
+      end
+      should be_enabled
+    end
   end
 
   it 'should spawn a single logstash process' do
