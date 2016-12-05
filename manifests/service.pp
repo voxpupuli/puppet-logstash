@@ -86,22 +86,17 @@ class logstash::service {
     # Then make sure the Logstash startup options are up to date.
     file {'/etc/logstash/startup.options':
       content => template('logstash/startup.options.erb'),
-      owner   => 'root',
-      group   => 'root',
-      mode    => '0664',
     }
-    ~>
+
     # ..and make sure the JVM options are up to date.
     file {'/etc/logstash/jvm.options':
       content => template('logstash/jvm.options.erb'),
-      owner   => 'root',
-      group   => 'root',
-      mode    => '0664',
     }
-    ~>
+
     # Invoke 'system-install', which generates startup scripts based on the
     # contents of the 'startup.options' file.
-    exec { '/usr/share/logstash/bin/system-install':
+    exec { 'logstash-system-install':
+      command     => '/usr/share/logstash/bin/system-install',
       refreshonly => true,
       notify      => Service['logstash'],
     }
@@ -141,5 +136,12 @@ class logstash::service {
   if $::logstash::restart_on_change {
     File<| tag == 'logstash_config' |> ~> Service['logstash']
     Logstash::Plugin<| |> ~> Service['logstash']
+  }
+
+  File {
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0664',
+    notify => Exec['logstash-system-install'],
   }
 }
