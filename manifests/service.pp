@@ -43,7 +43,21 @@ class logstash::service {
     'SERVICE_DESCRIPTION' => '"logstash"',
   }
 
+  $default_jvm_options = [
+    '-Dfile.encoding=UTF-8',
+    '-Djava.awt.headless=true',
+    '-Xms256m',
+    '-Xmx1g',
+    '-XX:CMSInitiatingOccupancyFraction=75',
+    '-XX:+DisableExplicitGC',
+    '-XX:+HeapDumpOnOutOfMemoryError',
+    '-XX:+UseCMSInitiatingOccupancyOnly',
+    '-XX:+UseConcMarkSweepGC',
+    '-XX:+UseParNewGC',
+  ]
+
   $startup_options = merge($default_startup_options, $logstash::startup_options)
+  $jvm_options = $logstash::jvm_options
 
   if $logstash::ensure == 'present' {
     case $logstash::status {
@@ -72,6 +86,14 @@ class logstash::service {
     # Then make sure the Logstash startup options are up to date.
     file {'/etc/logstash/startup.options':
       content => template('logstash/startup.options.erb'),
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0664',
+    }
+    ~>
+    # ..and make sure the JVM options are up to date.
+    file {'/etc/logstash/jvm.options':
+      content => template('logstash/jvm.options.erb'),
       owner   => 'root',
       group   => 'root',
       mode    => '0664',

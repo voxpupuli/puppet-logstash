@@ -115,4 +115,41 @@ describe 'class logstash' do
       end
     end
   end
+
+  describe 'jvm_options parameter' do
+    context "with '-Xms1g'" do
+      before do
+        jvm_options = "[ '-Xms1g' ]"
+        install_logstash_from_local_file("jvm_options => #{jvm_options}")
+      end
+
+      it 'should run java with -Xms1g' do
+        expect(logstash_process_list.pop).to include('-Xms1g')
+      end
+
+      it 'should not run java with the default of -Xms256m' do
+        expect(logstash_process_list.pop).not_to include('-Xms256m')
+      end
+
+      it 'should run java with the default "expert" flags' do
+        expert_flags = [
+          '-Dfile.encoding=UTF-8',
+          '-Djava.awt.headless=true',
+          '-XX:CMSInitiatingOccupancyFraction=75',
+          '-XX:+DisableExplicitGC',
+          '-XX:+HeapDumpOnOutOfMemoryError',
+          '-XX:+UseCMSInitiatingOccupancyOnly',
+          '-XX:+UseConcMarkSweepGC',
+          '-XX:+UseParNewGC',
+        ]
+        expert_flags.each do |flag|
+          expect(logstash_process_list.pop).to include(flag)
+        end
+      end
+    end
+  end
 end
+
+
+
+

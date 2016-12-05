@@ -91,6 +91,9 @@
 #   Options used for running the Logstash process.
 #   See: https://www.elastic.co/guide/en/logstash/current/config-setting-files.html
 #
+# [*jvm_options*]
+#   Array of options passed to the Java Virtual Machine.
+#
 # [*manage_repo*]
 #   Enable repo management by enabling official repositories
 #
@@ -113,32 +116,40 @@
 #       ensure => 'absent',
 #     }
 #
-# * Install everything but disable service(s) afterwards
+# * Install everything but disable service(s) afterwards:
 #     class { 'logstash':
 #       status => 'disabled',
 #     }
 #
+# * Set JVM memory options:
+#     class { 'logstash':
+#       jvm_options => [
+#         '-Xms1g',
+#         '-Xmx1g',
+#       ]
+#     }
 #
 # === Authors
 #
 # https://github.com/elastic/puppet-logstash/graphs/contributors
 #
 class logstash(
-  $ensure              = $logstash::params::ensure,
-  $status              = $logstash::params::status,
-  $restart_on_change   = $logstash::params::restart_on_change,
-  $autoupgrade         = $logstash::params::autoupgrade,
-  $version             = false,
-  $package_url         = undef,
-  $package_name        = $logstash::params::package_name,
-  $download_timeout    = $logstash::params::download_timeout,
-  $logstash_user       = $logstash::params::logstash_user,
-  $logstash_group      = $logstash::params::logstash_group,
-  $configdir           = $logstash::params::configdir,
-  $purge_configdir     = $logstash::params::purge_configdir,
-  $startup_options     = {},
-  $manage_repo         = true,
-  $repo_version        = $logstash::params::repo_version,
+  $ensure            = $logstash::params::ensure,
+  $status            = $logstash::params::status,
+  $restart_on_change = $logstash::params::restart_on_change,
+  $autoupgrade       = $logstash::params::autoupgrade,
+  $version           = false,
+  $package_url       = undef,
+  $package_name      = $logstash::params::package_name,
+  $download_timeout  = $logstash::params::download_timeout,
+  $logstash_user     = $logstash::params::logstash_user,
+  $logstash_group    = $logstash::params::logstash_group,
+  $configdir         = $logstash::params::configdir,
+  $purge_configdir   = $logstash::params::purge_configdir,
+  $startup_options   = {},
+  $jvm_options       = [],
+  $manage_repo       = true,
+  $repo_version      = $logstash::params::repo_version,
 ) inherits logstash::params {
 
   #### Validate parameters
