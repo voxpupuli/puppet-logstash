@@ -149,7 +149,3 @@ describe 'class logstash' do
     end
   end
 end
-
-
-
-
