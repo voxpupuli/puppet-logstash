@@ -103,6 +103,15 @@ describe 'class logstash' do
     end
   end
 
+  describe 'service_provider parameter' do
+    context "with service_provider => 'openrc'" do
+      it 'tries to use openrc as the service provider' do
+        log = apply_manifest('class {"logstash": service_provider => "openrc"}').stderr
+        expect(log).to include('Provider openrc is not functional on this host')
+      end
+    end
+  end
+
   describe 'startup_options parameter' do
     context "with 'LS_USER' => 'root'" do
       before do

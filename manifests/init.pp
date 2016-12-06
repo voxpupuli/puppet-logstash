@@ -85,7 +85,8 @@
 #   Purge the config directory for any unmanaged files
 #
 # [*service_provider*]
-#   Service provider to use. By Default when a single service provider is possibe that one is selected.
+#   Service provider (init system) to use. By Default, the module will try to
+#   choose the 'standard' provider for the current distribution.
 #
 # [*startup_options*]
 #   Options used for running the Logstash process.
@@ -146,6 +147,7 @@ class logstash(
   $logstash_group    = $logstash::params::logstash_group,
   $configdir         = $logstash::params::configdir,
   $purge_configdir   = $logstash::params::purge_configdir,
+  $service_provider  = undef,
   $startup_options   = {},
   $jvm_options       = [],
   $manage_repo       = true,

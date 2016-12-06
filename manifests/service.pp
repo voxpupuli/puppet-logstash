@@ -102,11 +102,19 @@ class logstash::service {
     }
   }
 
-  # Puppet 3 doesn't know that Debian 8 uses systemd, not SysV init,
-  # so we'll help it out with our knowledge from the future.
+  # Figure out which service provider (init system) we should be using.
+  # In general, we'll try to guess based on the operating system.
   $os = downcase($::operatingsystem)
   $release = $::operatingsystemmajrelease
-  if($os == 'debian' and $release == '8') {
+  # However, the operator may have explicitly defined the service provider.
+  if($logstash::service_provider) {
+    $service_provider = $logstash::service_provider
+  }
+  # In the absence of an explicit choice, we'll try to figure out a sensible
+  # default.
+  # Puppet 3 doesn't know that Debian 8 uses systemd, not SysV init, so we'll
+  # help it out with our knowledge from the future.
+  elsif($os == 'debian' and $release == '8') {
     $service_provider = 'systemd'
   }
   # Centos 6 uses Upstart by default, but Puppet can get confused about this too.
