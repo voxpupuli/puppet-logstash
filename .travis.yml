@@ -52,9 +52,7 @@ env:
 
     - PUPPET_VERSION=3.8.7 BEAKER_set=debian-7
     - PUPPET_VERSION=4.8.1 BEAKER_set=debian-7
-    # FIXME: Beaker fails to install PE on Debian 7.
-    # Example: https://travis-ci.org/elastic/puppet-logstash/jobs/159507699#L542
-    # - PUPPET_VERSION=3.8.4 BEAKER_set=debian-7 BEAKER_PE_VER=3.8.4 BEAKER_IS_PE=true
+    - PUPPET_VERSION=3.8.4 BEAKER_set=debian-7 BEAKER_PE_VER=3.8.4 BEAKER_IS_PE=true
 
     - PUPPET_VERSION=3.8.7 BEAKER_set=debian-8
     - PUPPET_VERSION=4.8.1 BEAKER_set=debian-8
