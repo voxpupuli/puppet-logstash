@@ -127,7 +127,7 @@ describe 'class logstash' do
 
   describe 'jvm_options parameter' do
     context "with '-Xms1g'" do
-      before do
+      before(:context) do
         jvm_options = "[ '-Xms1g' ]"
         install_logstash_from_local_file("jvm_options => #{jvm_options}")
       end
