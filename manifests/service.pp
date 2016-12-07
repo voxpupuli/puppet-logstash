@@ -27,6 +27,12 @@
 # https://github.com/elastic/puppet-logstash/graphs/contributors
 #
 class logstash::service {
+  $default_settings = {
+    'path.data'   => '/var/lib/logstash',
+    'path.config' => '/etc/logstash/conf.d',
+    'path.logs'   => '/var/log/logstash',
+  }
+
   $default_startup_options = {
     'JAVACMD'             => '/usr/bin/java',
     'LS_HOME'             => '/usr/share/logstash',
@@ -56,6 +62,7 @@ class logstash::service {
     '-XX:+UseParNewGC',
   ]
 
+  $settings = merge($default_settings, $logstash::settings)
   $startup_options = merge($default_startup_options, $logstash::startup_options)
   $jvm_options = $logstash::jvm_options
 
@@ -91,6 +98,11 @@ class logstash::service {
     # ..and make sure the JVM options are up to date.
     file {'/etc/logstash/jvm.options':
       content => template('logstash/jvm.options.erb'),
+    }
+
+    # ..and the Logstash internal settings too.
+    file {'/etc/logstash/logstash.yml':
+      content => template('logstash/logstash.yml.erb'),
     }
 
     # Invoke 'system-install', which generates startup scripts based on the

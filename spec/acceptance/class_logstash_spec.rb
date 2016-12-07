@@ -112,6 +112,64 @@ describe 'class logstash' do
     end
   end
 
+  describe 'settings parameter' do
+    context "with a flat key'" do
+      before(:context) do
+        settings = "{ 'http.port' => '9999' }"
+        install_logstash_from_local_file("settings => #{settings}")
+      end
+
+      it 'it sets "http.port" to "9999"' do
+        expect_setting('http.port', '9999')
+      end
+
+      it 'it retains the default "path.data" setting' do
+        expect_setting('path.data', '/var/lib/logstash')
+      end
+
+      it 'it retains the default "path.config" setting' do
+        expect_setting('path.config', '/etc/logstash/conf.d')
+      end
+
+      it 'it retains the default "path.logs" setting' do
+        expect_setting('path.logs', '/var/log/logstash')
+      end
+    end
+
+    context 'with a hierarchical key' do
+      before(:context) do
+        settings = <<-END
+        {
+          'pipeline' => {
+            'batch' => {
+              'size' => 99
+            }
+          }
+        }
+        END
+        install_logstash_from_local_file("settings => #{settings}")
+      end
+
+      it 'sets pipeline batch size to 99 hierarchically' do
+        # FIXME: This setting becomes the string "99" in the rendered YAML,
+        # when it should really be the integer value 99. Logstash is OK with
+        # either representation, so we get away with it, but it's not correct.
+        expect(logstash_settings['pipeline']['batch']['size']).to eq('99')
+      end
+    end
+
+    context 'when a default setting exists' do
+      before(:context) do
+        settings = "{ 'path.logs' => '/tmp' }"
+        install_logstash_from_local_file("settings => #{settings}")
+      end
+
+      it 'can override the default' do
+        expect_setting('path.logs', '/tmp')
+      end
+    end
+  end
+
   describe 'startup_options parameter' do
     context "with 'LS_USER' => 'root'" do
       before do

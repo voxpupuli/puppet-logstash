@@ -88,8 +88,12 @@
 #   Service provider (init system) to use. By Default, the module will try to
 #   choose the 'standard' provider for the current distribution.
 #
+# [*settings*]
+#   A hash of Logstash settings, to be defined in logstash.yml.
+#   See: https://www.elastic.co/guide/en/logstash/current/logstash-settings-file.html
+#
 # [*startup_options*]
-#   Options used for running the Logstash process.
+#   A hash of options used for running the Logstash process.
 #   See: https://www.elastic.co/guide/en/logstash/current/config-setting-files.html
 #
 # [*jvm_options*]
@@ -122,6 +126,13 @@
 #       status => 'disabled',
 #     }
 #
+# * Configure Logstash settings:
+#     class { 'logstash':
+#       settings => {
+#         'http.port' => '9700',
+#       }
+#     }
+#
 # * Set JVM memory options:
 #     class { 'logstash':
 #       jvm_options => [
@@ -148,6 +159,7 @@ class logstash(
   $configdir         = $logstash::params::configdir,
   $purge_configdir   = $logstash::params::purge_configdir,
   $service_provider  = undef,
+  $settings          = {},
   $startup_options   = {},
   $jvm_options       = [],
   $manage_repo       = true,

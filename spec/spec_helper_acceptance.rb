@@ -2,6 +2,7 @@ require 'beaker-rspec'
 require 'net/http'
 require 'pry'
 require 'securerandom'
+require 'yaml'
 
 # Collect global options from the environment.
 if ENV['LOGSTASH_VERSION'].nil?
@@ -158,6 +159,14 @@ end
 def logstash_process_list
   ps_cmd = 'ps --no-headers -C java -o user,command | grep logstash/runner.rb'
   shell(ps_cmd, accept_all_exit_codes: true).stdout.split("\n")
+end
+
+def logstash_settings
+  YAML.load(shell('cat /etc/logstash/logstash.yml').stdout)
+end
+
+def expect_setting(setting, value)
+  expect(logstash_settings[setting]).to eq(value)
 end
 
 def pe_package_url
