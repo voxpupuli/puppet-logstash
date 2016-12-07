@@ -242,7 +242,6 @@ hosts.each do |host|
   # Also install any other modules we need on the test system.
   install_puppet_module_via_pmt_on(host, module_name: 'puppetlabs-stdlib')
   install_puppet_module_via_pmt_on(host, module_name: 'puppetlabs-apt')
-  install_puppet_module_via_pmt_on(host, module_name: 'electrical-file_concat')
   install_puppet_module_via_pmt_on(host, module_name: 'darin-zypprepo')
 end
 

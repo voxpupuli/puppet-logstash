@@ -1,64 +1,62 @@
 # == define: logstash::configfile
 #
-# This define is to manage the config files for Logstah
+# This define is to manage the pipeline config files for Logstash
 #
 # === Parameters
 #
 # [*content*]
-#  Supply content to be used for the config file. This can also be a template.
+#  Supply content to be used for the config file, possibly rendered with
+#  template().
 #
 # [*source*]
-#  Supply a puppet file resource to be used for the config file.
-#
-# [*order*]
-#  The order number controls in which sequence the config file fragments are concatenated.
+#  Supply a file resource to be used for the config file.
 #
 # === Examples
 #
 #     Set config file content with a literal value:
 #
-#     logstash::configfile { 'apache':
-#       content => "",
-#       order   => 10
+#     logstash::configfile { 'heartbeat':
+#       content => 'input { heartbeat {} }',
 #     }
 #
-#     or with a puppet file source:
+#     or with a file source:
 #
 #     logstash::configfile { 'apache':
 #       source => 'puppet://path/to/apache.conf',
-#       order  => 10
-#     }
-#
-#     or with template (useful with Hiera):
-#
-#     logstash::configfile { 'apache':
-#       template => "${module_name}/path/to/apache.conf.erb",
-#       order   => 10
 #     }
 #
 # === Authors
 #
-# * Richard Pijnenburg <mailto:richard.pijnenburg@elasticsearch.com>
+# https://github.com/elastic/puppet-logstash/graphs/contributors
 #
-define logstash::configfile(
-  $content = undef,
-  $source = undef,
-  $order = 10,
-  $template = undef,
-) {
+define logstash::configfile($content = undef, $source = undef) {
+  include logstash
 
-  if ($template != undef ) {
-    $config_content = template($template)
-  }
-  else {
-    $config_content = $content
-  }
+  $path = "/etc/logstash/conf.d/${name}.conf"
+  $owner = $logstash::logstash_user
+  $group = $logstash::logstash_group
+  $mode ='0440'
+  $require = Package['logstash'] # So that we have '/etc/logstash/conf.d'.
+  $tag = [ 'logstash_config' ] # So that we notify the service.
 
-  file_fragment { $name:
-    tag     => "LS_CONFIG_${::fqdn}",
-    content => $config_content,
-    source  => $source,
-    order   => $order,
-    before  => [ File_concat['ls-config'] ],
+  if($content){
+    file { $path:
+      content => $content,
+      owner   => $owner,
+      group   => $group,
+      mode    => $mode,
+      require => $require,
+      tag     => $tag,
+    }
+  }
+  elsif($source){
+    file { $path:
+      source  => $source,
+      owner   => $owner,
+      group   => $group,
+      mode    => $mode,
+      require => $require,
+      tag     => $tag,
+    }
   }
 }
