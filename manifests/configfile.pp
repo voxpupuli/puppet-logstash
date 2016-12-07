@@ -1,15 +1,18 @@
 # == define: logstash::configfile
 #
-# This define is to manage the pipeline config files for Logstash
+# This define is to manage the pipeline configuration files for Logstash.
 #
 # === Parameters
+# One of following:
 #
 # [*content*]
-#  Supply content to be used for the config file, possibly rendered with
-#  template().
+#  Literal content to be used for the config file.
+#
+# [*template*]
+#  Location of template from which to render a config file.
 #
 # [*source*]
-#  Supply a file resource to be used for the config file.
+#  A file resource to be used for the config file.
 #
 # === Examples
 #
@@ -19,7 +22,13 @@
 #       content => 'input { heartbeat {} }',
 #     }
 #
-#     or with a file source:
+#     ...from a template:
+#
+#     logstash::configfile { 'from-template':
+#       template => 'site-logstash-module/pipeline-config.erb',
+#     }
+#
+#     ...or from a file source:
 #
 #     logstash::configfile { 'apache':
 #       source => 'puppet://path/to/apache.conf',
@@ -29,7 +38,12 @@
 #
 # https://github.com/elastic/puppet-logstash/graphs/contributors
 #
-define logstash::configfile($content = undef, $source = undef) {
+define logstash::configfile(
+  $content = undef,
+  $source = undef,
+  $template = undef,
+)
+{
   include logstash
 
   $path = "/etc/logstash/conf.d/${name}.conf"
@@ -39,9 +53,12 @@ define logstash::configfile($content = undef, $source = undef) {
   $require = Package['logstash'] # So that we have '/etc/logstash/conf.d'.
   $tag = [ 'logstash_config' ] # So that we notify the service.
 
-  if($content){
+  if($template)   { $config = template($template) }
+  elsif($content) { $config = $content }
+
+  if($config){
     file { $path:
-      content => $content,
+      content => $config,
       owner   => $owner,
       group   => $group,
       mode    => $mode,

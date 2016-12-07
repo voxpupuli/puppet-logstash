@@ -20,6 +20,23 @@ describe 'define logstash::configfile' do
     end
   end
 
+  context 'with a template' do
+    manifest = <<-END
+    logstash::configfile { 'from-template':
+      template => 'logstash/configfile-template.erb'
+    }
+    END
+
+    before(:context) do
+      apply_manifest(manifest, catch_failures: true, debug: true)
+    end
+
+    it 'creates a config file from the template' do
+      result = shell('cat /etc/logstash/conf.d/from-template.conf').stdout
+      expect(result).to include('2 + 2 equals 4')
+    end
+  end
+
   context 'with a puppet:// url as source parameter' do
     manifest = <<-END
     logstash::configfile { 'null-output':

@@ -244,6 +244,9 @@ hosts.each do |host|
   # ...and another plugin that can be fetched from Puppet with "puppet://"
   FileUtils.cp('./spec/fixtures/plugins/logstash-output-cowthink-5.0.0.gem', './files/')
 
+  # Provide a config file template.
+  FileUtils.cp('./spec/fixtures/templates/configfile-template.erb', './templates/')
+
   # Provide this module to the test system.
   project_root = File.dirname(File.dirname(__FILE__))
   install_dev_puppet_module_on(host, source: project_root, module_name: 'logstash')
