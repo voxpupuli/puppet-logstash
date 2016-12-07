@@ -151,10 +151,10 @@ describe 'class logstash' do
       end
 
       it 'sets pipeline batch size to 99 hierarchically' do
-        # FIXME: This setting becomes the string "99" in the rendered YAML,
+        # FIXME: Some Puppet versions put the string "99" in the rendered YAML
         # when it should really be the integer value 99. Logstash is OK with
         # either representation, so we get away with it, but it's not correct.
-        expect(logstash_settings['pipeline']['batch']['size']).to eq('99')
+        expect(logstash_settings['pipeline']['batch']['size'].to_i).to eq(99)
       end
     end
 
@@ -173,6 +173,7 @@ describe 'class logstash' do
   describe 'startup_options parameter' do
     context "with 'LS_USER' => 'root'" do
       before do
+        remove_logstash
         startup_options = "{ 'LS_USER' => 'root' }"
         install_logstash_from_local_file("startup_options => #{startup_options}")
       end
