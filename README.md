@@ -6,7 +6,7 @@ A Puppet module for managing and configuring [Logstash](http://logstash.net/).
 
 ## Versions
 
-This overview shows you which Puppet module and Logstash version work together.
+This table shows which Puppet module and Logstash versions work together.
 
     ------------------------------------
     | Puppet module | Logstash         |
@@ -23,6 +23,8 @@ This overview shows you which Puppet module and Logstash version work together.
     ------------------------------------
     | 0.6.x         | 1.5.0 - 2.x      |
     ------------------------------------
+    | 5.x           | 5.x              |
+    ------------------------------------
 
 ## Requirements
 
@@ -38,10 +40,7 @@ Optional:
 This minimum viable configuration ensures that the service is running and that it will be started at boot time.
 
 ``` puppet
-class { 'logstash':
-  manage_repo  => true,
-  java_install => true,
-}
+include logstash
 
 # It is essential to provide a valid Logstash configuration file for the daemon to start.
 logstash::configfile { 'my_ls_config':
