@@ -41,4 +41,4 @@ describe 'class patternfile' do
       expect(log).not_to include(restart_message)
     end
   end
-end
+ end

@@ -1,42 +1,35 @@
-# == define: logstash::configfile
+# This type represents a Logstash pipeline configuration file.
 #
-# This define is to manage the pipeline configuration files for Logstash.
+# Parameters are mutually exclusive. Only one should be specified.
 #
-# === Parameters
-# One of following:
+# @param [String] content
+#  Literal content to be placed in the file.
 #
-# [*content*]
-#  Literal content to be used for the config file.
+# @param [String] template
+#  A template from which to render the file.
 #
-# [*template*]
-#  Location of template from which to render a config file.
+# @param [String] source
+#  A file resource to be used for the file.
 #
-# [*source*]
-#  A file resource to be used for the config file.
+# @example Create a config file content with literal content.
 #
-# === Examples
+#   logstash::configfile { 'heartbeat':
+#     content => 'input { heartbeat {} }',
+#   }
 #
-#     Set config file content with a literal value:
+# @example Render a config file from a template.
 #
-#     logstash::configfile { 'heartbeat':
-#       content => 'input { heartbeat {} }',
-#     }
+#   logstash::configfile { 'from-template':
+#     template => 'site-logstash-module/pipeline-config.erb',
+#   }
 #
-#     ...from a template:
+# @example Copy the config from a file source.
 #
-#     logstash::configfile { 'from-template':
-#       template => 'site-logstash-module/pipeline-config.erb',
-#     }
+#   logstash::configfile { 'apache':
+#     source => 'puppet://path/to/apache.conf',
+#   }
 #
-#     ...or from a file source:
-#
-#     logstash::configfile { 'apache':
-#       source => 'puppet://path/to/apache.conf',
-#     }
-#
-# === Authors
-#
-# https://github.com/elastic/puppet-logstash/graphs/contributors
+# @author https://github.com/elastic/puppet-logstash/graphs/contributors
 #
 define logstash::configfile(
   $content = undef,
@@ -46,7 +39,7 @@ define logstash::configfile(
 {
   include logstash
 
-  $path = "/etc/logstash/conf.d/${name}.conf"
+  $path = "${logstash::configdir}/conf.d/${name}.conf"
   $owner = $logstash::logstash_user
   $group = $logstash::logstash_group
   $mode ='0440'

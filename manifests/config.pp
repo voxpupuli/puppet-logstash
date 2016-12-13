@@ -48,13 +48,13 @@ class logstash::config {
     }
 
     $directories = [
-      $logstash::patterndir,
-      $logstash::plugindir,
-      "${logstash::plugindir}/logstash",
-      "${logstash::plugindir}/logstash/inputs",
-      "${logstash::plugindir}/logstash/outputs",
-      "${logstash::plugindir}/logstash/filters",
-      "${logstash::plugindir}/logstash/codecs",
+      "${logstash::configdir}/patterns",
+      "${logstash::configdir}/plugins",
+      "${logstash::configdir}/plugins/logstash",
+      "${logstash::configdir}/plugins/logstash/inputs",
+      "${logstash::configdir}/plugins/logstash/outputs",
+      "${logstash::configdir}/plugins/logstash/filters",
+      "${logstash::configdir}/plugins/logstash/codecs",
     ]
 
     file { $directories:,

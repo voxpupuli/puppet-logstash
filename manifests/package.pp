@@ -34,23 +34,18 @@ class logstash::package(
     try_sleep => 10,
   }
 
-  #### Package management
-
-  # set params: in operation
   if $logstash::ensure == 'present' {
-
-    # Check if we want to install a specific version or not
-    if $version == false {
+    # Check if we want to install a specific version.
+    if $version {
+      $package_ensure = $version
+    }
+    else {
       $package_ensure = $logstash::autoupgrade ? {
         true  => 'latest',
         false => 'present',
       }
-    } else {
-      # install specific version
-      $package_ensure = $version
     }
 
-    # action
     if ($package_url != undef) {
       $filenameArray = split($package_url, '/')
       $basefilename = $filenameArray[-1]
@@ -74,7 +69,7 @@ class logstash::package(
         }
         'ftp', 'https', 'http': {
           exec { "download_package_logstash_${name}":
-            command => "${logstash::params::download_tool} ${pkg_source} ${package_url} 2> /dev/null",
+            command => "wget -O ${pkg_source} ${package_url} 2> /dev/null",
             path    => ['/usr/bin', '/bin'],
             creates => $pkg_source,
             timeout => $logstash::download_timeout,
