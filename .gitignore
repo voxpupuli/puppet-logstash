@@ -17,5 +17,6 @@ pkg/
 spec/reports/
 spec/logs
 log
+doc
 *.lock
 **.swp
