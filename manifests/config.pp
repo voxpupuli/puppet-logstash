@@ -1,7 +1,7 @@
 # This class provides various pre-requisites for configuring Logstash.
 #
-# @example Require this class to ensure its resources are available.
-#   require logstash::config
+# @example Include this class to ensure its resources are available.
+#   include logstash::config
 #
 # @author https://github.com/elastic/puppet-logstash/graphs/contributors
 #

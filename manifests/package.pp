@@ -1,19 +1,19 @@
-srequiore# This class manages the Logstash package.
+# This class manages the Logstash package.
 #
 # It is usually used only by the top-level `logstash` class. It's unlikely
 # that you will need to declare this class yourself.
 #
 # @param [String] package_name
-# The name of the Logstash package in the package manager.
+#   The name of the Logstash package in the package manager.
 #
 # @param [String] version
-# Install precisely this version from the package manager.
+#   Install precisely this version from the package manager.
 #
 # @param [String] package_url
-# Get the package from this URL, not from the package manager.
+#   Get the package from this URL, not from the package manager.
 #
-# @example Require this class to ensure its resources are available.
-#   require logstash::package
+# @example Include this class to ensure its resources are available.
+#   include logstash::package
 #
 # @author https://github.com/elastic/puppet-logstash/graphs/contributors
 #

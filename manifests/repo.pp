@@ -1,26 +1,12 @@
-# == Class: logstash::repo
+# This class manages package repositories for Logstash.
 #
-# This class exists to install and manage yum and apt repositories
-# that contain logstash official logstash packages
+# It is usually used only by the top-level `logstash` class. It's unlikely
+# that you will need to declare this class yourself.
 #
+# @example Include this class to ensure its resources are available.
+#   include logstash::repo
 #
-# === Parameters
-#
-# This class does not provide any parameters.
-#
-#
-# === Examples
-#
-# This class may be imported by other classes to use its functionality:
-#   class { 'logstash::repo': }
-#
-# It is not intended to be used directly by external resources like node
-# definitions or other modules.
-#
-#
-# === Authors
-#
-# https://github.com/elastic/puppet-logstash/graphs/contributors
+# @author https://github.com/elastic/puppet-logstash/graphs/contributors
 #
 class logstash::repo {
   $version = $logstash::repo_version
@@ -52,7 +38,7 @@ class logstash::repo {
         notify   => [
           Class['apt::update'],
           Exec['apt_update'],
-        ]
+        ],
       }
     }
     'RedHat': {

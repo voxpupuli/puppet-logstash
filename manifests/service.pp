@@ -1,30 +1,12 @@
-# == Class: logstash::service
+# This mangages the system service for Logstash.
 #
-# This class exists to coordinate all service management related actions,
-# functionality and logical units in a central place.
+# It is usually used only by the top-level `logstash` class. It's unlikely
+# that you will need to declare this class yourself.
 #
-# <b>Note:</b> "service" is the Puppet term and type for background processes
-# in general and is used in a platform-independent way. E.g. "service" means
-# "daemon" in relation to Unix-like systems.
+# @example Include this class to ensure its resources are available.
+#   include logstash::service
 #
-#
-# === Parameters
-#
-# This class does not provide any parameters.
-#
-#
-# === Examples
-#
-# This class may be imported by other classes to use its functionality:
-#   class { 'logstash::service': }
-#
-# It is not intended to be used directly by external resources like node
-# definitions or other modules.
-#
-#
-# === Authors
-#
-# https://github.com/elastic/puppet-logstash/graphs/contributors
+# @author https://github.com/elastic/puppet-logstash/graphs/contributors
 #
 class logstash::service {
   $default_settings = {
