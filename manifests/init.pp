@@ -85,32 +85,39 @@
 #   Path containing the Logstash configuration.
 #
 # @example Install Logstash, ensure the service is running and enabled.
-#     class { 'logstash': }
+#   class { 'logstash': }
 #
 # @example Remove Logstash.
-#     class { 'logstash':
-#       ensure => 'absent',
-#     }
+#   class { 'logstash':
+#     ensure => 'absent',
+#   }
 #
 # @example Install everything but disable the service.
-#     class { 'logstash':
-#       status => 'disabled',
-#     }
+#   class { 'logstash':
+#     status => 'disabled',
+#   }
 #
 # @example Configure Logstash settings.
-#     class { 'logstash':
-#       settings => {
-#         'http.port' => '9700',
-#       }
+#   class { 'logstash':
+#     settings => {
+#       'http.port' => '9700',
 #     }
+#   }
+#
+# @example Configure Logstash startup options.
+#   class { 'logstash':
+#     startup_options => {
+#       'LS_USER' => 'root',
+#     }
+#   }
 #
 # @example Set JVM memory options.
-#     class { 'logstash':
-#       jvm_options => [
-#         '-Xms1g',
-#         '-Xmx1g',
-#       ]
-#     }
+#   class { 'logstash':
+#     jvm_options => [
+#       '-Xms1g',
+#       '-Xmx1g',
+#     ]
+#   }
 #
 # @author https://github.com/elastic/puppet-logstash/graphs/contributors
 #
