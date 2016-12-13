@@ -1,32 +1,15 @@
-# == Class: logstash::config
+# This class provides various pre-requisites for configuring Logstash.
 #
-# This class exists to coordinate all configuration related actions,
-# functionality and logical units in a central place.
+# @example Require this class to ensure its resources are available.
+#   require logstash::config
 #
-#
-# === Parameters
-#
-# This class does not provide any parameters.
-#
-#
-# === Examples
-#
-# This class may be imported by other classes to use its functionality:
-#   class { 'logstash::config': }
-#
-# It is not intended to be used directly by external resources like node
-# definitions or other modules.
-#
-#
-# === Authors
-#
-# https://github.com/elastic/puppet-logstash/graphs/contributors
+# @author https://github.com/elastic/puppet-logstash/graphs/contributors
 #
 class logstash::config {
   require logstash::package
 
   File {
-    owner => $logstash::logstash_user,
+    owner  => $logstash::logstash_user,
     group => $logstash::logstash_group,
   }
 
@@ -58,7 +41,7 @@ class logstash::config {
     ]
 
     file { $directories:,
-      ensure  => directory,
+      ensure => directory,
     }
   }
   elsif ( $logstash::ensure == 'absent' ) {

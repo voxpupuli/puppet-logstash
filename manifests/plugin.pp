@@ -3,25 +3,27 @@
 # By default, plugins are downloaded from RubyGems, but it is also possible
 # to install from a local Gem, or one stored in Puppet.
 #
-# @example install a plugin
+# @example Install a plugin.
 #   logstash::plugin { 'logstash-input-stdin': }
 #
-# @example remove a plugin
+# @example Remove a plugin.
 #   logstash::plugin { 'logstash-input-stout':
 #     ensure => absent,
 #   }
 #
-# @example install a plugin from a local file
+# @example Install a plugin from a local file.
 #   logstash::plugin { 'logstash-input-custom':
 #     source => 'file:///tmp/logstash-input-custom.gem',
 #   }
 #
-# @example install a plugin from a Puppet module.
+# @example Install a plugin from a Puppet module.
 #   logstash::plugin { 'logstash-input-custom':
 #     source => 'puppet:///modules/logstash-site-plugins/logstash-input-custom.gem',
 #   }
 #
-# @param source [String] install from this file, not from RubyGems.
+# @param ensure [String] Install or remove with `present` or `absent`.
+#
+# @param source [String] Install from this file, not from RubyGems.
 #
 define logstash::plugin (
   $source = undef,
