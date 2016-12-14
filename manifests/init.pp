@@ -54,7 +54,7 @@
 # @param [String] logstash_group
 #   The group that Logstash should run as. This also controls file group ownership.
 #
-# @param [Boolean] purge_configdir
+# @param [Boolean] purge_config
 #   Purge the config directory of any unmanaged files,
 #
 # @param [String] service_provider
@@ -133,7 +133,7 @@ class logstash(
   $logstash_user     = 'logstash',
   $logstash_group    = 'logstash',
   $configdir         = '/etc/logstash',
-  $purge_configdir   = false,
+  $purge_config      = true,
   $service_provider  = undef,
   $settings          = {},
   $startup_options   = {},
@@ -142,10 +142,9 @@ class logstash(
   $repo_version      = '5.x',
 )
 {
-  #### Validate parameters
   validate_bool($autoupgrade)
   validate_bool($restart_on_change)
-  validate_bool($purge_configdir)
+  validate_bool($purge_config)
   validate_bool($manage_repo)
 
   if ! ($ensure in [ 'present', 'absent' ]) {
