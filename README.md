@@ -4,27 +4,11 @@ A Puppet module for managing and configuring [Logstash](http://logstash.net/).
 
 [![Build Status](https://travis-ci.org/elastic/puppet-logstash.png?branch=master)](https://travis-ci.org/elastic/puppet-logstash)
 
-## Versions
+## Logstash Versions
 
-This table shows which Puppet module and Logstash versions work together.
-
-    ------------------------------------
-    | Puppet module | Logstash         |
-    ------------------------------------
-    | 0.0.1 - 0.1.0 | 1.1.9            |
-    ------------------------------------
-    | 0.2.0         | 1.1.10           |
-    ------------------------------------
-    | 0.3.0 - 0.3.4 | 1.1.12 - 1.1.13  |
-    ------------------------------------
-    | 0.4.0 - 0.4.2 | 1.2.x - 1.3.x    |
-    ------------------------------------
-    | 0.5.0 - 0.5.1 | 1.4.1 - 1.4.2    |
-    ------------------------------------
-    | 0.6.x         | 1.5.0 - 2.x      |
-    ------------------------------------
-    | 5.x           | 5.x              |
-    ------------------------------------
+This module, "elastic/logstash" supports only Logstash 5.x. For earlier
+Logstash versions, support is provided by the legacy module,
+"elasticsearch/logstash".
 
 ## Requirements
 
