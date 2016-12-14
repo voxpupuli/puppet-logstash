@@ -97,7 +97,7 @@ class { 'logstash':
 ### Allow automatic point-release upgrades
 ``` puppet
 class { 'logstash':
-  autoupgrade  => true,
+  auto_upgrade  => true,
 }
 ```
 

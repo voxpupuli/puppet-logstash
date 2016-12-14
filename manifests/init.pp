@@ -8,7 +8,7 @@
 #   exact behavior is dependant on the service provider, specifically its
 #   support for the 'purgable' property.
 #
-# @param [Boolean] autoupgrade
+# @param [Boolean] auto_upgrade
 #   If set to `true`, Logstash will be upgraded if the package provider is
 #   able to find a newer version.  The exact behavior is dependant on the
 #   service provider, specifically its support for the 'upgradeable' property.
@@ -125,7 +125,7 @@ class logstash(
   $ensure            = 'present',
   $status            = 'enabled',
   $restart_on_change = true,
-  $autoupgrade       = false,
+  $auto_upgrade       = false,
   $version           = undef,
   $package_url       = undef,
   $package_name      = 'logstash',
@@ -142,7 +142,7 @@ class logstash(
   $repo_version      = '5.x',
 )
 {
-  validate_bool($autoupgrade)
+  validate_bool($auto_upgrade)
   validate_bool($restart_on_change)
   validate_bool($purge_config)
   validate_bool($manage_repo)

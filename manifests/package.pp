@@ -29,7 +29,7 @@ class logstash::package(
       $package_ensure = $version
     }
     else {
-      $package_ensure = $logstash::autoupgrade ? {
+      $package_ensure = $logstash::auto_upgrade ? {
         true  => 'latest',
         false => 'present',
       }
