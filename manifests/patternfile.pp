@@ -29,7 +29,7 @@ define logstash::patternfile ($source = undef, $filename = undef) {
   if($filename) { $destination = $filename }
   else          { $destination = basename($source) }
 
-  file { "${logstash::configdir}/patterns/${destination}":
+  file { "${logstash::config_dir}/patterns/${destination}":
     ensure => file,
     source => $source,
     owner  => $logstash::logstash_user,

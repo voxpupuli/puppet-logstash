@@ -13,12 +13,12 @@ class logstash::config {
   # end up with orphan files when managing config fragments with Puppet.
   # Purging the directories resolves the problem.
   $fragment_directories = [
-    "${logstash::configdir}/conf.d",
-    "${logstash::configdir}/patterns",
+    "${logstash::config_dir}/conf.d",
+    "${logstash::config_dir}/patterns",
   ]
 
   if($logstash::ensure == 'present') {
-    file { $logstash::configdir: ensure  => directory }
+    file { $logstash::config_dir: ensure  => directory }
 
     file { $fragment_directories:
       ensure  => directory,
@@ -28,7 +28,7 @@ class logstash::config {
   }
   elsif($logstash::ensure == 'absent') {
     # Completely remove the config directory. ie. 'rm -rf /etc/logstash'
-    file { $logstash::configdir:
+    file { $logstash::config_dir:
       ensure  => 'absent',
       recurse => true,
       force   => true,

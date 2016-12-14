@@ -39,7 +39,7 @@ define logstash::configfile(
 {
   include logstash
 
-  $path = "${logstash::configdir}/conf.d/${name}.conf"
+  $path = "${logstash::config_dir}/conf.d/${name}.conf"
   $owner = $logstash::logstash_user
   $group = $logstash::logstash_group
   $mode ='0440'

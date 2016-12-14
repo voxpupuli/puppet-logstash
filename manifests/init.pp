@@ -81,7 +81,7 @@
 #   Logstash repositories are defined by major version. Defines the major
 #   version to manage.
 #
-# @param [String] configdir
+# @param [String] config_dir
 #   Path containing the Logstash configuration.
 #
 # @example Install Logstash, ensure the service is running and enabled.
@@ -132,7 +132,7 @@ class logstash(
   $download_timeout  = 600,
   $logstash_user     = 'logstash',
   $logstash_group    = 'logstash',
-  $configdir         = '/etc/logstash',
+  $config_dir         = '/etc/logstash',
   $purge_config      = true,
   $service_provider  = undef,
   $settings          = {},
