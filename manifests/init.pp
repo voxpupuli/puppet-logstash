@@ -161,10 +161,8 @@ class logstash(
 
   if ($manage_repo == true) {
     validate_string($repo_version)
+    include logstash::repo
   }
-
-
-  if ($manage_repo == true) { include logstash::repo }
   include logstash::package
   include logstash::config
   include logstash::service
