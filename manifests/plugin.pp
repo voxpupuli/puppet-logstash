@@ -81,7 +81,7 @@ define logstash::plugin (
     'absent': {
       exec { "remove-${name}":
         command => "${exe} remove ${name}",
-        onlyif  => "${exe} list${exe_suffix} | grep -q ^${name}$",
+        onlyif  => "${exe} list | grep -q ^${name}$",
       }
     }
 
