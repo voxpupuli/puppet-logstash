@@ -1,4 +1,4 @@
-# puppet-logstash
+# elastic/logstash
 
 A Puppet module for managing and configuring [Logstash](http://logstash.net/).
 
