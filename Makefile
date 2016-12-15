@@ -46,6 +46,7 @@ clean:
 	rm -f files/*.gem
 	rm -f files/*.rpm
 	rm -rf log
+	rm -rf pkg
 
 release: clean
 	puppet module build

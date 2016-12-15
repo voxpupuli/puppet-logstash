@@ -1,4 +1,4 @@
-# elasticsearch/puppet-logstash
+# elasticsearch/logstash
 
 Legacy module for managing [Logstash](http://logstash.net/) 2.x.
 
@@ -8,16 +8,14 @@ This module is no longer under active development. See below...
 
 This version of the module only supports Logstash 2.x.
 
-* It is available on [Puppet Forge](https://forge.puppet.com/elasticsearch/logstash)
-as "`elasticsearch/logstash`".
-* The source is kept on the ["2.x" branch of the GitHub repository](https://github.com/elastic/puppet-logstash/tree/2.x).
+* It is available on Puppet Forge as "[`elasticsearch/logstash`](https://forge.puppet.com/elasticsearch/logstash)".
+* The source is kept on the [`2.x` branch of the GitHub repository](https://github.com/elastic/puppet-logstash/tree/2.x).
 
 For Logstash 5.x, and a better experience in general, a heavily rewritten
 module is available:
 
-* On [Puppet Forge](https://forge.puppet.com/elastic/logstash) as
-"`elastic/logstash`".
-* In the `master` branch of the [GitHub repository](https://github.com/elastic/puppet-logstash/tree/master).
+* On Puppet Forge as "[`elastic/logstash`](https://forge.puppet.com/elastic/logstash)".
+* In the [`master` branch of the GitHub repository](https://github.com/elastic/puppet-logstash/tree/master).
 
 [![Build Status](https://travis-ci.org/elastic/puppet-logstash.png?branch=2.x)](https://travis-ci.org/elastic/puppet-logstash)
 
