@@ -18,8 +18,8 @@ class logstash::service {
   $default_startup_options = {
     'JAVACMD'             => '/usr/bin/java',
     'LS_HOME'             => '/usr/share/logstash',
-    'LS_SETTINGS_DIR'     => '/etc/logstash',
-    'LS_OPTS'             => '"--path.settings ${LS_SETTINGS_DIR}"',
+    'LS_SETTINGS_DIR'     => $logstash::config_dir,
+    'LS_OPTS'             => "--path.settings=$logstash::config_dir",
     'LS_JAVA_OPTS'        => '""',
     'LS_PIDFILE'          => '/var/run/logstash.pid',
     'LS_USER'             => $logstash::logstash_user,
