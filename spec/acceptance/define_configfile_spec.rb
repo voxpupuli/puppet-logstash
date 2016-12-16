@@ -15,7 +15,7 @@ describe 'define logstash::configfile' do
     end
 
     it 'creates a file with the given content' do
-      result = shell('cat /etc/logstash/conf.d/heartbeat-input.conf').stdout
+      result = shell('cat /etc/logstash/conf.d/heartbeat-input').stdout
       expect(result).to eq(logstash_config)
     end
   end
@@ -32,7 +32,7 @@ describe 'define logstash::configfile' do
     end
 
     it 'creates a config file from the template' do
-      result = shell('cat /etc/logstash/conf.d/from-template.conf').stdout
+      result = shell('cat /etc/logstash/conf.d/from-template').stdout
       expect(result).to include('2 + 2 equals 4')
     end
   end
@@ -49,7 +49,7 @@ describe 'define logstash::configfile' do
     end
 
     it 'places the config file' do
-      result = shell('cat /etc/logstash/conf.d/null-output.conf').stdout
+      result = shell('cat /etc/logstash/conf.d/null-output').stdout
       expect(result).to include('Test output configuration with null output.')
     end
   end
