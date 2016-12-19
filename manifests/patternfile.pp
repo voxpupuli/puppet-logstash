@@ -7,15 +7,15 @@
 #   Optionally set the destination filename.
 #
 # @example Define a pattern file.
-#     logstash::patternfile { 'mypattern':
-#       source => 'puppet:///path/to/my/custom/pattern'
-#     }
+#   logstash::patternfile { 'mypattern':
+#     source => 'puppet:///path/to/my/custom/pattern'
+#   }
 #
 # @example Define a pattern file with an explicit destination filename.
-#     logstash::patternfile { 'mypattern':
-#       source   => 'puppet:///path/to/my/custom/pattern',
-#       filename => 'custom-pattern-name'
-#     }
+#   logstash::patternfile { 'mypattern':
+#     source   => 'puppet:///path/to/my/custom/pattern',
+#     filename => 'custom-pattern-name'
+#   }
 #
 # @author https://github.com/elastic/puppet-logstash/graphs/contributors
 #

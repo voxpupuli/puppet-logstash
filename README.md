@@ -39,7 +39,7 @@ logstash::configfile { 'my_ls_config':
 ### Choosing a Logstash minor version
 ``` puppet
 class { 'logstash':
-    version => '5.0.2',
+  version => '5.0.2',
 }
 ```
 
