@@ -48,5 +48,5 @@ clean:
 	rm -rf log
 	rm -rf package
 
-release: clean
+release: clean docs
 	puppet module build
