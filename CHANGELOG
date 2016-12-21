@@ -1,5 +1,8 @@
+5.0.2
+  Do not autmatically add ".conf" to pipeline config filesnames.
+
 5.0.1
-  Trival README update.
+  Trivial README update.
 
 5.0.0
   Major re-write for Logstash 5.x.

@@ -1,6 +1,6 @@
 {
   "name": "elastic-logstash",
-  "version": "5.0.1",
+  "version": "5.0.2",
   "source": "https://github.com/elastic/puppet-logstash",
   "author": "elastic",
   "license": "Apache-2.0",
