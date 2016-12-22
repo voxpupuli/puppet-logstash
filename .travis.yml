@@ -30,9 +30,8 @@ env:
     - LOGSTASH_VERSION=5.1.1
     - BEAKER_PE_DIR=spec/fixtures/artifacts
   matrix:
-    # Run the unit tests once.
-    # FIXME: ...actually don't for now. They are a mess.
-    # FIXME: - TRAVIS_TEST_UNIT=true
+    # Do linting once.
+    - TRAVIS_LINT=true
 
     # Then run the acceptance tests across the matrix.
     - PUPPET_VERSION=3.8.7 BEAKER_set=centos-6
