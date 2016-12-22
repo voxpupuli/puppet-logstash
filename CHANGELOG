@@ -1,3 +1,6 @@
+5.0.3
+  Sort startup_options to prevent triggering unneeded restarts.
+
 5.0.2
   Do not autmatically add ".conf" to pipeline config filesnames.
 
