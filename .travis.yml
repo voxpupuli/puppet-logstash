@@ -22,7 +22,7 @@ script:
   # It's a bit cheeky, but let's make sure that _something_ goes to STDOUT
   # every five minutes, so that our build won't be killed unjustly.
   - (while true; do date --iso-8601=seconds; sleep 300; done) &
-  - (if [[ -n $TRAVIS_TEST_UNIT ]]; then make test-unit; else bundle exec rake beaker; fi)
+  - (if [[ -n $TRAVIS_LINT ]]; then make lint; else bundle exec rake beaker; fi)
 
 env:
   global:
