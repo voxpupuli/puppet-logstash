@@ -66,10 +66,10 @@ class logstash::repo {
       # Workaround until zypprepo allows the adding of the keys
       # https://github.com/deadpoint/puppet-zypprepo/issues/4
       exec { 'logstash_suse_import_gpg':
-        command =>  "wget -q -O /tmp/RPM-GPG-KEY-elasticsearch ${gpg_key_url};" +
-                    'rpm --import /tmp/RPM-GPG-KEY-elasticsearch;' +
-                    'rm /tmp/RPM-GPG-KEY-elasticsearch',
-        unless  =>  "test $(rpm -qa gpg-pubkey | grep -i \"${gpg_key_id}\" | wc -l) -eq 1 ",
+        command => "wget -q -O /tmp/RPM-GPG-KEY-elasticsearch ${gpg_key_url}; \
+                    rpm --import /tmp/RPM-GPG-KEY-elasticsearch; \
+                    rm /tmp/RPM-GPG-KEY-elasticsearch",
+        unless  => "test $(rpm -qa gpg-pubkey | grep -i \"${gpg_key_id}\" | wc -l) -eq 1 ",
       }
 
       Exec['logstash_suse_import_gpg'] ~> Zypprepo['logstash'] -> Package<|tag == 'logstash'|>
