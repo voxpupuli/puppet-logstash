@@ -159,6 +159,8 @@ class logstash(
     fail("\"${status}\" is not a valid status parameter value")
   }
 
+  $home_dir = '/usr/share/logstash'
+
   if ($manage_repo == true) {
     validate_string($repo_version)
     include logstash::repo
