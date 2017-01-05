@@ -31,7 +31,7 @@ define logstash::plugin (
 )
 {
   require logstash::package
-  $exe = '/usr/share/logstash/bin/logstash-plugin'
+  $exe = "${logstash::home_dir}/bin/logstash-plugin"
 
   case $source { # Where should we get the plugin from?
     undef: {

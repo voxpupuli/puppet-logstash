@@ -17,7 +17,7 @@ class logstash::service {
 
   $default_startup_options = {
     'JAVACMD'             => '/usr/bin/java',
-    'LS_HOME'             => '/usr/share/logstash',
+    'LS_HOME'             => $logstash::home_dir,
     'LS_SETTINGS_DIR'     => $logstash::config_dir,
     'LS_OPTS'             => "--path.settings=${logstash::config_dir}",
     'LS_JAVA_OPTS'        => '""',
@@ -90,7 +90,7 @@ class logstash::service {
     # Invoke 'system-install', which generates startup scripts based on the
     # contents of the 'startup.options' file.
     exec { 'logstash-system-install':
-      command     => '/usr/share/logstash/bin/system-install',
+      command     => "${logstash::home_dir}/bin/system-install",
       refreshonly => true,
       notify      => Service['logstash'],
     }
