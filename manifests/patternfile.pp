@@ -32,8 +32,8 @@ define logstash::patternfile ($source = undef, $filename = undef) {
   file { "${logstash::config_dir}/patterns/${destination}":
     ensure => file,
     source => $source,
-    owner  => $logstash::logstash_user,
-    group  => $logstash::logstash_group,
+    owner  => 'root',
+    group  => 'root',
     mode   => '0644',
     tag    => ['logstash_config'],
   }
