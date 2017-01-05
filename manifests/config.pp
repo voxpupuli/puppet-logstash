@@ -36,7 +36,8 @@ class logstash::config {
   }
 
   File {
-    owner => $logstash::logstash_user,
-    group => $logstash::logstash_group,
+    owner => 'root',
+    group => 'root',
+    mode  => '0755',
   }
 }
