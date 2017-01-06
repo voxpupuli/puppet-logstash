@@ -36,7 +36,7 @@ env:
     # Then run the acceptance tests across the matrix.
     - PUPPET_VERSION=3.8.7 BEAKER_set=centos-6
     - PUPPET_VERSION=4.8.1 BEAKER_set=centos-6
-    - PUPPET_VERSION=3.8.4 BEAKER_set=centos-6 BEAKER_PE_VER=3.8.4 BEAKER_IS_PE=true
+    # - PUPPET_VERSION=3.8.4 BEAKER_set=centos-6 BEAKER_PE_VER=3.8.4 BEAKER_IS_PE=true
 
     - PUPPET_VERSION=3.8.7 BEAKER_set=centos-7
     - PUPPET_VERSION=4.0.0 BEAKER_set=centos-7
@@ -51,7 +51,7 @@ env:
 
     - PUPPET_VERSION=3.8.7 BEAKER_set=debian-7
     - PUPPET_VERSION=4.8.1 BEAKER_set=debian-7
-    - PUPPET_VERSION=3.8.4 BEAKER_set=debian-7 BEAKER_PE_VER=3.8.4 BEAKER_IS_PE=true
+    # - PUPPET_VERSION=3.8.4 BEAKER_set=debian-7 BEAKER_PE_VER=3.8.4 BEAKER_IS_PE=true
 
     - PUPPET_VERSION=3.8.7 BEAKER_set=debian-8
     - PUPPET_VERSION=4.8.1 BEAKER_set=debian-8
