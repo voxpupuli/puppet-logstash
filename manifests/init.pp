@@ -142,6 +142,8 @@ class logstash(
   $repo_version      = '5.x',
 )
 {
+  $home_dir = '/usr/share/logstash'
+
   validate_bool($auto_upgrade)
   validate_bool($restart_on_change)
   validate_bool($purge_config)
@@ -159,7 +161,6 @@ class logstash(
     fail("\"${status}\" is not a valid status parameter value")
   }
 
-  $home_dir = '/usr/share/logstash'
 
   if ($manage_repo == true) {
     validate_string($repo_version)
