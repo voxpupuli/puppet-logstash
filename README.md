@@ -186,7 +186,7 @@ create_resources('logstash::configfile', $logstash_configs)
 ```
 
 ### Patterns
-Many plugins (notably [Grok](http://logstash.net/docs/latest/filters/grok)) use *patterns*. While many are [included](https://github.com/logstash/logstash/tree/master/patterns) in Logstash already, additional site-specific patterns can be managed as well; where possible, you are encouraged to contribute new patterns back to the community.
+Many plugins (notably [Grok](http://logstash.net/docs/latest/filters/grok)) use *patterns*. While many are included in Logstash already, additional site-specific patterns can be managed as well.
 
 ``` puppet
 logstash::patternfile { 'extra_patterns':
