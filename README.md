@@ -23,8 +23,7 @@ Optional:
 
 ## Quick Start
 
-This minimum viable configuration ensures that the service is running will be
-started at boot time.
+This minimum viable configuration ensures that Logstash is installed, enabled, and running:
 
 ``` puppet
 include logstash
