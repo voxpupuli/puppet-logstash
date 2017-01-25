@@ -48,7 +48,7 @@ automatic repository management like this:
 
 ``` puppet
 class { 'logstash':
-  manage_repo  => false,
+  manage_repo => false,
 }
 ```
 
@@ -80,7 +80,7 @@ class { 'logstash':
 ### Allow automatic point-release upgrades
 ``` puppet
 class { 'logstash':
-  auto_upgrade  => true,
+  auto_upgrade => true,
 }
 ```
 
