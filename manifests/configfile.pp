@@ -47,7 +47,14 @@ define logstash::configfile(
   $tag = [ 'logstash_config' ] # So that we notify the service.
 
   if($template)   { $config = template($template) }
-  elsif($content) { $config = $content }
+  elsif($content) {
+    if is_array($content) {
+      $data = join($content, "\n")
+      $config = "${data}\n"
+    } else {
+      $config = $content
+    }
+  }
 
   if($config){
     file { $path:
