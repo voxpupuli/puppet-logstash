@@ -35,7 +35,7 @@ env:
 
     # Then run the acceptance tests across the matrix.
     - PUPPET_VERSION=3.8.7 BEAKER_set=centos-6
-    - PUPPET_VERSION=4.8.1 BEAKER_set=centos-6
+    - PUPPET_VERSION=4.8.2 BEAKER_set=centos-6
     # - PUPPET_VERSION=3.8.4 BEAKER_set=centos-6 BEAKER_PE_VER=3.8.4 BEAKER_IS_PE=true
 
     - PUPPET_VERSION=3.8.7 BEAKER_set=centos-7
@@ -47,21 +47,21 @@ env:
     - PUPPET_VERSION=4.5.3 BEAKER_set=centos-7
     - PUPPET_VERSION=4.6.2 BEAKER_set=centos-7
     - PUPPET_VERSION=4.7.0 BEAKER_set=centos-7
-    - PUPPET_VERSION=4.8.1 BEAKER_set=centos-7
+    - PUPPET_VERSION=4.8.2 BEAKER_set=centos-7
 
     - PUPPET_VERSION=3.8.7 BEAKER_set=debian-7
-    - PUPPET_VERSION=4.8.1 BEAKER_set=debian-7
+    - PUPPET_VERSION=4.8.2 BEAKER_set=debian-7
     # - PUPPET_VERSION=3.8.4 BEAKER_set=debian-7 BEAKER_PE_VER=3.8.4 BEAKER_IS_PE=true
 
     - PUPPET_VERSION=3.8.7 BEAKER_set=debian-8
-    - PUPPET_VERSION=4.8.1 BEAKER_set=debian-8
+    - PUPPET_VERSION=4.8.2 BEAKER_set=debian-8
 
     - PUPPET_VERSION=3.8.7 BEAKER_set=opensuse-13
 
     - PUPPET_VERSION=3.8.7 BEAKER_set=ubuntu-1204
-    - PUPPET_VERSION=4.8.1 BEAKER_set=ubuntu-1204
+    - PUPPET_VERSION=4.8.2 BEAKER_set=ubuntu-1204
 
     - PUPPET_VERSION=3.8.7 BEAKER_set=ubuntu-1404
-    - PUPPET_VERSION=4.8.1 BEAKER_set=ubuntu-1404
+    - PUPPET_VERSION=4.8.2 BEAKER_set=ubuntu-1404
 
-    - PUPPET_VERSION=4.8.1 BEAKER_set=ubuntu-1604
+    - PUPPET_VERSION=4.8.2 BEAKER_set=ubuntu-1604
