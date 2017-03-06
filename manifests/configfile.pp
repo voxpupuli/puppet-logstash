@@ -48,6 +48,7 @@ define logstash::configfile(
 
   if($template)   { $config = template($template) }
   elsif($content) { $config = $content }
+  else            { $config = undef }
 
   if($config){
     file { $path:
