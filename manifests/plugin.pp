@@ -40,10 +40,11 @@ define logstash::plugin (
       $plugin = $name
     }
 
-    /^\//: {
+    /^(\/|file:)/: {
       # A gem file that is already available on the local filesystem.
       # Install from the local path.
-      # ie. "logstash-plugin install /tmp/logtash-filter-custom.gem"
+      # ie. "logstash-plugin install /tmp/logtash-filter-custom.gem" or
+      # "logstash-plugin install file:///tmp/logtash-filter-custom.gem" or
       $plugin = $source
     }
 
