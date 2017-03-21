@@ -1,1 +1,4 @@
-<%= Hash[@settings.sort].to_yaml %>
+---
+<% @settings.sort.each do |k,v| -%>
+  <%= k %>: <%= v %>
+<% end -%>
