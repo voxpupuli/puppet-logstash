@@ -20,6 +20,9 @@ def agent_version_for_puppet_version(puppet_version)
   # REF: https://docs.puppet.com/puppet/latest/reference/about_agent.html
   version_map = {
     # Puppet => Agent
+    '4.9.4' => '1.9.3',
+    '4.8.2' => '1.8.3',
+    '4.7.1' => '1.7.2',
     '4.7.0' => '1.7.1',
     '4.6.2' => '1.6.2',
     '4.5.3' => '1.5.3',
