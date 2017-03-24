@@ -113,7 +113,7 @@ describe 'class logstash' do
   end
 
   describe 'settings parameter' do
-    context "with a flat key'" do
+    context 'with a flat key' do
       before(:context) do
         settings = "{ 'http.port' => '9999' }"
         install_logstash_from_local_file("settings => #{settings}")
