@@ -122,42 +122,29 @@
 # @author https://github.com/elastic/puppet-logstash/graphs/contributors
 #
 class logstash(
-  $ensure                    = 'present',
-  $status                    = 'enabled',
-  Boolean $restart_on_change = true,
-  Boolean $auto_upgrade      = false,
-  $version                   = undef,
-  $package_url               = undef,
-  $package_name              = 'logstash',
-  $download_timeout          = 600,
-  $logstash_user             = 'logstash',
-  $logstash_group            = 'logstash',
-  $config_dir                = '/etc/logstash',
-  Boolean $purge_config      = true,
-  $service_provider          = undef,
-  $settings                  = {},
-  $startup_options           = {},
-  $jvm_options               = [],
-  Boolean $manage_repo       = $logstash::params::manage_repo,
-  String $repo_version              = '5.x',
+  Enum['present','absent'] $ensure                         = 'present',
+  Enum['enabled','disabled','running','unmanaged'] $status = 'enabled',
+  Boolean $restart_on_change                               = true,
+  Boolean $auto_upgrade                                    = false,
+  $version                                                 = undef,
+  $package_url                                             = undef,
+  $package_name                                            = 'logstash',
+  Integer $download_timeout                                = 600,
+  $logstash_user                                           = 'logstash',
+  $logstash_group                                          = 'logstash',
+  $config_dir                                              = '/etc/logstash',
+  Boolean $purge_config                                    = true,
+  $service_provider                                        = undef,
+  $settings                                                = {},
+  $startup_options                                         = {},
+  $jvm_options                                             = [],
+  Boolean $manage_repo                                     = $logstash::params::manage_repo,
+  String $repo_version                                     = '5.x',
 ) inherits logstash::params
 {
-  $home_dir                  = '/usr/share/logstash'
+  $home_dir                                                = '/usr/share/logstash'
 
-  if ! ($ensure in [ 'present', 'absent' ]) {
-    fail("\"${ensure}\" is not a valid ensure parameter value")
-  }
-
-  if ! is_integer($download_timeout) {
-    fail("\"${download_timeout}\" is not a valid number for 'download_timeout' parameter")
-  }
-
-  if ! ($status in [ 'enabled', 'disabled', 'running', 'unmanaged' ]) {
-    fail("\"${status}\" is not a valid status parameter value")
-  }
-
-
-  if ($manage_repo == true) {
+  if $manage_repo {
     include logstash::repo
   }
   include logstash::package
