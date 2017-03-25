@@ -1,8 +1,11 @@
-require 'rubygems'
 require 'puppetlabs_spec_helper/module_spec_helper'
+require 'rspec-puppet-facts'
+include RspecPuppetFacts
 
 RSpec.configure do |c|
-  Puppet.settings[:strict_variables]=true if ENV['STRICT_VARIABLES'] == 'true'
-  Puppet.settings[:ordering]='random' if ENV['ORDERING_RANDOM'] == 'true'
-  c.parser = 'future' if ENV['FUTURE_PARSER'] == 'true'
+  default_facts = {
+    puppetversion: Puppet.version,
+    facterversion: Facter.version
+  }
+  c.default_facts = default_facts
 end
