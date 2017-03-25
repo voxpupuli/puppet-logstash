@@ -122,32 +122,27 @@
 # @author https://github.com/elastic/puppet-logstash/graphs/contributors
 #
 class logstash(
-  $ensure            = 'present',
-  $status            = 'enabled',
-  $restart_on_change = true,
-  $auto_upgrade       = false,
-  $version           = undef,
-  $package_url       = undef,
-  $package_name      = 'logstash',
-  $download_timeout  = 600,
-  $logstash_user     = 'logstash',
-  $logstash_group    = 'logstash',
-  $config_dir         = '/etc/logstash',
-  $purge_config      = true,
-  $service_provider  = undef,
-  $settings          = {},
-  $startup_options   = {},
-  $jvm_options       = [],
-  $manage_repo       = $logstash::params::manage_repo,
-  $repo_version      = '5.x',
+  $ensure                    = 'present',
+  $status                    = 'enabled',
+  Boolean $restart_on_change = true,
+  Boolean $auto_upgrade      = false,
+  $version                   = undef,
+  $package_url               = undef,
+  $package_name              = 'logstash',
+  $download_timeout          = 600,
+  $logstash_user             = 'logstash',
+  $logstash_group            = 'logstash',
+  $config_dir                = '/etc/logstash',
+  Boolean $purge_config      = true,
+  $service_provider          = undef,
+  $settings                  = {},
+  $startup_options           = {},
+  $jvm_options               = [],
+  Boolean $manage_repo       = $logstash::params::manage_repo,
+  String $repo_version              = '5.x',
 ) inherits logstash::params
 {
-  $home_dir = '/usr/share/logstash'
-
-  validate_bool($auto_upgrade)
-  validate_bool($restart_on_change)
-  validate_bool($purge_config)
-  validate_bool($manage_repo)
+  $home_dir                  = '/usr/share/logstash'
 
   if ! ($ensure in [ 'present', 'absent' ]) {
     fail("\"${ensure}\" is not a valid ensure parameter value")
@@ -163,7 +158,6 @@ class logstash(
 
 
   if ($manage_repo == true) {
-    validate_string($repo_version)
     include logstash::repo
   }
   include logstash::package
