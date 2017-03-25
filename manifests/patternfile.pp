@@ -21,7 +21,7 @@
 #
 define logstash::patternfile (
   Pattern[/^(puppet|file):\/\//] $source = undef,
-  $filename = undef
+  String $filename                       = undef
 ) {
   require logstash::config
 
