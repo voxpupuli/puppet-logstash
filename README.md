@@ -1,3 +1,4 @@
+
 # elastic/logstash
 
 A Puppet module for managing and configuring [Logstash](http://logstash.net/).
@@ -114,13 +115,27 @@ class { 'logstash':
 Logstash uses several files to define settings for the service and associated
 Java runtime. The settings files can be configured with class parameters.
 
-#### `logstash.yml`
+#### `logstash.yml` with flat keys
 ``` puppet
 class { 'logstash':
   settings => {
     'pipeline.batch.size'  => 25,
     'pipeline.batch.delay' => 5,
-  },
+  }
+}
+```
+
+#### `logstash.yml` with nested keys
+``` puppet
+class { 'logstash':
+  settings => {
+    'pipeline' => {
+      'batch' => {
+        'size' => 25,
+        'delay => 5,
+      }
+    }
+  }
 }
 ```
 
