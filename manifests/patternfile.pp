@@ -33,8 +33,8 @@ define logstash::patternfile ($source = undef, $filename = undef) {
     ensure => file,
     source => $source,
     owner  => 'root',
-    group  => 'root',
-    mode   => '0644',
+    group  => $logstash::logstash_group,
+    mode   => '0640',
     tag    => ['logstash_config'],
   }
 }
