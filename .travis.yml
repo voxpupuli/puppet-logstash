@@ -27,7 +27,7 @@ script:
 env:
   global:
     - TRAVIS_CI=true
-    - LOGSTASH_VERSION=5.2.2
+    - LOGSTASH_VERSION=5.3.0
     - BEAKER_PE_DIR=spec/fixtures/artifacts
   matrix:
     # Do linting once.
