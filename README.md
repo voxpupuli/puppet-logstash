@@ -250,5 +250,12 @@ logstash::plugin { 'logstash-filter-custom':
 }
 ```
 
+### Installing from an 'http(s)://' URL
+``` puppet
+logstash::plugin { 'x-pack':
+  source => 'https://artifacts.elastic.co/downloads/packs/x-pack/x-pack-5.3.0.zip',
+}
+```
+
 ## Support
 Need help? Join us in [#logstash](https://webchat.freenode.net?channels=%23logstash) on Freenode IRC or on the https://discuss.elastic.co/c/logstash discussion forum.
