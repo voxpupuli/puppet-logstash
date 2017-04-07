@@ -21,6 +21,11 @@
 #     source => 'puppet:///modules/logstash-site-plugins/logstash-input-custom.gem',
 #   }
 #
+# @example Install X-Pack.
+#   logstash::plugin { 'x-pack':
+#     source => 'https://artifacts.elastic.co/downloads/packs/x-pack/x-pack-5.3.0.zip',
+#   }
+#
 # @param ensure [String] Install or remove with `present` or `absent`.
 #
 # @param source [String] Install from this file, not from RubyGems.
@@ -57,6 +62,11 @@ define logstash::plugin (
         before => Exec["install-${name}"],
       }
       $plugin = $downloaded_file
+    }
+
+    /^https?:/: {
+      # An 'http(s):///' URL.
+      $plugin = $source
     }
 
     default: {
