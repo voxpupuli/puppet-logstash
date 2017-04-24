@@ -256,7 +256,11 @@ hosts.each do |host|
 
   # Also install any other modules we need on the test system.
   install_puppet_module_via_pmt_on(host, module_name: 'puppetlabs-stdlib')
-  install_puppet_module_via_pmt_on(host, module_name: 'puppetlabs-apt')
+  if PUPPET_VERSION.start_with?('3.')
+    install_puppet_module_via_pmt_on(host, module_name: 'puppetlabs-apt', version: '2.4.0')
+  else
+    install_puppet_module_via_pmt_on(host, module_name: 'puppetlabs-apt')
+  end
   install_puppet_module_via_pmt_on(host, module_name: 'darin-zypprepo')
 end
 
