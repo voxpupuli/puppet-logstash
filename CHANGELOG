@@ -1,7 +1,9 @@
+5.2.0
+  Allow 'http(s):// URLs for plugin install.
+
 5.1.0
   Make config files be owned by root.
   Allow 'file://' URLs for plugin install.
-  Allow 'http(s):// URLs for plugin install.
   Sort lines in jvm.options for file.
 
 5.0.4
