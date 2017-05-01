@@ -4,9 +4,9 @@ ruby '2.2.5'
 puppetversion = ENV['PUPPET_VERSION'] || '4.8.1'
 gem 'puppet', puppetversion, :require => false
 
-gem 'beaker', '3.13.0'
-gem 'beaker-pe', '1.6.1'
-gem 'beaker-rspec', '6.0.0'
+gem 'beaker', '3.15.0'
+gem 'beaker-pe', '1.13.0'
+gem 'beaker-rspec', '6.1.0'
 
 # REF: https://github.com/voxpupuli/metadata-json-lint/issues/10
 # gem 'metadata-json-lint'
