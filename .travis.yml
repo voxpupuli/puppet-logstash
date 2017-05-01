@@ -12,7 +12,7 @@ services:
 language: ruby
 
 rvm:
-  - 2.2.5
+  - 2.3.4
 
 script:
   - docker run --privileged -d polarbearlabs/haveged:1.9.1 # https://github.com/elastic/logstash/issues/5507
