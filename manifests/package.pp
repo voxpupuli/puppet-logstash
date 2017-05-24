@@ -6,7 +6,10 @@
 #
 # === Parameters
 #
-# This class does not provide any parameters.
+# [*package_configfiles*]
+#   Whether to keep or replace modified config files when installing or upgrading a package.
+#   This only affects the apt and dpkg providers. Defaults to keep.
+#   Valid values are keep, replace.
 #
 #
 # === Examples
@@ -22,7 +25,9 @@
 #
 # * Richard Pijnenburg <mailto:richard.pijnenburg@elasticsearch.com>
 #
-class logstash::package {
+class logstash::package(
+  $package_configfiles = 'keep',
+){
 
   Exec {
     path      => [ '/bin', '/usr/bin', '/usr/local/bin' ],
@@ -73,8 +78,9 @@ class logstash::package {
 
   #class { 'logstash::package::core': }
   logstash::package::install { 'logstash':
-    package_url  => $logstash::package_url,
-    version      => $logstash::version,
-    package_name => $logstash::package_name,
+    package_url         => $logstash::package_url,
+    version             => $logstash::version,
+    package_name        => $logstash::package_name,
+    package_configfiles => $package_configfiles,
   }
 }

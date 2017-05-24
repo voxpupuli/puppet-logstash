@@ -122,6 +122,11 @@
 #   Path to directory containing the logstash configuration.
 #   Use this setting if your packages deviate from the norm (/etc/logstash)
 #
+# [*package_configfiles*]
+#   Whether to keep or replace modified config files when installing or upgrading a package. 
+#   This only affects the apt and dpkg providers. Defaults to keep.
+#   Valid values are keep, replace.
+
 # === Examples
 #
 # * Installation, make sure service is running and will be started at boot time:
@@ -166,6 +171,7 @@ class logstash(
   $logstash_group      = $logstash::params::logstash_group,
   $configdir           = $logstash::params::configdir,
   $purge_configdir     = $logstash::params::purge_configdir,
+  $package_configfiles = 'keep',
   $java_install        = false,
   $java_package        = undef,
   $service_provider    = 'init',
@@ -222,7 +228,9 @@ class logstash(
   #### Manage actions
 
   # package(s)
-  class { 'logstash::package': }
+  class { 'logstash::package':
+    package_configfiles => $package_configfiles,
+  }
 
   # configuration
   class { 'logstash::config': }
