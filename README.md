@@ -257,5 +257,12 @@ logstash::plugin { 'x-pack':
 }
 ```
 
+### Controling the environment for the `logstash-plugin` command
+``` puppet
+logstash::plugin { 'logstash-input-websocket':
+  environment => 'LS_JVM_OPTS="-Xms1g -Xmx1g"',
+}
+```
+
 ## Support
 Need help? Join us in [#logstash](https://webchat.freenode.net?channels=%23logstash) on Freenode IRC or on the https://discuss.elastic.co/c/logstash discussion forum.

@@ -26,13 +26,21 @@
 #     source => 'https://artifacts.elastic.co/downloads/packs/x-pack/x-pack-5.3.0.zip',
 #   }
 #
+# @example Install a plugin, overriding JVM options via the environment.
+#   logstash::plugin { 'logstash-input-jmx':
+#     environment => ['LS_JVM_OPTIONS="-Xms1g -Xmx1g"']
+#   }
+#
 # @param ensure [String] Install or remove with `present` or `absent`.
 #
 # @param source [String] Install from this file, not from RubyGems.
 #
+# @param environment [String] Environment used when running 'logstash-plugin'
+#
 define logstash::plugin (
   $source = undef,
   $ensure = present,
+  $environment = [],
 )
 {
   require logstash::package
@@ -102,8 +110,9 @@ define logstash::plugin (
   }
 
   Exec {
-    path    => '/bin:/usr/bin',
-    user    => $logstash::logstash_user,
-    timeout => 1800,
+    path        => '/bin:/usr/bin',
+    user        => $logstash::logstash_user,
+    timeout     => 1800,
+    environment => $environment,
   }
 }
