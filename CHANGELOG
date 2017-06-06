@@ -1,3 +1,6 @@
+5.3.0
+  Allow setting environment for plugin resources
+
 5.2.0
   Allow 'http(s):// URLs for plugin install.
 
