@@ -7,9 +7,9 @@ module_root = '/etc/puppetlabs/code/environments/production/modules/logstash'
 
 Vagrant.configure(2) do |config|
   # config.vm.box = 'puppetlabs/debian-8.2-64-puppet'
-  config.vm.box = 'puppetlabs/ubuntu-16.04-64-puppet'
+  config.vm.box = 'bento/centos-7.3'
   config.vm.provider 'virtualbox' do |vm|
-    vm.memory = 3 * 1024
+    vm.memory = 4 * 1024
   end
 
   # Make the Logstash module available.
