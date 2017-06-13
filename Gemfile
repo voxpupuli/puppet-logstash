@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 ruby '2.3.4'
 
-puppetversion = ENV['PUPPET_VERSION'] || '4.8.1'
+puppetversion = ENV['PUPPET_VERSION'] || '4.10.1'
 gem 'puppet', puppetversion, :require => false
 
 gem 'beaker', '3.15.0'
