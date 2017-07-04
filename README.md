@@ -131,8 +131,8 @@ class { 'logstash':
   settings => {
     'pipeline' => {
       'batch' => {
-        'size' => 25,
-        'delay => 5,
+        'size'  => 25,
+        'delay' => 5,
       }
     }
   }
