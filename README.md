@@ -184,20 +184,25 @@ logstash::configfile { 'basic_ls_config':
 }
 ```
 
-If you want to use hiera to specify your configs, include the following create_resources call in your node manifest or in manifests/site.pp:
+If you want to use Hiera to specify your configs, include the following
+create_resources call in your manifest:
 
 ``` puppet
-$logstash_configs = hiera('logstash_configs', {})
+$logstash_configs = hiera('my_logstash_configs', {})
 create_resources('logstash::configfile', $logstash_configs)
 ```
-...and then include the following config within the corresponding hiera file:
+...and then create a data structure like this in Hiera:
 ``` puppet
-"logstash_configs": {
-  "config-name": {
-    "template": "logstash/config.file.erb",
-  }
-}
+---
+my_logstash_configs:
+  nginx:
+    template: site_logstash/nginx.conf.erb
+  syslog:
+    template: site_logstash/syslog.conf.erb
 ```
+
+In this example, templates for the config files are stored in the custom,
+site-specific module "`site_logstash`".
 
 ### Patterns
 Many plugins (notably [Grok](http://logstash.net/docs/latest/filters/grok)) use *patterns*. While many are included in Logstash already, additional site-specific patterns can be managed as well.
