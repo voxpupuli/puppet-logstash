@@ -188,8 +188,7 @@ If you want to use Hiera to specify your configs, include the following
 create_resources call in your manifest:
 
 ``` puppet
-$logstash_configs = hiera('my_logstash_configs', {})
-create_resources('logstash::configfile', $logstash_configs)
+create_resources('logstash::configfile', hiera('my_logstash_configs'))
 ```
 ...and then create a data structure like this in Hiera:
 ``` yaml
