@@ -192,7 +192,7 @@ $logstash_configs = hiera('my_logstash_configs', {})
 create_resources('logstash::configfile', $logstash_configs)
 ```
 ...and then create a data structure like this in Hiera:
-``` puppet
+``` yaml
 ---
 my_logstash_configs:
   nginx:
