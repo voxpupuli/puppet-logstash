@@ -79,4 +79,11 @@ describe 'class plugin' do
     ensure_plugin('present', plugin, "source => '#{source}'")
     expect(installed_plugins).to contain(plugin)
   end
+
+  it 'can install a plugin from an offline zip' do
+    plugin = 'logstash-output-cowsay'
+    source = "puppet:///modules/logstash/#{plugin}-5.0.0.zip"
+    ensure_plugin('present', plugin, "source => '#{source}'")
+    expect(installed_plugins).to contain(plugin)
+  end
 end

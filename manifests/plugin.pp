@@ -69,7 +69,15 @@ define logstash::plugin (
         source => $source,
         before => Exec["install-${name}"],
       }
-      $plugin = $downloaded_file
+
+      case $source {
+        /\.zip$/: {
+          $plugin = "file://${downloaded_file}"
+        }
+        default: {
+          $plugin = $downloaded_file
+        }
+      }
     }
 
     /^https?:/: {
