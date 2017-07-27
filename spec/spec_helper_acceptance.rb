@@ -247,6 +247,9 @@ hosts.each do |host|
   # ...and another plugin that can be fetched from Puppet with "puppet://"
   FileUtils.cp('./spec/fixtures/plugins/logstash-output-cowthink-5.0.0.gem', './files/')
 
+  # ...and yet another plugin, this time packaged as an offline installer
+  FileUtils.cp('./spec/fixtures/plugins/logstash-output-cowsay-5.0.0.zip', './files/')
+
   # Provide a config file template.
   FileUtils.cp('./spec/fixtures/templates/configfile-template.erb', './templates/')
 
