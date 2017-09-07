@@ -77,10 +77,6 @@
 # @param [Boolean] manage_repo
 #   Enable repository management. Configure the official repositories.
 #
-# @param [String] repo_version
-#   Logstash repositories are defined by major version. Defines the major
-#   version to manage.
-#
 # @param [String] config_dir
 #   Path containing the Logstash configuration.
 #

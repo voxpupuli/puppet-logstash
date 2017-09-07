@@ -95,7 +95,6 @@ def install_logstash_manifest(extra_args = nil)
   <<-END
   class { 'logstash':
     manage_repo  => true,
-    repo_version => '#{REPO_VERSION}',
     version      => '#{logstash_package_version}',
     #{extra_args if extra_args}
   }
