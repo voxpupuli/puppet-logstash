@@ -16,9 +16,11 @@ systemctl start puppetserver
 echo '127.0.0.1 localhost puppet' > /etc/hosts
 
 # Install puppet-logstash dependencies.
-/opt/puppetlabs/bin/puppet module install \
-  --target-dir=/etc/puppetlabs/code/environments/production/modules \
-  puppetlabs-stdlib
+for module in puppetlabs-stdlib puppetlabs-apt elastic-elastic_stack; do
+  /opt/puppetlabs/bin/puppet module install \
+    --target-dir=/etc/puppetlabs/code/environments/production/modules \
+    $module
+done
 
 # Install Java 8 for Logstash.
 yum install -y java-1.8.0-openjdk-devel
@@ -28,8 +30,7 @@ java -version 2>&1
 cat <<EOF > /etc/puppetlabs/code/environments/production/manifests/site.pp
 class { 'logstash':
   manage_repo  => true,
-  repo_version => '5.x',
-  version      => '5.4.1',
+  version      => '5.5.2',
 }
 
 logstash::configfile { 'basic_config':
