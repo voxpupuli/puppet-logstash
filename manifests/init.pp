@@ -138,9 +138,9 @@ class logstash(
   $settings          = {},
   $startup_options   = {},
   $jvm_options       = [],
-  $manage_repo       = true,
+  $manage_repo       = $logstash::params::manage_repo,
   $repo_version      = '5.x',
-)
+) inherits logstash::params
 {
   $home_dir = '/usr/share/logstash'
 
