@@ -75,11 +75,17 @@ def logstash_package_filename
 end
 
 def logstash_package_version
+  if LS_VERSION =~ /(alpha|beta)/
+    package_version = LS_VERSION.gsub('-', '~')
+  else
+    package_version = LS_VERSION
+  end
+
   case fact('osfamily') # FIXME: Put this logic in the module, not the tests.
   when 'RedHat'
-    "#{LS_VERSION}-1"
+    "#{package_version}-1"
   when 'Debian', 'Suse'
-    "1:#{LS_VERSION}-1"
+    "1:#{package_version}-1"
   end
 end
 
