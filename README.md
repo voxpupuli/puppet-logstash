@@ -13,7 +13,7 @@ Logstash versions, support is provided by the legacy module,
 
 ## Requirements
 
-* Puppet 3.8.6 or better.
+* Puppet 4.6.1 or better.
 * The [stdlib](https://forge.puppetlabs.com/puppetlabs/stdlib) Puppet library.
 
 Optional:
