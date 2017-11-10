@@ -26,7 +26,12 @@ class logstash::package(
   if $logstash::ensure == 'present' {
     # Check if we want to install a specific version.
     if $version {
-      $package_ensure = $version
+      if $::osfamily == 'redhat' {
+        $package_ensure = regsubst($version, '-', '~')
+      }
+      else {
+        $package_ensure = $version
+      }
     }
     else {
       $package_ensure = $logstash::auto_upgrade ? {
