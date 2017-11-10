@@ -14,7 +14,11 @@ PUPPET_VERSION = ENV['PUPPET_VERSION'] || '3.8.6'
 PE_VERSION = ENV['BEAKER_PE_VER'] || ENV['PE_VERSION'] || '3.8.3'
 PE_DIR = ENV['BEAKER_PE_DIR']
 
-REPO_VERSION = LS_VERSION[0] + ".x" # "5.0.1" -> "5.x"
+if LS_VERSION =~ /(alpha|beta|rc)/
+  IS_PRERELEASE = true
+else
+  IS_PRERELEASE = false
+end
 
 def agent_version_for_puppet_version(puppet_version)
   # REF: https://docs.puppet.com/puppet/latest/reference/about_agent.html
@@ -75,7 +79,7 @@ def logstash_package_filename
 end
 
 def logstash_package_version
-  if LS_VERSION =~ /(alpha|beta)/
+  if LS_VERSION =~ /(alpha|beta|rc)/
     package_version = LS_VERSION.gsub('-', '~')
   else
     package_version = LS_VERSION
@@ -99,6 +103,10 @@ end
 
 def install_logstash_manifest(extra_args = nil)
   <<-END
+  class { 'elastic_stack::repo':
+    version    => #{LS_VERSION[0]},
+    prerelease => #{IS_PRERELEASE.to_s},
+  }
   class { 'logstash':
     manage_repo  => true,
     version      => '#{logstash_package_version}',
