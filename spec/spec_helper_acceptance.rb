@@ -117,6 +117,19 @@ def install_logstash_manifest(extra_args = nil)
   END
 end
 
+def include_logstash_manifest()
+  <<-END
+  class { 'elastic_stack::repo':
+    version    => #{LS_VERSION[0]},
+    prerelease => #{IS_PRERELEASE.to_s},
+  }
+
+  include logstash
+
+  #{logstash_config_manifest}
+  END
+end
+
 def install_logstash_from_url_manifest(url, extra_args = nil)
   <<-END
   class { 'logstash':
@@ -147,7 +160,7 @@ def install_logstash(extra_args = nil)
 end
 
 def include_logstash
-  apply_manifest('include logstash', catch_failures: true, debug: true)
+  apply_manifest(include_logstash_manifest, catch_failures: true, debug: true)
   sleep 5 # FIXME: This is horrible.
 end
 
