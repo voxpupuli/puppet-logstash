@@ -88,7 +88,9 @@ class logstash::service {
       content => template('logstash/logstash.yml.erb'),
     }
 
-    # ..and pipelines.yml, if the user provided such
+    # ..and pipelines.yml, if the user provided such. If they didn't, zero out
+    # the file, which will default Logstash to traditional single-pipeline
+    # behaviour.
     if(empty($pipelines)) {
       file {'/etc/logstash/pipelines.yml':
         content => '',
