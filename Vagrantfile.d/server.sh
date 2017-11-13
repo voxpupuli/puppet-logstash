@@ -1,5 +1,7 @@
+set -euo pipefail
+
 # Install and configure puppetserver.
-rpm -Uvh https://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm
+rpm -Uvh https://yum.puppetlabs.com/puppet5/puppet5-release-el-7.noarch.rpm
 yum install -y puppetserver puppet-agent
 ln -sf /opt/puppetlabs/bin/* /usr/bin
 
