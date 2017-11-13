@@ -74,6 +74,9 @@
 # @param [Array] jvm_options
 #   A collection of settings to be defined in `jvm.options`.
 #
+# @param [Array] pipelines
+#   A collection of settings to be defined in `pipelines.yml`.
+#
 # @param [Boolean] manage_repo
 #   Enable repository management. Configure the official repositories.
 #
@@ -115,6 +118,20 @@
 #     ]
 #   }
 #
+# @example Configure multiple pipelines.
+#   class { 'logstash':
+#     pipelines => [
+#       {
+#         "pipeline.id" => "my-pipeline_1",
+#         "path.config" =>  "/etc/path/to/p1.config",
+#       },
+#       {
+#         "pipeline.id" => "my-other-pipeline",
+#         "path.config" =>  "/etc/different/path/p2.cfg",
+#       }
+#     ]
+#   }
+#
 # @author https://github.com/elastic/puppet-logstash/graphs/contributors
 #
 class logstash(
@@ -134,6 +151,7 @@ class logstash(
   $settings          = {},
   $startup_options   = {},
   $jvm_options       = [],
+  Array $pipelines   = [],
   Boolean $manage_repo   = true,
 )
 {

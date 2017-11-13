@@ -198,6 +198,10 @@ def expect_setting(setting, value)
   expect(logstash_settings[setting]).to eq(value)
 end
 
+def pipelines_from_yaml
+  YAML.load(shell('cat /etc/logstash/pipelines.yml').stdout)
+end
+
 def pe_package_url
   distro, distro_version = ENV['BEAKER_set'].split('-')
   case distro

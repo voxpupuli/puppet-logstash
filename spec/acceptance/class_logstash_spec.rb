@@ -216,4 +216,29 @@ describe 'class logstash' do
       end
     end
   end
+
+  describe 'pipelines_parameter' do
+    context "with two pipelines declared" do
+      before(:context) do
+        pipelines_puppet = <<-END
+        [
+          {
+            "pipeline.id" => "my-pipeline_0",
+            "path.config" =>  "/etc/path/to/p1.config",
+          },
+          {
+            "pipeline.id" => "my-pipeline_1",
+            "path.config" =>  "/etc/different/path/p2.cfg",
+          }
+        ]
+        END
+        install_logstash_from_local_file("pipelines => #{pipelines_puppet}")
+      end
+
+      it 'should render them to pipelines.yml' do
+        expect(pipelines_from_yaml[0]['pipeline.id']).to eq('my-pipeline_0')
+        expect(pipelines_from_yaml[1]['pipeline.id']).to eq('my-pipeline_1')
+      end
+    end
+  end
 end

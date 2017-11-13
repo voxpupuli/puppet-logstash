@@ -47,6 +47,7 @@ class logstash::service {
   $settings = merge($default_settings, $logstash::settings)
   $startup_options = merge($default_startup_options, $logstash::startup_options)
   $jvm_options = $logstash::jvm_options
+  $pipelines = $logstash::pipelines
 
   if $logstash::ensure == 'present' {
     case $logstash::status {
@@ -85,6 +86,18 @@ class logstash::service {
     # ..and the Logstash internal settings too.
     file {'/etc/logstash/logstash.yml':
       content => template('logstash/logstash.yml.erb'),
+    }
+
+    # ..and pipelines.yml, if the user provided such
+    if(empty($pipelines)) {
+      file {'/etc/logstash/pipelines.yml':
+        content => '',
+      }
+    }
+    else {
+      file {'/etc/logstash/pipelines.yml':
+        content => template('logstash/pipelines.yml.erb'),
+      }
     }
 
     # Invoke 'system-install', which generates startup scripts based on the
