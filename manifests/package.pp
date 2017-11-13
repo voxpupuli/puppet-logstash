@@ -23,6 +23,18 @@ class logstash::package(
   $package_name = $logstash::package_name,
 )
 {
+  Exec {
+    path      => [ '/bin', '/usr/bin', '/usr/local/bin' ],
+    cwd       => '/',
+    tries     => 3,
+    try_sleep => 10,
+  }
+
+  File {
+    ensure => file,
+    backup => false,
+  }
+
   if $logstash::ensure == 'present' {
     # Check if we want to install a specific version.
     if $version {
@@ -108,17 +120,5 @@ class logstash::package(
     source   => $package_local_file, # undef if using package manager.
     provider => $package_provider, # undef if using package manager.
     require  => $package_require,
-  }
-
-  Exec {
-    path      => [ '/bin', '/usr/bin', '/usr/local/bin' ],
-    cwd       => '/',
-    tries     => 3,
-    try_sleep => 10,
-  }
-
-  File {
-    ensure => file,
-    backup => false,
   }
 }

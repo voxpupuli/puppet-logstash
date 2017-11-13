@@ -8,6 +8,12 @@
 class logstash::config {
   require logstash::package
 
+  File {
+    owner => 'root',
+    group => 'root',
+    mode  => '0755',
+  }
+
   # Configuration "fragment" directories for pipeline config and pattern files.
   # We'll keep these seperate since we may want to "purge" them. It's easy to
   # end up with orphan files when managing config fragments with Puppet.
@@ -33,11 +39,5 @@ class logstash::config {
       recurse => true,
       force   => true,
     }
-  }
-
-  File {
-    owner => 'root',
-    group => 'root',
-    mode  => '0755',
   }
 }
