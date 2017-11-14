@@ -218,16 +218,16 @@ describe 'class logstash' do
   end
 
   describe 'pipelines_parameter' do
-    context "with two pipelines declared" do
+    context "with pipelines declared" do
       before(:context) do
         pipelines_puppet = <<-END
         [
           {
-            "pipeline.id" => "my-pipeline_0",
+            "pipeline.id" => "pipeline_one",
             "path.config" =>  "/etc/path/to/p1.config",
           },
           {
-            "pipeline.id" => "my-pipeline_1",
+            "pipeline.id" => "pipeline_two",
             "path.config" =>  "/etc/different/path/p2.cfg",
           }
         ]
@@ -236,8 +236,12 @@ describe 'class logstash' do
       end
 
       it 'should render them to pipelines.yml' do
-        expect(pipelines_from_yaml[0]['pipeline.id']).to eq('my-pipeline_0')
-        expect(pipelines_from_yaml[1]['pipeline.id']).to eq('my-pipeline_1')
+        expect(pipelines_from_yaml[0]['pipeline.id']).to eq('pipeline_one')
+        expect(pipelines_from_yaml[1]['pipeline.id']).to eq('pipeline_two')
+      end
+
+      it 'should remove "path.config" from "logstash.yml"' do
+        expect(logstash_settings['path.config']).to be_nil
       end
     end
   end

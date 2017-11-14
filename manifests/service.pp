@@ -90,11 +90,6 @@ class logstash::service {
       content => template('logstash/jvm.options.erb'),
     }
 
-    # ..and the Logstash internal settings too.
-    file {'/etc/logstash/logstash.yml':
-      content => template('logstash/logstash.yml.erb'),
-    }
-
     # ..and pipelines.yml, if the user provided such. If they didn't, zero out
     # the file, which will default Logstash to traditional single-pipeline
     # behaviour.
@@ -107,6 +102,11 @@ class logstash::service {
       file {'/etc/logstash/pipelines.yml':
         content => template('logstash/pipelines.yml.erb'),
       }
+    }
+
+    # ..and the Logstash internal settings too.
+    file {'/etc/logstash/logstash.yml':
+      content => template('logstash/logstash.yml.erb'),
     }
 
     # Invoke 'system-install', which generates startup scripts based on the
