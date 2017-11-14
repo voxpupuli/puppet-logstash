@@ -1,4 +1,3 @@
-
 # elastic/logstash
 
 A Puppet module for managing and configuring [Logstash](http://logstash.net/).
@@ -7,14 +6,16 @@ A Puppet module for managing and configuring [Logstash](http://logstash.net/).
 
 ## Logstash Versions
 
-This module, "elastic/logstash" supports only Logstash 5.x. For earlier
-Logstash versions, support is provided by the legacy module,
+This module, "elastic/logstash" supports only Logstash 5.x and 6.x. For earlier
+Logstash versions, support is provided by the legacy module
 "elasticsearch/logstash".
 
 ## Requirements
 
 * Puppet 4.6.1 or better.
 * The [stdlib](https://forge.puppetlabs.com/puppetlabs/stdlib) Puppet library.
+* Logstash itself requires Java 8. The "puppetlabs/java" module is recommended
+  for installing Java.
 
 Optional:
 * The [apt](https://forge.puppetlabs.com/puppetlabs/apt) (>= 2.0.0) Puppet
@@ -39,7 +40,23 @@ logstash::configfile { 'my_ls_config':
 ### Choosing a Logstash minor version
 ``` puppet
 class { 'logstash':
-  version => '5.0.2',
+  version => '6.0.0',
+}
+```
+
+### Choosing a Logstash major version
+
+This module uses the related "elastic/elastic_stack" module to manage package
+repositories. Since there is a separate repository for each major version of
+the Elastic stack, if you don't want the default version (6), it's necessary
+to select which version to configure, like this:
+``` puppet
+class { 'elastic_stack::repo':
+  version => 5,
+}
+
+class { 'logstash':
+  version => '5.6.4',
 }
 ```
 
