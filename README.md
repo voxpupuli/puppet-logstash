@@ -13,15 +13,17 @@ Logstash versions, support is provided by the legacy module
 ## Requirements
 
 * Puppet 4.6.1 or better.
-* The [stdlib](https://forge.puppetlabs.com/puppetlabs/stdlib) Puppet library.
+* The [stdlib](https://forge.puppetlabs.com/puppetlabs/stdlib) module.
 * Logstash itself requires Java 8. The "puppetlabs/java" module is recommended
-  for installing Java.
+  for installing Java. This module will not install Java.
 
 Optional:
-* The [apt](https://forge.puppetlabs.com/puppetlabs/apt) (>= 2.0.0) Puppet
-  library when using repo management on Debian/Ubuntu.
-* The [zypprepo](https://forge.puppetlabs.com/darin/zypprepo) Puppet library
-  when using repo management on SLES/SuSE
+* The [elastic_stack](https://forge.puppetlabs.com/elastic/elastic_stack) module
+  when using automatic repository management.
+* The [apt](https://forge.puppetlabs.com/puppetlabs/apt) (>= 2.0.0) module when
+  using repo management on Debian/Ubuntu.
+* The [zypprepo](https://forge.puppetlabs.com/darin/zypprepo) module when using
+  repo management on SLES/SuSE.
 
 ## Quick Start
 
