@@ -176,6 +176,27 @@ class { 'logstash':
 }
 ```
 
+#### `pipelines.yml`
+
+``` puppet
+class { 'logstash':
+  pipelines => [
+    {
+      "pipeline.id" => "pipeline_one",
+      "path.config" =>  "/usr/local/etc/logstash/pipeline-1/one.conf",
+    },
+    {
+      "pipeline.id" => "pipeline_two",
+      "path.config" =>  "/usr/local/etc/logstash/pipeline-2/two.conf",
+    }
+  ]
+}
+```
+
+Note that specifying `pipelines` will automatically remove the default
+`path.config` setting from `logstash.yml`, since this is incompatible with
+`pipelines.yml`.
+
 ### Pipeline Configuration
 Pipeline configuration files can be declared with the `logstash::configfile`
 type.
