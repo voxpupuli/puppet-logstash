@@ -35,6 +35,7 @@ env:
     - PUPPET_VERSION=4.8.2 BEAKER_set=centos-7
     - PUPPET_VERSION=4.9.4 BEAKER_set=centos-7
     - PUPPET_VERSION=4.10.8 BEAKER_set=centos-7
+
     - PUPPET_VERSION=5.3.3 BEAKER_set=centos-7
 
     - PUPPET_VERSION=4.6.1 BEAKER_set=debian-7
@@ -44,16 +45,22 @@ env:
     - PUPPET_VERSION=4.8.2 BEAKER_set=debian-8
     - PUPPET_VERSION=4.9.4 BEAKER_set=debian-8
     - PUPPET_VERSION=4.10.8 BEAKER_set=debian-8
+
     - PUPPET_VERSION=5.3.3 BEAKER_set=debian-8
 
     - PUPPET_VERSION=4.6.1 BEAKER_set=ubuntu-1404
     - PUPPET_VERSION=4.8.2 BEAKER_set=ubuntu-1404
     - PUPPET_VERSION=4.9.4 BEAKER_set=ubuntu-1404
     - PUPPET_VERSION=4.10.8 BEAKER_set=ubuntu-1404
+
     - PUPPET_VERSION=5.3.3 BEAKER_set=ubuntu-1404
 
     - PUPPET_VERSION=4.6.1 BEAKER_set=ubuntu-1604
     - PUPPET_VERSION=4.8.2 BEAKER_set=ubuntu-1604
     - PUPPET_VERSION=4.9.4 BEAKER_set=ubuntu-1604
     - PUPPET_VERSION=4.10.8 BEAKER_set=ubuntu-1604
+
+    - PUPPET_VERSION=5.0.1 BEAKER_set=ubuntu-1604
+    - PUPPET_VERSION=5.1.0 BEAKER_set=ubuntu-1604
+    - PUPPET_VERSION=5.2.0 BEAKER_set=ubuntu-1604
     - PUPPET_VERSION=5.3.3 BEAKER_set=ubuntu-1604
