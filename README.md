@@ -222,6 +222,16 @@ logstash::configfile { 'basic_ls_config':
 }
 ```
 
+You can also specify the exact path for the config file, which is
+particularly useful with multiple pipelines:
+
+``` puppet
+logstash::configfile { 'config_for_pipeline_two':
+  content => 'input { heartbeat {} } output { null {} }',
+  path    => '/usr/local/etc/logstash/pipeline-2/two.conf',
+}
+```
+
 If you want to use Hiera to specify your configs, include the following
 create_resources call in your manifest:
 
