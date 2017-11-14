@@ -25,20 +25,3 @@ echo '127.0.0.1 localhost puppet' > /etc/hosts
 # Install Java 8 for Logstash.
 yum install -y java-1.8.0-openjdk-devel
 java -version 2>&1
-
-# Place a manifest to test the Logstash module.
-cat <<EOF > /etc/puppetlabs/code/environments/production/manifests/site.pp
-class { 'elastic_stack::repo':
-  version    => 6,
-  prerelease => true,
-}
-
-class { 'logstash':
-  manage_repo  => true,
-  version      => '6.0.0-rc2',
-}
-
-logstash::configfile { 'basic_config':
-  content => 'input { tcp { port => 2000 } } output { null {} }'
-}
-EOF

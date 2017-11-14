@@ -3,7 +3,9 @@
 # testing framwork, it's just for hacking.
 #
 # See `CONTRIBUTING.md` for details on formal testing.
-module_root = '/etc/puppetlabs/code/environments/production/modules/logstash'
+puppet_code_root = '/etc/puppetlabs/code/environments/production'
+module_root = "#{puppet_code_root}/modules/logstash"
+manifest_dir = "#{puppet_code_root}/manifests"
 
 Vagrant.configure(2) do |config|
   # config.vm.box = 'puppetlabs/debian-8.2-64-puppet'
@@ -16,6 +18,9 @@ Vagrant.configure(2) do |config|
   %w(manifests templates files).each do |dir|
     config.vm.synced_folder(dir, "#{module_root}/#{dir}")
   end
+
+  # Map in a Puppet manifest that can be used for experiments.
+  config.vm.synced_folder('Vagrantfile.d/manifests', "#{puppet_code_root}/manifests")
 
   # Prepare a puppetserver install so we can test the module in a realistic
   # way. 'puppet apply' is cool, but in reality, most people need this to work
