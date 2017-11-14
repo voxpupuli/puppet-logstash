@@ -20,8 +20,8 @@ class logstash::config {
 
   if($logstash::ensure == 'present') {
     file { $logstash::config_dir:
-      ensure  => directory,
-      mode    => '0755',
+      ensure => directory,
+      mode   => '0755',
     }
 
     file { "${logstash::config_dir}/conf.d":
