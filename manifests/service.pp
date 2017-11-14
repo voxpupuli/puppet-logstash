@@ -52,7 +52,7 @@ class logstash::service {
   File {
     owner  => 'root',
     group  => 'root',
-    mode   => '0664',
+    mode   => '0644',
     notify => Exec['logstash-system-install'],
   }
 
