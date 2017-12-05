@@ -1,3 +1,6 @@
+6.0.1
+  Fix explicit versions like "5.6.2-1.noarch" #353
+
 6.0.0
   Puppet 3 support removed. Minimum Puppet version is now 4.6.1.
   Puppet 5 supported.
