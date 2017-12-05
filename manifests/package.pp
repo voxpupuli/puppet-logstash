@@ -39,7 +39,12 @@ class logstash::package(
     # Check if we want to install a specific version.
     if $version {
       if $::osfamily == 'redhat' {
-        $package_ensure = regsubst($version, '-', '~')
+        # Prerelease RPM packages have tildes ("~") in their version strings,
+        # which can be quite surprising to the user. Let them say:
+        #   6.0.0-rc2
+        # not:
+        #   6.0.0~rc2
+        $package_ensure = regsubst($version, '(\d+)-(alpha|beta|rc)(\d+)$', '\1~\2\3')
       }
       else {
         $package_ensure = $version
