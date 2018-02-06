@@ -29,7 +29,7 @@ script:
 
 env:
   global:
-    - LOGSTASH_VERSION=6.0.0
+    - LOGSTASH_VERSION=6.1.3
     - BEAKER_PE_DIR=spec/fixtures/artifacts
     - CI_SPEC_OPTIONS='--format documentation'
   matrix:
