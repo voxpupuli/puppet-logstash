@@ -37,7 +37,7 @@ env:
     - TRAVIS_LINT=true
 
     # Run the puppet-rspec synthetic/unit tests.
-    - PUPPET_VERSION=4.6.1 TRAVIS_UNIT=true
+    - PUPPET_VERSION=4.6.2 TRAVIS_UNIT=true
     - PUPPET_VERSION=4.8.2 TRAVIS_UNIT=true
     - PUPPET_VERSION=4.9.4 TRAVIS_UNIT=true
     - PUPPET_VERSION=4.10.8 TRAVIS_UNIT=true
@@ -47,11 +47,11 @@ env:
     - PUPPET_VERSION=5.3.3 TRAVIS_UNIT=true
 
     # Then run the acceptance tests across the matrix.
-    - PUPPET_VERSION=4.6.1 BEAKER_set=centos-6
+    - PUPPET_VERSION=4.6.2 BEAKER_set=centos-6
     - PUPPET_VERSION=4.8.2 BEAKER_set=centos-6
     - PUPPET_VERSION=4.8.2 BEAKER_set=centos-6 LOGSTASH_VERSION=5.6.4
 
-    - PUPPET_VERSION=4.6.1 BEAKER_set=centos-7
+    - PUPPET_VERSION=4.6.2 BEAKER_set=centos-7
     - PUPPET_VERSION=4.7.0 BEAKER_set=centos-7
     - PUPPET_VERSION=4.8.2 BEAKER_set=centos-7
     - PUPPET_VERSION=4.9.4 BEAKER_set=centos-7
@@ -61,11 +61,11 @@ env:
     - PUPPET_VERSION=5.3.3 BEAKER_set=centos-7
     - PUPPET_VERSION=5.3.3 BEAKER_set=centos-7 LOGSTASH_VERSION=5.6.4
 
-    - PUPPET_VERSION=4.6.1 BEAKER_set=debian-7
+    - PUPPET_VERSION=4.6.2 BEAKER_set=debian-7
     - PUPPET_VERSION=4.8.2 BEAKER_set=debian-7
     - PUPPET_VERSION=4.8.2 BEAKER_set=debian-7 LOGSTASH_VERSION=5.6.4
 
-    - PUPPET_VERSION=4.6.1 BEAKER_set=debian-8
+    - PUPPET_VERSION=4.6.2 BEAKER_set=debian-8
     - PUPPET_VERSION=4.8.2 BEAKER_set=debian-8
     - PUPPET_VERSION=4.9.4 BEAKER_set=debian-8
     - PUPPET_VERSION=4.10.8 BEAKER_set=debian-8
@@ -74,7 +74,7 @@ env:
     - PUPPET_VERSION=5.3.3 BEAKER_set=debian-8
     - PUPPET_VERSION=5.3.3 BEAKER_set=debian-8 LOGSTASH_VERSION=5.6.4
 
-    - PUPPET_VERSION=4.6.1 BEAKER_set=ubuntu-1404
+    - PUPPET_VERSION=4.6.2 BEAKER_set=ubuntu-1404
     - PUPPET_VERSION=4.8.2 BEAKER_set=ubuntu-1404
     - PUPPET_VERSION=4.9.4 BEAKER_set=ubuntu-1404
     - PUPPET_VERSION=4.10.8 BEAKER_set=ubuntu-1404
@@ -83,7 +83,7 @@ env:
     - PUPPET_VERSION=5.3.3 BEAKER_set=ubuntu-1404
     - PUPPET_VERSION=5.3.3 BEAKER_set=ubuntu-1404 LOGSTASH_VERSION=5.6.4
 
-    - PUPPET_VERSION=4.6.1 BEAKER_set=ubuntu-1604
+    - PUPPET_VERSION=4.6.2 BEAKER_set=ubuntu-1604
     - PUPPET_VERSION=4.8.2 BEAKER_set=ubuntu-1604
     - PUPPET_VERSION=4.9.4 BEAKER_set=ubuntu-1604
     - PUPPET_VERSION=4.10.8 BEAKER_set=ubuntu-1604
