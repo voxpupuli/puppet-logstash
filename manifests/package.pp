@@ -100,7 +100,10 @@ class logstash::package(
       $package_local_file = undef
       $package_provider = undef
       if $::osfamily == 'Debian' {
-        $package_require = Class['apt::update']
+        $package_require = $logstash::manage_repo ? {
+          true  => Class['apt::update'],
+          false => undef,
+        }
       } else {
         $package_require = undef
       }
