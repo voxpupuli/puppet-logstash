@@ -15,10 +15,10 @@ class { 'elastic_stack::repo':
 }
 
 class { 'logstash':
-  manage_repo => true,
-  version     => '1:6.2.1-1',
-  pipelines   => $pipelines,
-  startup_options => { 'LS_USER' => 'root' }
+  manage_repo     => true,
+  version         => '1:6.2.1-1',
+  pipelines       => $pipelines,
+  startup_options => { 'LS_USER' => 'root' },
 }
 
 logstash::configfile { 'pipeline_zero':
