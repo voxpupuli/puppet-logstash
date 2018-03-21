@@ -11,13 +11,14 @@ $pipelines = [
 
 class { 'elastic_stack::repo':
   version    => 6,
-  prerelease => true,
+  prerelease => false,
 }
 
 class { 'logstash':
   manage_repo => true,
-  version     => '6.0.0-rc2',
+  version     => '1:6.2.1-1',
   pipelines   => $pipelines,
+  startup_options => { 'LS_USER' => 'root' }
 }
 
 logstash::configfile { 'pipeline_zero':
