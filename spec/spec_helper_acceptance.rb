@@ -186,7 +186,7 @@ def stop_logstash
 end
 
 def logstash_process_list
-  ps_cmd = 'ps --no-headers -C java -o user,command | grep logstash/runner.rb'
+  ps_cmd = 'ps -ww --no-headers -C java -o user,command | grep logstash'
   shell(ps_cmd, accept_all_exit_codes: true).stdout.split("\n")
 end
 
