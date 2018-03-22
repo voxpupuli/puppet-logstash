@@ -199,6 +199,9 @@ Note that specifying `pipelines` will automatically remove the default
 `path.config` setting from `logstash.yml`, since this is incompatible with
 `pipelines.yml`.
 
+Enabling centralized pipeline management with `xpack.management.enabled` will
+also remove the default `path.config`.
+
 ### Pipeline Configuration
 Pipeline configuration files can be declared with the `logstash::configfile`
 type.

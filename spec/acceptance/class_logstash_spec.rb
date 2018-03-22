@@ -245,4 +245,36 @@ describe 'class logstash' do
       end
     end
   end
+
+  describe 'xpack_management_enabled_parameter' do
+    context 'when set true with dotted notation' do
+      before(:context) do
+        settings_puppet_code = '{"xpack.management.enabled" => true}'
+        install_logstash_from_local_file("settings => #{settings_puppet_code}")
+      end
+
+      it 'should remove "path.config" from "logstash.yml"' do
+        expect(logstash_settings['path.config']).to be_nil
+      end
+    end
+
+    context 'when set true with hierarchical notation' do
+      before(:context) do
+        settings_puppet_code = <<-END
+        {
+          "xpack" => {
+            "management" => {
+              "enabled" => true
+            }
+          }
+        }
+        END
+        install_logstash_from_local_file("settings => #{settings_puppet_code}")
+      end
+
+      it 'should remove "path.config" from "logstash.yml"' do
+        expect(logstash_settings['path.config']).to be_nil
+      end
+    end
+  end
 end
