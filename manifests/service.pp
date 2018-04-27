@@ -70,6 +70,10 @@ class logstash::service {
         $service_ensure = 'running'
         $service_enable = false
       }
+      'unmanaged': {
+        $service_ensure = 'unmanaged'
+        $service_enable = false
+      }
       default: {
         fail("\"${logstash::status}\" is an unknown service status value")
       }
@@ -150,18 +154,20 @@ class logstash::service {
     $service_provider = undef
   }
 
-  service { 'logstash':
-    ensure     => $service_ensure,
-    enable     => $service_enable,
-    hasstatus  => true,
-    hasrestart => true,
-    provider   => $service_provider,
-  }
+  if $service_ensure != 'unmanaged' {
+    service { 'logstash':
+      ensure     => $service_ensure,
+      enable     => $service_enable,
+      hasstatus  => true,
+      hasrestart => true,
+      provider   => $service_provider,
+    }
 
-  # If any files tagged as config files for the service are changed, notify
-  # the service so it restarts.
-  if $::logstash::restart_on_change {
-    File<| tag == 'logstash_config' |> ~> Service['logstash']
-    Logstash::Plugin<| |> ~> Service['logstash']
+    # If any files tagged as config files for the service are changed, notify
+    # the service so it restarts.
+    if $::logstash::restart_on_change {
+      File<| tag == 'logstash_config' |> ~> Service['logstash']
+      Logstash::Plugin<| |> ~> Service['logstash']
+    }
   }
 }
