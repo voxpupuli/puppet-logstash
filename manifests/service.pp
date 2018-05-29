@@ -143,7 +143,7 @@ class logstash::service {
   elsif($os =~ /opensuse/ and $release == '13') {
     $service_provider = 'systemd'
   }
-  elsif ($os =~ /amazon/ and $release > '2') {
+  elsif($os =~ /amazon/ and $release > '2') {
     $service_provider = 'upstart'
   }
   else {
