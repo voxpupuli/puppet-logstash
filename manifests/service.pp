@@ -146,7 +146,7 @@ class logstash::service {
   #Older Amazon Linux AMIs has its release based on the year
   #it came out (2010 and up); the provider needed to be set explicitly;
   #New Amazon Linux 2 AMIs has the release set to 2, Puppet can handle it 
-  elsif($os =~ /amazon/ and versioncmp($release, '2010') > 0) {
+  elsif($os =~ /amazon/ and versioncmp($release, '2000') > 0) {
     $service_provider = 'upstart'
   }
   else {
