@@ -173,8 +173,8 @@ class logstash(
   contain logstash::package
   contain logstash::config
   contain logstash::service
-  
-  Class['logstash::package'] ->
-  Class['logstash::config'] ->
-  Class['logstash::service']
+
+  Class['logstash::package']
+  -> Class['logstash::config']
+  -> Class['logstash::service']
 }
