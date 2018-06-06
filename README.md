@@ -111,7 +111,6 @@ class { 'logstash':
 }
 ```
 
-
 ### Do not run as a service
 ``` puppet
 class { 'logstash':
