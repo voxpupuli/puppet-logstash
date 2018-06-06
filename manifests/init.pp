@@ -170,7 +170,11 @@ class logstash(
   if ($manage_repo == true) {
     include elastic_stack::repo
   }
-  include logstash::package
-  include logstash::config
-  include logstash::service
+  contain logstash::package
+  contain logstash::config
+  contain logstash::service
+  
+  Class['logstash::package'] ->
+  Class['logstash::config'] ->
+  Class['logstash::service']
 }
