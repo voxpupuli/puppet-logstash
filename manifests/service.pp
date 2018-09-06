@@ -133,8 +133,8 @@ class logstash::service {
   elsif($os == 'debian' and $release == '8') {
     $service_provider = 'systemd'
   }
-  # Centos 6 uses Upstart by default, but Puppet can get confused about this too.
-  elsif($os =~ /(redhat|centos)/ and $release == '6') {
+  # RedHat/CentOS/OEL 6 uses Upstart by default, but Puppet can get confused about this too.
+  elsif($os =~ /(redhat|centos|oraclelinux)/ and $release == '6') {
     $service_provider = 'upstart'
   }
   elsif($os =~ /ubuntu/ and $release == '12.04') {
