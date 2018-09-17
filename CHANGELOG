@@ -1,3 +1,12 @@
+6.1.4
+  Use Upstart for init on Oracle Linux 6
+
+6.1.3
+  Allow puppetlabs-stdlib 5.x
+
+6.1.2
+  Set cwd to "/tmp" during plugin execs.
+
 6.1.1
   Update init system handling.
 

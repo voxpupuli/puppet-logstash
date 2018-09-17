@@ -30,3 +30,5 @@ logstash::configfile { 'pipeline_one':
   content => 'input { tcp { port => 2002 } } output { null {} }',
   path    => '/tmp/pipeline_one.conf',
 }
+
+logstash::plugin { 'logstash-input-mysql': }
