@@ -111,10 +111,18 @@ class logstash::service {
 
     # Invoke 'system-install', which generates startup scripts based on the
     # contents of the 'startup.options' file.
-    exec { 'logstash-system-install':
-      command     => "${logstash::home_dir}/bin/system-install",
-      refreshonly => true,
-      notify      => Service['logstash'],
+    # Only if restart_on_change is not false
+    if $::logstash::restart_on_change {
+      exec { 'logstash-system-install':
+        command     => "${logstash::home_dir}/bin/system-install",
+        refreshonly => true,
+        notify      => Service['logstash'],
+      }
+    } else {
+      exec { 'logstash-system-install':
+        command     => "${logstash::home_dir}/bin/system-install",
+        refreshonly => true,
+      }
     }
   }
 
