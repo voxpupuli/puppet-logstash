@@ -28,7 +28,7 @@
 #
 # @example Install a plugin, overriding JVM options via the environment.
 #   logstash::plugin { 'logstash-input-jmx':
-#     environment => ['LS_JVM_OPTIONS="-Xms1g -Xmx1g"']
+#     environment => ['LS_JAVA_OPTS="-Xms1g -Xmx1g"']
 #   }
 #
 # @param ensure [String] Install or remove with `present` or `absent`.

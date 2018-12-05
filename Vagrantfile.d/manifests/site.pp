@@ -16,7 +16,7 @@ class { 'elastic_stack::repo':
 
 class { 'logstash':
   manage_repo     => true,
-  version         => '1:6.2.1-1',
+  version         => '6.5.1',
   pipelines       => $pipelines,
   startup_options => { 'LS_USER' => 'root' },
 }
@@ -32,3 +32,8 @@ logstash::configfile { 'pipeline_one':
 }
 
 logstash::plugin { 'logstash-input-mysql': }
+
+$hiera_pluginlist = lookup({name => 'logstash::pluginlist', default_value => undef, merge => deep})
+if $hiera_pluginlist {
+  create_resources('logstash::plugin', $hiera_pluginlist)
+}
