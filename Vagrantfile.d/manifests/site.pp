@@ -31,9 +31,6 @@ logstash::configfile { 'pipeline_one':
   path    => '/tmp/pipeline_one.conf',
 }
 
-logstash::plugin { 'logstash-input-mysql': }
-
-$hiera_pluginlist = lookup({name => 'logstash::pluginlist', default_value => undef, merge => deep})
-if $hiera_pluginlist {
-  create_resources('logstash::plugin', $hiera_pluginlist)
+logstash::plugin { 'logstash-input-mysql':
+  environment => ['LS_JAVA_OPTS=-Xms1g -Xmx1g']
 }

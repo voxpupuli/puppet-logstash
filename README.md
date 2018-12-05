@@ -317,7 +317,7 @@ logstash::plugin { 'x-pack':
 ### Controling the environment for the `logstash-plugin` command
 ``` puppet
 logstash::plugin { 'logstash-input-websocket':
-  environment => 'LS_JAVA_OPTS="-Xms1g -Xmx1g"',
+  environment => 'LS_JAVA_OPTS=-Xms1g -Xmx1g',
 }
 ```
 
