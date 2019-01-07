@@ -109,6 +109,14 @@ class logstash::service {
       content => template('logstash/logstash.yml.erb'),
     }
 
+    if defined(Class['java']) {
+      Class['java'] -> Exec['logstash-system-install']
+
+      $use_environment = ["JAVA_HOME=${java::use_java_home}"]
+    } else {
+      $use_environment = []
+    }
+
     # Invoke 'system-install', which generates startup scripts based on the
     # contents of the 'startup.options' file.
     # Only if restart_on_change is not false
@@ -117,11 +125,13 @@ class logstash::service {
         command     => "${logstash::home_dir}/bin/system-install",
         refreshonly => true,
         notify      => Service['logstash'],
+        environment => $use_environment,
       }
     } else {
       exec { 'logstash-system-install':
         command     => "${logstash::home_dir}/bin/system-install",
         refreshonly => true,
+        environment => $use_environment,
       }
     }
   }
