@@ -50,8 +50,6 @@ env:
     - PUPPET_VERSION=5.3.3 BEAKER_set=centos-7
     - PUPPET_VERSION=5.3.3 BEAKER_set=centos-7 LOGSTASH_VERSION=5.6.4
 
-    - PUPPET_VERSION=4.8.2 BEAKER_set=debian-7 LOGSTASH_VERSION=5.6.4
-
     - PUPPET_VERSION=4.6.2 BEAKER_set=debian-8
     - PUPPET_VERSION=4.8.2 BEAKER_set=debian-8
     - PUPPET_VERSION=4.9.4 BEAKER_set=debian-8
