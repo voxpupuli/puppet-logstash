@@ -12,7 +12,7 @@ services:
 language: ruby
 
 rvm:
-  - 2.3.4
+  - 2.4.1
 
 script:
   - docker run --privileged -d polarbearlabs/haveged:1.9.1 # https://github.com/elastic/logstash/issues/5507
@@ -29,7 +29,7 @@ script:
 
 env:
   global:
-    - LOGSTASH_VERSION=6.7.1
+    - LOGSTASH_VERSION=7.3.0
     - BEAKER_PE_DIR=spec/fixtures/artifacts
     - CI_SPEC_OPTIONS='--format documentation'
   matrix:
@@ -37,30 +37,33 @@ env:
     - TRAVIS_LINT=true
 
     # Run the puppet-rspec synthetic/unit tests.
-    - PUPPET_VERSION=4.10.8 TRAVIS_UNIT=true
-    - PUPPET_VERSION=5.5.10 TRAVIS_UNIT=true
+    - PUPPET_VERSION=4.10.12 TRAVIS_UNIT=true
+    - PUPPET_VERSION=5.5.16 TRAVIS_UNIT=true
+    - PUPPET_VERSION=6.0.10 TRAVIS_UNIT=true
 
     # Then run the acceptance tests across the matrix.
-    - PUPPET_VERSION=4.10.8 BEAKER_set=centos-7
-    - PUPPET_VERSION=4.10.8 BEAKER_set=centos-7 LOGSTASH_VERSION=5.6.4
+    - PUPPET_VERSION=4.10.12 BEAKER_set=centos-7
+    - PUPPET_VERSION=4.10.12 BEAKER_set=centos-7 LOGSTASH_VERSION=6.8.2
+    - PUPPET_VERSION=5.5.16 BEAKER_set=centos-7
+    - PUPPET_VERSION=5.5.16 BEAKER_set=centos-7 LOGSTASH_VERSION=6.8.2
+    - PUPPET_VERSION=6.0.10 BEAKER_set=centos-7
+    - PUPPET_VERSION=6.0.10 BEAKER_set=centos-7 LOGSTASH_VERSION=6.8.2
 
-    - PUPPET_VERSION=5.5.10 BEAKER_set=centos-7
-    - PUPPET_VERSION=5.5.10 BEAKER_set=centos-7 LOGSTASH_VERSION=5.6.4
+    - PUPPET_VERSION=4.10.12 BEAKER_set=debian-8
+    - PUPPET_VERSION=4.10.12 BEAKER_set=debian-8 LOGSTASH_VERSION=6.8.2
+    - PUPPET_VERSION=5.5.16 BEAKER_set=debian-8
+    - PUPPET_VERSION=5.5.16 BEAKER_set=debian-8 LOGSTASH_VERSION=6.8.2
+    - PUPPET_VERSION=6.0.10 BEAKER_set=debian-8
+    - PUPPET_VERSION=6.0.10 BEAKER_set=debian-8 LOGSTASH_VERSION=6.8.2
 
-    - PUPPET_VERSION=4.10.8 BEAKER_set=debian-8
-    - PUPPET_VERSION=4.10.8 BEAKER_set=debian-8 LOGSTASH_VERSION=5.6.4
+    # Logstash 7 and Puppet 6 are not supported on 14.04 (which is EOL).
+    - PUPPET_VERSION=4.10.12 BEAKER_set=ubuntu-1404 LOGSTASH_VERSION=6.8.2
+    - PUPPET_VERSION=5.5.16 BEAKER_set=ubuntu-1404 LOGSTASH_VERSION=6.8.2
 
-    - PUPPET_VERSION=5.5.10 BEAKER_set=debian-8
-    - PUPPET_VERSION=5.5.10 BEAKER_set=debian-8 LOGSTASH_VERSION=5.6.4
+    - PUPPET_VERSION=4.10.12 BEAKER_set=ubuntu-1604
+    - PUPPET_VERSION=4.10.12 BEAKER_set=ubuntu-1604 LOGSTASH_VERSION=6.8.2
+    - PUPPET_VERSION=5.5.16 BEAKER_set=ubuntu-1604
+    - PUPPET_VERSION=5.5.16 BEAKER_set=ubuntu-1604 LOGSTASH_VERSION=6.8.2
+    - PUPPET_VERSION=6.0.10 BEAKER_set=ubuntu-1604
+    - PUPPET_VERSION=6.0.10 BEAKER_set=ubuntu-1604 LOGSTASH_VERSION=6.8.2
 
-    - PUPPET_VERSION=4.10.8 BEAKER_set=ubuntu-1404
-    - PUPPET_VERSION=4.10.8 BEAKER_set=ubuntu-1404 LOGSTASH_VERSION=5.6.4
-
-    - PUPPET_VERSION=5.5.10 BEAKER_set=ubuntu-1404
-    - PUPPET_VERSION=5.5.10 BEAKER_set=ubuntu-1404 LOGSTASH_VERSION=5.6.4
-
-    - PUPPET_VERSION=4.10.8 BEAKER_set=ubuntu-1604
-    - PUPPET_VERSION=4.10.8 BEAKER_set=ubuntu-1604 LOGSTASH_VERSION=5.6.4
-
-    - PUPPET_VERSION=5.5.10 BEAKER_set=ubuntu-1604
-    - PUPPET_VERSION=5.5.10 BEAKER_set=ubuntu-1604 LOGSTASH_VERSION=5.6.4

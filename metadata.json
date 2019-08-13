@@ -1,6 +1,6 @@
 {
   "name": "elastic-logstash",
-  "version": "6.1.5",
+  "version": "7.0.0",
   "source": "https://github.com/elastic/puppet-logstash",
   "author": "elastic",
   "license": "Apache-2.0",
@@ -14,7 +14,7 @@
     },
     {
       "name": "elastic/elastic_stack",
-      "version_requirement": ">=6.0.0 <7.0.0"
+      "version_requirement": ">=7.0.0 <8.0.0"
     }
   ],
   "operatingsystem_support": [

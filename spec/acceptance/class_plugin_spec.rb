@@ -57,15 +57,6 @@ describe 'class plugin' do
     end
   end
 
-  if Gem::Version.new(LS_VERSION) >= Gem::Version.new('5.2.0')
-    it 'can install x-pack from an https url' do
-      plugin = 'x-pack'
-      source = "https://artifacts.elastic.co/downloads/packs/x-pack/x-pack-#{LS_VERSION}.zip"
-      ensure_plugin('present', plugin, "source => '#{source}'")
-      expect(installed_plugins).to contain(plugin)
-    end
-  end
-
   it 'can install a plugin from a "puppet://" url' do
     plugin = 'logstash-output-cowthink'
     source = "puppet:///modules/logstash/#{plugin}-5.0.0.gem"
