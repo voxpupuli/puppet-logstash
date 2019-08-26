@@ -48,7 +48,7 @@ define logstash::plugin (
 
   Exec {
     path        => '/bin:/usr/bin',
-    cwd         => '/tmp',
+    cwd         => $logstash::home_dir,
     user        => $logstash::logstash_user,
     timeout     => 1800,
     environment => $environment,
@@ -116,7 +116,7 @@ define logstash::plugin (
     'absent': {
       exec { "remove-${name}":
         command => "${exe} remove ${name}",
-        onlyif  => "${exe} list | grep -q ^${name}$",
+        onlyif  => "${exe} list --installed | grep -q ^${name}$",
       }
     }
 

@@ -26,18 +26,19 @@ describe 'class plugin' do
   end
 
   context 'when a plugin is not installed' do
+    plugin = "logstash-output-riemann"
     before(:each) do
-      remove('logstash-input-sqs')
+      remove(plugin)
     end
 
     it 'will not remove it again' do
-      log = ensure_plugin('absent', 'logstash-input-sqs').stdout
-      expect(log).to_not contain('remove-logstash-input-sqs')
+      log = ensure_plugin('absent', plugin).stdout
+      expect(log).to_not contain("remove-#{plugin}")
     end
 
     it 'can install it from rubygems' do
-      ensure_plugin('present', 'logstash-input-sqs')
-      expect(installed_plugins).to contain('logstash-input-sqs')
+      ensure_plugin('present', plugin)
+      expect(installed_plugins).to contain(plugin)
     end
   end
 

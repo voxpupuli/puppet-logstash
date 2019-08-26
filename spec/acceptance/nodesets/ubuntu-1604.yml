@@ -16,4 +16,3 @@ HOSTS:
 CONFIG:
   type: foss
   :trace_limit: 100  # Get more than 10 lines of trace when something fails.
-it st
