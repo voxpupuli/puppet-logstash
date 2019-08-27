@@ -1,3 +1,6 @@
+6.1.5
+  Honour `restart_on_change` for startup files #377
+
 6.1.4
   Use Upstart for init on Oracle Linux 6
 

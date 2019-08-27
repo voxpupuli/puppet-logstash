@@ -159,19 +159,22 @@ end
 
 # Provide a basic Logstash install. Useful as a testing pre-requisite.
 def install_logstash(extra_args = nil)
-  apply_manifest(install_logstash_manifest(extra_args), catch_failures: true)
+  result = apply_manifest(install_logstash_manifest(extra_args), catch_failures: true)
   sleep 5 # FIXME: This is horrible.
+  return result
 end
 
 def include_logstash
-  apply_manifest(include_logstash_manifest, catch_failures: true, debug: true)
+  result = apply_manifest(include_logstash_manifest, catch_failures: true, debug: true)
   sleep 5 # FIXME: This is horrible.
+  return result
 end
 
 def install_logstash_from_url(url, extra_args = nil)
   manifest = install_logstash_from_url_manifest(url, extra_args)
-  apply_manifest(manifest, catch_failures: true)
+  result = apply_manifest(manifest, catch_failures: true)
   sleep 5 # FIXME: This is horrible.
+  return result
 end
 
 def install_logstash_from_local_file(extra_args = nil)
@@ -179,14 +182,16 @@ def install_logstash_from_local_file(extra_args = nil)
 end
 
 def remove_logstash
-  apply_manifest(remove_logstash_manifest)
+  result = apply_manifest(remove_logstash_manifest)
   sleep 5 # FIXME: This is horrible.
+  return result
 end
 
 def stop_logstash
-  apply_manifest(stop_logstash_manifest, catch_failures: true)
+  result = apply_manifest(stop_logstash_manifest, catch_failures: true)
   shell('ps -eo comm | grep java | xargs kill -9', accept_all_exit_codes: true)
   sleep 5 # FIXME: This is horrible.
+  return result
 end
 
 def logstash_process_list
@@ -204,6 +209,10 @@ end
 
 def pipelines_from_yaml
   YAML.load(shell('cat /etc/logstash/pipelines.yml').stdout)
+end
+
+def service_restart_message
+  "Service[logstash]: Triggered 'refresh'"
 end
 
 def pe_package_url

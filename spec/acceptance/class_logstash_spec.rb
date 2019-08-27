@@ -214,6 +214,23 @@ describe 'class logstash' do
           expect(logstash_process_list.pop).to include(flag)
         end
       end
+
+      context 'when the option is changed' do
+        it 'should restart logstash' do
+          puppet_log = install_logstash_from_local_file(
+            "jvm_options => [ '-Xms512m' ]").stdout
+          expect(puppet_log).to include(service_restart_message)
+        end
+
+        context 'when restart_on_change is false' do
+          it 'should not restart logstash' do
+            puppet_log = install_logstash_from_local_file(
+              "jvm_options       => [ '-Xms256m' ],
+               restart_on_change => false").stdout
+            expect(puppet_log).not_to include(service_restart_message)
+          end
+        end
+      end
     end
   end
 

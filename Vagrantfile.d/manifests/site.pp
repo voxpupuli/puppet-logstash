@@ -16,7 +16,7 @@ class { 'elastic_stack::repo':
 
 class { 'logstash':
   manage_repo     => true,
-  version         => '1:6.2.1-1',
+  version         => '6.5.1',
   pipelines       => $pipelines,
   startup_options => { 'LS_USER' => 'root' },
 }
@@ -31,4 +31,6 @@ logstash::configfile { 'pipeline_one':
   path    => '/tmp/pipeline_one.conf',
 }
 
-logstash::plugin { 'logstash-input-mysql': }
+logstash::plugin { 'logstash-input-mysql':
+  environment => ['LS_JAVA_OPTS=-Xms1g -Xmx1g']
+}
