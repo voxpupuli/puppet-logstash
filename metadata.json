@@ -14,7 +14,7 @@
     },
     {
       "name": "elastic/elastic_stack",
-      "version_requirement": ">=6.0.0 <7.0.0"
+      "version_requirement": ">=6.0.0 <8.0.0"
     }
   ],
   "operatingsystem_support": [
