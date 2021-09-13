@@ -49,7 +49,7 @@ define logstash::plugin (
   Exec {
     path        => '/bin:/usr/bin',
     cwd         => '/tmp',
-    user        => $logstash::logstash_user,
+    user        => 'root',
     timeout     => 1800,
     environment => $environment,
   }
