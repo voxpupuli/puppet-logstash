@@ -1,4 +1,3 @@
-# coding: utf-8
 require 'spec_helper_acceptance'
 
 describe 'class patternfile' do
@@ -10,7 +9,7 @@ describe 'class patternfile' do
         source   => 'puppet:///modules/logstash/grok-pattern-#{pattern_number}',
         filename => 'the_only_pattern_file',
       }
-      END
+    END
     apply_manifest(manifest)
   end
 
@@ -18,13 +17,14 @@ describe 'class patternfile' do
     before(:context) { apply_pattern(0) }
 
     describe file '/etc/logstash/patterns/the_only_pattern_file' do
-      it { should be_a_file }
-      its(:content) { should match(/GROK_PATTERN_0/) }
+      it { is_expected.to be_a_file }
+      its(:content) { is_expected.to match(%r{GROK_PATTERN_0}) }
     end
   end
 
   context 'with a pattern file in place' do
-    before(:each) { apply_pattern(0) }
+    before { apply_pattern(0) }
+
     restart_message = 'Scheduling refresh of Service[logstash]'
 
     it 'restarts logstash when a pattern file changes' do
@@ -34,11 +34,9 @@ describe 'class patternfile' do
 
     it 'does not restart logstash if logstash::restart_on_change is false' do
       os = fact('lsbdistdescription')
-      if (os =~ /(centos release 6\.|ubuntu 12\.04)/i) && PUPPET_VERSION[0] == '3'
-        skip('Something funky happening with Upstart and Puppet 3?')
-      end
+      skip('Something funky happening with Upstart and Puppet 3?') if (os =~ %r{(centos release 6\.|ubuntu 12\.04)}i) && PUPPET_VERSION[0] == '3'
       log = apply_pattern(1, 'restart_on_change => false').stdout
       expect(log).not_to include(restart_message)
     end
   end
- end
+end
