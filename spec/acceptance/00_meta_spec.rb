@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper_acceptance'
 
 # Here we put the more basic fundamental tests, ultra obvious stuff.
