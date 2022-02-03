@@ -43,7 +43,7 @@ describe 'class plugin' do
   end
 
   context 'when a plugin is installed' do
-    before do
+    it 'will contain the required plugin' do
       expect(installed_plugins).to contain('logstash-input-file')
     end
 
