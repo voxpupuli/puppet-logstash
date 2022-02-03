@@ -81,12 +81,12 @@ class logstash::service {
 
   if $service_ensure == 'running' {
     # Then make sure the Logstash startup options are up to date.
-    file {'/etc/logstash/startup.options':
+    file { '/etc/logstash/startup.options':
       content => template('logstash/startup.options.erb'),
     }
 
     # ..and make sure the JVM options are up to date.
-    file {'/etc/logstash/jvm.options':
+    file { '/etc/logstash/jvm.options':
       content => template('logstash/jvm.options.erb'),
     }
 
@@ -94,25 +94,25 @@ class logstash::service {
     # the file, which will default Logstash to traditional single-pipeline
     # behaviour.
     if(empty($pipelines)) {
-      file {'/etc/logstash/pipelines.yml':
+      file { '/etc/logstash/pipelines.yml':
         content => '',
       }
     }
     else {
-      file {'/etc/logstash/pipelines.yml':
+      file { '/etc/logstash/pipelines.yml':
         content => template('logstash/pipelines.yml.erb'),
       }
     }
 
     # ..and the Logstash internal settings too.
-    file {'/etc/logstash/logstash.yml':
+    file { '/etc/logstash/logstash.yml':
       content => template('logstash/logstash.yml.erb'),
     }
 
     # Invoke 'system-install', which generates startup scripts based on the
     # contents of the 'startup.options' file.
     # Only if restart_on_change is not false
-    if $::logstash::restart_on_change {
+    if $logstash::restart_on_change {
       exec { 'logstash-system-install':
         command     => "${logstash::home_dir}/bin/system-install",
         refreshonly => true,
@@ -128,8 +128,8 @@ class logstash::service {
 
   # Figure out which service provider (init system) we should be using.
   # In general, we'll try to guess based on the operating system.
-  $os = downcase($::operatingsystem)
-  $release = $::operatingsystemmajrelease
+  $os = downcase($facts['os']['name'])
+  $release = $facts['os']['release']['major']
   # However, the operator may have explicitly defined the service provider.
   if($logstash::service_provider) {
     $service_provider = $logstash::service_provider
@@ -174,7 +174,7 @@ class logstash::service {
 
   # If any files tagged as config files for the service are changed, notify
   # the service so it restarts.
-  if $::logstash::restart_on_change {
+  if $logstash::restart_on_change {
     File<| tag == 'logstash_config' |> ~> Service['logstash']
     Logstash::Plugin<| |> ~> Service['logstash']
   }
