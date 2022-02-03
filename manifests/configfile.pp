@@ -41,27 +41,26 @@
 #
 # @author https://github.com/elastic/puppet-logstash/graphs/contributors
 #
-define logstash::configfile(
+define logstash::configfile (
   $content = undef,
   $source = undef,
   $template = undef,
   $path = undef,
-)
-{
+) {
   include logstash
 
   $owner = 'root'
   $group = $logstash::logstash_group
   $mode  = '0640'
   $require = Package['logstash'] # So that we have '/etc/logstash/conf.d'.
-  $tag = [ 'logstash_config' ] # So that we notify the service.
+  $tag = ['logstash_config'] # So that we notify the service.
 
-  if($template)   { $config = template($template) }
+  if($template) { $config = template($template) }
   elsif($content) { $config = $content }
-  else            { $config = undef }
+  else { $config = undef }
 
   if($path) { $config_file = $path }
-  else      { $config_file = "${logstash::config_dir}/conf.d/${name}" }
+  else { $config_file = "${logstash::config_dir}/conf.d/${name}" }
 
   if($config) {
     file { $config_file:

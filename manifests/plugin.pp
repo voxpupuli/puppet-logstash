@@ -41,8 +41,7 @@ define logstash::plugin (
   $source = undef,
   $ensure = present,
   $environment = [],
-)
-{
+) {
   require logstash::package
   $exe = "${logstash::home_dir}/bin/logstash-plugin"
 

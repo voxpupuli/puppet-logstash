@@ -32,7 +32,7 @@ class logstash::config {
       notify  => Service['logstash'],
     }
 
-    file {     "${logstash::config_dir}/patterns":
+    file { "${logstash::config_dir}/patterns":
       ensure  => directory,
       purge   => $logstash::purge_config,
       recurse => $logstash::purge_config,
