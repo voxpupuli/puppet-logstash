@@ -42,6 +42,7 @@
 # @author https://github.com/elastic/puppet-logstash/graphs/contributors
 #
 define logstash::configfile (
+  $ensure = $::logstash::ensure,
   $content = undef,
   $source = undef,
   $template = undef,
@@ -64,6 +65,7 @@ define logstash::configfile (
 
   if($config) {
     file { $config_file:
+      ensure  => $ensure,
       content => $config,
       owner   => $owner,
       group   => $group,
@@ -74,6 +76,7 @@ define logstash::configfile (
   }
   elsif($source) {
     file { $config_file:
+      ensure  => $ensure,
       source  => $source,
       owner   => $owner,
       group   => $group,

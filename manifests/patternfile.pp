@@ -20,6 +20,7 @@
 # @author https://github.com/elastic/puppet-logstash/graphs/contributors
 #
 define logstash::patternfile (
+  $ensure                                  = $::logstash::ensure,
   Pattern[/^(puppet|file):\/\//] $source   = undef,
   Optional[String[1]]            $filename = undef,
 ) {
@@ -28,7 +29,7 @@ define logstash::patternfile (
   $destination = pick($filename, basename($source))
 
   file { "${logstash::config_dir}/patterns/${destination}":
-    ensure => file,
+    ensure => $ensure,
     source => $source,
     owner  => 'root',
     group  => $logstash::logstash_group,
