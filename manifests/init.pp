@@ -137,7 +137,7 @@
 #
 # @author https://github.com/elastic/puppet-logstash/graphs/contributors
 #
-class logstash(
+class logstash (
   $ensure            = 'present',
   $status            = 'enabled',
   Boolean $restart_on_change = true,
@@ -157,13 +157,14 @@ class logstash(
   $jvm_options       = [],
   Array $pipelines   = [],
   Boolean $manage_repo   = true,
-)
-{
-  if ! ($ensure in [ 'present', 'absent' ]) {
+) {
+  $home_dir = '/usr/share/logstash'
+
+  if ! ($ensure in ['present', 'absent']) {
     fail("\"${ensure}\" is not a valid ensure parameter value")
   }
 
-  if ! ($status in [ 'enabled', 'disabled', 'running', 'unmanaged' ]) {
+  if ! ($status in ['enabled', 'disabled', 'running', 'unmanaged']) {
     fail("\"${status}\" is not a valid status parameter value")
   }
 
