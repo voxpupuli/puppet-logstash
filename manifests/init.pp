@@ -146,7 +146,7 @@ class logstash (
   $package_url       = undef,
   $package_name      = 'logstash',
   Integer $download_timeout  = 600,
-  $home_dir          = '/usr/share/logstash',
+  Stdlib::Absolutepath $home_dir = '/usr/share/logstash',
   $logstash_user     = 'logstash',
   $logstash_group    = 'logstash',
   $config_dir         = '/etc/logstash',
