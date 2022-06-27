@@ -48,7 +48,7 @@
 # @param [Integer] download_timeout
 #   Timeout, in seconds, for http, https, and ftp downloads.
 #
-# @param [String] home_dir
+# @param home_dir
 #   The home directory for logstash.
 #
 # @param [String] logstash_user
