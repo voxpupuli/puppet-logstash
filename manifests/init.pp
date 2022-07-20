@@ -48,6 +48,9 @@
 # @param [Integer] download_timeout
 #   Timeout, in seconds, for http, https, and ftp downloads.
 #
+# @param home_dir
+#   The home directory for logstash.
+#
 # @param [String] logstash_user
 #   The user that Logstash should run as. This also controls file ownership.
 #
@@ -143,6 +146,7 @@ class logstash (
   $package_url       = undef,
   $package_name      = 'logstash',
   Integer $download_timeout  = 600,
+  Stdlib::Absolutepath $home_dir = '/usr/share/logstash',
   $logstash_user     = 'logstash',
   $logstash_group    = 'logstash',
   $config_dir         = '/etc/logstash',
@@ -154,8 +158,6 @@ class logstash (
   Array $pipelines   = [],
   Boolean $manage_repo   = true,
 ) {
-  $home_dir = '/usr/share/logstash'
-
   if ! ($ensure in ['present', 'absent']) {
     fail("\"${ensure}\" is not a valid ensure parameter value")
   }
