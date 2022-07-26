@@ -10,11 +10,11 @@ defaults = {
   '-Xms' => '-Xms256m',
   '-Xmx' => '-Xmx1g',
   'UseParNewGC' => '-XX:+UseParNewGC',
-  'UseConcmarksweepgc' => '-XX:+UseConcMarkSweepGC',
+  'UseConcMarkSweepGC' => '-XX:+UseConcMarkSweepGC',
   'CMSInitiatingOccupancyFraction=' => '-XX:CMSInitiatingOccupancyFraction=75',
   'UseCMSInitiatingOccupancyOnly' => '-XX:+UseCMSInitiatingOccupancyOnly',
   'DisableExplicitGC' => '-XX:+DisableExplicitGC',
-  '-Djava.aws.headless=' => '-Djava.awt.headless=true',
+  '-Djava.awt.headless=' => '-Djava.awt.headless=true',
   '-Dfile.encoding=' => '-Dfile.encoding=UTF-8',
   'HeapDumpOnOutOfMemoryError' => '-XX:+HeapDumpOnOutOfMemoryError',
 }
