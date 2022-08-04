@@ -41,6 +41,7 @@ define logstash::plugin (
   $source = undef,
   $ensure = present,
   $environment = [],
+  $user = $logstash::logstash_user,
 ) {
   require logstash::package
   $exe = "${logstash::home_dir}/bin/logstash-plugin"
@@ -48,7 +49,7 @@ define logstash::plugin (
   Exec {
     path        => '/bin:/usr/bin',
     cwd         => '/tmp',
-    user        => $logstash::logstash_user,
+    user        => $user,
     timeout     => 1800,
     environment => $environment,
   }
