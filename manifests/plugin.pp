@@ -35,13 +35,15 @@
 #
 # @param source [String] Install from this file, not from RubyGems.
 #
+# @param user [String] User to install plugin as.
+#
 # @param environment [String] Environment used when running 'logstash-plugin'
 #
 define logstash::plugin (
   $source = undef,
   $ensure = present,
   $environment = [],
-  $user = $logstash::logstash_user,
+  String $user = $logstash::logstash_user,
 ) {
   require logstash::package
   $exe = "${logstash::home_dir}/bin/logstash-plugin"
