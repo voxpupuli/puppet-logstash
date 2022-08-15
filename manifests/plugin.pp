@@ -35,7 +35,7 @@
 #
 # @param source [String] Install from this file, not from RubyGems.
 #
-# @param user [String] User to install plugin as.
+# @param user User to install plugin as.
 #
 # @param environment [String] Environment used when running 'logstash-plugin'
 #
