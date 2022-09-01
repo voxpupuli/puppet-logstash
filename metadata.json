@@ -1,12 +1,12 @@
 {
-  "name": "elastic-logstash",
+  "name": "puppet-logstash",
   "version": "6.1.5",
-  "source": "https://github.com/elastic/puppet-logstash",
+  "source": "https://github.com/voxpupuli/puppet-logstash",
   "author": "elastic",
   "license": "Apache-2.0",
   "summary": "Module for managing and configuring Logstash",
   "description": "Module for managing and configuring Logstash",
-  "project_page": "https://github.com/elastic/puppet-logstash",
+  "project_page": "https://github.com/voxpupuli/puppet-logstash",
   "dependencies": [
     {
       "name": "puppetlabs/stdlib",
