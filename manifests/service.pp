@@ -31,22 +31,10 @@ class logstash::service {
     'SERVICE_DESCRIPTION' => '"logstash"',
   }
 
-  $default_jvm_options = [
-    '-Dfile.encoding=UTF-8',
-    '-Djava.awt.headless=true',
-    '-Xms256m',
-    '-Xmx1g',
-    '-XX:CMSInitiatingOccupancyFraction=75',
-    '-XX:+DisableExplicitGC',
-    '-XX:+HeapDumpOnOutOfMemoryError',
-    '-XX:+UseCMSInitiatingOccupancyOnly',
-    '-XX:+UseConcMarkSweepGC',
-    '-XX:+UseParNewGC',
-  ]
-
   $settings = merge($default_settings, $logstash::settings)
   $startup_options = merge($default_startup_options, $logstash::startup_options)
   $jvm_options = $logstash::jvm_options
+  $jvm_options_defaults = $logstash::jvm_options_defaults
   $pipelines = $logstash::pipelines
 
   File {
