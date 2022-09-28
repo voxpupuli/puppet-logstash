@@ -74,8 +74,11 @@
 #
 #   See: https://www.elastic.co/guide/en/logstash/current/config-setting-files.html
 #
+# @param [Hash] jvm_options_defaults
+#   Default set of optionname => option mappings from upstream 8.5 version
+#
 # @param [Array] jvm_options
-#   A collection of settings to be defined in `jvm.options`.
+#   A collection of settings to be defined in `jvm.options`. Override same settings in jvm_options_defaults
 #
 # @param [Array] pipelines
 #   A collection of settings to be defined in `pipelines.yml`.
@@ -154,6 +157,17 @@ class logstash (
   $service_provider  = undef,
   $settings          = {},
   $startup_options   = {},
+  $jvm_options_defaults = {
+    '-Xms' => '-Xms1g',
+    '-Xmx' => '-Xmx1g',
+    'UseConcMarkSweepGC' => '11-13:-XX:+UseConcMarkSweepGC',
+    'CMSInitiatingOccupancyFraction=' => '11-13:-XX:CMSInitiatingOccupancyFraction=75',
+    'UseCMSInitiatingOccupancyOnly' => '11-13:-XX:+UseCMSInitiatingOccupancyOnly',
+    '-Djava.awt.headless=' => '-Djava.awt.headless=true',
+    '-Dfile.encoding=' => '-Dfile.encoding=UTF-8',
+    'HeapDumpOnOutOfMemoryError' => '-XX:+HeapDumpOnOutOfMemoryError',
+    '-Djava.security.egd' => '-Djava.security.egd=file:/dev/urandom',
+  },
   $jvm_options       = [],
   Array $pipelines   = [],
   Boolean $manage_repo   = true,
