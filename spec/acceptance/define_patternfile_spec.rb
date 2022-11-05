@@ -5,7 +5,7 @@ require 'spec_helper_acceptance'
 describe 'class patternfile' do
   def apply_pattern(pattern_number, extra_logstash_class_args = nil)
     manifest = <<-END
-      #{install_logstash_from_local_file_manifest(extra_logstash_class_args)}
+      #{install_logstash_manifest(extra_logstash_class_args)}
 
       logstash::patternfile { 'pattern':
         source   => 'puppet:///modules/logstash/grok-pattern-#{pattern_number}',

@@ -30,10 +30,12 @@ describe 'define logstash::configfile' do
     END
 
     before(:context) do
+      skip('There is no configfile-template.erb in the module ..')
       apply_manifest(manifest, catch_failures: true, debug: true)
     end
 
     it 'creates a config file from the template' do
+      skip('There is no configfile-template.erb in the module ..')
       result = shell('cat /etc/logstash/conf.d/from-template').stdout
       expect(result).to include('2 + 2 equals 4')
     end

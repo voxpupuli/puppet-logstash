@@ -2,15 +2,11 @@
 
 require 'beaker-rspec'
 require 'net/http'
-require 'pry'
 require 'securerandom'
 require 'yaml'
 
 # Collect global options from the environment.
-ENV['LOGSTASH_VERSION'] = '7.17.6'
-raise 'Please set the LOGSTASH_VERSION environment variable.' if ENV['LOGSTASH_VERSION'].nil?
-
-LS_VERSION = ENV['LOGSTASH_VERSION']
+LS_VERSION = ENV['LOGSTASH_VERSION'] || '7.17.7'
 PUPPET_VERSION = ENV['PUPPET_VERSION'] || '4.10.7'
 
 PE_VERSION = ENV['BEAKER_PE_VER'] || ENV['PE_VERSION'] || '3.8.3'
@@ -66,9 +62,9 @@ def http_package_url
 
   case fact('osfamily')
   when 'Debian'
-    "#{url_root}.deb"
+    "#{url_root}-amd64.deb"
   when 'RedHat', 'Suse'
-    "#{url_root}.rpm"
+    "#{url_root}-x86_64.rpm"
   end
 end
 
@@ -167,7 +163,7 @@ def install_logstash(extra_args = nil)
 end
 
 def include_logstash
-  result = apply_manifest(include_logstash_manifest, catch_failures: true, debug: true)
+  result = apply_manifest(include_logstash_manifest, catch_failures: true)
   sleep 5 # FIXME: This is horrible.
   result
 end
@@ -241,77 +237,3 @@ end
 def puppet_enterprise?
   ENV['BEAKER_IS_PE'] == 'true' || ENV['IS_PE'] == 'true'
 end
-
-# hosts.each do |host|
-#  # Install Puppet
-#  if puppet_enterprise?
-#    pe_download = File.join(PE_DIR, pe_package_filename)
-#    `curl -s -o #{pe_download} #{pe_package_url}` unless File.exist?(pe_download)
-#    on host, "hostname #{host.name}"
-#    install_pe_on(host, pe_ver: PE_VERSION)
-#  else
-#    if PUPPET_VERSION.start_with?('4.')
-#      agent_version = agent_version_for_puppet_version(PUPPET_VERSION)
-#      install_puppet_agent_on(host, puppet_agent_version: agent_version)
-#    else
-#      begin
-#        install_puppet_on(host, version: PUPPET_VERSION)
-#      rescue
-#        install_puppet_from_gem_on(host, version: PUPPET_VERSION)
-#      end
-#    end
-#  end
-#
-#  if fact('osfamily') == 'Suse'
-#    if fact('operatingsystem') == 'OpenSuSE'
-#      install_package host, 'ruby-devel augeas-devel libxml2-devel'
-#      on host, 'gem install ruby-augeas --no-ri --no-rdoc'
-#    end
-#  end
-#
-#  # Update package cache for those who need it.
-#  on host, 'apt-get update' if fact('osfamily') == 'Debian'
-#
-#  # Aquire a binary package of Logstash.
-#  logstash_download = "spec/fixtures/artifacts/#{logstash_package_filename}"
-#  `curl -s -o #{logstash_download} #{http_package_url}` unless File.exist?(logstash_download)
-#  # ...send it to the test host
-#  scp_to(host, logstash_download, '/tmp/')
-#  # ...and also make it available as a "puppet://" url, by putting it in the
-#  # 'files' directory of the Logstash module.
-#  FileUtils.cp(logstash_download, './files/')
-#
-#  # ...and put some grok pattern examples in their too.
-#  Dir.glob('./spec/fixtures/grok-patterns/*').each do |f|
-#    FileUtils.cp(f, './files/')
-#  end
-#
-#  # Provide a Logstash plugin as a local Gem.
-#  scp_to(host, './spec/fixtures/plugins/logstash-output-cowsay-5.0.0.gem', '/tmp/')
-#
-#  # ...and another plugin that can be fetched from Puppet with "puppet://"
-#  FileUtils.cp('./spec/fixtures/plugins/logstash-output-cowthink-5.0.0.gem', './files/')
-#
-#  # ...and yet another plugin, this time packaged as an offline installer
-#  FileUtils.cp('./spec/fixtures/plugins/logstash-output-cowsay-5.0.0.zip', './files/')
-#
-#  # Provide a config file template.
-#  FileUtils.cp('./spec/fixtures/templates/configfile-template.erb', './templates/')
-#
-#  # Provide this module to the test system.
-#  project_root = File.dirname(File.dirname(__FILE__))
-#  install_dev_puppet_module_on(host, source: project_root, module_name: 'logstash')
-#
-#  # Also install any other modules we need on the test system.
-#  install_puppet_module_via_pmt_on(host, module_name: 'elastic-elastic_stack')
-#  install_puppet_module_via_pmt_on(host, module_name: 'darin-zypprepo')
-# end
-#
-# RSpec.configure do |c|
-#  # Readable test descriptions
-#  c.formatter = :documentation
-#  c.color = true
-#
-#  # declare an exclusion filter
-#  c.filter_run_excluding broken: true
-# end

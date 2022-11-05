@@ -21,7 +21,7 @@ describe 'logstash::plugin' do
       it { is_expected.to compile }
 
       it {
-        is_expected.to contain_exec("install-#{title}").with(user: 'logstash')
+        is_expected.to contain_exec("install-#{title}").with(user: 'root')
       }
     end
   end

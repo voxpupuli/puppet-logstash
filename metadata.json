@@ -5,7 +5,6 @@
   "author": "elastic",
   "license": "Apache-2.0",
   "summary": "Module for managing and configuring Logstash",
-  "description": "Module for managing and configuring Logstash",
   "project_page": "https://github.com/voxpupuli/puppet-logstash",
   "dependencies": [
     {

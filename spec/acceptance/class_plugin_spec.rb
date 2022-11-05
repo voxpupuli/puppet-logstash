@@ -3,6 +3,11 @@
 require 'spec_helper_acceptance'
 
 describe 'class plugin' do
+  before(:all) do
+    remove_logstash
+    install_logstash('status => "disabled", restart_on_change => false')
+  end
+
   def ensure_plugin(present_absent, plugin, extra_args = nil)
     manifest = <<-END
       class { 'logstash':
@@ -60,6 +65,7 @@ describe 'class plugin' do
 
   if Gem::Version.new(LS_VERSION) >= Gem::Version.new('5.2.0')
     it 'can install x-pack from an https url' do
+      skip('The latest x-pack release is 6.2.4 released April 17, 2018 ...')
       plugin = 'x-pack'
       source = "https://artifacts.elastic.co/downloads/packs/x-pack/x-pack-#{LS_VERSION}.zip"
       ensure_plugin('present', plugin, "source => '#{source}'")
@@ -68,6 +74,7 @@ describe 'class plugin' do
   end
 
   it 'can install a plugin from a "puppet://" url' do
+    skip('There is no plugins embedded in the module ...')
     plugin = 'logstash-output-cowthink'
     source = "puppet:///modules/logstash/#{plugin}-5.0.0.gem"
     ensure_plugin('present', plugin, "source => '#{source}'")
@@ -75,6 +82,7 @@ describe 'class plugin' do
   end
 
   it 'can install a plugin from a local gem' do
+    skip('No download means no local plugin available ...')
     plugin = 'logstash-output-cowsay'
     source = "/tmp/#{plugin}-5.0.0.gem"
     ensure_plugin('present', plugin, "source => '#{source}'")
@@ -82,6 +90,7 @@ describe 'class plugin' do
   end
 
   it 'can install a plugin from an offline zip' do
+    skip('There is no plugins embedded in the module ...')
     plugin = 'logstash-output-cowsay'
     source = "puppet:///modules/logstash/#{plugin}-5.0.0.zip"
     ensure_plugin('present', plugin, "source => '#{source}'")

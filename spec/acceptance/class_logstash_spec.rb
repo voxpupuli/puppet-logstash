@@ -4,7 +4,7 @@ require 'spec_helper_acceptance'
 
 shared_examples 'a logstash installer' do
   it "installs logstash version #{LS_VERSION}" do
-    expect(shell('/usr/share/logstash/bin/logstash --version').stdout).to eq("logstash #{LS_VERSION}\n")
+    expect(shell('/usr/share/logstash/bin/logstash --version').stdout).to contain("logstash #{LS_VERSION}")
   end
 
   case fact('osfamily')
@@ -74,10 +74,12 @@ describe 'class logstash' do
 
     context 'when installing from a "puppet://" url' do
       before(:all) do
+        skip('There is no rpm package in the module ...')
         remove_logstash
         install_logstash_from_url(puppet_fileserver_package_url)
       end
 
+      skip('There is no rpm package in the module ...')
       it_behaves_like 'a logstash installer'
     end
   end
@@ -209,8 +211,6 @@ describe 'class logstash' do
           '-XX:+DisableExplicitGC',
           '-XX:+HeapDumpOnOutOfMemoryError',
           '-XX:+UseCMSInitiatingOccupancyOnly',
-          '-XX:+UseConcMarkSweepGC',
-          '-XX:+UseParNewGC',
         ]
         expert_flags.each do |flag|
           expect(logstash_process_list.pop).to include(flag)
