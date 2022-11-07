@@ -18,47 +18,44 @@
   ],
   "operatingsystem_support": [
     {
-      "operatingsystem": "RedHat",
-      "operatingsystemrelease": [
-        "7"
-      ]
-    },
-    {
-      "operatingsystem": "CentOS",
-      "operatingsystemrelease": [
-        "7"
-      ]
-    },
-    {
-      "operatingsystem": "OracleLinux",
-      "operatingsystemrelease": [
-        "7"
-      ]
-    },
-    {
-      "operatingsystem": "Scientific",
-      "operatingsystemrelease": [
-        "7"
-      ]
-    },
-    {
       "operatingsystem": "Debian",
+      "operatingsystemrelease": [
+        "10",
+        "11"
+      ]
+    },
+    {
+      "operatingsystem": "OpenSuSE",
+      "operatingsystemrelease": [
+        "15"
+      ]
+    },
+    {
+      "operatingsystem": "RedHat",
       "operatingsystemrelease": [
         "7",
         "8"
       ]
     },
     {
-      "operatingsystem": "Ubuntu",
+      "operatingsystem": "CentOS",
       "operatingsystemrelease": [
-        "14.04",
-        "16.04"
+        "7",
+        "8"
+      ]
+    },
+  {
+      "operatingsystem": "SLES",
+      "operatingsystemrelease": [
+        "12",
+        "15"
       ]
     },
     {
-      "operatingsystem": "OpenSuSE",
+      "operatingsystem": "Ubuntu",
       "operatingsystemrelease": [
-        "13.x"
+        "18.04",
+        "20.04"
       ]
     }
   ],
