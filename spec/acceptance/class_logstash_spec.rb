@@ -208,7 +208,6 @@ describe 'class logstash' do
           '-Dfile.encoding=UTF-8',
           '-Djava.awt.headless=true',
           '-XX:CMSInitiatingOccupancyFraction=75',
-          '-XX:+DisableExplicitGC',
           '-XX:+HeapDumpOnOutOfMemoryError',
           '-XX:+UseCMSInitiatingOccupancyOnly',
         ]
