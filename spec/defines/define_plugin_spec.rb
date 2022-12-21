@@ -10,10 +10,10 @@ describe 'logstash::plugin' do
       end
 
       let(:pre_condition) do
-        '
-        include elastic_stack::repo
-        include logstash
-      '
+        <<~PUPPET
+          include elastic_stack::repo
+          include logstash
+        PUPPET
       end
 
       let(:title) { 'logstash-input-mysql' }
