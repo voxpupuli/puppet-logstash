@@ -124,7 +124,7 @@ If you have Ruby 2.x or want a specific version of Puppet,
 you must set an environment variable such as:
 
 ```sh
-export PUPPET_GEM_VERSION="~> 5.5.6"
+export PUPPET_GEM_VERSION="~> 6.1.0"
 ```
 
 You can install all needed gems for spec tests into the modules directory by
