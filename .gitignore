@@ -21,3 +21,4 @@ doc
 *.lock
 **.swp
 files/logstash-output-cowsay-5.0.0.zip
+.vscode/

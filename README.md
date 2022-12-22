@@ -4,15 +4,9 @@ A Puppet module for managing and configuring [Logstash](http://logstash.net/).
 
 [![Build Status](https://travis-ci.org/elastic/puppet-logstash.png?branch=master)](https://travis-ci.org/elastic/puppet-logstash)
 
-## Logstash Versions
-
-This module, "elastic/logstash" supports only Logstash 5.x and 6.x. For earlier
-Logstash versions, support is provided by the legacy module
-"elasticsearch/logstash".
-
 ## Requirements
 
-* Puppet 4.6.1 or better.
+* Puppet 6 or better.
 * The [stdlib](https://forge.puppetlabs.com/puppetlabs/stdlib) module.
 * Logstash itself requires Java 8. The "puppetlabs/java" module is recommended
   for installing Java. This module will not install Java.
