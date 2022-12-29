@@ -16,7 +16,6 @@ class logstash::service {
   }
 
   $default_startup_options = {
-    'JAVACMD'             => '/usr/bin/java',
     'LS_HOME'             => $logstash::home_dir,
     'LS_SETTINGS_DIR'     => $logstash::config_dir,
     'LS_OPTS'             => "--path.settings=${logstash::config_dir}",

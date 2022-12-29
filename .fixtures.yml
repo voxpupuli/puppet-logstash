@@ -4,3 +4,4 @@ fixtures:
     stdlib: https://github.com/puppetlabs/puppetlabs-stdlib.git
     zypprepo: https://github.com/voxpupuli/puppet-zypprepo.git
     elastic_stack: https://github.com/voxpupuli/puppet-elastic_stack.git
+    yumrepo: https://github.com/puppetlabs/puppetlabs-yumrepo_core.git

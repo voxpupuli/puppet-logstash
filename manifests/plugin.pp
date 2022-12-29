@@ -43,7 +43,7 @@ define logstash::plugin (
   $source = undef,
   $ensure = present,
   $environment = [],
-  String $user = $logstash::logstash_user,
+  String $user = 'root',
 ) {
   require logstash::package
   $exe = "${logstash::home_dir}/bin/logstash-plugin"
