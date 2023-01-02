@@ -1,8 +1,8 @@
 {
   "name": "puppet-logstash",
-  "version": "6.1.5",
+  "version": "7.0.0-rc0",
   "source": "https://github.com/voxpupuli/puppet-logstash",
-  "author": "elastic",
+  "author": "Vox Pupuli",
   "license": "Apache-2.0",
   "summary": "Module for managing and configuring Logstash",
   "project_page": "https://github.com/voxpupuli/puppet-logstash",
