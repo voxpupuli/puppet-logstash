@@ -1,6 +1,6 @@
 {
   "name": "puppet-logstash",
-  "version": "7.0.0",
+  "version": "7.0.1-rc0",
   "source": "https://github.com/voxpupuli/puppet-logstash",
   "author": "Vox Pupuli",
   "license": "Apache-2.0",
@@ -44,7 +44,7 @@
         "8"
       ]
     },
-  {
+    {
       "operatingsystem": "SLES",
       "operatingsystemrelease": [
         "12",
