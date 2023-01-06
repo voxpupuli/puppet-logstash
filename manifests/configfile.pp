@@ -2,6 +2,10 @@
 #
 # Parameters are mutually exclusive. Only one should be specified.
 #
+# @param [String] ensure
+# Ensure the file is either [`present`,`absent`].
+# Useful if you want to place the file on some servers but specifically not on (or remove from) other servers
+#
 # @param [String] content
 #  Literal content to be placed in the file.
 #
@@ -42,7 +46,7 @@
 # @author https://github.com/elastic/puppet-logstash/graphs/contributors
 #
 define logstash::configfile (
-  $ensure = $::logstash::ensure,
+  Enum['present', 'absent'] $ensure = $logstash::ensure,
   $content = undef,
   $source = undef,
   $template = undef,
