@@ -1,12 +1,11 @@
 {
-  "name": "elastic-logstash",
-  "version": "6.1.5",
-  "source": "https://github.com/elastic/puppet-logstash",
-  "author": "elastic",
+  "name": "puppet-logstash",
+  "version": "7.0.1-rc0",
+  "source": "https://github.com/voxpupuli/puppet-logstash",
+  "author": "Vox Pupuli",
   "license": "Apache-2.0",
   "summary": "Module for managing and configuring Logstash",
-  "description": "Module for managing and configuring Logstash",
-  "project_page": "https://github.com/elastic/puppet-logstash",
+  "project_page": "https://github.com/voxpupuli/puppet-logstash",
   "dependencies": [
     {
       "name": "puppetlabs/stdlib",
@@ -19,58 +18,51 @@
   ],
   "operatingsystem_support": [
     {
-      "operatingsystem": "RedHat",
-      "operatingsystemrelease": [
-        "6",
-        "7"
-      ]
-    },
-    {
-      "operatingsystem": "CentOS",
-      "operatingsystemrelease": [
-        "6",
-        "7"
-      ]
-    },
-    {
-      "operatingsystem": "OracleLinux",
-      "operatingsystemrelease": [
-        "6",
-        "7"
-      ]
-    },
-    {
-      "operatingsystem": "Scientific",
-      "operatingsystemrelease": [
-        "6",
-        "7"
-      ]
-    },
-    {
       "operatingsystem": "Debian",
+      "operatingsystemrelease": [
+        "10",
+        "11"
+      ]
+    },
+    {
+      "operatingsystem": "OpenSuSE",
+      "operatingsystemrelease": [
+        "15"
+      ]
+    },
+    {
+      "operatingsystem": "RedHat",
       "operatingsystemrelease": [
         "7",
         "8"
       ]
     },
     {
-      "operatingsystem": "Ubuntu",
+      "operatingsystem": "CentOS",
       "operatingsystemrelease": [
-        "14.04",
-        "16.04"
+        "7",
+        "8"
       ]
     },
     {
-      "operatingsystem": "OpenSuSE",
+      "operatingsystem": "SLES",
       "operatingsystemrelease": [
-        "13.x"
+        "12",
+        "15"
+      ]
+    },
+    {
+      "operatingsystem": "Ubuntu",
+      "operatingsystemrelease": [
+        "18.04",
+        "20.04"
       ]
     }
   ],
   "requirements": [
     {
       "name": "puppet",
-      "version_requirement": ">=4.6.1 <6.0.0"
+      "version_requirement": ">= 6.1.0 < 8.0.0"
     }
   ]
 }

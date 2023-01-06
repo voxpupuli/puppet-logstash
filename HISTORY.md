@@ -1,4 +1,5 @@
-6.1.5
+## [6.1.5](https://github.com/voxpupuli/puppet-logstash/tree/6.1.5) (2018-11-13)
+
   Honour `restart_on_change` for startup files #377
 
 6.1.4
@@ -159,7 +160,7 @@
 0.3.0
   Update defines for Logstash 1.1.12
   Adding license file
-  Deleted old init file removal to avoid issues. ( Issue #50 ) 
+  Deleted old init file removal to avoid issues. ( Issue #50 )
   Allow file owner/group to be variable ( Issue/PR #47 )
   Ensure log directory exists before starting ( PR #53 by Brian Lalor )
   Provide complete containment of the class ( PR #53 by Brian Lalor )

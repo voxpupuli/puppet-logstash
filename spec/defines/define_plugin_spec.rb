@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe 'logstash::plugin' do
@@ -7,17 +9,19 @@ describe 'logstash::plugin' do
         facts
       end
 
-      let(:pre_condition) { %q(
-        include elastic_stack::repo
-        include logstash
-      )}
+      let(:pre_condition) do
+        <<~PUPPET
+          include elastic_stack::repo
+          include logstash
+        PUPPET
+      end
 
       let(:title) { 'logstash-input-mysql' }
 
       it { is_expected.to compile }
 
       it {
-        is_expected.to contain_exec("install-#{title}").with(user: 'logstash')
+        is_expected.to contain_exec("install-#{title}").with(user: 'root')
       }
     end
   end

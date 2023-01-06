@@ -1,21 +1,24 @@
-# elastic/logstash
+# logstash
 
-A Puppet module for managing and configuring [Logstash](http://logstash.net/).
+[![Build Status](https://github.com/voxpupuli/puppet-logstash/workflows/CI/badge.svg)](https://github.com/voxpupuli/puppet-logstash/actions?query=workflow%3ACI)
+[![Release](https://github.com/voxpupuli/puppet-logstash/actions/workflows/release.yml/badge.svg)](https://github.com/voxpupuli/puppet-logstash/actions/workflows/release.yml)
+[![Puppet Forge](https://img.shields.io/puppetforge/v/puppet/logstash.svg)](https://forge.puppetlabs.com/puppet/logstash)
+[![Puppet Forge - downloads](https://img.shields.io/puppetforge/dt/puppet/logstash.svg)](https://forge.puppetlabs.com/puppet/logstash)
+[![Puppet Forge - endorsement](https://img.shields.io/puppetforge/e/puppet/logstash.svg)](https://forge.puppetlabs.com/puppet/logstash)
+[![Puppet Forge - scores](https://img.shields.io/puppetforge/f/puppet/logstash.svg)](https://forge.puppetlabs.com/puppet/logstash)
+[![puppetmodule.info docs](http://www.puppetmodule.info/images/badge.png)](http://www.puppetmodule.info/m/puppet-logstash)
+[![Apache-2 License](https://img.shields.io/github/license/voxpupuli/puppet-logstash.svg)](LICENSE)
+[![Donated by Elastic](https://img.shields.io/badge/donated%20by-Elastic-fb7047.svg)](#transfer-notice)
 
-[![Build Status](https://travis-ci.org/elastic/puppet-logstash.png?branch=master)](https://travis-ci.org/elastic/puppet-logstash)
+A Puppet module for managing and configuring [Logstash](https://www.elastic.co/logstash/).
 
-## Logstash Versions
-
-This module, "elastic/logstash" supports only Logstash 5.x and 6.x. For earlier
-Logstash versions, support is provided by the legacy module
-"elasticsearch/logstash".
+Version 7 and newer of this module are released by Vox Pupuli. They now follow semantic versioning. Previously the module was maintained by Elastic.
 
 ## Requirements
 
-* Puppet 4.6.1 or better.
 * The [stdlib](https://forge.puppetlabs.com/puppetlabs/stdlib) module.
-* Logstash itself requires Java 8. The "puppetlabs/java" module is recommended
-  for installing Java. This module will not install Java.
+* Logstash < 7.0.0 requires Java. The [puppetlabs/java](https://forge.puppetlabs.com/modules/puppetlabs/java) module is recommended
+  for installing Java.
 
 Optional:
 * The [elastic_stack](https://forge.puppetlabs.com/elastic/elastic_stack) module
@@ -39,29 +42,26 @@ logstash::configfile { 'my_ls_config':
 ```
 
 ## Package and service options
-### Choosing a Logstash minor version
-``` puppet
-class { 'logstash':
-  version => '6.0.0',
-}
-```
-
 ### Choosing a Logstash major version
 
 This module uses the related "elastic/elastic_stack" module to manage package
 repositories. Since there is a separate repository for each major version of
-the Elastic stack, if you don't want the default version (6), it's necessary
+the Elastic stack, if you don't want the default version, it's necessary
 to select which version to configure, like this:
 ``` puppet
 class { 'elastic_stack::repo':
-  version => 5,
+  version => 6,
 }
 
-class { 'logstash':
-  version => '5.6.4',
-}
+include logstash
 ```
 
+### Choosing a Logstash minor version
+``` puppet
+class { 'logstash':
+  version => '6.8.0',
+}
+```
 ### Manual repository management
 You may want to manage repositories manually. You can disable
 automatic repository management like this:
@@ -79,21 +79,21 @@ explicit package to fetch and install.
 #### From an HTTP/HTTPS/FTP URL
 ``` puppet
 class { 'logstash':
-  package_url => 'https://artifacts.elastic.co/downloads/logstash/logstash-5.1.1.rpm',
+  package_url => 'https://artifacts.elastic.co/downloads/logstash/logstash-7.17.8-x86_64.rpm',
 }
 ```
 
 #### From a 'puppet://' URL
 ``` puppet
 class { 'logstash':
-  package_url => 'puppet:///modules/my_module/logstash-5.1.1.rpm',
+  package_url => 'puppet:///modules/my_module/logstash-7.17.8-x86_64.rpm',
 }
 ```
 
 #### From a local file on the agent
 ``` puppet
 class { 'logstash':
-  package_url => 'file:///tmp/logstash-5.1.1.rpm',
+  package_url => 'file:///tmp/logstash-7.17.8-x86_64.rpm',
 }
 ```
 
@@ -101,6 +101,13 @@ class { 'logstash':
 ``` puppet
 class { 'logstash':
   auto_upgrade => true,
+}
+```
+
+### Use a different logstash home
+``` puppet
+class { 'logstash':
+  home_dir => '/opt/logstash',
 }
 ```
 
@@ -321,5 +328,8 @@ logstash::plugin { 'logstash-input-websocket':
 }
 ```
 
-## Support
-Need help? Join us in [#logstash](https://webchat.freenode.net?channels=%23logstash) on Freenode IRC or on the https://discuss.elastic.co/c/logstash discussion forum.
+## Transfer Notice
+
+This module was originally authored by [Elastic](https://www.elastic.co).
+The maintainer preferred that Vox Pupuli take ownership of the module for future improvement and maintenance.
+Existing pull requests and issues were transferred over, please fork and continue to contribute here instead of Elastic.
