@@ -9,8 +9,8 @@ class logstash::config {
   require logstash::package
 
   File {
-    owner => 'root',
-    group => 'root',
+    owner => $logstash::config_user,
+    group => $logstash::config_group,
   }
 
   # Configuration "fragment" directories for pipeline config and pattern files.
