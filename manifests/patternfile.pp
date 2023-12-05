@@ -1,9 +1,9 @@
 # This type represents a Grok pattern file for Logstash.
 #
-# @param [String] source
+# @param source
 #   File source for the pattern file. eg. `puppet://[...]` or `file://[...]`
 #
-# @param [String] filename
+# @param filename
 #   Optionally set the destination filename.
 #
 # @example Define a pattern file.
