@@ -4,7 +4,21 @@ All notable changes to this project will be documented in this file.
 Each new release typically also includes the latest modulesync defaults.
 These should not affect the functionality of the module.
 
-## [v7.0.0](https://github.com/voxpupuli/puppet-logstash/tree/v7.0.0) (2023-01-04)
+## [v8.0.0](https://github.com/voxpupuli/puppet-logstash/tree/v8.0.0) (2024-01-30)
+
+[Full Changelog](https://github.com/voxpupuli/puppet-logstash/compare/v7.0.0...v8.0.0)
+
+**Breaking changes:**
+
+- Drop Puppet 6 support [\#424](https://github.com/voxpupuli/puppet-logstash/pull/424) ([bastelfreak](https://github.com/bastelfreak))
+
+**Implemented enhancements:**
+
+- bump elastic\_stack max version to \<10.0.0 [\#432](https://github.com/voxpupuli/puppet-logstash/pull/432) ([sandwitch](https://github.com/sandwitch))
+- Add Puppet 8 support [\#427](https://github.com/voxpupuli/puppet-logstash/pull/427) ([bastelfreak](https://github.com/bastelfreak))
+- puppetlabs/stdlib: Allow 9.x [\#426](https://github.com/voxpupuli/puppet-logstash/pull/426) ([bastelfreak](https://github.com/bastelfreak))
+
+## [v7.0.0](https://github.com/voxpupuli/puppet-logstash/tree/v7.0.0) (2023-01-05)
 
 [Full Changelog](https://github.com/voxpupuli/puppet-logstash/compare/6.1.5...v7.0.0)
 
