@@ -49,8 +49,8 @@ define logstash::configfile (
 ) {
   include logstash
 
-  $owner = 'root'
-  $group = $logstash::logstash_group
+  $owner = $logstash::config_user
+  $group = $logstash::config_group
   $mode  = '0640'
   $require = Package['logstash'] # So that we have '/etc/logstash/conf.d'.
   $tag = ['logstash_config'] # So that we notify the service.

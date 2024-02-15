@@ -52,10 +52,16 @@
 #   The home directory for logstash.
 #
 # @param [String] logstash_user
-#   The user that Logstash should run as. This also controls file ownership.
+#   The user that Logstash should run as.
 #
 # @param [String] logstash_group
-#   The group that Logstash should run as. This also controls file group ownership.
+#   The group that Logstash should run as.
+#
+# @param [String] config_user
+#   The user that owns Logstash control files.
+#
+# @param [String] config_group
+#   The group that owns Logstash control files.
 #
 # @param [Boolean] purge_config
 #   Purge the config directory of any unmanaged files,
@@ -152,6 +158,8 @@ class logstash (
   Stdlib::Absolutepath $home_dir = '/usr/share/logstash',
   $logstash_user     = 'logstash',
   $logstash_group    = 'logstash',
+  $config_user       = 'root',
+  $config_group      = 'root',
   $config_dir         = '/etc/logstash',
   Boolean $purge_config = true,
   $service_provider  = undef,
