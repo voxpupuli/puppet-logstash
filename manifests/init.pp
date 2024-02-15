@@ -170,6 +170,7 @@ class logstash (
   },
   $jvm_options       = [],
   Array $pipelines   = [],
+  Hash $pipeline_files = {},
   Boolean $manage_repo   = true,
 ) {
   if ! ($ensure in ['present', 'absent']) {
@@ -186,4 +187,5 @@ class logstash (
   include logstash::package
   include logstash::config
   include logstash::service
+  include logstash::pipeline_files
 }
