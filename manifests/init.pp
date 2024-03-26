@@ -154,7 +154,7 @@ class logstash (
   $logstash_group    = 'logstash',
   $config_dir         = '/etc/logstash',
   Boolean $purge_config = true,
-  $service_provider  = undef,
+  Optional[String[1]] $service_provider = undef,
   $settings          = {},
   $startup_options   = {},
   $jvm_options_defaults = {
