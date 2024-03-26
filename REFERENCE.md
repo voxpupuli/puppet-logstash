@@ -242,7 +242,7 @@ Default value: `true`
 
 ##### <a name="-logstash--service_provider"></a>`service_provider`
 
-Data type: `String`
+Data type: `Optional[String[1]]`
 
 Service provider (init system) to use. By Default, the module will try to
 choose the 'standard' provider for the current distribution.

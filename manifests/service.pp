@@ -113,50 +113,12 @@ class logstash::service {
     }
   }
 
-  # Figure out which service provider (init system) we should be using.
-  # In general, we'll try to guess based on the operating system.
-  $os = downcase($facts['os']['name'])
-  $release = $facts['os']['release']['major']
-  # However, the operator may have explicitly defined the service provider.
-  if($logstash::service_provider) {
-    $service_provider = $logstash::service_provider
-  }
-  # In the absence of an explicit choice, we'll try to figure out a sensible
-  # default.
-  # Puppet 3 doesn't know that Debian 8 uses systemd, not SysV init, so we'll
-  # help it out with our knowledge from the future.
-  elsif($os == 'debian' and $release == '8') {
-    $service_provider = 'systemd'
-  }
-  # RedHat/CentOS/OEL 6 uses Upstart by default, but Puppet can get confused about this too.
-  elsif($os =~ /(redhat|centos|oraclelinux)/ and $release == '6') {
-    $service_provider = 'upstart'
-  }
-  elsif($os =~ /ubuntu/ and $release == '12.04') {
-    $service_provider = 'upstart'
-  }
-  elsif($os =~ /opensuse/ and $release == '13') {
-    $service_provider = 'systemd'
-  }
-  #Older Amazon Linux AMIs has its release based on the year
-  #it came out (2010 and up); the provider needed to be set explicitly;
-  #New Amazon Linux 2 AMIs has the release set to 2, Puppet can handle it
-  elsif($os =~ /amazon/ and versioncmp($release, '2000') > 0) {
-    $service_provider = 'upstart'
-  }
-  else {
-    # In most cases, Puppet(4) can figure out the correct service
-    # provider on its own, so we'll just say 'undef', and let it do
-    # whatever it thinks is best.
-    $service_provider = undef
-  }
-
   service { 'logstash':
     ensure     => $service_ensure,
     enable     => $service_enable,
     hasstatus  => true,
     hasrestart => true,
-    provider   => $service_provider,
+    provider   => $logstash::service_provider,
   }
 
   # If any files tagged as config files for the service are changed, notify
