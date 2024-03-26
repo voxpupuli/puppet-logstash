@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 Each new release typically also includes the latest modulesync defaults.
 These should not affect the functionality of the module.
 
+## [v8.1.0](https://github.com/voxpupuli/puppet-logstash/tree/v8.1.0) (2024-03-26)
+
+[Full Changelog](https://github.com/voxpupuli/puppet-logstash/compare/v8.0.0...v8.1.0)
+
+**Implemented enhancements:**
+
+- Add Rocky/AlmaLinux/OracleLinux support [\#442](https://github.com/voxpupuli/puppet-logstash/pull/442) ([bastelfreak](https://github.com/bastelfreak))
+- Add Ubuntu 22.04 support [\#441](https://github.com/voxpupuli/puppet-logstash/pull/441) ([bastelfreak](https://github.com/bastelfreak))
+- Add EL9 support [\#440](https://github.com/voxpupuli/puppet-logstash/pull/440) ([bastelfreak](https://github.com/bastelfreak))
+- Add Debian 12 support [\#439](https://github.com/voxpupuli/puppet-logstash/pull/439) ([bastelfreak](https://github.com/bastelfreak))
+- Don't hardcode the service provider [\#438](https://github.com/voxpupuli/puppet-logstash/pull/438) ([bastelfreak](https://github.com/bastelfreak))
+- replace legacy `merge()` with native puppet code [\#437](https://github.com/voxpupuli/puppet-logstash/pull/437) ([bastelfreak](https://github.com/bastelfreak))
+
 ## [v8.0.0](https://github.com/voxpupuli/puppet-logstash/tree/v8.0.0) (2024-01-30)
 
 [Full Changelog](https://github.com/voxpupuli/puppet-logstash/compare/v7.0.0...v8.0.0)
