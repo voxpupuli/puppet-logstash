@@ -30,8 +30,8 @@ class logstash::service {
     'SERVICE_DESCRIPTION' => '"logstash"',
   }
 
-  $settings = merge($default_settings, $logstash::settings)
-  $startup_options = merge($default_startup_options, $logstash::startup_options)
+  $settings = $default_settings + $logstash::settings
+  $startup_options = $default_startup_options + $logstash::startup_options
   $jvm_options = $logstash::jvm_options
   $jvm_options_defaults = $logstash::jvm_options_defaults
   $pipelines = $logstash::pipelines
@@ -140,7 +140,7 @@ class logstash::service {
   }
   #Older Amazon Linux AMIs has its release based on the year
   #it came out (2010 and up); the provider needed to be set explicitly;
-  #New Amazon Linux 2 AMIs has the release set to 2, Puppet can handle it 
+  #New Amazon Linux 2 AMIs has the release set to 2, Puppet can handle it
   elsif($os =~ /amazon/ and versioncmp($release, '2000') > 0) {
     $service_provider = 'upstart'
   }
