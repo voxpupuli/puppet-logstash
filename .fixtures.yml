@@ -1,7 +1,8 @@
+---
 fixtures:
   repositories:
     apt: https://github.com/puppetlabs/puppetlabs-apt.git
-    stdlib: https://github.com/puppetlabs/puppetlabs-stdlib.git
-    zypprepo: https://github.com/voxpupuli/puppet-zypprepo.git
     elastic_stack: https://github.com/voxpupuli/puppet-elastic_stack.git
+    stdlib: https://github.com/puppetlabs/puppetlabs-stdlib.git
     yumrepo: https://github.com/puppetlabs/puppetlabs-yumrepo_core.git
+    zypprepo: https://github.com/voxpupuli/puppet-zypprepo.git
