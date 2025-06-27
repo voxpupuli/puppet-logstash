@@ -4,6 +4,28 @@ All notable changes to this project will be documented in this file.
 Each new release typically also includes the latest modulesync defaults.
 These should not affect the functionality of the module.
 
+## [v9.0.0](https://github.com/voxpupuli/puppet-logstash/tree/v9.0.0) (2025-06-27)
+
+[Full Changelog](https://github.com/voxpupuli/puppet-logstash/compare/v8.1.0...v9.0.0)
+
+**Breaking changes:**
+
+- Drop Ubuntu 18.04 and 20.04 [\#463](https://github.com/voxpupuli/puppet-logstash/pull/463) ([h-haaks](https://github.com/h-haaks))
+- Drop CentOS 7 and 8 [\#462](https://github.com/voxpupuli/puppet-logstash/pull/462) ([h-haaks](https://github.com/h-haaks))
+- Drop RedHat 7 [\#461](https://github.com/voxpupuli/puppet-logstash/pull/461) ([h-haaks](https://github.com/h-haaks))
+- Drop Debian 10 [\#460](https://github.com/voxpupuli/puppet-logstash/pull/460) ([h-haaks](https://github.com/h-haaks))
+- Remove EOL SLES 12 [\#457](https://github.com/voxpupuli/puppet-logstash/pull/457) ([thomas-merz](https://github.com/thomas-merz))
+
+**Implemented enhancements:**
+
+- Add Ubuntu 24.04 [\#465](https://github.com/voxpupuli/puppet-logstash/pull/465) ([h-haaks](https://github.com/h-haaks))
+- Allow puppet/elastic\_stack 10.x [\#459](https://github.com/voxpupuli/puppet-logstash/pull/459) ([h-haaks](https://github.com/h-haaks))
+- metadata.json: Add OpenVox [\#455](https://github.com/voxpupuli/puppet-logstash/pull/455) ([jstraw](https://github.com/jstraw))
+
+**Closed issues:**
+
+- module gets warnings when used with stdlib9. [\#428](https://github.com/voxpupuli/puppet-logstash/issues/428)
+
 ## [v8.1.0](https://github.com/voxpupuli/puppet-logstash/tree/v8.1.0) (2024-03-26)
 
 [Full Changelog](https://github.com/voxpupuli/puppet-logstash/compare/v8.0.0...v8.1.0)
