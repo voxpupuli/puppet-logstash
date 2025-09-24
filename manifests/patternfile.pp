@@ -1,9 +1,9 @@
 # This type represents a Grok pattern file for Logstash.
 #
-# @param [String] source
+# @param source
 #   File source for the pattern file. eg. `puppet://[...]` or `file://[...]`
 #
-# @param [String] filename
+# @param filename
 #   Optionally set the destination filename.
 #
 # @example Define a pattern file.
@@ -30,8 +30,8 @@ define logstash::patternfile (
   file { "${logstash::config_dir}/patterns/${destination}":
     ensure => file,
     source => $source,
-    owner  => 'root',
-    group  => $logstash::logstash_group,
+    owner  => $logstash::config_user,
+    group  => $logstash::config_group,
     mode   => '0640',
     tag    => ['logstash_config'],
   }

@@ -110,6 +110,8 @@ The following parameters are available in the `logstash` class:
 * [`home_dir`](#-logstash--home_dir)
 * [`logstash_user`](#-logstash--logstash_user)
 * [`logstash_group`](#-logstash--logstash_group)
+* [`config_user`](#-logstash--config_user)
+* [`config_group`](#-logstash--config_group)
 * [`purge_config`](#-logstash--purge_config)
 * [`service_provider`](#-logstash--service_provider)
 * [`settings`](#-logstash--settings)
@@ -220,7 +222,7 @@ Default value: `'/usr/share/logstash'`
 
 Data type: `String`
 
-The user that Logstash should run as. This also controls file ownership.
+The user that Logstash should run as.
 
 Default value: `'logstash'`
 
@@ -228,9 +230,25 @@ Default value: `'logstash'`
 
 Data type: `String`
 
-The group that Logstash should run as. This also controls file group ownership.
+The group that Logstash should run as.
 
 Default value: `'logstash'`
+
+##### <a name="-logstash--config_user"></a>`config_user`
+
+Data type: `String`
+
+The user that owns Logstash control files.
+
+Default value: `'root'`
+
+##### <a name="-logstash--config_group"></a>`config_group`
+
+Data type: `String`
+
+The group that owns Logstash control files.
+
+Default value: `'root'`
 
 ##### <a name="-logstash--purge_config"></a>`purge_config`
 
