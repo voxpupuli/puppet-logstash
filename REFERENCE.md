@@ -517,7 +517,7 @@ The following parameters are available in the `logstash::patternfile` defined ty
 
 ##### <a name="-logstash--patternfile--source"></a>`source`
 
-Data type: `Pattern[/^(puppet|file):\/\//]`
+Data type: `Optional[Pattern[/^(puppet|file):\/\//]]`
 
 File source for the pattern file. eg. `puppet://[...]` or `file://[...]`
 
