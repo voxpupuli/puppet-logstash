@@ -626,4 +626,3 @@ Data type: `String`
 Environment used when running 'logstash-plugin'
 
 Default value: `[]`
-
